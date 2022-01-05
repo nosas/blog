@@ -1,0 +1,69 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="./css/default_light.css">
+</head>
+
+<body>
+    <center>
+        <div style="display: inline-block; vertical-align:middle;">
+            <a href="/" style="text-decoration: none;">SASON REZA<br>
+            </a>
+            <hr>
+            <div style="text-align: center;display: inline-block; width: 100%;">
+                <a class="title" href="about">ABOUT</a> &nbsp;<a class="title" href="contact">CONTACT</a>
+            </div>
+        </div>
+    </center>
+
+    <br>
+    <p>
+        My name is Sason (Suh-sawn). I’m a college graduate and network test engineer with an interest in artificial
+        intelligence, machine learning, cybersecurity, and motorsports. I graduated in 2018 with a cybersecurity-focused
+        bachelor’s in Computer Science and have since been working in the industry as a systems software engineer while
+        refining my cybersecurity skills and learning new computer science subjects.
+
+        <br>I have been surrounded by computers and technology my whole life, and, as a result, developed a genuine
+        passion for learning, improving, and optimizing (also known as min-maxing). This passion stems from playing
+        competitive video games, both online and against my brother/cousins, throughout my childhood – specifically
+        Warcraft III, Overwatch, Rocket League, and even Toontown Online – which requires executing actions in the most
+        optimal sequences. I was the youngest kid around so I was never allowed to play first. Instead, I watched
+        attentively, analyzed their moves, and noted any mistakes or moves which could be optimized. When it was finally
+        my turn to play, I would capitalize on their mistakes and optimize my moves to quickly beat them. My competitive
+        gaming family turned me into the min-maxer I am today, and now I’m able to apply these analytical techniques to
+        all aspects of my life and career. 🙂
+        <br>Other than min-maxing, I enjoy tinkering and stress testing (commonly known as breaking things and then
+        fixing them). Playing video games made me competitive and analytical but also sprung a small curiosity in me
+        regarding my limits: “To what extent are my skills limited? Well, I don’t know, let’s play for hours on end
+        until I find out.” After countless hours playing a video game, I learned what I was capable of and now it was
+        time to see what the game was capable of. I started thinking of how I could go beyond the limits of the video
+        game and do things that I wasn’t necessarily supposed to do. While most of it was silly stuff, such as feeding
+        my Chao’s infinite chaos drives in Sonic Adventure 2, it taught me to think outside the box. And it’s been the
+        same story since, but now I test the limits of everything in sight, rather than only video game functionality.
+        <br>Cyber security and artificial intelligence are exactly the fields to fuel my competitive, curious mindset:
+        Never-ending amounts of applications for me to tinker with and break, unique and creative methods/solutions to
+        learn from created by people all over the world, and the competition to get your name out there. All of the
+        other Computer Science fields simply can’t match the excitement of cyber security and artificial intelligence.
+
+        <hr>
+        About My Blog<br>
+        I created a blog so I can document the efforts of further understanding, and demonstrating, my ever-growing
+        knowledge of topics related to cybersecurity, artificial intelligence, and machine learning. By no means am I an
+        expert in any of these topics, but I hope to share my adventure of becoming one. Computer science is quite an
+        interesting and wide-ranging field, and I hope my blog posts will be able to teach you a thing or two about
+        these captivating topics.
+
+        <hr>
+        What’s up with the Mr. Bean theme?<br>
+        I grew up watching a lot of Mr. Bean. He’s goofy and always gets himself into the strangest predicaments.
+        Despite the goofiness and shenanigans, Bean is quite inspirational in his ability to screw everything up in the
+        most absurd fashion and think outside of the box to develop unique solutions. For example, take the episode
+        where Bean makes a sandwich on a park bench (watch it on YouTube).
+        After all these years of watching Mr. Bean, I wouldn’t be surprised if the first thing that runs through my head
+        when probing an application or bug hunting is, “What would Mr. Bean do?”
+
+    </p>
+
+</body>
+
+</html>

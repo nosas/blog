@@ -15,9 +15,15 @@
             </div>
         </div>
     </center>
-    <p>Hello World!</p>
-    <p>TODO:
-        https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/verifying-your-custom-domain-for-github-pages
+    <p>
+        <style type="text/css">
+            a {
+                text-decoration: none;
+            }
+        </style>
+        email &nbsp;: <a href="mailto:sasonreza@gmail.com">sasonreza@gmail.com</a><br>
+        twitter: <a href="https://twitter.com/sasonreza">sasonreza</a><br>
+        github : <a href="https://github.com/nosas">nosas</a><br>
     </p>
 </body>
 
