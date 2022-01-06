@@ -19,3 +19,8 @@ This repo is my rendition of a simple web framework which converts markdown file
 
 The HTML pages are generated from markdown using Python. A main script called 'generate_html.py' searches all sub-directories for files named 'article.md' and executes 'article.py' to convert the `.md` files to `index.html`.
 
+Python frameworks used:
+
+* [python-markdown2](https://github.com/trentm/python-markdown2) to convert markdown files into HTML
+* [pygments-css](https://github.com/richleland/pygments-css) to highlight code syntax
+
