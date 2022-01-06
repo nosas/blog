@@ -13,9 +13,12 @@
       background: #1d1d1d;
     }
 
+    hr {
+      color: gold;
+    }
 
     a {
-      color: whitesmoke;
+      color: snow;
       font-weight: bold;
     }
 
@@ -36,9 +39,8 @@
     pre {
       display: block;
       font-family: monospace;
-      color: rgb(230, 169, 15);
       background-color: rgb(12, 12, 12);
-      border: 1px solid rgb(170, 170, 170);
+      border: 1px solid gainsboro;
       padding-left: 2%;
       padding-top: 1ch;
       padding-bottom: 1ch;
@@ -52,9 +54,6 @@
       margin-bottom: 0.5ch;
     }
 
-    /** {
-       font-size: 16px;
-     }*/
     @media (max-width: 500px) {
 
       /* For small screen decices */
@@ -74,7 +73,6 @@
     }
 
     blockquote {
-      color: rgb(52, 146, 23);
       border: dashed 1px gainsboro;
       width: 97.5%;
       font-style: italic;
@@ -93,4 +91,21 @@
       text-transform: none;
       text-align: right;
       width: 100%;
+    }
+
+    details>summary {
+      font-style: italic;
+      background-color: rgb(40, 40, 40);
+      padding: 2px 6px;
+      border: 1px outset;
+      border-color: black;
+      border-width: small;
+      cursor: pointer;
+    }
+
+    details>p {
+      /* border-radius: 0 0 10px 10px; */
+      background-color: black;
+      padding: 2px 6px;
+      margin: 0;
     }
