@@ -42,7 +42,7 @@ def convert_md_to_html(article: str):
 
     article_html = markdown2.markdown(text=article_contents, extras=EXTRAS)
     with open(f'{article_dir}/index.html', 'w+') as f:
-        f.write(HEADER.format(date=date.today.strftime("%B %d, %Y")))
+        f.write(HEADER.format(date=date.today().strftime("%B %d, %Y")))
         f.write(article_html)
         f.write(FOOTER)
     print(f"\t[+] Finished converting {article}, don't forget to add the title!")
