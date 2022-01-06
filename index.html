@@ -23,20 +23,25 @@
     <h1>Blog Posts</h1>
     04/01/2022 - <a href="first_post/">First Post</a>
     <br>
-    04/01/2022 - <a href="first_post/article.md">Second Post</a>
+    04/01/2022 - <a href="second_post/">Second Post</a>
     <br>
-
 
     <br>
     <hr>
     <h1>TODO</h1>
     <ul>
-        <li><input type="checkbox" disabled="disabled"></input>
-            <a
-                href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/verifying-your-custom-domain-for-github-pages">Verify
-                my custom domain for github pages</a>
+        <li><input type="checkbox" disabled="disabled"></input>Write first article about implementing Minimax in Mancala
         </li>
-        <li><input type="checkbox" disabled="disabled" checked="checked"></input>Change default css to dark mode</li>
+        <li><input type="checkbox" disabled="disabled" checked="checked"></input>Automatically set header on every page
+            and article</li>
+        <ul>
+            <li>This will need to be done in <code>article.py</code> or <strike>some Javascript</strike></li>
+            <li>Then I won't have to manually update the navbar on every page if I want to make a small change</li>
+            <ul>
+                <li>I'll still have to manually update all pages because I'm statically writing the headers. But it's a
+                    straightforward process with regex.</li>
+            </ul>
+        </ul>
         <li><input type="checkbox" disabled="disabled" checked="checked"></input>Determine whether to
             <strike>self-host</strike> or use <b>GitHub Pages</b>
         </li>
@@ -45,11 +50,13 @@
                 to get some blog posts out!</li>
             <li>I will self-host in the future so I can work on developing my web dev skills</li>
         </ul>
-        <li><input type="checkbox" disabled="disabled"></input>Automatically set navbar on every page and article</li>
-        <ul>
-            <li>This will need to be done in <code>article.py</code> or maybe some JS</li>
-            <li>Then I won't have to manually update the navbar on every page if I want to make a small change</li>
-        </ul>
+        <li><input type="checkbox" disabled="disabled" checked="checked"></input>Change default css to dark mode</li>
+        <li><input type="checkbox" disabled="disabled"></input>
+            <a
+                href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/verifying-your-custom-domain-for-github-pages">Verify
+                my custom domain for github pages</a>
+        </li>
+
     </ul>
 </body>
 

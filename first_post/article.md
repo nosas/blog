@@ -6,8 +6,6 @@ Sample text on a newline.
 
 > Sample quote
 
-> ! Some spoiler, this doesn't seem to work
-
 ```python
 import sample_import
 from random import choice
