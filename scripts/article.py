@@ -29,7 +29,7 @@ FOOTER = """
 """
 
 
-def convert(article: str):
+def convert_md_to_html(article: str):
     article_dir = article.strip('article.md')
 
     with open(article) as a:
