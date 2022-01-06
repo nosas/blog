@@ -1,6 +1,7 @@
 # Convert .md file to static .html
 # markdown2 article.md -x code-friendly,fenced-code-blocks,footnotes,header-ids,tables > index.html
 import markdown2
+from datetime import date
 
 EXTRAS = ["code-friendly", "fenced-code-blocks", "footnotes", "header-ids", "tables"]
 HEADER = """
@@ -22,6 +23,10 @@ HEADER = """
       </div>
     </div>
   </center>
+
+  <br>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">{date}</p>
+
 """  # noqa
 FOOTER = """
 </body>
@@ -37,7 +42,7 @@ def convert_md_to_html(article: str):
 
     article_html = markdown2.markdown(text=article_contents, extras=EXTRAS)
     with open(f'{article_dir}/index.html', 'w+') as f:
-        f.write(HEADER)
+        f.write(HEADER.format(date=date.today.strftime("%B %d, %Y")))
         f.write(article_html)
         f.write(FOOTER)
-    print(f"\t[+] Finished converting {article}")
+    print(f"\t[+] Finished converting {article}, don't forget to add the title!")
