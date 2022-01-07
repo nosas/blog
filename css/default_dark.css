@@ -37,8 +37,8 @@
     }
 
     code {
-      font-size: 95%;
-      font-style: italic;
+      font-size: 104%;
+      /* font-style: italic; */
       background-color: rgb(60, 60, 75);
       padding-left: 0.3ch;
       padding-right: 0.3ch;
