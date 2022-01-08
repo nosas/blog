@@ -23,6 +23,7 @@
     }
 
     img {
+      max-width: 900px;
       border: none;
     }
 
@@ -34,6 +35,12 @@
     sup {
       vertical-align: 0.3em;
       font-size: 0.65em;
+    }
+
+    sub {
+      font-style: italic;
+      vertical-align: -0.25em;
+      font-size: 0.8em;
     }
 
     code {
@@ -66,6 +73,14 @@
       text-transform: uppercase;
       margin-top: 4ch;
       margin-bottom: 1ch;
+    }
+
+    table {
+      border-spacing: 1ch;
+    }
+
+    th {
+      text-align: justify;
     }
 
     @media (max-width: 500px) {
