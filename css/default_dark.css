@@ -24,7 +24,37 @@
 
     img {
       max-width: 900px;
+      width: 100%;
       border: none;
+    }
+
+    figure {
+      width: 50%;
+      border: thin whitesmoke dashed;
+      margin-left: 2em;
+      padding: 0.5em;
+      padding-left: 1em;
+      padding-right: 1em;
+    }
+
+    figure.right {
+      float: right;
+      margin-right: 0em;
+    }
+
+    figure.center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      /* style="  display: block;margin-left: auto;margin-right: auto;width: 50%;" */
+    }
+
+    figcaption {
+      margin-top: 1ch;
+      margin-bottom: 0.5ch;
+      text-align: center;
+      font-style: italic;
+      font-size: smaller;
     }
 
     p {
