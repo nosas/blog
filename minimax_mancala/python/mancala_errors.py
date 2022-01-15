@@ -10,5 +10,3 @@ class IllegalMoveError(Exception):
         6. Invalid pit index provided, must be in range (0-13)
     """
     pass
-
-

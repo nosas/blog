@@ -32,7 +32,7 @@
       width: 50%;
       border: thin whitesmoke dashed;
       margin-left: 2em;
-      padding: 0.5em;
+      padding: 0.69em;
       padding-left: 1em;
       padding-right: 1em;
     }
@@ -63,8 +63,8 @@
     }
 
     sup {
-      vertical-align: 0.3em;
-      font-size: 0.65em;
+      vertical-align: 0.4em;
+      font-size: 0.8em;
     }
 
     sub {
