@@ -1,11 +1,11 @@
     * {
-      font-size: 16px;
+      font-size: 18px;
       color: rgb(207, 206, 206);
     }
 
     html {
       font-family: monospace;
-      max-width: 900px;
+      max-width: 1000px;
       /* For Desktop PC (see @media for Tablets/Phones) */
       padding-left: 2%;
       padding-right: 3%;
@@ -65,6 +65,11 @@
     sup {
       vertical-align: 0.4em;
       font-size: 0.8em;
+    }
+
+    sup.footnote-ref a {
+      font-size: inherit;
+      color: turquoise;
     }
 
     sub {
