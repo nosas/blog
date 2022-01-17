@@ -1,5 +1,4 @@
 from mancala_errors import IllegalMoveError
-from random import choice
 
 
 class Mancala:
@@ -122,7 +121,7 @@ class Mancala:
         Returns:
             int: Index of pit where the final seed was sowed
         """
-        print(f"Player {1 if b.p1 else 2} selected pit {pit}: {self.pits[pit]}")
+        print(f"Player {1 if self.p1 else 2} selected pit {pit}: {self.pits[pit]}")
 
         illegal_moves = [
             # Can't move if the game is over
@@ -191,32 +190,3 @@ class Mancala:
         # If the last seed lands in the same pit they selected, the player goes again
         self._p1 = self.p1 if pit == current_pit else not self.p1
         return self.game_score
-
-
-if __name__ == "__main__":
-    b = Mancala()
-    print(b.render())
-
-    while not b.game_over:
-        pits = list(b._p1_range) if b.p1 else list(b._p2_range)
-        print(f"Player {1 if b.p1 else 2}'s Turn! Choose a number in range <{pits[0]}-{pits[-1]}>")
-
-        if b.p1:
-            pit = input()
-            if pit == 'q':
-                break
-        else:
-            # Only select non-empty pits, possible values are in range(6), or <0-5>
-            possible_pits = [idx for idx, pit in enumerate(b.p2_pits) if pit > 0]
-            # Ensure the pit selected is in range <7-12>
-            pit = choice(possible_pits) + 7
-
-        try:
-            b.sow(pit=int(pit))
-            print(b.render())
-        except IllegalMoveError:
-            print("[!] Illegal move!")
-        except ValueError:
-            print("[!] Invalid input, must be in ['q', range(14)]. Try again")
-
-    print(f"Winner! Player{b.game_winner} with total score {b.game_score}")

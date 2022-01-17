@@ -248,20 +248,20 @@ Players take turns picking up all the seeds from one of their 6 pits and placing
 Stones are placed counterclock-wise into pits and in the player's own mancala at the end of the board.
 Players must not place seeds in their opponent's mancala.
 
-There are two exceptions for when a player can go again:
+There are two exceptions for when a player can go again, or **re-turn**:
 
-1. The last stone lands in their own mancala
-1. The last stone lands in the same pit it started from
+1. The last stone in the player's hand lands in their own mancala
+1. The last stone in the player's hand lands in the same pit it started from
 
 Lastly, there is a **capture rule**:
-If the player's last stone lands in an empty pit on their own side of the board, and the adjacent pit on the opponent's side contains 1+ seeds, the player may capture all seeds from both pits and place them in their own mancala.
+If the last stone in the player's hand lands in an empty pit on their own side of the board, and the adjacent pit on the opponent's side contains 1+ seeds, the player may capture all seeds from both pits and place them in their own mancala.
 
 The player's goal is to have more seeds in their mancala than their opponent.
 
 The game ends on either of two conditions:
 
 1. A player's mancala contains 25+ seeds
-1. All pits on a player's side are empty. In this case, the player with seeds still in play may gather them all and deposit into their own mancala.
+1. All pits on a player's side are empty. In this case, the player with seeds still in play may gather and deposit the remaining seeds into their own mancala.
 
 Please watch [this 3-minute video](https://www.youtube.com/watch?v=OX7rj93m6o8) if the explanation above wasn't clear.
 
@@ -274,7 +274,10 @@ The code and gameplay can be found on [my GitHub repo](https://github.com/nosas/
 In addition to the game simulator, I wrote an Agent class so I could play against bots using various Mancala strategies.
 So far, the bots only strategies are: prioritize re-turns, random, minimax, minimax with alpha-beta pruning.
 
-In the future, I plan on using OpenAI Gym to simulate a bot tournament and find the strongest Mancala strategy.
+
+
+
+<!-- In the future, I plan on using OpenAI Gym to simulate a bot tournament and find the strongest Mancala strategy. -->
 
 ---
 # References/Notes
