@@ -241,7 +241,40 @@ If we wanted to maximize the alpha-beta pruning process on a Chess game tree, we
 ---
 # Mancala
 
+Mancala is a 2-player turn-based board game.
+Each player has 6 pits with 4 seeds/stones along with 1 mancala (store) at the end of the board.
 
+Players take turns picking up all the seeds from one of their 6 pits and placing them one-by-one until they're holding no seeds.
+Stones are placed counterclock-wise into pits and in the player's own mancala at the end of the board.
+Players must not place seeds in their opponent's mancala.
+
+There are two exceptions for when a player can go again:
+
+1. The last stone lands in their own mancala
+1. The last stone lands in the same pit it started from
+
+Lastly, there is a **capture rule**:
+If the player's last stone lands in an empty pit on their own side of the board, and the adjacent pit on the opponent's side contains 1+ seeds, the player may capture all seeds from both pits and place them in their own mancala.
+
+The player's goal is to have more seeds in their mancala than their opponent.
+
+The game ends on either of two conditions:
+
+1. A player's mancala contains 25+ seeds
+1. All pits on a player's side are empty. In this case, the player with seeds still in play may gather them all and deposit into their own mancala.
+
+Please watch [this 3-minute video](https://www.youtube.com/watch?v=OX7rj93m6o8) if the explanation above wasn't clear.
+
+---
+## Mancala simluation
+
+I wrote a simple, CLI Mancala game simulator in Python.
+The code and gameplay can be found on [my GitHub repo](https://github.com/nosas/blog/tree/mancala/minimax_mancala/code).
+
+In addition to the game simulator, I wrote an Agent class so I could play against bots using various Mancala strategies.
+So far, the bots only strategies are: prioritize re-turns, random, minimax, minimax with alpha-beta pruning.
+
+In the future, I plan on using OpenAI Gym to simulate a bot tournament and find the strongest Mancala strategy.
 
 ---
 # References/Notes
@@ -251,4 +284,4 @@ If we wanted to maximize the alpha-beta pruning process on a Chess game tree, we
 [^3]: The heuristic value is often referred to as utility. The variable `u` represents utility, where u<sub>i</sub> represents the player's utility.
 [^4]: [How the Computer Beat the Go Master](https://www.scientificamerican.com/article/how-the-computer-beat-the-go-master/)
 [^5]: [Depth-first search animation](https://en.wikipedia.org/wiki/Depth-first_search#/media/File:Depth-First-Search.gif)
-[^6]: [Chess Move Order: Typical move ordering](https://www.chessprogramming.org/Move_Ordering#Typical_move_ordering)
+[^6]: [Chess Move Ordering: Typical move ordering](https://www.chessprogramming.org/Move_Ordering#Typical_move_ordering)

@@ -198,16 +198,18 @@ if __name__ == "__main__":
     print(b.render())
 
     while not b.game_over:
-        print(f"Player {1 if b.p1 else 2}'s Turn")
-        # if b.p1:
-        pit = input()
-        if pit == 'q':
-            break
-        # else:
-        #     # Only select non-empty pits, possible values are in range(6), or <0-5>
-        #     possible_pits = [idx for idx, pit in enumerate(b.p2_pits) if pit > 0]
-        #     # Ensure the pit selected is in range <7-12>
-        #     pit = choice(possible_pits) + 7
+        pits = list(b._p1_range) if b.p1 else list(b._p2_range)
+        print(f"Player {1 if b.p1 else 2}'s Turn! Choose a number in range <{pits[0]}-{pits[-1]}>")
+
+        if b.p1:
+            pit = input()
+            if pit == 'q':
+                break
+        else:
+            # Only select non-empty pits, possible values are in range(6), or <0-5>
+            possible_pits = [idx for idx, pit in enumerate(b.p2_pits) if pit > 0]
+            # Ensure the pit selected is in range <7-12>
+            pit = choice(possible_pits) + 7
 
         try:
             b.sow(pit=int(pit))
@@ -215,7 +217,6 @@ if __name__ == "__main__":
         except IllegalMoveError:
             print("[!] Illegal move!")
         except ValueError:
-            # User input is invalid, must be in ['q', range(14)]
             print("[!] Invalid input, must be in ['q', range(14)]. Try again")
 
     print(f"Winner! Player{b.game_winner} with total score {b.game_score}")
