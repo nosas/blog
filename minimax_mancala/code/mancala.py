@@ -121,7 +121,7 @@ class Mancala:
         Returns:
             int: Index of pit where the final seed was sowed
         """
-        print(f"Player {1 if self.p1 else 2} selected pit {pit}: {self.pits[pit]}")
+        print(f"Player {1 if self.p1 else 2} selected pit {pit}: {self.pits[pit]} seeds")
 
         illegal_moves = [
             # Can't move if the game is over

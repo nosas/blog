@@ -18,17 +18,19 @@ if __name__ == "__main__":
 
         print(f"Player {1 if b.p1 else 2}'s Turn! Choose a number in range {possible_moves}")
         pit = agent.move(game=b)
-
-        # Stop the game is player inputs 'q'
+        # Stop the game if player inputs 'q'
         if pit == 'q':
             break
 
         try:
+            if int(pit) not in possible_moves:
+                raise ValueError
+
             b.sow(pit=int(pit))
             print(b.render())
         except IllegalMoveError:
             print("[!] Illegal move!")
         except ValueError:
-            print("[!] Invalid input, must be in ['q', range(14)]. Try again")
+            print(f"[!] Invalid input, must be in ['q', {possible_moves}]. Try again")
 
     print(f"Winner! Player{b.game_winner} with total score {b.game_score}")

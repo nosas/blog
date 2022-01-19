@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from mancala import Mancala
 from random import choice
+from time import sleep
 
 
 class Agent(ABC):
@@ -23,6 +24,7 @@ class AgentRandom(Agent):
 
     def move(self, game: Mancala) -> int:
         possible_moves = self.get_possible_moves(game=game)
+        sleep(0.5)
         return choice(possible_moves)
 
 
