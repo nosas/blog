@@ -68,7 +68,7 @@ class Mancala:
 
     @property
     def p1(self) -> int:
-        """Return 1 if p1's turn, return 0 if p2's turn"""
+        """Return 1 if P1's turn, return 0 if P2's turn"""
         return int(self._p1)
 
     @property

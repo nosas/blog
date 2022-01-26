@@ -266,25 +266,163 @@ The game ends on either of two conditions:
 Please watch [this 3-minute video](https://www.youtube.com/watch?v=OX7rj93m6o8) if the explanation above wasn't clear.
 
 ---
-## Mancala simluation
+## Mancala simulator
 
 I wrote a simple, CLI Mancala game simulator in Python.
-The code and gameplay can be found on [my GitHub repo](https://github.com/nosas/blog/tree/mancala/minimax_mancala/code).
+The code can be found on [my GitHub repo](https://github.com/nosas/blog/tree/mancala/minimax_mancala/code). An example of the simluator can be seen below.
+
+The top-most row is the indices of Player 1's pits.
+The following row is Player 1's pits initialized with 4 seeds.
+The left-most number is Player 1's mancala index, 13.
+The number immediately to the right of Player 1's mancala is his/her score.
+Everything else is Player 2's indices, pits, or mancala.
+
+<center>
+
+```
+
+   0   1   2   3   4   5
+   |===============================|
+   |---| 4 | 4 | 4 | 4 | 4 | 4 |---|
+  13 | 0 |=======================| 0 | 6
+   |---| 4 | 4 | 4 | 4 | 4 | 4 |---|
+   |===============================|
+   12  11  10  9   8   7
+
+Player 1's Turn! Choose a number in range [0, 1, 2, 3, 4, 5]
+    Player 1 selected pit 1: 4 seeds (+1, 0, 0)
+
+   0   1   2   3   4   5
+   |===============================|
+   |---| 5 | 0 | 4 | 4 | 4 | 4 |---|
+  13 | 1 |=======================| 0 | 6
+   |---| 5 | 5 | 4 | 4 | 4 | 4 |---|
+   |===============================|
+   12  11  10  9   8   7
+
+```
+
+</center>
+
+Each player takes turns selecting a pit.
+The simulator will then output which pit the player selected along with four additional outputs:
+
+1. How many seeds were in the pit
+1. The player's score difference after playing the move
+1. A boolean value of whether the player captured a pit
+1. A boolean value of whether the player can go again (re-turn)
 
 In addition to the game simulator, I wrote an Agent class so I could play against bots using various Mancala strategies.
-So far, the bots only strategies are: prioritize re-turns, random, minimax, minimax with alpha-beta pruning.
+So far, the bots only strategies are: random, minimax, and minimax with alpha-beta pruning.
 
+Additional strategies could be also implemented - such as maximize re-turns, prioritize captures, prevent captures - but we're focusing on minimax in this article.
+In the future, I plan on using OpenAI Gym to simulate a bot tournament and find the strongest Mancala strategy.
 
+---
+## Mancala game tree
 
+The minimax agent creates game trees by iterating over all its own possible moves, simluating the opponent's move in response, and repeating the process until it reaches its maximum search depth.
 
-<!-- In the future, I plan on using OpenAI Gym to simulate a bot tournament and find the strongest Mancala strategy. -->
+Large game trees are created throughout the game - especially when each player's pits are full of seeds, such as the beginning of the game - due to Mancala's branching factor of 6.
+Recall that the number of terminal nodes requiring evaluations is equal to `b`<sup>`d`</sup>, where `b` is the branching factor (number of possible actions in that game state) and `d` is the algorithm's search depth.
+
+Each player begins with 6 possible moves, or a branching factor, `b`, of 6.
+The minimax Agent's default depth variable, `d`, is set to 3.
+Therefore, at the beginning of the game there are a total of 6<sup>3</sup>, or 216, terminal nodes requiring heuristic evaluations before the bot makes its first move.
+
+If we increase the depth of the search to 8, we have 6<sup>8</sup> - or 1,679,616 - heuristic evaluations.
+Bumping the depth up once again to 9 requires 10,077,696 evaluations.
+An order-of-magnitude difference to look ahead one more move.
+In case you're wondering, looking ahead 10 moves requires 60,466,176 heuristic evaluations. Exponential numbers are impressive.
+
+---
+## Mancala heuristic evaluation
+
+The terminal nodes' heuristic values - the value of the players' moves - are evaluated by the Agent's `evaluation` method.
+The heuristic evaluation is rather simple: comprate the Agent's score to the opponent's score after executing some move, and return the difference between scores.
+A positive number means the Agent is winning; a negative number means the opponent is winning.
+In cases where the Agent discovers multiple moves with the same optimal outcome, a random move will be selected.
+
+In short, the agent calculates move values with a simple and weak evaluation method that uses no domain knowledge.
+It picks moves that increases it score; that's it.
+
+The evaluation method can be upgraded by utilizing domain knowledge.
+We could implement valuations/weights to each possible move, such as captures, re-turns.
+For example, we could weigh capture moves to be more valuable than simply scoring one seed.
+Additional valuations include: winning moves, re-turns, defensive moves to prevent captures, re-turns that lead to captures, etc.
+
+The weak evaluation method means there will be many of the same of the same values, - i.e. the player moves but the score doesn't change very much.
+Therefore, more nodes will need to be visited and calculated.
+
+Stronger evaluation methods will reduce search times by increasing pruning activity with *ideal ordering*.
+If our Agent can have more granular output values, then it can prune more nodes or sub-trees.
+That means less nodes will be visited and calculated.
+
+If you're curious about what stronger evaluation methods look like, I encourage you to check out Chess engines and their evaluation methods.
+Each engine's evaluation method is unique, but they share the following Chess knowledge:
+
+1. Material: Sum of all Chess piece values. Pawn (10), Knight/Bishop (30), Rook (50), Queen (90)
+1. Game Phases: Opening, mid-game, end-game
+1. Mobility
+1. Center Control
+1. Connectivity
+1. Trapped Pieces
+1. King Safety
+
+Read more about Chess evaluations on the [Chess Programming Wiki](https://www.chessprogramming.org/Evaluation).
+
+Take a peek at the Stockfish engine's source code [here](https://github.com/official-stockfish/Stockfish).
+
+Lastly, [watch this video](https://www.youtube.com/watch?v=U4ogK0MIzqk) from Sebastian Lague.
+This video solidified my understanding of heuristic evaluation.
+
+---
+## Mancala conclusion
+
+The minimax agent plays naively due to its weak heuristic evaluation method.
+With a stronger evaluation method, the Agent could prioritize chaining re-turns or captures and win the game much quicker.
+
+Moreover, Agents with shallow depths (small `d`) often play single-scoring moves instead of chaining re-turns to maximize its scoring outcome.
+This is more-or-less expected behavior due to two parts:
+
+1. The minimax algorithm is **minimizing the maximum loss in a worst-case scenario**, not maximizing its score
+1. The algorithm cannot search far enough ahead to *see* the possibility of chaining re-turns due to limited computational resources or small depth value
+
+Alpha-beta pruning proved to drastically speed up the Agent's decision-making.
+Without alpha-beta pruning, a minimax agent with a depth greater than 5 takes over 10 seconds to select a move.
+With alpha-beta pruning, the Agent can look as far as 8 moves ahead in less than 10 seconds.
+
+Increasing the depth to 9 moves increases search times to over 1 minute, *but* the Agent's strategy does not change.
+Agents with depths 7, 8, and 9 all play the same opening and mid-game strategy!
+<details>
+    <summary>
+    Agent's typical opening against my winning, stalling strategy
+    </summary>
+```
+Agent's moves  : [3,  1, 0,  5, 0, 1,  0, 4,  0, 5, 1, 0, 3, 1, 0, 2, 1, 0]
+My moves       : [11, 9, 8, 12, 9, 8, 11, 8, 12, 8, 9]
+Players' moves : [3, 1, 11, 9, 0, 8, 5, 0, 1, 0, 4, 12, 0, 5, 9, 1, 8, 0, 3, 11, 1, 8, 0, 12, 2, 8, 1, 9, 0]
+```
+</details>
+
+Overall, minimax is a simple, yet fundamental, search algorithm.
+The algorithm excels in making the safest moves in perfect information games when given a large enough search depth.
+Optimizations such as alpha-beta pruning drastically reduce the algorithm's search times.
+
+I look forward to learning more about search algorithms and pathfinding algorithms.
+Next step is OpenAI Gym and graph traversals!
 
 ---
 # References/Notes
 
 [^1]: [Stanford CS, Game Theory: Zero-Sum Games](https://cs.stanford.edu/people/eroberts/courses/soco/projects/1998-99/game-theory/zero.html)
+
 [^2]: Other papers or articles may refer to the player as p<sub>i</sub> or a<sub>i</sub>, and opponent(s) as p<sub>-i</sub> or a<sub>-i</sub>
+
 [^3]: The heuristic value is often referred to as utility. The variable `u` represents utility, where u<sub>i</sub> represents the player's utility.
+
 [^4]: [How the Computer Beat the Go Master](https://www.scientificamerican.com/article/how-the-computer-beat-the-go-master/)
+
 [^5]: [Depth-first search animation](https://en.wikipedia.org/wiki/Depth-first_search#/media/File:Depth-First-Search.gif)
+
 [^6]: [Chess Move Ordering: Typical move ordering](https://www.chessprogramming.org/Move_Ordering#Typical_move_ordering)

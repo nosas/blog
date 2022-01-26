@@ -14,6 +14,8 @@ class Agent(ABC):
     def evaluation(game: Mancala, player: int) -> int:
         """Return heuristic value of the terminal node"""
         # return game.game_score[player]
+        if game.game_over:
+            return 100 if game.game_winner == player else -100
         return game.game_score[player] - game.game_score[not player]
 
     @staticmethod
@@ -68,15 +70,11 @@ class AgentMinimax(Agent):
         if depth == 0:
             return Agent.evaluation(game=clone, player=maximizer)
 
-        possible_moves = Agent.get_possible_moves(game=clone)
         best_move = -float("inf") if maximizer else float("inf")
+        possible_moves = Agent.get_possible_moves(game=clone)
 
         for move in possible_moves:
-            move_value = AgentMinimax.minimax(
-                depth=depth - 1,
-                game=clone,
-                pit=move
-            )
+            move_value = AgentMinimax.minimax(depth=depth-1, game=clone, pit=move)
             best_move = max(best_move, move_value) if maximizer else min(best_move, move_value)
 
         return best_move
@@ -92,7 +90,45 @@ class AgentMinimax(Agent):
         return choice(best_pits)
 
 
-class AgentMinimaxAlphaBeta(Agent):
+class AgentMinimaxAlphaBeta(AgentMinimax):
+
+    @staticmethod
+    def minimax(depth: int, game: Mancala, pit: int, alpha: int, beta: int) -> int:
+        """Recursively traverse the game tree and select a pit that minimizes the maximum loss"""
+
+        clone = game.clone()
+        score_diff, capture, go_again = clone.sow(pit=pit)
+        maximizer = clone.p1
+
+        if depth == 0:
+            return Agent.evaluation(game=clone, player=maximizer)
+
+        best_move = -float("inf") if maximizer else float("inf")
+        possible_moves = Agent.get_possible_moves(game=clone)
+
+        for move in possible_moves:
+            move_value = AgentMinimax.minimax(depth=depth-1, game=clone, pit=move)
+            best_move = max(best_move, move_value) if maximizer else min(best_move, move_value)
+
+            if maximizer:
+                alpha = max(alpha, best_move)
+            else:
+                beta = min(beta, best_move)
+
+            if beta <= alpha:
+                return best_move
+
+        return best_move
 
     def move(self, game: Mancala) -> int:
-        pass
+
+        clone = game.clone()
+        possible_moves = Agent.get_possible_moves(game=clone)
+        possible_scores = [AgentMinimaxAlphaBeta.minimax(
+            self.depth, clone, pit, -float("inf"), float("inf")) for pit
+            in possible_moves]
+
+        best_score = max(possible_scores)
+        best_pits = [pit for score, pit in zip(possible_scores, possible_moves) if score == best_score]  # noqa
+        return choice(best_pits)
+
