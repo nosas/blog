@@ -409,6 +409,8 @@ Overall, minimax is a simple, yet fundamental, search algorithm.
 The algorithm excels in making the safest moves in perfect information games when given a large enough search depth.
 Optimizations such as alpha-beta pruning drastically reduce the algorithm's search times.
 
+Visit the references section below for more detailed articles explaining minimax[^7].
+
 I look forward to learning more about search algorithms and pathfinding algorithms.
 Next step is OpenAI Gym and graph traversals!
 
@@ -426,3 +428,5 @@ Next step is OpenAI Gym and graph traversals!
 [^5]: [Depth-first search animation](https://en.wikipedia.org/wiki/Depth-first_search#/media/File:Depth-First-Search.gif)
 
 [^6]: [Chess Move Ordering: Typical move ordering](https://www.chessprogramming.org/Move_Ordering#Typical_move_ordering)
+
+[^7]: [Minimax algorithm and alpha-beta pruning: Understanding minimax in detail from a beginner's perspective](https://mathspp.com/blog/minimax-algorithm-and-alpha-beta-pruning)
