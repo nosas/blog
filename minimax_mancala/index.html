@@ -1,377 +1,456 @@
-
 <html>
 
 <head>
-  <link rel="stylesheet" type="text/css" href="../css/default_dark.css">
-  <link rel="stylesheet" type="text/css" href="../css/syntax_dark.css">
+    <link rel="stylesheet" type="text/css" href="../css/default_dark.css">
+    <link rel="stylesheet" type="text/css" href="../css/syntax_dark.css">
 </head>
 
 <body>
-  <center>
-    <div style="display: inline-block; vertical-align:middle;">
-      <a href="/" style="text-decoration: none;">SASON REZA<br>
-      </a>
-      <hr>
-      <div style="text-align: center;display: inline-block; width: 100%;">
-        <a class="title" href="../about">ABOUT</a> &nbsp;<a class="title" href="../contact">CONTACT</a>
-      </div>
-    </div>
-  </center>
+    <center>
+        <div style="display: inline-block; vertical-align:middle;">
+            <a href="/" style="text-decoration: none;">SASON REZA<br>
+            </a>
+            <hr>
+            <div style="text-align: center;display: inline-block; width: 100%;">
+                <a class="title" href="../about">ABOUT</a> &nbsp;<a class="title" href="../contact">CONTACT</a>
+            </div>
+        </div>
+    </center>
 
-  <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">January 25, 2022</p>
+    <br>
+    <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">January 25, 2022</p>
 
-<p><title>Minimax with alpha-beta pruning in Mancala</title></p>
+    <p>
+        <title>Minimax with alpha-beta pruning in Mancala</title>
+    </p>
 
-<h1 id="minimax-search">Minimax search</h1>
+    <h1 id="minimax-search">Minimax search</h1>
 
-<p>Minimax search is a fundamental depth-first search algorithm used in Artificial Intelligence, decision theory, game theory, and statistics.
-The purpose of minimax search is to  <strong>minimize the maximum loss</strong> in a worst-case scenario - or, simply put, figure out the best action to pursue in a worst-case scenario.</p>
+    <p>Minimax search is a fundamental depth-first search algorithm used in Artificial Intelligence, decision theory,
+        game theory, and statistics.
+        The purpose of minimax search is to <strong>minimize the maximum loss</strong> in a worst-case scenario - or,
+        simply put, figure out the best action to pursue in a worst-case scenario.</p>
 
-<p>This algorithm can be implemented in <em>n</em>-player <strong>perfect information</strong> games but is most commonly implemented in 2-player zero-sum games such as Checkers, Chess, Connect 4, Mancala, Tic-Tac-Toe, etc.
-Zero-sum games are simplified as games where whatever (value/utility) one player wins and, the other player loses.</p>
+    <p>This algorithm can be implemented in <em>n</em>-player <strong>perfect information</strong> games but is most
+        commonly implemented in 2-player zero-sum games such as Checkers, Chess, Connect 4, Mancala, Tic-Tac-Toe, etc.
+        Zero-sum games are simplified as games where whatever (value/utility) one player wins and, the other player
+        loses.</p>
 
-<p>Perfect information games are games where every player knows the results of all previous moves.
-In games of perfect information, there is at least one "best" way to play for each player.
-The "best" way to play can be obtained by searching into future moves using and evaluating the game states with search algorithms such as minimax.
-Moreover, the best strategy does not necessarily allow one to win but will minimize the losses<sup class="footnote-ref" id="fnref-1"><a href="#fn-1">3</a></sup>.</p>
+    <p>Perfect information games are games where every player knows the results of all previous moves.
+        In games of perfect information, there is at least one "best" way to play for each player.
+        The "best" way to play can be obtained by searching into future moves using and evaluating the game states with
+        search algorithms such as minimax.
+        Moreover, the best strategy does not necessarily allow one to win but will minimize the losses<sup
+            class="footnote-ref" id="fnref-1"><a href="#fn-1">3</a></sup>.</p>
 
-<p>In this article, we'll discuss what minimax search is, the related vocabulary, search tree structure, search process, alpha-beta pruning, and, finally, implement minimax with and without alpha-beta pruning in mancala.</p>
+    <p>In this article, we'll discuss what minimax search is, the related vocabulary, search tree structure, search
+        process, alpha-beta pruning, and, finally, implement minimax with and without alpha-beta pruning in mancala.</p>
 
-<hr />
+    <hr />
 
-<h2 id="minimax-vocabulary">Minimax vocabulary</h2>
+    <h2 id="minimax-vocabulary">Minimax vocabulary</h2>
 
-<p>Let's familiarize ourselves with minimax-related variables and keywords before we implement minimax searches.</p>
+    <p>Let's familiarize ourselves with minimax-related variables and keywords before we implement minimax searches.</p>
 
-<table>
-<thead>
-<tr>
-  <th><strong>Keyword</strong></th>
-  <th style="text-align:center;"><strong>Variable</strong></th>
-  <th style="text-align:center;"><strong>Definition</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td>Player/Maximizer</td>
-  <td style="text-align:center;">p<sub>max</sub><sup class="footnote-ref" id="fnref-2"><a href="#fn-2">1</a></sup></td>
-  <td style="text-align:center;">Maximizes their action's value - or minimizes the maximum loss - in a worst-case scenario</td>
-</tr>
-<tr>
-  <td>Opponent/Minimizer</td>
-  <td style="text-align:center;">p<sub>min</sub></td>
-  <td style="text-align:center;">Minimizes the value of the player's (p<sub>max</sub>'s) maximum gain</td>
-</tr>
-<tr>
-  <td>Heuristic value</td>
-  <td style="text-align:center;"><code>v</code><sup class="footnote-ref" id="fnref-3"><a href="#fn-3">2</a></sup></td>
-  <td style="text-align:center;">Value of the player's action - or current game state - obtained by an evaluation function. Larger numbers are more beneficial for p<sub>max</sub>, whereas smaller numbers are more beneficial for p<sub>min</sub>.</td>
-</tr>
-<tr>
-  <td>Branching factor</td>
-  <td style="text-align:center;"><code>b</code></td>
-  <td style="text-align:center;">How many actions the player has available</td>
-</tr>
-<tr>
-  <td>Depth</td>
-  <td style="text-align:center;"><code>d</code></td>
-  <td style="text-align:center;">How deep into the tree - or how many moves ahead - the algorithm will search</td>
-</tr>
-</tbody>
-</table>
+    <table>
+        <thead>
+            <tr>
+                <th><strong>Keyword</strong></th>
+                <th style="text-align:center;"><strong>Variable</strong></th>
+                <th style="text-align:center;"><strong>Definition</strong></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Player/Maximizer</td>
+                <td style="text-align:center;">p<sub>max</sub><sup class="footnote-ref" id="fnref-2"><a
+                            href="#fn-2">1</a></sup></td>
+                <td style="text-align:center;">Maximizes their action's value - or minimizes the maximum loss - in a
+                    worst-case scenario</td>
+            </tr>
+            <tr>
+                <td>Opponent/Minimizer</td>
+                <td style="text-align:center;">p<sub>min</sub></td>
+                <td style="text-align:center;">Minimizes the value of the player's (p<sub>max</sub>'s) maximum gain</td>
+            </tr>
+            <tr>
+                <td>Heuristic value</td>
+                <td style="text-align:center;"><code>v</code><sup class="footnote-ref" id="fnref-3"><a
+                            href="#fn-3">2</a></sup></td>
+                <td style="text-align:center;">Value of the player's action - or current game state - obtained by an
+                    evaluation function. Larger numbers are more beneficial for p<sub>max</sub>, whereas smaller numbers
+                    are more beneficial for p<sub>min</sub>.</td>
+            </tr>
+            <tr>
+                <td>Branching factor</td>
+                <td style="text-align:center;"><code>b</code></td>
+                <td style="text-align:center;">How many actions the player has available</td>
+            </tr>
+            <tr>
+                <td>Depth</td>
+                <td style="text-align:center;"><code>d</code></td>
+                <td style="text-align:center;">How deep into the tree - or how many moves ahead - the algorithm will
+                    search</td>
+            </tr>
+        </tbody>
+    </table>
 
-<hr />
+    <hr />
 
-<h2 id="minimax-tree-structure">Minimax tree structure</h2>
+    <h2 id="minimax-tree-structure">Minimax tree structure</h2>
 
-<p>Suppose we're playing a 2-player turn-based game where each player has a choice between two actions per turn.
-The branching factor, <code>b</code>, will be equal to 2.
-We'll configure the algorithm to search to a depth of 3 - that is, we'll consider the player's possible moves, the opponent's responses, and the player's responses to the opponent's responses - which will set the variable <code>d</code> equal to 3.</p>
+    <p>Suppose we're playing a 2-player turn-based game where each player has a choice between two actions per turn.
+        The branching factor, <code>b</code>, will be equal to 2.
+        We'll configure the algorithm to search to a depth of 3 - that is, we'll consider the player's possible moves,
+        the opponent's responses, and the player's responses to the opponent's responses - which will set the variable
+        <code>d</code> equal to 3.</p>
 
-<p>Given the variables <code>b</code>=2 and <code>d</code>=3, the algorithm will generate the following tree structure:</p>
+    <p>Given the variables <code>b</code>=2 and <code>d</code>=3, the algorithm will generate the following tree
+        structure:</p>
 
-<figure class="right">
-    <img src="img/minimax_tree.png" alt="Minimax tree structure"/>
-    <figcaption>Tree generated by minimax with the branching factor of 2 and depth of 3.
-    Each node in the tree is the value of a game state as a result of the player choosing an action.
- </figcaption>
-</figure>
-
-<!-- ![Minimax tree structure](img/minimax_tree.png) -->
-
-<p>The number of heuristic evaluations - also called <em>terminal nodes</em> or <em>leaf nodes</em>, seen in the figure as v1-v8 - completed in a minimax search tree is denoted by: <strong>b<sup>d</sup></strong>.
-It's important to notice that the size of the search tree increases exponentially based on <strong>how deep the algorithm searches</strong> and <strong>how large the branching factor is</strong>.</p>
-
-<p>We have a mere 2<sup>3</sup> (8) heuristics evaluations in the tree above when looking 3 moves ahead.
-However, the tree represents an arbitrary game for which there are only two possible actions per turn.</p>
-
-<p>Consider chess, where the branching factor (possible moves) is exactly 20 for opening moves and about 35 for the remainder of the game<sup class="footnote-ref" id="fnref-4"><a href="#fn-4">4</a></sup>.
-If we re-configured our minimax algorithm's branching factor (<code>b</code>) to reflect the number of possible moves in chess, we would have to perform roughly 35<sup>3</sup> (42,875) heuristic evaluations.
-And that's only looking 3 moves ahead!</p>
-
-<p>The last thing to consider about these trees is that <strong>the branching factor is not always uniform</strong>.
-Just because there are two possible moves this turn, it doesn't mean there will be two possible moves next turn.
-Perhaps there is only one possible move next turn or you may have reached a terminal state where there are no possible moves; you've won or lost.</p>
-
-<p>Looking at chess again... there are 20 possible opening moves.
-After the first move, and depending on which piece is moved, there can be anywhere from 20 to 29 moves.
-The opening move below allows for 29 possible moves on white's next turn - or 28 possible moves if black moves their pawn to d5.</p>
-
-<!-- ![29 possible moves for white](img/chess_opening_move.png) -->
-
-<figure class="center">
-    <img src="img/chess_opening_move.png" style="width:100%;">
-    <figcaption>White's first move, pawn d2->d4, opens up an additional 9 moves for white's next turn</figcaption>
-</figure>
-
-<hr />
-
-<h2 id="minimax-search-process">Minimax search process</h2>
-
-<p>Recall that minimax search is a <strong>depth-first search</strong> algorithm; it starts at the root node and travels as deep as possible through each branch before backtracking to the top of the tree.
-The depth-first search is complete once all nodes have been visited.</p>
-
-<p><details>
-    <summary>
-    Depth-first search animation
-    </summary>
-    <figure class="center">
-        <img src="img/depth_first_search.gif" style="width:100%;"/>
-        <figcaption>Depth-first search on a tree with 10 nodes<sup class="footnote-ref" id="fnref-5"><a href="#fn-5">5</a></sup></figcaption>
+    <figure class="right">
+        <img src="img/minimax_tree.png" alt="Minimax tree structure" />
+        <figcaption>Tree generated by minimax with the branching factor of 2 and depth of 3.
+            Each node in the tree is the value of a game state as a result of the player choosing an action.
+        </figcaption>
     </figure>
-</details></p>
-
-<p>Minimax evaluates all terminal nodes at the maximum search depth <code>d</code> and then begins the search process.
-The non-terminal nodes' values are determined by the minimizer/maximizer's choices of the descendent leaf nodes.</p>
 
-<p>Referring back to the minimax tree, the search process begins as follows for a tree with depth 3:</p>
-
-<figure class="right">
-    <img src="img/minimax_search.gif" style="width:100%;"/>
-    <figcaption>Minimax search animation</figcaption>
-</figure>
-
-<ol>
-<li>Minimax reaches the terminal nodes on the left-hand side of the tree and calculates the heuristic values, v1 and v2</li>
-<li>Minimax backtracks one level; <code>max2</code> picks the maximum value between v1 and v2</li>
-<li>Minimax then goes down the right-hand side of <code>min1</code> and calculates the terminal node values of v3 and v4</li>
-<li>Backtrack up one level; <code>max3</code> picks the maximum value between v3 and v4</li>
-<li>Backtrack up one level; <code>min1</code>  picks the minimum value between <code>max2</code> and <code>max3</code></li>
-<li>Repeat with <code>max4(v5, v6)</code>, <code>max5(v7, v8)</code>, and <code>min2(max4, max5)</code></li>
-<li>Finally <code>max1</code> (root node) picks the maximum value between <code>min1</code> and <code>min2</code></li>
-</ol>
-
-<p>The gist of minimax is that the minimizer and maximizer alternate picking their most optimal value for every level of the tree.
-Who picks first depends on how deep the tree is, but it's guaranteed that the maximizer picks last because they are the root node and the main player.</p>
-
-<p>When the search completes, the root node will contain the player's maximum gain in a worst-case scenario, <strong>assuming the opponent is always playing their best move.</strong>
-Minimax with deep searches (large <code>d</code> value) are not optimal against opponents with random actions because the algorithm assumes the opponent is competent and playing optimal moves.</p>
-
-<p>One last thing to consider is that the algorithm's search time drastically increases for complex games with a large branching factor <code>b</code> - also called <em>action spaces</em> - such as chess.
-The algorithm visits <em>every</em> node - every possible action - before choosing an optimal action.
-So the larger and deeper the tree, the longer the search algorithm takes to find the most optimal value.</p>
-
-<p>The search time of large trees can be dramatically reduced by applying an optimization called <strong>alpha-beta pruning</strong>.</p>
-
-<hr />
-
-<h1 id="alpha-beta-pruning">Alpha-beta pruning</h1>
-
-<p>Alpha-beta pruning is an optimization technique for the minimax search algorithm.
-The optimization greatly reduces search times by preventing minimax from visiting and evaluating unnecessary nodes.</p>
-
-<p>Recall that the number of nodes visited by minimax is exponential (b<sup>d</sup>).
-In best-case scenarios, alpha-beta pruning reduces the exponent in half, thus considerably improving search times.
-But how does alpha-beta pruning optimize search times?</p>
-
-<p>The pruning process cuts off leaves - or entire sub-trees - in the game tree which need not be searched because a better move already exists.
-It's easy to think that the algorithm may prune the most optimal action; however, alpha-beta pruning will return the same action as minimax, only much faster.</p>
-
-<hr />
-
-<h2 id="alpha-beta-vocabulary">Alpha-beta vocabulary</h2>
-
-<p>The optimization technique adds two new terms to our minimax vocabulary: alpha (<code>α</code>) and beta (<code>β</code>)</p>
-
-<table>
-<thead>
-<tr>
-  <th><strong>Keyword</strong></th>
-  <th style="text-align:center;"><strong>Variable</strong></th>
-  <th><strong>Definition</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td>Alpha</td>
-  <td style="text-align:center;"><code>α</code></td>
-  <td>The best action (highest value) p<sub>max</sub> can guarantee at the current tree depth or above. Initial value is -∞.</td>
-</tr>
-<tr>
-  <td>Beta</td>
-  <td style="text-align:center;"><code>β</code></td>
-  <td>The best action (lowest value) the p<sub>min</sub> can guarantee at the current tree depth or above. Initial value is +∞.</td>
-</tr>
-</tbody>
-</table>
-
-<hr />
-
-<h2 id="alpha-beta-pruning-process">Alpha-beta pruning process</h2>
-
-<p>Before diving into the pruning process, we need to understand the principles of alpha-beta:</p>
-
-<ol>
-<li>Only the maximizer may update <code>α</code></li>
-<li>Only the minimizer may update <code>β</code></li>
-<li><code>α</code> and <code>β</code> values are passed down only to the child nodes; not to the parent nodes</li>
-<li>Pruning occurs when <code>α</code>&gt;=<code>β</code></li>
-</ol>
-
-<p>Let's now walk through the alpha-beta pruning process.
-In the following figures, Nodes A, C, D, F, G are the maximizers, and Nodes B, E are the minimizers.</p>
-
-<p>The default <code>α</code> and <code>β</code> values are propagated from A to its children B and C.</p>
-
-<figure class="center" style="width:60%;">
-    <img src="img/alpha_beta0.png" style="width:100%;"/>
-    <figcaption>A propogates its alpha-beta values to children nodes B and C</figcaption>
-</figure>
-
-<p>Node C evaluates its left-hand terminal node (2) and compares it to the current <code>α</code> value.
-If the terminal node's value is greater than the current <code>α</code> value -  e.g. max(2, -∞) - then Node C updates <code>α</code> with the terminal node's value.
-Node C's node and <code>α</code> values are now equal to 2 because 2 is greater than -∞.</p>
-
-<figure class="center" style="width:60%;">
-    <img src="img/alpha_beta1.png" style="width:100%;"/>
-    <figcaption>C updates its node and <code>α</code> values</figcaption>
-</figure>
-
-<p>Node C then evaluates its right-hand terminal node.
-The right-hand node's value (1) is less than <code>α</code> (2) and less than Node C's current value (2), so nothing is updated.</p>
-
-<p>Node C's value is backtracked upwards; Node B's value is set to 2.
-Node B then compares its <code>β</code> value (+∞) to its current node value (2) and updates <code>β</code> if the current node value is less than <code>β</code> - e.g. min(2, +∞).
-Node B's <code>β</code> value is now set to 2 and propagated downwards to Node D's <code>β</code> value.</p>
-
-<figure class="center" style="width:60%;">
-    <img src="img/alpha_beta2.png" style="width:100%;"/>
-    <figcaption>B updates it node and <code>β</code>, values following C's backtrack, then propogates its <code>β</code> to D</figcaption>
-</figure>
-
-<p>Node D evaluates the left-hand node and updates its node and <code>α</code> values to 9.
-<strong>Here's the important part</strong>: Node D's <code>α</code> value is now greater than its <code>β</code> value, so it no longer has to evaluate the remaining nodes.
-The right-hand node is pruned, thus saving the algorithm from evaluating the heuristic value of one node so far.</p>
-
-<figure class="center" style="width:60%;">
-    <img src="img/alpha_beta3.png" style="width:100%;"/>
-    <figcaption>D prunes the right-hand terminal node after updating its <code>α</code> value because it's a pointless computation</figcaption>
-</figure>
-
-<p>Node D backtracks its node value to Node B.
-Node B selects the minimum value from C and D with min(2, 9), and selects 2.
-Node B then backtracks its node value to Node A, and Node A updates its node and <code>α</code> values to 2 after evaluating max(2, -∞).</p>
-
-<figure class="center" style="width:60%;">
-    <img src="img/alpha_beta4.png" style="width:100%;"/>
-    <figcaption>A updates its node and <code>α</code> values following B's backtrack</figcaption>
-</figure>
-
-<p>Node A propagates its alpha-beta values (<code>α</code>=2, <code>β</code>=+∞) down to Nodes E and F.
-Node F evaluates its left-hand terminal node (0) and selects 0 for its node value, but does not update the <code>α</code> value because max(0, 2) is still 2.
-Node F then evaluates the right-hand node but doesn't update its node or <code>α</code> value because -3 is less than 0 and 2.</p>
-
-<figure class="center" style="width:60%;">
-    <img src="img/alpha_beta5.png" style="width:100%;"/>
-    <figcaption>A propogates its <code>α</code> value to children Nodes E and F</figcaption>
-</figure>
-
-<p>Node F backtracks its node value up to Node E, where E will update its <code>β</code> value with 0 after evaluating min(0, +∞).
-Now E's alpha-beta values are (<code>α</code>=2, <code>β</code>=0).
-<strong>Here's another important part</strong>: Node E's <code>α</code> value is greater than its <code>β</code> value, so it prunes the entire sub-tree of Node G.
-Thus saving the algorithm from two more node evaluations, for a total of three fewer heuristic evaluations overall.</p>
-
-<figure class="center" style="width:60%;">
-    <img src="img/alpha_beta6.png" style="width:100%;"/>
-    <figcaption>E prunes sub-tree G following F's backtrack because E's <code>α</code> value is greater than its <code>β</code> value</figcaption>
-</figure>
-
-<p>Node E backtracks its node value of 0 up to Node A where Node A will take the max(B, E) or max(2, 0).</p>
-
-<p>Of course Node A will select 2. And that's how we can find the player's most optimal action in a worst-case scenario using minimax with alpha-beta pruning!</p>
-
-<figure class="center" style="width:60%;">
-    <img src="img/alpha_beta.png" style="width:100%;"/>
-    <figcaption>Minimax game tree including the optimal action path, alpha-beta values, and prunes</figcaption>
-</figure>
-
-<hr />
-
-<h2 id="alpha-beta-pruning-considerations">Alpha-beta pruning considerations</h2>
-
-<p>The order in which nodes are examined directly affects alpha-beta pruning's effectiveness. There are two types of node orderings to be conscious of before creating a minimax game tree:</p>
-
-<ol>
-<li><em>Worst</em> ordering: In the worst-case scenario, the alpha-beta optimization does not prune any nodes; thus acting as the standard minimax algorithm with no optimizations. The worst ordering occurs when the most optimal value resides on the right-most terminal node.</li>
-<li><em>Ideal</em> ordering: Conversely, the ideal ordering occurs when the most optimal value resides on/near the left-most terminal node. In the ideal ordering, the algorithm prunes many nodes and adds considerable optimizations to the overall search time.</li>
-</ol>
-
-<p>How can we prevent the worst ordering?</p>
-
-<p>Order moves from best to worst using domain knowledge so the best move resides on/near the left-most terminal node.</p>
-
-<p>In Chess, for instance, certain actions are more valuable than others: winning captures, promotions, equal captures, non-captures<sup class="footnote-ref" id="fnref-6"><a href="#fn-6">6</a></sup>.
-If we wanted to maximize the alpha-beta pruning process on a Chess game tree, we'd order the nodes from most valuable to least valuable - aka an <em>ideal</em> ordering.</p>
-
-<hr />
-
-<h1 id="mancala">Mancala</h1>
-
-<p>Mancala is a 2-player turn-based board game.
-Each player has 6 pits with 4 seeds/stones along with 1 mancala (store) at the end of the board.</p>
-
-<p>Players take turns picking up all the seeds from one of their 6 pits and placing them one by one until they're holding no seeds.
-Stones are placed counterclockwise into pits and in the player's mancala at the end of the board.
-Players must not place seeds in their opponent's mancala.</p>
-
-<p>There are two exceptions for when a player can go again, or <strong>re-turn</strong>:</p>
-
-<ol>
-<li>The last stone in the player's hand lands in their mancala</li>
-<li>The last stone in the player's hand lands in the same pit it started from</li>
-</ol>
-
-<p>Lastly, there is a <strong>capture rule</strong>:
-If the last stone in the player's hand lands in an empty pit on their side of the board, and the adjacent pit on the opponent's side contains 1+ seeds, the player may capture all seeds from both pits and place them in their mancala.</p>
-
-<p>The player's goal is to have more seeds in their mancala than their opponent.</p>
-
-<p>The game ends on either of two conditions:</p>
-
-<ol>
-<li>A player's mancala contains 25+ seeds</li>
-<li>All pits on a player's side are empty. In this case, the player with seeds still in play may gather and deposit the remaining seeds into their mancala.</li>
-</ol>
-
-<p>Please watch <a href="https://www.youtube.com/watch?v=OX7rj93m6o8">this 3-minute video</a> if the explanation above wasn't clear.</p>
-
-<hr />
-
-<h2 id="mancala-simulator">Mancala simulator</h2>
-
-<p>I wrote a simple, CLI Mancala game simulator in Python.
-The code can be found on <a href="https://github.com/nosas/blog/tree/mancala/minimax_mancala/code">my GitHub repo</a>. An example of the simulator can be seen below.</p>
-
-<p>The top-most row is the indices of Player 1's pits.
-The following row is Player 1's pits initialized with 4 seeds.
-The left-most number is Player 1's mancala index, 13.
-The number immediately to the right of Player 1's mancala is his/her score.
-Everything else is Player 2's indices, pits, or mancala.</p>
-
-<p><center></p>
-
-<pre><code>
+    <!-- ![Minimax tree structure](img/minimax_tree.png) -->
+
+    <p>The number of heuristic evaluations - also called <em>terminal nodes</em> or <em>leaf nodes</em>, seen in the
+        figure as v1-v8 - completed in a minimax search tree is denoted by: <strong>b<sup>d</sup></strong>.
+        It's important to notice that the size of the search tree increases exponentially based on <strong>how deep the
+            algorithm searches</strong> and <strong>how large the branching factor is</strong>.</p>
+
+    <p>We have a mere 2<sup>3</sup> (8) heuristics evaluations in the tree above when looking 3 moves ahead.
+        However, the tree represents an arbitrary game for which there are only two possible actions per turn.</p>
+
+    <p>Consider chess, where the branching factor (possible moves) is exactly 20 for opening moves and about 35 for the
+        remainder of the game<sup class="footnote-ref" id="fnref-4"><a href="#fn-4">4</a></sup>.
+        If we re-configured our minimax algorithm's branching factor (<code>b</code>) to reflect the number of possible
+        moves in chess, we would have to perform roughly 35<sup>3</sup> (42,875) heuristic evaluations.
+        And that's only looking 3 moves ahead!</p>
+
+    <p>The last thing to consider about these trees is that <strong>the branching factor is not always uniform</strong>.
+        Just because there are two possible moves this turn, it doesn't mean there will be two possible moves next turn.
+        Perhaps there is only one possible move next turn or you may have reached a terminal state where there are no
+        possible moves; you've won or lost.</p>
+
+    <p>Looking at chess again... there are 20 possible opening moves.
+        After the first move, and depending on which piece is moved, there can be anywhere from 20 to 29 moves.
+        The opening move below allows for 29 possible moves on white's next turn - or 28 possible moves if black moves
+        their pawn to d5.</p>
+
+    <!-- ![29 possible moves for white](img/chess_opening_move.png) -->
+
+    <figure class="center">
+        <img src="img/chess_opening_move.png" style="width:100%;">
+        <figcaption>White's first move, pawn d2->d4, opens up an additional 9 moves for white's next turn</figcaption>
+    </figure>
+
+    <hr />
+
+    <h2 id="minimax-search-process">Minimax search process</h2>
+
+    <p>Recall that minimax search is a <strong>depth-first search</strong> algorithm; it starts at the root node and
+        travels as deep as possible through each branch before backtracking to the top of the tree.
+        The depth-first search is complete once all nodes have been visited.</p>
+
+    <p>
+    <details>
+        <summary>
+            Depth-first search animation
+        </summary>
+        <figure class="center">
+            <img src="img/depth_first_search.gif" style="width:100%;" />
+            <figcaption>Depth-first search on a tree with 10 nodes<sup class="footnote-ref" id="fnref-5"><a
+                        href="#fn-5">5</a></sup></figcaption>
+        </figure>
+    </details>
+    </p>
+
+    <p>Minimax evaluates all terminal nodes at the maximum search depth <code>d</code> and then begins the search
+        process.
+        The non-terminal nodes' values are determined by the minimizer/maximizer's choices of the descendent leaf nodes.
+    </p>
+
+    <p>Referring back to the minimax tree, the search process begins as follows for a tree with depth 3:</p>
+
+    <figure class="right">
+        <img src="img/minimax_search.gif" style="width:100%;" />
+        <figcaption>Minimax search animation</figcaption>
+    </figure>
+
+    <ol>
+        <li>Minimax reaches the terminal nodes on the left-hand side of the tree and calculates the heuristic values, v1
+            and v2</li>
+        <li>Minimax backtracks one level; <code>max2</code> picks the maximum value between v1 and v2</li>
+        <li>Minimax then goes down the right-hand side of <code>min1</code> and calculates the terminal node values of
+            v3 and v4</li>
+        <li>Backtrack up one level; <code>max3</code> picks the maximum value between v3 and v4</li>
+        <li>Backtrack up one level; <code>min1</code> picks the minimum value between <code>max2</code> and
+            <code>max3</code></li>
+        <li>Repeat with <code>max4(v5, v6)</code>, <code>max5(v7, v8)</code>, and <code>min2(max4, max5)</code></li>
+        <li>Finally <code>max1</code> (root node) picks the maximum value between <code>min1</code> and
+            <code>min2</code></li>
+    </ol>
+
+    <p>The gist of minimax is that the minimizer and maximizer alternate picking their most optimal value for every
+        level of the tree.
+        Who picks first depends on how deep the tree is, but it's guaranteed that the maximizer picks last because they
+        are the root node and the main player.</p>
+
+    <p>When the search completes, the root node will contain the player's maximum gain in a worst-case scenario,
+        <strong>assuming the opponent is always playing their best move.</strong>
+        Minimax with deep searches (large <code>d</code> value) are not optimal against opponents with random actions
+        because the algorithm assumes the opponent is competent and playing optimal moves.</p>
+
+    <p>One last thing to consider is that the algorithm's search time drastically increases for complex games with a
+        large branching factor <code>b</code> - also called <em>action spaces</em> - such as chess.
+        The algorithm visits <em>every</em> node - every possible action - before choosing an optimal action.
+        So the larger and deeper the tree, the longer the search algorithm takes to find the most optimal value.</p>
+
+    <p>The search time of large trees can be dramatically reduced by applying an optimization called <strong>alpha-beta
+            pruning</strong>.</p>
+
+    <hr />
+
+    <h1 id="alpha-beta-pruning">Alpha-beta pruning</h1>
+
+    <p>Alpha-beta pruning is an optimization technique for the minimax search algorithm.
+        The optimization greatly reduces search times by preventing minimax from visiting and evaluating unnecessary
+        nodes.</p>
+
+    <p>Recall that the number of nodes visited by minimax is exponential (b<sup>d</sup>).
+        In best-case scenarios, alpha-beta pruning reduces the exponent in half, thus considerably improving search
+        times.
+        But how does alpha-beta pruning optimize search times?</p>
+
+    <p>The pruning process cuts off leaves - or entire sub-trees - in the game tree which need not be searched because a
+        better move already exists.
+        It's easy to think that the algorithm may prune the most optimal action; however, alpha-beta pruning will return
+        the same action as minimax, only much faster.</p>
+
+    <hr />
+
+    <h2 id="alpha-beta-vocabulary">Alpha-beta vocabulary</h2>
+
+    <p>The optimization technique adds two new terms to our minimax vocabulary: alpha (<code>α</code>) and beta
+        (<code>β</code>)</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th><strong>Keyword</strong></th>
+                <th style="text-align:center;"><strong>Variable</strong></th>
+                <th><strong>Definition</strong></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Alpha</td>
+                <td style="text-align:center;"><code>α</code></td>
+                <td>The best action (highest value) p<sub>max</sub> can guarantee at the current tree depth or above.
+                    Initial value is -∞.</td>
+            </tr>
+            <tr>
+                <td>Beta</td>
+                <td style="text-align:center;"><code>β</code></td>
+                <td>The best action (lowest value) the p<sub>min</sub> can guarantee at the current tree depth or above.
+                    Initial value is +∞.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr />
+
+    <h2 id="alpha-beta-pruning-process">Alpha-beta pruning process</h2>
+
+    <p>Before diving into the pruning process, we need to understand the principles of alpha-beta:</p>
+
+    <ol>
+        <li>Only the maximizer may update <code>α</code></li>
+        <li>Only the minimizer may update <code>β</code></li>
+        <li><code>α</code> and <code>β</code> values are passed down only to the child nodes; not to the parent nodes
+        </li>
+        <li>Pruning occurs when <code>α</code>&gt;=<code>β</code></li>
+    </ol>
+
+    <p>Let's now walk through the alpha-beta pruning process.
+        In the following figures, Nodes A, C, D, F, G are the maximizers, and Nodes B, E are the minimizers.</p>
+
+    <p>The default <code>α</code> and <code>β</code> values are propagated from A to its children B and C.</p>
+
+    <figure class="center" style="width:60%;">
+        <img src="img/alpha_beta0.png" style="width:100%;" />
+        <figcaption>A propogates its alpha-beta values to children nodes B and C</figcaption>
+    </figure>
+
+    <p>Node C evaluates its left-hand terminal node (2) and compares it to the current <code>α</code> value.
+        If the terminal node's value is greater than the current <code>α</code> value - e.g. max(2, -∞) - then Node C
+        updates <code>α</code> with the terminal node's value.
+        Node C's node and <code>α</code> values are now equal to 2 because 2 is greater than -∞.</p>
+
+    <figure class="center" style="width:60%;">
+        <img src="img/alpha_beta1.png" style="width:100%;" />
+        <figcaption>C updates its node and <code>α</code> values</figcaption>
+    </figure>
+
+    <p>Node C then evaluates its right-hand terminal node.
+        The right-hand node's value (1) is less than <code>α</code> (2) and less than Node C's current value (2), so
+        nothing is updated.</p>
+
+    <p>Node C's value is backtracked upwards; Node B's value is set to 2.
+        Node B then compares its <code>β</code> value (+∞) to its current node value (2) and updates <code>β</code> if
+        the current node value is less than <code>β</code> - e.g. min(2, +∞).
+        Node B's <code>β</code> value is now set to 2 and propagated downwards to Node D's <code>β</code> value.</p>
+
+    <figure class="center" style="width:60%;">
+        <img src="img/alpha_beta2.png" style="width:100%;" />
+        <figcaption>B updates it node and <code>β</code>, values following C's backtrack, then propogates its
+            <code>β</code> to D</figcaption>
+    </figure>
+
+    <p>Node D evaluates the left-hand node and updates its node and <code>α</code> values to 9.
+        <strong>Here's the important part</strong>: Node D's <code>α</code> value is now greater than its <code>β</code>
+        value, so it no longer has to evaluate the remaining nodes.
+        The right-hand node is pruned, thus saving the algorithm from evaluating the heuristic value of one node so far.
+    </p>
+
+    <figure class="center" style="width:60%;">
+        <img src="img/alpha_beta3.png" style="width:100%;" />
+        <figcaption>D prunes the right-hand terminal node after updating its <code>α</code> value because it's a
+            pointless computation</figcaption>
+    </figure>
+
+    <p>Node D backtracks its node value to Node B.
+        Node B selects the minimum value from C and D with min(2, 9), and selects 2.
+        Node B then backtracks its node value to Node A, and Node A updates its node and <code>α</code> values to 2
+        after evaluating max(2, -∞).</p>
+
+    <figure class="center" style="width:60%;">
+        <img src="img/alpha_beta4.png" style="width:100%;" />
+        <figcaption>A updates its node and <code>α</code> values following B's backtrack</figcaption>
+    </figure>
+
+    <p>Node A propagates its alpha-beta values (<code>α</code>=2, <code>β</code>=+∞) down to Nodes E and F.
+        Node F evaluates its left-hand terminal node (0) and selects 0 for its node value, but does not update the
+        <code>α</code> value because max(0, 2) is still 2.
+        Node F then evaluates the right-hand node but doesn't update its node or <code>α</code> value because -3 is less
+        than 0 and 2.</p>
+
+    <figure class="center" style="width:60%;">
+        <img src="img/alpha_beta5.png" style="width:100%;" />
+        <figcaption>A propogates its <code>α</code> value to children Nodes E and F</figcaption>
+    </figure>
+
+    <p>Node F backtracks its node value up to Node E, where E will update its <code>β</code> value with 0 after
+        evaluating min(0, +∞).
+        Now E's alpha-beta values are (<code>α</code>=2, <code>β</code>=0).
+        <strong>Here's another important part</strong>: Node E's <code>α</code> value is greater than its <code>β</code>
+        value, so it prunes the entire sub-tree of Node G.
+        Thus saving the algorithm from two more node evaluations, for a total of three fewer heuristic evaluations
+        overall.
+    </p>
+
+    <figure class="center" style="width:60%;">
+        <img src="img/alpha_beta6.png" style="width:100%;" />
+        <figcaption>E prunes sub-tree G following F's backtrack because E's <code>α</code> value is greater than its
+            <code>β</code> value</figcaption>
+    </figure>
+
+    <p>Node E backtracks its node value of 0 up to Node A where Node A will take the max(B, E) or max(2, 0).</p>
+
+    <p>Of course Node A will select 2. And that's how we can find the player's most optimal action in a worst-case
+        scenario using minimax with alpha-beta pruning!</p>
+
+    <figure class="center" style="width:60%;">
+        <img src="img/alpha_beta.png" style="width:100%;" />
+        <figcaption>Minimax game tree including the optimal action path, alpha-beta values, and prunes</figcaption>
+    </figure>
+
+    <hr />
+
+    <h2 id="alpha-beta-pruning-considerations">Alpha-beta pruning considerations</h2>
+
+    <p>The order in which nodes are examined directly affects alpha-beta pruning's effectiveness. There are two types of
+        node orderings to be conscious of before creating a minimax game tree:</p>
+
+    <ol>
+        <li><em>Worst</em> ordering: In the worst-case scenario, the alpha-beta optimization does not prune any nodes;
+            thus acting as the standard minimax algorithm with no optimizations. The worst ordering occurs when the most
+            optimal value resides on the right-most terminal node.</li>
+        <li><em>Ideal</em> ordering: Conversely, the ideal ordering occurs when the most optimal value resides on/near
+            the left-most terminal node. In the ideal ordering, the algorithm prunes many nodes and adds considerable
+            optimizations to the overall search time.</li>
+    </ol>
+
+    <p>How can we prevent the worst ordering?</p>
+
+    <p>Order moves from best to worst using domain knowledge so the best move resides on/near the left-most terminal
+        node.</p>
+
+    <p>In Chess, for instance, certain actions are more valuable than others: winning captures, promotions, equal
+        captures, non-captures<sup class="footnote-ref" id="fnref-6"><a href="#fn-6">6</a></sup>.
+        If we wanted to maximize the alpha-beta pruning process on a Chess game tree, we'd order the nodes from most
+        valuable to least valuable - aka an <em>ideal</em> ordering.</p>
+
+    <hr />
+
+    <h1 id="mancala">Mancala</h1>
+
+    <p>Mancala is a 2-player turn-based board game.
+        Each player has 6 pits with 4 seeds/stones along with 1 mancala (store) at the end of the board.</p>
+
+    <p>Players take turns picking up all the seeds from one of their 6 pits and placing them one by one until they're
+        holding no seeds.
+        Stones are placed counterclockwise into pits and in the player's mancala at the end of the board.
+        Players must not place seeds in their opponent's mancala.</p>
+
+    <p>There are two exceptions for when a player can go again, or <strong>re-turn</strong>:</p>
+
+    <ol>
+        <li>The last stone in the player's hand lands in their mancala</li>
+        <li>The last stone in the player's hand lands in the same pit it started from</li>
+    </ol>
+
+    <p>Lastly, there is a <strong>capture rule</strong>:
+        If the last stone in the player's hand lands in an empty pit on their side of the board, and the adjacent pit on
+        the opponent's side contains 1+ seeds, the player may capture all seeds from both pits and place them in their
+        mancala.</p>
+
+    <p>The player's goal is to have more seeds in their mancala than their opponent.</p>
+
+    <p>The game ends on either of two conditions:</p>
+
+    <ol>
+        <li>A player's mancala contains 25+ seeds</li>
+        <li>All pits on a player's side are empty. In this case, the player with seeds still in play may gather and
+            deposit the remaining seeds into their mancala.</li>
+    </ol>
+
+    <p>Please watch <a href="https://www.youtube.com/watch?v=OX7rj93m6o8">this 3-minute video</a> if the explanation
+        above wasn't clear.</p>
+
+    <hr />
+
+    <h2 id="mancala-simulator">Mancala simulator</h2>
+
+    <p>I wrote a simple, CLI Mancala game simulator in Python.
+        The code can be found on <a href="https://github.com/nosas/blog/tree/mancala/minimax_mancala/code">my GitHub
+            repo</a>. An example of the simulator can be seen below.</p>
+
+    <p>The top-most row is the indices of Player 1's pits.
+        The following row is Player 1's pits initialized with 4 seeds.
+        The left-most number is Player 1's mancala index, 13.
+        The number immediately to the right of Player 1's mancala is his/her score.
+        Everything else is Player 2's indices, pits, or mancala.</p>
+
+    <p>
+        <center>
+    </p>
+
+    <pre><code>
    0   1   2   3   4   5
    |===============================|
    |---| 4 | 4 | 4 | 4 | 4 | 4 |---|
@@ -393,164 +472,211 @@ Player 1's Turn! Choose a number in range [0, 1, 2, 3, 4, 5]
 
 </code></pre>
 
-<p></center></p>
+    <p>
+        </center>
+    </p>
 
-<p>Each player takes turns selecting a pit.
-The simulator will then output which pit the player selected along with four additional outputs:</p>
+    <p>Each player takes turns selecting a pit.
+        The simulator will then output which pit the player selected along with four additional outputs:</p>
 
-<ol>
-<li>How many seeds were in the pit</li>
-<li>The player's score difference after playing the move</li>
-<li>A boolean value of whether the player captured a pit</li>
-<li>A boolean value of whether the player can go again (re-turn)</li>
-</ol>
+    <ol>
+        <li>How many seeds were in the pit</li>
+        <li>The player's score difference after playing the move</li>
+        <li>A boolean value of whether the player captured a pit</li>
+        <li>A boolean value of whether the player can go again (re-turn)</li>
+    </ol>
 
-<p>In addition to the game simulator, I wrote an Agent class so I could play against bots using various Mancala strategies.
-So far, the bots' strategies are random, minimax, and minimax with alpha-beta pruning.</p>
+    <p>In addition to the game simulator, I wrote an Agent class so I could play against bots using various Mancala
+        strategies.
+        So far, the bots' strategies are random, minimax, and minimax with alpha-beta pruning.</p>
 
-<p>Additional strategies could be also implemented - such as maximizing re-turns, prioritizing captures, prevent captures - but we're focusing on minimax in this article.
-In the future, I plan on using OpenAI Gym to simulate a bot tournament and find the strongest Mancala strategy.</p>
+    <p>Additional strategies could be also implemented - such as maximizing re-turns, prioritizing captures, prevent
+        captures - but we're focusing on minimax in this article.
+        In the future, I plan on using OpenAI Gym to simulate a bot tournament and find the strongest Mancala strategy.
+    </p>
 
-<hr />
+    <hr />
 
-<h2 id="mancala-game-tree">Mancala game tree</h2>
+    <h2 id="mancala-game-tree">Mancala game tree</h2>
 
-<p>The minimax agent creates game trees by iterating over all its possible moves, simulating the opponent's move in response, and repeating the process until it reaches its maximum search depth.</p>
+    <p>The minimax agent creates game trees by iterating over all its possible moves, simulating the opponent's move in
+        response, and repeating the process until it reaches its maximum search depth.</p>
 
-<p>Large game trees are created throughout the game - especially when each player's pits are full of seeds, such as the beginning of the game - due to Mancala's branching factor of 6.
-Recall that the number of terminal nodes requiring evaluations is equal to <code>b</code><sup><code>d</code></sup>, where <code>b</code> is the branching factor (number of possible actions in that game state) and <code>d</code> is the algorithm's search depth.</p>
+    <p>Large game trees are created throughout the game - especially when each player's pits are full of seeds, such as
+        the beginning of the game - due to Mancala's branching factor of 6.
+        Recall that the number of terminal nodes requiring evaluations is equal to
+        <code>b</code><sup><code>d</code></sup>, where <code>b</code> is the branching factor (number of possible
+        actions in that game state) and <code>d</code> is the algorithm's search depth.</p>
 
-<p>Each player begins with 6 possible moves, or a branching factor, <code>b</code>, of 6.
-The minimax Agent's default depth variable, <code>d</code>, is set to 3.
-Therefore, at the beginning of the game, there are a total of 6<sup>3</sup>, or 216, terminal nodes requiring heuristic evaluations before the bot makes its first move.</p>
+    <p>Each player begins with 6 possible moves, or a branching factor, <code>b</code>, of 6.
+        The minimax Agent's default depth variable, <code>d</code>, is set to 3.
+        Therefore, at the beginning of the game, there are a total of 6<sup>3</sup>, or 216, terminal nodes requiring
+        heuristic evaluations before the bot makes its first move.</p>
 
-<p>If we increase the depth of the search to 8, we have 6<sup>8</sup> - or 1,679,616 - heuristic evaluations.
-Bumping the depth up once again to 9 requires 10,077,696 evaluations.
-An order-of-magnitude difference to look ahead one more move.
-In case you're wondering, looking ahead 10 moves requires 60,466,176 heuristic evaluations. Exponential numbers are impressive.</p>
+    <p>If we increase the depth of the search to 8, we have 6<sup>8</sup> - or 1,679,616 - heuristic evaluations.
+        Bumping the depth up once again to 9 requires 10,077,696 evaluations.
+        An order-of-magnitude difference to look ahead one more move.
+        In case you're wondering, looking ahead 10 moves requires 60,466,176 heuristic evaluations. Exponential numbers
+        are impressive.</p>
 
-<hr />
+    <hr />
 
-<h2 id="mancala-heuristic-evaluation">Mancala heuristic evaluation</h2>
+    <h2 id="mancala-heuristic-evaluation">Mancala heuristic evaluation</h2>
 
-<p>The terminal nodes' heuristic values - the value of the players' moves - are evaluated by the Agent's <code>evaluation</code> method.
-The heuristic evaluation is rather simple: compare the Agent's score to the opponent's score after executing some move, and return the difference between scores.
-A positive number means the Agent is winning; a negative number means the opponent is winning.
-In cases where the Agent discovers multiple moves with the same optimal outcome, a random move will be selected.</p>
+    <p>The terminal nodes' heuristic values - the value of the players' moves - are evaluated by the Agent's
+        <code>evaluation</code> method.
+        The heuristic evaluation is rather simple: compare the Agent's score to the opponent's score after executing
+        some move, and return the difference between scores.
+        A positive number means the Agent is winning; a negative number means the opponent is winning.
+        In cases where the Agent discovers multiple moves with the same optimal outcome, a random move will be selected.
+    </p>
 
-<p>In short, the agent calculates move values with a simple and weak evaluation method that uses no domain knowledge.
-It picks moves that increase its score; that's it.</p>
+    <p>In short, the agent calculates move values with a simple and weak evaluation method that uses no domain
+        knowledge.
+        It picks moves that increase its score; that's it.</p>
 
-<p>The evaluation method can be upgraded by utilizing domain knowledge.
-We could implement valuations/weights to each possible move, such as captures, re-turns.
-For example, we could weigh capture moves to be more valuable than simply scoring one seed.
-Additional valuations include winning moves, re-turns, defensive moves to prevent captures, re-turns that lead to captures, etc.</p>
+    <p>The evaluation method can be upgraded by utilizing domain knowledge.
+        We could implement valuations/weights to each possible move, such as captures, re-turns.
+        For example, we could weigh capture moves to be more valuable than simply scoring one seed.
+        Additional valuations include winning moves, re-turns, defensive moves to prevent captures, re-turns that lead
+        to captures, etc.</p>
 
-<p>The weak evaluation method means there will be many of the same values, - i.e. the player moves but the score doesn't change very much.
-Therefore, more nodes will need to be visited and calculated.</p>
+    <p>The weak evaluation method means there will be many of the same values, - i.e. the player moves but the score
+        doesn't change very much.
+        Therefore, more nodes will need to be visited and calculated.</p>
 
-<p>Stronger evaluation methods will reduce search times by increasing pruning activity with <em>ideal ordering</em>.
-If our Agent can have more granular output values, then it can prune more nodes or sub-trees.
-That means fewer nodes will be visited and calculated.</p>
+    <p>Stronger evaluation methods will reduce search times by increasing pruning activity with <em>ideal ordering</em>.
+        If our Agent can have more granular output values, then it can prune more nodes or sub-trees.
+        That means fewer nodes will be visited and calculated.</p>
 
-<p>If you're curious about what stronger evaluation methods look like, I encourage you to check out Chess engines and their evaluation methods.
-Each engine's evaluation method is unique, but they share the following Chess knowledge:</p>
+    <p>If you're curious about what stronger evaluation methods look like, I encourage you to check out Chess engines
+        and their evaluation methods.
+        Each engine's evaluation method is unique, but they share the following Chess knowledge:</p>
 
-<ol>
-<li>Material: Sum of all Chess piece values. Pawn (10), Knight/Bishop (30), Rook (50), Queen (90)</li>
-<li>Game Phases: Opening, mid-game, end-game</li>
-<li>Mobility</li>
-<li>Center Control</li>
-<li>Connectivity</li>
-<li>Trapped Pieces</li>
-<li>King Safety</li>
-</ol>
+    <ol>
+        <li>Material: Sum of all Chess piece values. Pawn (10), Knight/Bishop (30), Rook (50), Queen (90)</li>
+        <li>Game Phases: Opening, mid-game, end-game</li>
+        <li>Mobility</li>
+        <li>Center Control</li>
+        <li>Connectivity</li>
+        <li>Trapped Pieces</li>
+        <li>King Safety</li>
+    </ol>
 
-<p>Read more about Chess evaluations on the <a href="https://www.chessprogramming.org/Evaluation">Chess Programming Wiki</a>.</p>
+    <p>Read more about Chess evaluations on the <a href="https://www.chessprogramming.org/Evaluation">Chess Programming
+            Wiki</a>.</p>
 
-<p>Take a peek at the Stockfish engine's source code <a href="https://github.com/official-stockfish/Stockfish">here</a>.</p>
+    <p>Take a peek at the Stockfish engine's source code <a
+            href="https://github.com/official-stockfish/Stockfish">here</a>.</p>
 
-<p>Lastly, <a href="https://www.youtube.com/watch?v=U4ogK0MIzqk">watch this video</a> from Sebastian Lague.
-This video solidified my understanding of heuristic evaluation.</p>
+    <p>Lastly, <a href="https://www.youtube.com/watch?v=U4ogK0MIzqk">watch this video</a> from Sebastian Lague.
+        This video solidified my understanding of heuristic evaluation.</p>
 
-<hr />
+    <hr />
 
-<h2 id="mancala-conclusion">Mancala conclusion</h2>
+    <h2 id="mancala-conclusion">Mancala conclusion</h2>
 
-<p>The minimax agent plays naively due to its weak heuristic evaluation method.
-With a stronger evaluation method, the Agent could prioritize chaining re-turns or captures and win the game much quicker.</p>
+    <p>The minimax agent plays naively due to its weak heuristic evaluation method.
+        With a stronger evaluation method, the Agent could prioritize chaining re-turns or captures and win the game
+        much quicker.</p>
 
-<p>Moreover, Agents with shallow depths (small <code>d</code>) often play single-scoring moves instead of chaining re-turns to maximize their scoring outcome.
-This is more-or-less expected behavior due to two parts:</p>
+    <p>Moreover, Agents with shallow depths (small <code>d</code>) often play single-scoring moves instead of chaining
+        re-turns to maximize their scoring outcome.
+        This is more-or-less expected behavior due to two parts:</p>
 
-<ol>
-<li>The minimax algorithm is <strong>minimizing the maximum loss in a worst-case scenario</strong>, not maximizing its score</li>
-<li>The algorithm cannot search far enough ahead to <em>see</em> the possibility of chaining re-turns due to limited computational resources or small depth value</li>
-</ol>
+    <ol>
+        <li>The minimax algorithm is <strong>minimizing the maximum loss in a worst-case scenario</strong>, not
+            maximizing its score</li>
+        <li>The algorithm cannot search far enough ahead to <em>see</em> the possibility of chaining re-turns due to
+            limited computational resources or small depth value</li>
+    </ol>
 
-<p>Alpha-beta pruning proved to drastically speed up the Agent's decision-making.
-Without alpha-beta pruning, a minimax agent with a depth greater than 5 takes over 10 seconds to select a move.
-With alpha-beta pruning, the Agent can look as far as 8 moves ahead in less than 10 seconds.</p>
+    <p>Alpha-beta pruning proved to drastically speed up the Agent's decision-making.
+        Without alpha-beta pruning, a minimax agent with a depth greater than 5 takes over 10 seconds to select a move.
+        With alpha-beta pruning, the Agent can look as far as 8 moves ahead in less than 10 seconds.</p>
 
-<p>Increasing the depth to 9 moves increases search times to over 1 minute, <em>but</em> the Agent's strategy does not change.
-Agents with depths 7, 8, and 9 all play the same opening and mid-game strategy!
-<details>
-    <summary>
-    Agent's typical opening against my winning, stalling strategy
-    </summary></p>
+    <p>Increasing the depth to 9 moves increases search times to over 1 minute, <em>but</em> the Agent's strategy does
+        not change.
+        Agents with depths 7, 8, and 9 all play the same opening and mid-game strategy!
+    <details>
+        <summary>
+            Agent's typical opening against my winning, stalling strategy
+        </summary>
+        </p>
 
-<pre><code>Agent's moves  : [3,  1, 0,  5, 0, 1,  0, 4,  0, 5, 1, 0, 3, 1, 0, 2, 1, 0]
+        <pre><code>Agent's moves  : [3,  1, 0,  5, 0, 1,  0, 4,  0, 5, 1, 0, 3, 1, 0, 2, 1, 0]
 My moves       : [11, 9, 8, 12, 9, 8, 11, 8, 12, 8, 9]
 Players' moves : [3, 1, 11, 9, 0, 8, 5, 0, 1, 0, 4, 12, 0, 5, 9, 1, 8, 0, 3, 11, 1, 8, 0, 12, 2, 8, 1, 9, 0]
 </code></pre>
 
-<p></details></p>
+        <p>
+    </details>
+    </p>
 
-<p>Overall, minimax is a simple, yet fundamental, search algorithm.
-The algorithm excels in making the safest moves in perfect information games when given a large enough search depth.
-Optimizations such as alpha-beta pruning drastically reduce the algorithm's search times.</p>
+    <p>Overall, minimax is a simple, yet fundamental, search algorithm.
+        The algorithm excels in making the safest moves in perfect information games when given a large enough search
+        depth.
+        Optimizations such as alpha-beta pruning drastically reduce the algorithm's search times.</p>
 
-<p>Visit the references section below for more detailed articles explaining minimax<sup class="footnote-ref" id="fnref-7"><a href="#fn-7">7</a></sup>.</p>
+    <p>Visit the references section below for more detailed articles explaining minimax<sup class="footnote-ref"
+            id="fnref-7"><a href="#fn-7">7</a></sup>.</p>
 
-<p>I look forward to learning more about search algorithms and pathfinding algorithms.
-The next step is OpenAI Gym and graph traversals!</p>
+    <p>I look forward to learning more about search algorithms and pathfinding algorithms.
+        The next step is OpenAI Gym and graph traversals!</p>
 
-<hr />
+    <hr />
 
-<h1 id="referencesnotes">References/Notes</h1>
+    <h1 id="referencesnotes">References/Notes</h1>
 
-<div class="footnotes">
-<hr />
-<ol>
-<li id="fn-2">
-<p>Other papers or articles may refer to the player as p<sub>i</sub> or a<sub>i</sub>, and opponent(s) as p<sub>-i</sub> or a<sub>-i</sub>&#160;<a href="#fnref-2" class="footnoteBackLink" title="Jump back to footnote 1 in the text.">&#8617;</a></p>
-</li>
+    <div class="footnotes">
+        <hr />
+        <ol>
+            <li id="fn-2">
+                <p>Other papers or articles may refer to the player as p<sub>i</sub> or a<sub>i</sub>, and opponent(s)
+                    as p<sub>-i</sub> or a<sub>-i</sub>&#160;<a href="#fnref-2" class="footnoteBackLink"
+                        title="Jump back to footnote 1 in the text.">&#8617;</a></p>
+            </li>
 
-<li id="fn-3">
-<p>The heuristic value is often referred to as utility. The variable <code>u</code> represents utility, where u<sub>i</sub> represents the player's utility.&#160;<a href="#fnref-3" class="footnoteBackLink" title="Jump back to footnote 2 in the text.">&#8617;</a></p>
-</li>
+            <li id="fn-3">
+                <p>The heuristic value is often referred to as utility. The variable <code>u</code> represents utility,
+                    where u<sub>i</sub> represents the player's utility.&#160;<a href="#fnref-3"
+                        class="footnoteBackLink" title="Jump back to footnote 2 in the text.">&#8617;</a></p>
+            </li>
 
-<li id="fn-1">
-<p><a href="https://cs.stanford.edu/people/eroberts/courses/soco/projects/1998-99/game-theory/zero.html">Stanford CS, Game Theory: Zero-Sum Games</a>&#160;<a href="#fnref-1" class="footnoteBackLink" title="Jump back to footnote 3 in the text.">&#8617;</a></p>
-</li>
+            <li id="fn-1">
+                <p><a
+                        href="https://cs.stanford.edu/people/eroberts/courses/soco/projects/1998-99/game-theory/zero.html">Stanford
+                        CS, Game Theory: Zero-Sum Games</a>&#160;<a href="#fnref-1" class="footnoteBackLink"
+                        title="Jump back to footnote 3 in the text.">&#8617;</a></p>
+            </li>
 
-<li id="fn-4">
-<p><a href="https://www.scientificamerican.com/article/how-the-computer-beat-the-go-master/">How the Computer Beat the Go Master</a>&#160;<a href="#fnref-4" class="footnoteBackLink" title="Jump back to footnote 4 in the text.">&#8617;</a></p>
-</li>
+            <li id="fn-4">
+                <p><a href="https://www.scientificamerican.com/article/how-the-computer-beat-the-go-master/">How the
+                        Computer Beat the Go Master</a>&#160;<a href="#fnref-4" class="footnoteBackLink"
+                        title="Jump back to footnote 4 in the text.">&#8617;</a></p>
+            </li>
 
-<li id="fn-5">
-<p><a href="https://en.wikipedia.org/wiki/Depth-first_search#/media/File:Depth-First-Search.gif">Depth-first search animation</a>&#160;<a href="#fnref-5" class="footnoteBackLink" title="Jump back to footnote 5 in the text.">&#8617;</a></p>
-</li>
+            <li id="fn-5">
+                <p><a href="https://en.wikipedia.org/wiki/Depth-first_search#/media/File:Depth-First-Search.gif">Depth-first
+                        search animation</a>&#160;<a href="#fnref-5" class="footnoteBackLink"
+                        title="Jump back to footnote 5 in the text.">&#8617;</a></p>
+            </li>
 
-<li id="fn-6">
-<p><a href="https://www.chessprogramming.org/Move_Ordering#Typical_move_ordering">Chess Move Ordering: Typical move ordering</a>&#160;<a href="#fnref-6" class="footnoteBackLink" title="Jump back to footnote 6 in the text.">&#8617;</a></p>
-</li>
+            <li id="fn-6">
+                <p><a href="https://www.chessprogramming.org/Move_Ordering#Typical_move_ordering">Chess Move Ordering:
+                        Typical move ordering</a>&#160;<a href="#fnref-6" class="footnoteBackLink"
+                        title="Jump back to footnote 6 in the text.">&#8617;</a></p>
+            </li>
 
-<li id="fn-7">
-<p><a href="https://mathspp.com/blog/minimax-algorithm-and-alpha-beta-pruning">Minimax algorithm and alpha-beta pruning: Understanding minimax in detail from a beginner's perspective</a>&#160;<a href="#fnref-7" class="footnoteBackLink" title="Jump back to footnote 7 in the text.">&#8617;</a></p>
-</li>
-</ol>
-</div>
+            <li id="fn-7">
+                <p><a href="https://mathspp.com/blog/minimax-algorithm-and-alpha-beta-pruning">Minimax algorithm and
+                        alpha-beta pruning: Understanding minimax in detail from a beginner's perspective</a>&#160;<a
+                        href="#fnref-7" class="footnoteBackLink"
+                        title="Jump back to footnote 7 in the text.">&#8617;</a></p>
+            </li>
+        </ol>
+    </div>
 
 </body>
+
 </html>
