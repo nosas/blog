@@ -1,9 +1,11 @@
+<title>Minimax with alpha-beta pruning in Mancala</title>
+
 # Minimax search
 
 Minimax search is a fundamental depth-first search algorithm used in Artificial Intelligence, decision theory, game theory, and statistics.
 The purpose of minimax search is to  **minimize the maximum loss** in a worst-case scenario - or, simply put, figure out the best action to pursue in a worst-case scenario.
 
-This algorithm can be implemented in *n*-player **perfect information** games but is most commonly implemented in 2-player zero-sum games such as checkers, chess, connect 4, mancala, tic-tac-toe, etc.
+This algorithm can be implemented in *n*-player **perfect information** games but is most commonly implemented in 2-player zero-sum games such as Checkers, Chess, Connect 4, Mancala, Tic-Tac-Toe, etc.
 Zero-sum games are simplified as games where whatever (value/utility) one player wins and, the other player loses.
 
 Perfect information games are games where every player knows the results of all previous moves.
@@ -58,8 +60,8 @@ The last thing to consider about these trees is that **the branching factor is n
 Just because there are two possible moves this turn, it doesn't mean there will be two possible moves next turn.
 Perhaps there is only one possible move next turn or you may have reached a terminal state where there are no possible moves; you've won or lost.
 
-Looking at chess again: there are 20 possible opening moves, that is known.
-After the first move, and depending on which piece is moved, there can be anywhere from 20-29 moves.
+Looking at chess again... there are 20 possible opening moves.
+After the first move, and depending on which piece is moved, there can be anywhere from 20 to 29 moves.
 The opening move below allows for 29 possible moves on white's next turn - or 28 possible moves if black moves their pawn to d5.
 
 
@@ -196,7 +198,7 @@ Node B then backtracks its node value to Node A, and Node A updates its node and
 </figure>
 
 Node A propagates its alpha-beta values (`α`=2, `β`=+∞) down to Nodes E and F.
-Node F evaluates its left-hand terminal node (0) and selects 0 for its own node value, but does not update the `α` value because max(0, 2) is still 2.
+Node F evaluates its left-hand terminal node (0) and selects 0 for its node value, but does not update the `α` value because max(0, 2) is still 2.
 Node F then evaluates the right-hand node but doesn't update its node or `α` value because -3 is less than 0 and 2.
 
 <figure class="center" style="width:60%;">
@@ -226,9 +228,9 @@ Of course Node A will select 2. And that's how we can find the player's most opt
 ---
 ## Alpha-beta pruning considerations
 
-The order in which nodes are examined directly affects alpha-beta pruning's effectiveness. There are two types of node orderings to be conscious of prior to creating a minimax game tree:
+The order in which nodes are examined directly affects alpha-beta pruning's effectiveness. There are two types of node orderings to be conscious of before creating a minimax game tree:
 
-1. *Worst* ordering: In the worst-case scenario, the alpha-beta optimization does not prune any nodes; thus acting like the standard minimax algorithm without no optimizations. The worst ordering occurs when the most optimal value resides on the right-most terminal node.
+1. *Worst* ordering: In the worst-case scenario, the alpha-beta optimization does not prune any nodes; thus acting as the standard minimax algorithm with no optimizations. The worst ordering occurs when the most optimal value resides on the right-most terminal node.
 1. *Ideal* ordering: Conversely, the ideal ordering occurs when the most optimal value resides on/near the left-most terminal node. In the ideal ordering, the algorithm prunes many nodes and adds considerable optimizations to the overall search time.
 
 How can we prevent the worst ordering?
@@ -244,24 +246,24 @@ If we wanted to maximize the alpha-beta pruning process on a Chess game tree, we
 Mancala is a 2-player turn-based board game.
 Each player has 6 pits with 4 seeds/stones along with 1 mancala (store) at the end of the board.
 
-Players take turns picking up all the seeds from one of their 6 pits and placing them one-by-one until they're holding no seeds.
-Stones are placed counterclock-wise into pits and in the player's own mancala at the end of the board.
+Players take turns picking up all the seeds from one of their 6 pits and placing them one by one until they're holding no seeds.
+Stones are placed counterclockwise into pits and in the player's mancala at the end of the board.
 Players must not place seeds in their opponent's mancala.
 
 There are two exceptions for when a player can go again, or **re-turn**:
 
-1. The last stone in the player's hand lands in their own mancala
+1. The last stone in the player's hand lands in their mancala
 1. The last stone in the player's hand lands in the same pit it started from
 
 Lastly, there is a **capture rule**:
-If the last stone in the player's hand lands in an empty pit on their own side of the board, and the adjacent pit on the opponent's side contains 1+ seeds, the player may capture all seeds from both pits and place them in their own mancala.
+If the last stone in the player's hand lands in an empty pit on their side of the board, and the adjacent pit on the opponent's side contains 1+ seeds, the player may capture all seeds from both pits and place them in their mancala.
 
 The player's goal is to have more seeds in their mancala than their opponent.
 
 The game ends on either of two conditions:
 
 1. A player's mancala contains 25+ seeds
-1. All pits on a player's side are empty. In this case, the player with seeds still in play may gather and deposit the remaining seeds into their own mancala.
+1. All pits on a player's side are empty. In this case, the player with seeds still in play may gather and deposit the remaining seeds into their mancala.
 
 Please watch [this 3-minute video](https://www.youtube.com/watch?v=OX7rj93m6o8) if the explanation above wasn't clear.
 
@@ -269,7 +271,7 @@ Please watch [this 3-minute video](https://www.youtube.com/watch?v=OX7rj93m6o8) 
 ## Mancala simulator
 
 I wrote a simple, CLI Mancala game simulator in Python.
-The code can be found on [my GitHub repo](https://github.com/nosas/blog/tree/mancala/minimax_mancala/code). An example of the simluator can be seen below.
+The code can be found on [my GitHub repo](https://github.com/nosas/blog/tree/mancala/minimax_mancala/code). An example of the simulator can be seen below.
 
 The top-most row is the indices of Player 1's pits.
 The following row is Player 1's pits initialized with 4 seeds.
@@ -313,22 +315,22 @@ The simulator will then output which pit the player selected along with four add
 1. A boolean value of whether the player can go again (re-turn)
 
 In addition to the game simulator, I wrote an Agent class so I could play against bots using various Mancala strategies.
-So far, the bots only strategies are: random, minimax, and minimax with alpha-beta pruning.
+So far, the bots' strategies are random, minimax, and minimax with alpha-beta pruning.
 
-Additional strategies could be also implemented - such as maximize re-turns, prioritize captures, prevent captures - but we're focusing on minimax in this article.
+Additional strategies could be also implemented - such as maximizing re-turns, prioritizing captures, prevent captures - but we're focusing on minimax in this article.
 In the future, I plan on using OpenAI Gym to simulate a bot tournament and find the strongest Mancala strategy.
 
 ---
 ## Mancala game tree
 
-The minimax agent creates game trees by iterating over all its own possible moves, simluating the opponent's move in response, and repeating the process until it reaches its maximum search depth.
+The minimax agent creates game trees by iterating over all its possible moves, simulating the opponent's move in response, and repeating the process until it reaches its maximum search depth.
 
 Large game trees are created throughout the game - especially when each player's pits are full of seeds, such as the beginning of the game - due to Mancala's branching factor of 6.
 Recall that the number of terminal nodes requiring evaluations is equal to `b`<sup>`d`</sup>, where `b` is the branching factor (number of possible actions in that game state) and `d` is the algorithm's search depth.
 
 Each player begins with 6 possible moves, or a branching factor, `b`, of 6.
 The minimax Agent's default depth variable, `d`, is set to 3.
-Therefore, at the beginning of the game there are a total of 6<sup>3</sup>, or 216, terminal nodes requiring heuristic evaluations before the bot makes its first move.
+Therefore, at the beginning of the game, there are a total of 6<sup>3</sup>, or 216, terminal nodes requiring heuristic evaluations before the bot makes its first move.
 
 If we increase the depth of the search to 8, we have 6<sup>8</sup> - or 1,679,616 - heuristic evaluations.
 Bumping the depth up once again to 9 requires 10,077,696 evaluations.
@@ -339,24 +341,24 @@ In case you're wondering, looking ahead 10 moves requires 60,466,176 heuristic e
 ## Mancala heuristic evaluation
 
 The terminal nodes' heuristic values - the value of the players' moves - are evaluated by the Agent's `evaluation` method.
-The heuristic evaluation is rather simple: comprate the Agent's score to the opponent's score after executing some move, and return the difference between scores.
+The heuristic evaluation is rather simple: compare the Agent's score to the opponent's score after executing some move, and return the difference between scores.
 A positive number means the Agent is winning; a negative number means the opponent is winning.
 In cases where the Agent discovers multiple moves with the same optimal outcome, a random move will be selected.
 
 In short, the agent calculates move values with a simple and weak evaluation method that uses no domain knowledge.
-It picks moves that increases it score; that's it.
+It picks moves that increase its score; that's it.
 
 The evaluation method can be upgraded by utilizing domain knowledge.
 We could implement valuations/weights to each possible move, such as captures, re-turns.
 For example, we could weigh capture moves to be more valuable than simply scoring one seed.
-Additional valuations include: winning moves, re-turns, defensive moves to prevent captures, re-turns that lead to captures, etc.
+Additional valuations include winning moves, re-turns, defensive moves to prevent captures, re-turns that lead to captures, etc.
 
-The weak evaluation method means there will be many of the same of the same values, - i.e. the player moves but the score doesn't change very much.
+The weak evaluation method means there will be many of the same values, - i.e. the player moves but the score doesn't change very much.
 Therefore, more nodes will need to be visited and calculated.
 
 Stronger evaluation methods will reduce search times by increasing pruning activity with *ideal ordering*.
 If our Agent can have more granular output values, then it can prune more nodes or sub-trees.
-That means less nodes will be visited and calculated.
+That means fewer nodes will be visited and calculated.
 
 If you're curious about what stronger evaluation methods look like, I encourage you to check out Chess engines and their evaluation methods.
 Each engine's evaluation method is unique, but they share the following Chess knowledge:
@@ -382,7 +384,7 @@ This video solidified my understanding of heuristic evaluation.
 The minimax agent plays naively due to its weak heuristic evaluation method.
 With a stronger evaluation method, the Agent could prioritize chaining re-turns or captures and win the game much quicker.
 
-Moreover, Agents with shallow depths (small `d`) often play single-scoring moves instead of chaining re-turns to maximize its scoring outcome.
+Moreover, Agents with shallow depths (small `d`) often play single-scoring moves instead of chaining re-turns to maximize their scoring outcome.
 This is more-or-less expected behavior due to two parts:
 
 1. The minimax algorithm is **minimizing the maximum loss in a worst-case scenario**, not maximizing its score
@@ -412,7 +414,7 @@ Optimizations such as alpha-beta pruning drastically reduce the algorithm's sear
 Visit the references section below for more detailed articles explaining minimax[^7].
 
 I look forward to learning more about search algorithms and pathfinding algorithms.
-Next step is OpenAI Gym and graph traversals!
+The next step is OpenAI Gym and graph traversals!
 
 ---
 # References/Notes
