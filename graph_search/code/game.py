@@ -1,8 +1,8 @@
 from sys import exit
-
+from os import path
 import pygame as pg
-
-from config import BG_COLOR, FPS, HEIGHT, LIGHTGREY, TILESIZE, TITLE, WIDTH
+from config import AGENT_IMG, BG_COLOR, FPS, HEIGHT, LIGHTGREY, TILESIZE, TITLE, WIDTH
+from agents import AgentManual
 
 
 class Game:
@@ -12,6 +12,17 @@ class Game:
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
 
+        # PyGame object containers
+        self.all_sprites = pg.sprite.Group()
+        self.agent = AgentManual(game=self, x=10, y=10)
+        self.load_data()
+
+    def load_data(self):
+        game_folder = path.dirname(__file__)
+        img_folder = path.join(game_folder, 'img')
+        self.agent_image = pg.image.load(path.join(img_folder, AGENT_IMG)).convert_alpha()
+        self.agent_image = pg.transform.flip(surface=self.agent_image, flip_x=True, flip_y=False)
+
     def run(self):
         self.playing = True
         while self.playing:
@@ -19,9 +30,6 @@ class Game:
             self.events()
             self.update()
             self.draw()
-
-    def stop(self):
-        self.playing = False
 
     def quit(self):
         pg.quit()
@@ -35,11 +43,12 @@ class Game:
                 self.quit()
 
     def update(self):
-        pass
+        self.all_sprites.update()
 
     def draw(self):
         self.screen.fill(color=BG_COLOR)
         self.draw_grid()
+        self.all_sprites.draw(surface=self.screen)
         pg.display.update()
 
     def draw_grid(self):
