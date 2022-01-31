@@ -19,9 +19,13 @@ class Game:
 
     def load_data(self):
         game_folder = path.dirname(__file__)
-        img_folder = path.join(game_folder, 'img')
-        self.agent_image = pg.image.load(path.join(img_folder, AGENT_IMG)).convert_alpha()
-        self.agent_image = pg.transform.flip(surface=self.agent_image, flip_x=True, flip_y=False)
+        img_folder = path.join(game_folder, "img")
+        self.agent_image = pg.image.load(
+            path.join(img_folder, AGENT_IMG)
+        ).convert_alpha()
+        self.agent_image = pg.transform.flip(
+            surface=self.agent_image, flip_x=True, flip_y=False
+        )
 
     def run(self):
         self.playing = True
