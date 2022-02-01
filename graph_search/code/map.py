@@ -50,6 +50,7 @@ class Road(pg.sprite.Sprite):
 
 
 class Path(pg.sprite.Sprite):
+    _font = {"name": "comicsansms", "size": 12}
     _symbols = {"left": "L", "right": "R", "up": "U", "down": "D"}
 
     @staticmethod
@@ -72,14 +73,14 @@ class Path(pg.sprite.Sprite):
         self.rect.y = y * height
 
         self.direction = direction
-        self.font = pg.font.SysFont("comicsansms", 12)
+        self.font = pg.font.SysFont(**Path._font)
         self.image = self.font.render(self.symbol, True, WHITE)
 
     def draw(self):
-        pass
+        self.image = self.font.render(self.symbol, True, WHITE)
+        # self.rect = self.image.get_rect()  # ! Bug! Font renders on screen's top-left
+        self.game.screen.blit(source=self.image, dest=(self.x, self.y))
 
     def update(self):
         # Agent's visual attributes
-        self.image = self.font.render(self.symbol, True, WHITE)
-        self.rect = self.image.get_rect()
-        self.game.screen.blit(source=self.image, dest=(self.rect.x, self.rect.y))
+        pass

@@ -26,7 +26,7 @@ class Game:
 
     def _load_data(self):
         game_folder = path.dirname(__file__)
-        img_folder = path.join(game_folder, "img")cc
+        img_folder = path.join(game_folder, "img")
         map_folder = path.join(img_folder, "map")
 
         self.map = TiledMap(filename=path.join(map_folder, MAP))
@@ -62,12 +62,13 @@ class Game:
                     height=tile_object.height,
                     direction=tile_object.properties["direction"],
                 )
+                temp_rect = pg.Rect(
+                    tile_object.x, tile_object.y, tile_object.width, tile_object.height
+                )
+                pg.draw.rect(self.screen, WHITE, temp_rect, 0)
             if tile_object.name == "teleport":
                 self.img_bitmap = self.map.tmxdata.get_tile_image_by_gid(
                     tile_object.gid
-                )
-                self.temp_rect = pg.Rect(
-                    tile_object.x, tile_object.y, tile_object.width, tile_object.height
                 )
 
     def run(self):
@@ -95,9 +96,12 @@ class Game:
         self.screen.blit(source=self.map_img, dest=self.map_rect)
         # self.draw_grid()
         self.all_sprites.draw(surface=self.screen)
-        self.roads.draw(surface=self.screen)
-        for p in self.roads:
-            self.screen.blit(source=p.image, dest=(p.x, p.y))
+        for road in self.roads:
+            # ? Why doesn't self.roads.draw() execute all object's .draw() method?
+            road.draw()
+        # self.roads.draw(surface=self.screen)
+        # for p in self.roads:
+        #     self.screen.blit(source=p.image, dest=(p.x, p.y))
         pg.display.update()
 
     def draw_grid(self):
