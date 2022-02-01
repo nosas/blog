@@ -9,7 +9,6 @@ from pygame import (
     K_d,
     K_s,
     K_w,
-    Surface,
     Vector2,
     key,
     sprite,
@@ -28,11 +27,9 @@ class Agent(sprite.Sprite):
         sprite.Sprite.__init__(self, self.groups)
 
         # Position and movement attributes
-        self.pos = Vector2(x, y) * TILESIZE
+        self.pos = Vector2(x, y)  # * TILESIZE
         self.vel = Vector2(0, 0)
         self.rot = 0
-
-        self.draw()
 
     @abstractmethod
     def draw(self):
@@ -62,6 +59,8 @@ class Agent(sprite.Sprite):
 class AgentManual(Agent):
     def __init__(self, game, x: int, y: int):
         super().__init__(game=game, x=x, y=y)
+        self.image = game.agent_img
+        self.rect = self.image.get_rect()
         self.hit_rect = AGENT_HIT_RECT
         self.hit_rect.center = self.rect.center
 
@@ -70,9 +69,9 @@ class AgentManual(Agent):
 
     def draw(self):
         # Agent's visual attributes
-        self.image = Surface((TILESIZE, TILESIZE))
-        self.image.fill(color=GREEN)
-        self.rect = self.image.get_rect()
+        # self.image = Surface((TILESIZE, TILESIZE))
+        # self.rect = self.image.get_rect()
+        pass
 
     def move(self):
         self.rot_speed = 0
@@ -92,15 +91,18 @@ class AgentManual(Agent):
         # Handle move keys being pressed
         self.move()
         self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
+
         # Adjust image based on rotation
-        self.image = transform.rotate(surface=self.game.agent_image, angle=self.rot)
+        self.image = transform.rotate(surface=self.game.agent_img, angle=self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
+
         # Update position
         self.pos += self.vel * self.game.dt
         self.hit_rect.centerx = self.pos.x
+
         # Handle collisions
-        self.collision("x")
+        self.collision(x=True)
         self.hit_rect.centery = self.pos.y
-        self.collision("y")
+        self.collision(y=True)
         self.rect.center = self.hit_rect.center

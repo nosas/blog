@@ -10,8 +10,9 @@ RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 
 # Game window settings
-WIDTH = 1024 * 2
-HEIGHT = 900
+TILESIZE = 16
+WIDTH = 100 * TILESIZE
+HEIGHT = 40 * TILESIZE
 
 # Game settings
 FPS = 100
@@ -19,12 +20,12 @@ TITLE = "Agent Movement Demo"
 BG_COLOR = BLACK
 
 # Map settings
-TILESIZE = 64
+MAP = "map16.tmx"
 GRIDWIDTH = WIDTH / TILESIZE
 GRIDHEIGHT = HEIGHT / TILESIZE
 
 # Agent settings
 AGENT_IMG = "agent.png"
-AGENT_SPEED = 0.5
-AGENT_ROT_SPEED = 0.25
-AGENT_HIT_RECT = Rect(0, 0, 32, 32)
+AGENT_SPEED = 0.03 * 1.5
+AGENT_ROT_SPEED = 0.12
+AGENT_HIT_RECT = Rect(0, 0, 16, 16)
