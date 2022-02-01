@@ -17,7 +17,7 @@ from map import TiledMap, Path
 
 
 class Game:
-    def __init__(self):X
+    def __init__(self):
         pg.init()
         self.screen = pg.display.set_mode(size=(WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
