@@ -1,34 +1,46 @@
 from abc import abstractmethod
 
-from pygame import (
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
-    K_UP,
-    K_a,
-    K_d,
-    K_s,
-    K_w,
-    Vector2,
-    key,
-    sprite,
-    transform,
-)
+import pygame as pg
 
-from config import AGENT_HIT_RECT, AGENT_ROT_SPEED, AGENT_SPEED, GREEN, TILESIZE
+from config import AGENT_HIT_RECT, AGENT_ROT_SPEED, AGENT_SPEED
 
 
-class Agent(sprite.Sprite):
+def collide_hit_rect(obj1, obj2):
+    return obj1.hit_rect.colliderect(obj2.rect)
+
+
+def collide_with_walls(sprite, group, dir):
+    if dir == "x":
+        hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
+        if hits:
+            if hits[0].rect.centerx > sprite.hit_rect.centerx:
+                sprite.pos.x = hits[0].rect.left - sprite.hit_rect.width / 2
+            if hits[0].rect.centerx < sprite.hit_rect.centerx:
+                sprite.pos.x = hits[0].rect.right + sprite.hit_rect.width / 2
+            sprite.vel.x = 0
+            sprite.hit_rect.centerx = sprite.pos.x
+    if dir == "y":
+        hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
+        if hits:
+            if hits[0].rect.centery > sprite.hit_rect.centery:
+                sprite.pos.y = hits[0].rect.top - sprite.hit_rect.height / 2
+            if hits[0].rect.centery < sprite.hit_rect.centery:
+                sprite.pos.y = hits[0].rect.bottom + sprite.hit_rect.height / 2
+            sprite.vel.y = 0
+            sprite.hit_rect.centery = sprite.pos.y
+
+
+class Agent(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.game = game
 
         # PyGame-specific attributes
         self.groups = game.all_sprites
-        sprite.Sprite.__init__(self, self.groups)
+        pg.sprite.Sprite.__init__(self, self.groups)
 
         # Position and movement attributes
-        self.pos = Vector2(x, y)  # * TILESIZE
-        self.vel = Vector2(0, 0)
+        self.pos = pg.Vector2(x, y)  # * TILESIZE
+        self.vel = pg.Vector2(0, 0)
         self.rot = 0
 
     @abstractmethod
@@ -75,17 +87,17 @@ class AgentManual(Agent):
 
     def move(self):
         self.rot_speed = 0
-        self.vel = Vector2(0, 0)
-        keys = key.get_pressed()
+        self.vel = pg.Vector2(0, 0)
+        keys = pg.key.get_pressed()
 
-        if keys[K_LEFT] or keys[K_a]:
+        if keys[pg.K_LEFT] or keys[pg.K_a]:
             self.rot_speed = AGENT_ROT_SPEED
-        if keys[K_RIGHT] or keys[K_d]:
+        if keys[pg.K_RIGHT] or keys[pg.K_d]:
             self.rot_speed = -AGENT_ROT_SPEED
-        if keys[K_UP] or keys[K_w]:
-            self.vel = Vector2(AGENT_SPEED, 0).rotate(-self.rot)
-        if keys[K_DOWN] or keys[K_s]:
-            self.vel = Vector2(-AGENT_SPEED / 2, 0).rotate(-self.rot)
+        if keys[pg.K_UP] or keys[pg.K_w]:
+            self.vel = pg.Vector2(AGENT_SPEED, 0).rotate(-self.rot)
+        if keys[pg.K_DOWN] or keys[pg.K_s]:
+            self.vel = pg.Vector2(-AGENT_SPEED / 2, 0).rotate(-self.rot)
 
     def update(self):
         # Handle move keys being pressed
@@ -93,7 +105,7 @@ class AgentManual(Agent):
         self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
 
         # Adjust image based on rotation
-        self.image = transform.rotate(surface=self.game.agent_img, angle=self.rot)
+        self.image = pg.transform.rotate(surface=self.game.agent_img, angle=self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
 
