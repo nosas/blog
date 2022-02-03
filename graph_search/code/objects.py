@@ -21,6 +21,7 @@ class Road(pg.sprite.Sprite):
         self.game = game
         self.groups = game.all_sprites, game.roads
         pg.sprite.Sprite.__init__(self, self.groups)
+
         self.rect = pg.Rect(x, y, TILESIZE, TILESIZE)
         self.x = x
         self.y = y
@@ -28,7 +29,7 @@ class Road(pg.sprite.Sprite):
         self.rect.y = y * TILESIZE
 
 
-class Path(pg.sprite.Sprite):
+class Path(Road):
     _font = {"name": "comicsansms", "size": 12}
     _symbols = {"left": "L", "right": "R", "up": "U", "down": "D"}
 
@@ -37,13 +38,12 @@ class Path(pg.sprite.Sprite):
         return Path._symbols[direction]
 
     @property
-    def symbol(self) -> str:
+    def _symbol(self) -> str:
         return Path._get_symbol(direction=self.direction)
 
     def __init__(self, game, x: int, y: int, width: int, height: int, direction: str):
-        self.game = game
+        super().__init__(game=game, x=x, y=y)
         self.groups = game.roads
-        pg.sprite.Sprite.__init__(self, self.groups)
 
         self.rect = pg.Rect(x, y, width, height)
         self.x = x
@@ -53,10 +53,10 @@ class Path(pg.sprite.Sprite):
 
         self.direction = direction
         self.font = pg.font.SysFont(**Path._font)
-        self.image = self.font.render(self.symbol, True, WHITE)
+        self.image = self.font.render(self._symbol, True, WHITE)
 
     def draw(self):
-        self.image = self.font.render(self.symbol, True, WHITE)
+        self.image = self.font.render(self._symbol, True, WHITE)
         # self.rect = self.image.get_rect()  # ! Bug! Font renders on screen's top-left
         self.game.screen.blit(source=self.image, dest=(self.x, self.y))
 
