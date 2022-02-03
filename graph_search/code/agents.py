@@ -57,21 +57,21 @@ class Agent(pg.sprite.Sprite):
         self.rot = 0
 
     @abstractmethod
-    def draw(self):
-        """How the agent is drawn on the map"""
-        raise NotImplementedError(f"Class {self.__class__} does not have a move method")
-
-    @abstractmethod
-    def move(self):
+    def _move(self):
         """Determine which keys are being pressed and handle Agent movement"""
         raise NotImplementedError(f"Class {self.__class__} does not have a move method")
 
     @abstractmethod
-    def collision(self, direction):
+    def _collision(self, direction):
         """Handle Agent reactions when colliding with walls or other Agents"""
         raise NotImplementedError(
             f"Class {self.__class__} does not have a collision method"
         )
+
+    @abstractmethod
+    def draw(self):
+        """How the agent is drawn on the map"""
+        raise NotImplementedError(f"Class {self.__class__} does not have a move method")
 
     @abstractmethod
     def update(self):
@@ -82,26 +82,21 @@ class Agent(pg.sprite.Sprite):
 
 
 class AgentManual(Agent):
-    def __init__(self, game, x: float, y: float):
+    def __init__(self, game, x: float, y: float, rot: int = 0):
         super().__init__(game=game, x=x, y=y)
         self.image = game.agent_img
+        self.rot = rot
         self.rect = self.image.get_rect()
         self.hit_rect = AGENT_HIT_RECT
         self.hit_rect.center = self.rect.center
 
-    def collision(self, x: bool = None, y: bool = None):
+    def _collision(self, x: bool = None, y: bool = None):
         assert not (x is not None and y is not None)
         return collide_with_walls(
             sprite=self, group=self.game.walls, direction="x" if x else "y"
         )
 
-    def draw(self):
-        # Agent's visual attributes are loaded in `game.py` and updated in self.update()
-        # self.image = Surface((TILESIZE, TILESIZE))
-        # self.rect = self.image.get_rect()
-        pass
-
-    def move(self):
+    def _move(self):
         self.rot_speed = 0
         self.vel = pg.Vector2(0, 0)
         keys = pg.key.get_pressed()
@@ -115,23 +110,29 @@ class AgentManual(Agent):
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vel = pg.Vector2(-AGENT_SPEED / 2, 0).rotate(-self.rot)
 
+    def draw(self):
+        # Agent's visual attributes are loaded in `game.py` and updated in self.update()
+        # self.image = Surface((TILESIZE, TILESIZE))
+        # self.rect = self.image.get_rect()
+        pass
+
     def update(self):
         """Moves, rotates, and updates the agent's position and image. Also checks for collisions"""
         # Handle move keys being pressed
-        self.move()
+        self._move()
         self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
 
         # Adjust image based on rotation
         self.image = pg.transform.rotate(surface=self.game.agent_img, angle=self.rot)
         self.rect = self.image.get_rect()
-        self.rect.center = self.pos
+        # self.rect.center = self.pos
 
         # Update position
         self.pos += self.vel * self.game.dt
-        self.hit_rect.centerx = self.pos.x
 
         # Handle collisions
-        self.collision(x=True)
+        self.hit_rect.centerx = self.pos.x
+        self._collision(x=True)
         self.hit_rect.centery = self.pos.y
-        self.collision(y=True)
+        self._collision(y=True)
         self.rect.center = self.hit_rect.center

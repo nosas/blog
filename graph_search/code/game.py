@@ -6,6 +6,7 @@ import pygame as pg
 from agents import AgentManual
 from config import (
     AGENT_IMG,
+    AGENT_RANDOM_SPAWN,
     DEBUG,
     FPS,
     HEIGHT,
@@ -20,6 +21,7 @@ from config import (
 )
 from map import TiledMap
 from objects import Wall, Path
+from random import choice, random
 
 
 class Game:
@@ -35,12 +37,11 @@ class Game:
     def _draw(self):
         """Draw all game images to screen: sprites, roads, paths, debug info"""
         self.screen.blit(source=self.map_img, dest=self.map_rect)
+
         # self.draw_grid()
         self.all_sprites.draw(surface=self.screen)
         # ? Why doesn't self.roads.draw() execute all object's .draw() method?
         # self.roads.draw(surface=self.screen)
-        for road in self.roads:
-            road.draw()
         if self.debug:
             self._draw_debug()
 
@@ -145,8 +146,16 @@ class Game:
 
             # if tile_object.type == "agent" and tile_object.name == "agent":
             if name == "agent":
-                self.agent = AgentManual(game=self, x=x, y=y)
-            if type == "road":
+                if AGENT_RANDOM_SPAWN:
+                    # TODO Verify Agent doesn't spawn on mob, battle, agent, tp, door
+                    road = choice(self.roads.sprites())
+                    x = road.x
+                    y = road.y
+                    rot = random() * 360
+                    self.agent = AgentManual(game=self, x=x, y=y, rot=rot)
+                else:
+                    self.agent = AgentManual(game=self, x=x, y=y)
+            elif type == "road":
                 if name == "path":
                     Path(
                         game=self,
@@ -156,11 +165,11 @@ class Game:
                         height=height,
                         direction=tile_object.properties["direction"],
                     )
-            if name == "teleport":
+            elif name == "teleport":
                 self.img_bitmap = self.map.tmxdata.get_tile_image_by_gid(
                     tile_object.gid
                 )
-            if type == "wall":
+            elif type == "wall":
                 Wall(
                     game=self,
                     x=x,
