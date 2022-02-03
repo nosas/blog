@@ -5,13 +5,24 @@ import pygame as pg
 from config import AGENT_HIT_RECT, AGENT_ROT_SPEED, AGENT_SPEED
 
 
-def collide_hit_rect(obj1, obj2):
-    return obj1.hit_rect.colliderect(obj2.rect)
+def collide_hit_rect(obj_with_rect1, obj_with_rect2):
+    return obj_with_rect1.hit_rect.colliderect(obj_with_rect2.rect)
 
 
-def collide_with_walls(sprite, group, dir):
-    if dir == "x":
-        hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
+def collide_with_walls(
+    sprite: pg.sprite.Sprite, group: pg.sprite.Group, direction: str
+):
+    """Check if a sprite (Agent) collides with some other Group (Wall)
+
+    Args:
+        sprite (pg.sprite.Sprite): Typically an Agent object
+        group (pg.sprite.Group): Typically a Wall object
+        direction (str): "x" or "y"
+    """
+    if direction == "x":
+        hits = pg.sprite.spritecollide(
+            sprite=sprite, group=group, dokill=False, collided=collide_hit_rect
+        )
         if hits:
             if hits[0].rect.centerx > sprite.hit_rect.centerx:
                 sprite.pos.x = hits[0].rect.left - sprite.hit_rect.width / 2
@@ -19,8 +30,10 @@ def collide_with_walls(sprite, group, dir):
                 sprite.pos.x = hits[0].rect.right + sprite.hit_rect.width / 2
             sprite.vel.x = 0
             sprite.hit_rect.centerx = sprite.pos.x
-    if dir == "y":
-        hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
+    if direction == "y":
+        hits = pg.sprite.spritecollide(
+            sprite=sprite, group=group, dokill=False, collided=collide_hit_rect
+        )
         if hits:
             if hits[0].rect.centery > sprite.hit_rect.centery:
                 sprite.pos.y = hits[0].rect.top - sprite.hit_rect.height / 2
@@ -31,7 +44,7 @@ def collide_with_walls(sprite, group, dir):
 
 
 class Agent(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self, game, x: float, y: float):
         self.game = game
 
         # PyGame-specific attributes
@@ -69,7 +82,7 @@ class Agent(pg.sprite.Sprite):
 
 
 class AgentManual(Agent):
-    def __init__(self, game, x: int, y: int):
+    def __init__(self, game, x: float, y: float):
         super().__init__(game=game, x=x, y=y)
         self.image = game.agent_img
         self.rect = self.image.get_rect()
@@ -77,10 +90,13 @@ class AgentManual(Agent):
         self.hit_rect.center = self.rect.center
 
     def collision(self, x: bool = None, y: bool = None):
-        pass
+        assert not (x is not None and y is not None)
+        return collide_with_walls(
+            sprite=self, group=self.game.walls, direction="x" if x else "y"
+        )
 
     def draw(self):
-        # Agent's visual attributes
+        # Agent's visual attributes are loaded in `game.py` and updated in self.update()
         # self.image = Surface((TILESIZE, TILESIZE))
         # self.rect = self.image.get_rect()
         pass
@@ -100,6 +116,7 @@ class AgentManual(Agent):
             self.vel = pg.Vector2(-AGENT_SPEED / 2, 0).rotate(-self.rot)
 
     def update(self):
+        """Moves, rotates, and updates the agent's position and image. Also checks for collisions"""
         # Handle move keys being pressed
         self.move()
         self.rot = (self.rot + self.rot_speed * self.game.dt) % 360

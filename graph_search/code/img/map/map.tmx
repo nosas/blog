@@ -197,32 +197,32 @@
  </group>
  <group id="25" name="Wall">
   <objectgroup id="28" name="Wall">
-   <object id="78" type="wall" x="0" y="1600" width="960" height="64"/>
-   <object id="79" type="wall" x="896" y="768" width="64" height="832"/>
-   <object id="80" type="wall" x="960" y="768" width="1728" height="64"/>
-   <object id="81" type="wall" x="2624" y="832" width="64" height="832"/>
-   <object id="82" type="wall" x="2688" y="1600" width="1024" height="64"/>
-   <object id="83" type="wall" x="3648" y="1472" width="64" height="128"/>
-   <object id="84" type="wall" x="3520" y="1472" width="128" height="64"/>
-   <object id="85" type="wall" x="3520" y="768" width="64" height="704"/>
-   <object id="86" type="wall" x="3584" y="768" width="1088" height="64"/>
-   <object id="87" type="wall" x="4608" y="832" width="64" height="704"/>
-   <object id="88" type="wall" x="4480" y="1472" width="128" height="64"/>
-   <object id="89" type="wall" x="4480" y="1536" width="64" height="128"/>
-   <object id="90" type="wall" x="4544" y="1600" width="896" height="64"/>
-   <object id="91" type="wall" x="5376" y="1024" width="64" height="576"/>
-   <object id="92" type="wall" x="5440" y="1024" width="1152" height="64"/>
-   <object id="93" type="wall" x="6528" y="1088" width="64" height="384"/>
-   <object id="94" type="wall" x="5760" y="1408" width="768" height="64"/>
-   <object id="95" type="wall" x="5760" y="1472" width="64" height="576"/>
-   <object id="96" type="wall" x="4160" y="1984" width="1600" height="64"/>
-   <object id="97" type="wall" x="4032" y="1152" width="128" height="896"/>
-   <object id="98" type="wall" x="2240" y="1984" width="1792" height="64"/>
-   <object id="100" type="wall" x="2240" y="1152" width="64" height="832"/>
-   <object id="101" type="wall" x="1280" y="1152" width="960" height="64"/>
-   <object id="102" type="wall" x="1280" y="1216" width="64" height="832"/>
-   <object id="103" type="wall" x="0" y="1984" width="1280" height="64"/>
-   <object id="104" type="wall" x="0" y="1664" width="64" height="320"/>
+   <object id="78" name="wall" type="wall" x="0" y="1600" width="960" height="64"/>
+   <object id="79" name="wall" type="wall" x="896" y="768" width="64" height="832"/>
+   <object id="80" name="wall" type="wall" x="960" y="768" width="1728" height="64"/>
+   <object id="81" name="wall" type="wall" x="2624" y="832" width="64" height="832"/>
+   <object id="82" name="wall" type="wall" x="2688" y="1600" width="1024" height="64"/>
+   <object id="83" name="wall" type="wall" x="3648" y="1472" width="64" height="128"/>
+   <object id="84" name="wall" type="wall" x="3520" y="1472" width="128" height="64"/>
+   <object id="85" name="wall" type="wall" x="3520" y="768" width="64" height="704"/>
+   <object id="86" name="wall" type="wall" x="3584" y="768" width="1088" height="64"/>
+   <object id="87" name="wall" type="wall" x="4608" y="832" width="64" height="704"/>
+   <object id="88" name="wall" type="wall" x="4480" y="1472" width="128" height="64"/>
+   <object id="89" name="wall" type="wall" x="4480" y="1536" width="64" height="128"/>
+   <object id="90" name="wall" type="wall" x="4544" y="1600" width="896" height="64"/>
+   <object id="91" name="wall" type="wall" x="5376" y="1024" width="64" height="576"/>
+   <object id="92" name="wall" type="wall" x="5440" y="1024" width="1152" height="64"/>
+   <object id="93" name="wall" type="wall" x="6528" y="1088" width="64" height="384"/>
+   <object id="94" name="wall" type="wall" x="5760" y="1408" width="768" height="64"/>
+   <object id="95" name="wall" type="wall" x="5760" y="1472" width="64" height="576"/>
+   <object id="96" name="wall" type="wall" x="4160" y="1984" width="1600" height="64"/>
+   <object id="97" name="wall" type="wall" x="4032" y="1152" width="128" height="896"/>
+   <object id="98" name="wall" type="wall" x="2240" y="1984" width="1792" height="64"/>
+   <object id="100" name="wall" type="wall" x="2240" y="1152" width="64" height="832"/>
+   <object id="101" name="wall" type="wall" x="1280" y="1152" width="960" height="64"/>
+   <object id="102" name="wall" type="wall" x="1280" y="1216" width="64" height="832"/>
+   <object id="103" name="wall" type="wall" x="0" y="1984" width="1280" height="64"/>
+   <object id="104" name="wall" type="wall" x="0" y="1664" width="64" height="320"/>
   </objectgroup>
   <layer id="6" name="Wall" width="110" height="32">
    <data encoding="csv">

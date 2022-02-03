@@ -15,6 +15,7 @@ WIDTH = 100 * TILESIZE
 HEIGHT = 40 * TILESIZE
 
 # Game settings
+DEBUG = True
 FPS = 100
 TITLE = "Agent Movement Demo"
 BG_COLOR = BLACK

@@ -1,30 +1,108 @@
-from sys import exit
 from os import path
+from sys import exit
+
 import pygame as pg
+
+from agents import AgentManual
 from config import (
     AGENT_IMG,
-    WHITE,
+    DEBUG,
     FPS,
+    GREEN,
     HEIGHT,
     LIGHTGREY,
     MAP,
+    RED,
     TILESIZE,
     TITLE,
+    WHITE,
     WIDTH,
+    YELLOW,
 )
-from agents import AgentManual
-from map import TiledMap, Path
+from map import Path, TiledMap
+from objects import Wall
 
 
 class Game:
     def __init__(self):
+        """Initialize the screen, game clock, and load game data"""
         pg.init()
+        self.debug = DEBUG
         self.screen = pg.display.set_mode(size=(WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self._load_data()
 
+    def _draw(self):
+        """Draw all game images to screen: sprites, roads, paths, debug info"""
+        self.screen.blit(source=self.map_img, dest=self.map_rect)
+        # self.draw_grid()
+        self.all_sprites.draw(surface=self.screen)
+        # ? Why doesn't self.roads.draw() execute all object's .draw() method?
+        # self.roads.draw(surface=self.screen)
+        for road in self.roads:
+            road.draw()
+        if self.debug:
+            self._draw_debug()
+
+        pg.display.update()
+
+    def _draw_debug(self):
+        # Agent-specific debug outputs
+        pg.draw.rect(self.screen, RED, self.agent.hit_rect, 0)
+
+        # Wall-specific debug outputs
+        for wall in self.walls:
+            pg.draw.rect(self.screen, YELLOW, wall.hit_rect, 0)
+
+        # Draw white rectangles over objects
+        for tile_object in self.map.tmxdata.objects:
+            x = tile_object.x
+            y = tile_object.y
+            height = tile_object.height
+            width = tile_object.width
+            if tile_object.name == "path":
+                temp_rect = pg.Rect(x, y, width, height)
+                pg.draw.rect(self.screen, WHITE, temp_rect, 0)
+
+    def _draw_fps():
+        """Draw the FPS count"""
+        pass
+
+    def _draw_grid(self):
+        """Draw a screen-wide grid"""
+        for x in range(0, WIDTH, TILESIZE):
+            pg.draw.line(
+                surface=self.screen,
+                color=LIGHTGREY,
+                start_pos=(x, 0),
+                end_pos=(x, HEIGHT),
+            )
+        for y in range(0, HEIGHT, TILESIZE):
+            pg.draw.line(
+                surface=self.screen,
+                color=LIGHTGREY,
+                start_pos=(0, y),
+                end_pos=(WIDTH, y),
+            )
+
+    def _events(self):
+        """Handle key buttons, mouse clicks, etc."""
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self._quit()
+            if event.type == pg.KEYDOWN:
+                if event.key in [pg.K_ESCAPE, pg.K_q]:
+                    self._quit()
+                if event.key == pg.K_SPACE:
+                    self.debug = not self.debug
+                    print("agent pos   ", self.agent.pos)
+                    print("agent posxy ", self.agent.pos.x, self.agent.pos.y)
+                    print("agent rect  ", self.agent.rect.x, self.agent.rect.y)
+                    print("agent hrect ", self.agent.hit_rect.x, self.agent.hit_rect.y)
+
     def _load_data(self):
+        """Load game, image, and map data"""
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, "img")
         map_folder = path.join(img_folder, "map")
@@ -41,84 +119,62 @@ class Game:
             surface=self.agent_img, size=(TILESIZE, TILESIZE)
         )
 
+    def _quit(self):
+        pg.quit()
+        exit()
+
+    def _update(self):
+        """Update all sprite interactions"""
+        self.all_sprites.update()
+        self.roads.update()
+
     def new(self):
+        """Create sprite groups and convert tiles into game objects"""
         # PyGame object containers
         self.all_sprites = pg.sprite.Group()
         self.roads = pg.sprite.Group()
         self.walls = pg.sprite.Group()
 
+        # ! Object conversions will be moved to the classes' own methods
         for tile_object in self.map.tmxdata.objects:
+            name = tile_object.name
+            type = tile_object.type
+            x = tile_object.x
+            y = tile_object.y
+            height = tile_object.height
+            width = tile_object.width
+
             # if tile_object.type == "agent" and tile_object.name == "agent":
-            if tile_object.name == "agent":
-                print(tile_object.x, tile_object.y)
-                self.agent = AgentManual(game=self, x=tile_object.x, y=tile_object.y)
-                print(self.agent.pos.x, self.agent.pos.y)
-            if tile_object.name == "path":
-                Path(
-                    game=self,
-                    x=tile_object.x,
-                    y=tile_object.y,
-                    width=tile_object.width,
-                    height=tile_object.height,
-                    direction=tile_object.properties["direction"],
-                )
-                temp_rect = pg.Rect(
-                    tile_object.x, tile_object.y, tile_object.width, tile_object.height
-                )
-                pg.draw.rect(self.screen, WHITE, temp_rect, 0)
-            if tile_object.name == "teleport":
+            if name == "agent":
+                self.agent = AgentManual(game=self, x=x, y=y)
+            if type == "road":
+                if name == "path":
+                    Path(
+                        game=self,
+                        x=x,
+                        y=y,
+                        width=width,
+                        height=height,
+                        direction=tile_object.properties["direction"],
+                    )
+            if name == "teleport":
                 self.img_bitmap = self.map.tmxdata.get_tile_image_by_gid(
                     tile_object.gid
                 )
+            if type == "wall":
+                Wall(
+                    game=self,
+                    x=x,
+                    y=y,
+                    width=width,
+                    height=height,
+                )
 
     def run(self):
+        """Start the game"""
         self.playing = True
         while self.playing:
             self.dt = self.clock.tick(FPS)
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    self.quit()
-                if event.type == pg.KEYDOWN and event.key in [pg.K_ESCAPE, pg.K_q]:
-                    self.quit()
-
-            self.update()
-            self.draw()
-
-    def quit(self):
-        pg.quit()
-        exit()
-
-    def update(self):
-        self.all_sprites.update()
-        self.roads.update()
-
-    def draw(self):
-        self.screen.blit(source=self.map_img, dest=self.map_rect)
-        # self.draw_grid()
-        self.all_sprites.draw(surface=self.screen)
-        for road in self.roads:
-            # ? Why doesn't self.roads.draw() execute all object's .draw() method?
-            road.draw()
-        # self.roads.draw(surface=self.screen)
-        # for p in self.roads:
-        #     self.screen.blit(source=p.image, dest=(p.x, p.y))
-        pg.display.update()
-
-    def draw_grid(self):
-        for x in range(0, WIDTH, TILESIZE):
-            pg.draw.line(
-                surface=self.screen,
-                color=LIGHTGREY,
-                start_pos=(x, 0),
-                end_pos=(x, HEIGHT),
-            )
-        for y in range(0, HEIGHT, TILESIZE):
-            pg.draw.line(
-                surface=self.screen,
-                color=LIGHTGREY,
-                start_pos=(0, y),
-                end_pos=(WIDTH, y),
-            )
-
-    def draw_fps():
-        pass
+            self._events()
+            self._update()
+            self._draw()
