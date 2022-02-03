@@ -8,7 +8,6 @@ from config import (
     AGENT_IMG,
     DEBUG,
     FPS,
-    GREEN,
     HEIGHT,
     LIGHTGREY,
     MAP,
@@ -19,8 +18,8 @@ from config import (
     WIDTH,
     YELLOW,
 )
-from map import Path, TiledMap
-from objects import Wall
+from map import TiledMap
+from objects import Wall, Path
 
 
 class Game:
