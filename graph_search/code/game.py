@@ -3,16 +3,17 @@ from sys import exit
 
 import pygame as pg
 
-from agents import AgentManual
+from agents import AgentManual, Mob
 from config import (
     AGENT_IMG,
     AGENT_RANDOM_SPAWN,
+    BLUE,
     DEBUG,
     FPS,
     HEIGHT,
     LIGHTGREY,
     MAP,
-    RED,
+    NUM_MOBS,
     TILESIZE,
     TITLE,
     WHITE,
@@ -38,19 +39,20 @@ class Game:
         """Draw all game images to screen: sprites, roads, paths, debug info"""
         self.screen.blit(source=self.map_img, dest=self.map_rect)
 
-        # self.draw_grid()
         self.all_sprites.draw(surface=self.screen)
         # ? Why doesn't self.roads.draw() execute all object's .draw() method?
         # self.roads.draw(surface=self.screen)
         if self.debug:
             self._draw_debug()
-
         pg.display.update()
 
     def _draw_debug(self):
         # Agent-specific debug outputs
-        pg.draw.rect(self.screen, RED, self.agent.hit_rect, 0)
+        pg.draw.rect(self.screen, BLUE, self.agent.hit_rect, 0)
+        self._draw_grid()
 
+        for mob in self.mobs:
+            pg.draw.rect(self.screen, BLUE, mob.hit_rect, 0)
         # Wall-specific debug outputs
         for wall in self.walls:
             pg.draw.rect(self.screen, YELLOW, wall.hit_rect, 0)
@@ -132,7 +134,9 @@ class Game:
         """Create sprite groups and convert tiles into game objects"""
         # PyGame object containers
         self.all_sprites = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
         self.roads = pg.sprite.Group()
+        self.paths = pg.sprite.Group()
         self.walls = pg.sprite.Group()
 
         # ! Object conversions will be moved to the classes' own methods
@@ -157,7 +161,7 @@ class Game:
                     self.agent = AgentManual(game=self, x=x, y=y)
             elif type == "road":
                 if name == "path":
-                    Path(
+                    p = Path(
                         game=self,
                         x=x,
                         y=y,
@@ -165,10 +169,13 @@ class Game:
                         height=height,
                         direction=tile_object.properties["direction"],
                     )
-            elif name == "teleport":
-                self.img_bitmap = self.map.tmxdata.get_tile_image_by_gid(
-                    tile_object.gid
-                )
+                    if len(self.mobs.sprites()) < NUM_MOBS:
+                        Mob(
+                            game=self,
+                            x=x,
+                            y=y,
+                            path=p,
+                        )
             elif type == "wall":
                 Wall(
                     game=self,
@@ -176,6 +183,10 @@ class Game:
                     y=y,
                     width=width,
                     height=height,
+                )
+            elif name == "teleport":
+                self.img_bitmap = self.map.tmxdata.get_tile_image_by_gid(
+                    tile_object.gid
                 )
 
     def run(self):

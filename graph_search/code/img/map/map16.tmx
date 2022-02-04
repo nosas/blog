@@ -45,7 +45,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <group id="9" name="Road">
+ <group id="9" name="road">
   <layer id="3" name="road" width="100" height="40">
    <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -134,8 +134,8 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
   </layer>
-  <group id="11" name="Path">
-   <objectgroup id="13" name="Path Down">
+  <group id="11" name="path" locked="1">
+   <objectgroup id="13" name="down">
     <object id="12" name="path" type="road" x="464" y="256" width="16" height="64">
      <properties>
       <property name="direction" value="down"/>
@@ -197,7 +197,7 @@
      </properties>
     </object>
    </objectgroup>
-   <objectgroup id="12" name="Path Up">
+   <objectgroup id="12" name="up">
     <object id="8" name="path" type="road" x="304" y="272" width="16" height="208">
      <properties>
       <property name="direction" value="up"/>
@@ -259,7 +259,7 @@
      </properties>
     </object>
    </objectgroup>
-   <objectgroup id="10" name="Path Right">
+   <objectgroup id="10" name="right">
     <object id="7" name="path" type="road" x="48" y="464" width="256" height="16">
      <properties>
       <property name="direction" value="right"/>
@@ -321,7 +321,7 @@
      </properties>
     </object>
    </objectgroup>
-   <objectgroup id="14" name="Path Left">
+   <objectgroup id="14" name="left">
     <object id="14" name="path" type="road" x="448" y="320" width="32" height="16">
      <properties>
       <property name="direction" value="left"/>
@@ -430,7 +430,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
   </layer>
-  <objectgroup id="20" name="wall">
+  <objectgroup id="20" name="wall" locked="1">
    <object id="73" name="wall" type="wall" x="16" y="400" width="240" height="16"/>
    <object id="74" name="wall" type="wall" x="240" y="192" width="16" height="208"/>
    <object id="77" name="wall" type="wall" x="256" y="192" width="192" height="16"/>

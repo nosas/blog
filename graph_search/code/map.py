@@ -1,6 +1,6 @@
 import pygame as pg
 from pytmx import load_pygame, TiledTileLayer
-from config import TILESIZE, WHITE
+from config import TILESIZE
 
 
 class TiledMap:

@@ -1,8 +1,16 @@
 from abc import abstractmethod
+from pathlib import Path
 
 import pygame as pg
 
-from config import AGENT_HIT_RECT, AGENT_ROT_SPEED, AGENT_SPEED
+from config import (
+    AGENT_HIT_RECT,
+    AGENT_ROT_SPEED,
+    AGENT_SPEED,
+    RED,
+    MOB_SPEED,
+    MOB_SIZE,
+)
 
 
 def collide_hit_rect(obj_with_rect1, obj_with_rect2):
@@ -125,7 +133,6 @@ class AgentManual(Agent):
         # Adjust image based on rotation
         self.image = pg.transform.rotate(surface=self.game.agent_img, angle=self.rot)
         self.rect = self.image.get_rect()
-        # self.rect.center = self.pos
 
         # Update position
         self.pos += self.vel * self.game.dt
@@ -136,3 +143,60 @@ class AgentManual(Agent):
         self.hit_rect.centery = self.pos.y
         self._collision(y=True)
         self.rect.center = self.hit_rect.center
+
+
+class Mob(pg.sprite.Sprite):
+    def __init__(self, game, x: float, y: int, path: Path):
+        self.game = game
+        self.groups = game.all_sprites, game.mobs
+        pg.sprite.Sprite.__init__(self, self.groups)
+
+        self.pos = pg.Vector2(x, y)  # * TILESIZE
+        self.vel = pg.Vector2(0, 0)
+        self.path = path
+        self.direction = path.direction
+
+        self.image = pg.Surface(MOB_SIZE)
+        self.image.fill(color=RED)
+        self.rect = self.image.get_rect()
+        self._align_with_path()
+        self.rect.center = self.pos
+        self.hit_rect = AGENT_HIT_RECT
+        self.hit_rect.center = self.rect.center
+
+    def _align_with_path(self):
+        # # Adjust self.rect.center to be in the middle of the path
+        if self.path.direction in ["left", "right"]:
+            _, tly = self.path.rect.topleft
+            _, bly = self.path.rect.bottomleft
+            self.pos.y = (tly + bly) / 2
+        elif self.path.direction in ["up", "down"]:
+            brx, _ = self.path.rect.bottomright
+            blx, _ = self.path.rect.bottomleft
+            self.pos.x = (brx + blx) / 2
+        self.rect.center = self.pos
+
+    def _move(self):
+        vel = {
+            "left": pg.Vector2(-MOB_SPEED, 0),
+            "right": pg.Vector2(MOB_SPEED, 0),
+            "up": pg.Vector2(0, -MOB_SPEED),
+            "down": pg.Vector2(0, MOB_SPEED),
+        }
+        self.vel = vel[self.direction]
+
+    def update(self):
+        """Moves, rotates, and updates the agent's position and image. Also checks for collisions"""
+        # Handle move keys being pressed
+        self._move()
+        # Update position
+        self._align_with_path()
+        self.pos += self.vel * self.game.dt
+        self.rect.center = self.pos
+
+        paths = pg.sprite.spritecollide(
+            sprite=self, group=self.game.paths, dokill=False
+        )
+        if len(paths) == 1 and paths[0] != self.path:
+            self.path = paths[0]
+            self.direction = self.path.direction

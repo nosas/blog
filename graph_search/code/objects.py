@@ -17,16 +17,19 @@ class Wall(pg.sprite.Sprite):
 
 
 class Road(pg.sprite.Sprite):
-    def __init__(self, game, x: int, y: int):
+    def __init__(self, game, x: int, y: int, groups: tuple[pg.sprite.Group] = None):
         self.game = game
-        self.groups = game.all_sprites, game.roads
+        if groups is not None:
+            self.groups = groups + (game.all_sprites, game.roads)
+        else:
+            self.groups = game.all_sprites, game.roads
         pg.sprite.Sprite.__init__(self, self.groups)
 
         self.rect = pg.Rect(x, y, TILESIZE, TILESIZE)
         self.x = x
         self.y = y
-        self.rect.x = x * TILESIZE
-        self.rect.y = y * TILESIZE
+        self.rect.x = x
+        self.rect.y = y
 
 
 class Path(Road):
@@ -42,14 +45,13 @@ class Path(Road):
         return Path._get_symbol(direction=self.direction)
 
     def __init__(self, game, x: int, y: int, width: int, height: int, direction: str):
-        super().__init__(game=game, x=x, y=y)
-        self.groups = game.roads
+        super().__init__(game=game, x=x, y=y, groups=(game.paths,))
 
         self.rect = pg.Rect(x, y, width, height)
         self.x = x
         self.y = y
-        self.rect.x = x * width
-        self.rect.y = y * height
+        self.rect.x = x
+        self.rect.y = y
 
         self.direction = direction
         self.font = pg.font.SysFont(**Path._font)
