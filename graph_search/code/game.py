@@ -51,21 +51,14 @@ class Game:
         pg.draw.rect(self.screen, BLUE, self.agent.hit_rect, 0)
         self._draw_grid()
 
-        for mob in self.mobs:
-            pg.draw.rect(self.screen, BLUE, mob.hit_rect, 0)
         # Wall-specific debug outputs
         for wall in self.walls:
-            pg.draw.rect(self.screen, YELLOW, wall.hit_rect, 0)
+            pg.draw.rect(self.screen, YELLOW, wall.hit_rect, 3)
 
         # Draw white rectangles over objects
-        for tile_object in self.map.tmxdata.objects:
-            x = tile_object.x
-            y = tile_object.y
-            height = tile_object.height
-            width = tile_object.width
-            if tile_object.name == "path":
-                temp_rect = pg.Rect(x, y, width, height)
-                pg.draw.rect(self.screen, WHITE, temp_rect, 0)
+        for p in self.paths:
+            temp_rect = pg.Rect(p.x, p.y, p.rect.width, p.rect.height)
+            pg.draw.rect(self.screen, WHITE, temp_rect, 2)
 
     def _draw_fps():
         """Draw the FPS count"""
@@ -150,15 +143,15 @@ class Game:
 
             # if tile_object.type == "agent" and tile_object.name == "agent":
             if name == "agent":
+                offset = TILESIZE / 2  # Center Agent's position to tile's center
+                rot = 0
                 if AGENT_RANDOM_SPAWN:
                     # TODO Verify Agent doesn't spawn on mob, battle, agent, tp, door
                     road = choice(self.roads.sprites())
                     x = road.x
                     y = road.y
                     rot = random() * 360
-                    self.agent = AgentManual(game=self, x=x, y=y, rot=rot)
-                else:
-                    self.agent = AgentManual(game=self, x=x, y=y)
+                self.agent = AgentManual(game=self, x=x + offset, y=y + offset, rot=rot)
             elif type == "road":
                 if name == "path":
                     p = Path(
