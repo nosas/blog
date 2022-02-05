@@ -165,15 +165,11 @@ class Mob(pg.sprite.Sprite):
         self.hit_rect.center = self.rect.center
 
     def _align_with_path(self):
-        # # Adjust self.rect.center to be in the middle of the path
+        # Adjust self.rect.center to be in the middle of the path
         if self.path.direction in ["left", "right"]:
-            _, tly = self.path.rect.topleft
-            _, bly = self.path.rect.bottomleft
-            self.pos.y = (tly + bly) / 2
+            self.pos.y = self.path.rect.centery
         elif self.path.direction in ["up", "down"]:
-            brx, _ = self.path.rect.bottomright
-            blx, _ = self.path.rect.bottomleft
-            self.pos.x = (brx + blx) / 2
+            self.pos.x = self.path.rect.centerx
         self.rect.center = self.pos
 
     def _move(self):
