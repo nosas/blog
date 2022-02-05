@@ -186,13 +186,11 @@ class Mob(pg.sprite.Sprite):
         # Handle move keys being pressed
         self._move()
         # Update position
-        self._align_with_path()
         self.pos += self.vel * self.game.dt
         self.rect.center = self.pos
 
-        paths = pg.sprite.spritecollide(
-            sprite=self, group=self.game.paths, dokill=False
-        )
+        paths = pg.sprite.spritecollide(sprite=self, group=self.game.paths, dokill=0)
         if len(paths) == 1 and paths[0] != self.path:
             self.path = paths[0]
             self.direction = self.path.direction
+            self._align_with_path()
