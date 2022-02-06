@@ -218,9 +218,23 @@ class Mob(pg.sprite.Sprite):
     def _collision_path(self):
         paths = pg.sprite.spritecollide(sprite=self, group=self.game.paths, dokill=0)
         if len(paths) == 1 and paths[0] != self.path:
-            self.path = paths[0]
-            self.direction = self.path.direction
-            self._align_with_path()
+            new_path = paths[0]
+            if (
+                self.path.direction == "left"
+                and self.pos.x <= new_path.rect.centerx
+            ) or (
+                self.path.direction == "right"
+                and self.pos.x >= new_path.rect.centerx
+            ) or (
+                self.path.direction == "up"
+                and self.pos.y <= new_path.rect.centery
+            ) or (
+                self.path.direction == "down"
+                and self.pos.y >= new_path.rect.centery
+            ):
+                self.path = new_path
+                self.direction = self.path.direction
+                self._align_with_path()
 
     def _move(self):
         vel = {
