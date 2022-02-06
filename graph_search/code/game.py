@@ -10,6 +10,7 @@ from config import (
     BLUE,
     DEBUG,
     FPS,
+    GREEN,
     HEIGHT,
     LIGHTGREY,
     MAP,
@@ -21,7 +22,7 @@ from config import (
     YELLOW,
 )
 from map import TiledMap
-from objects import Wall, Path
+from objects import Wall, Path, Sidewalk
 from random import choice, random
 
 
@@ -50,6 +51,9 @@ class Game:
         # Agent-specific debug outputs
         pg.draw.rect(self.screen, BLUE, self.agent.hit_rect, 0)
         self._draw_grid()
+
+        for sidewalk in self.sidewalks:
+            pg.draw.rect(self.screen, GREEN, sidewalk.rect, 3)
 
         # Wall-specific debug outputs
         for wall in self.walls:
@@ -130,6 +134,7 @@ class Game:
         self.mobs = pg.sprite.Group()
         self.roads = pg.sprite.Group()
         self.paths = pg.sprite.Group()
+        self.sidewalks = pg.sprite.Group()
         self.walls = pg.sprite.Group()
 
         # ! Object conversions will be moved to the classes' own methods
@@ -153,6 +158,8 @@ class Game:
                     rot = random() * 360
                 self.agent = AgentManual(game=self, x=x + offset, y=y + offset, rot=rot)
             elif type == "road":
+                if name == "sidewalk":
+                    Sidewalk(game=self, x=x, y=y, width=width, height=height)
                 if name == "path":
                     p = Path(
                         game=self,

@@ -1,5 +1,5 @@
 import pygame as pg
-from config import TILESIZE, WHITE
+from config import WHITE
 
 
 class Wall(pg.sprite.Sprite):
@@ -17,7 +17,7 @@ class Wall(pg.sprite.Sprite):
 
 
 class Road(pg.sprite.Sprite):
-    def __init__(self, game, x: int, y: int, groups: tuple[pg.sprite.Group] = None):
+    def __init__(self, game, x: int, y: int, width: int, height: int, groups: tuple[pg.sprite.Group] = None):
         self.game = game
         if groups is not None:
             self.groups = groups + (game.all_sprites, game.roads)
@@ -25,7 +25,7 @@ class Road(pg.sprite.Sprite):
             self.groups = game.all_sprites, game.roads
         pg.sprite.Sprite.__init__(self, self.groups)
 
-        self.rect = pg.Rect(x, y, TILESIZE, TILESIZE)
+        self.rect = pg.Rect(x, y, width, height)
         self.x = x
         self.y = y
         self.rect.x = x
@@ -45,13 +45,7 @@ class Path(Road):
         return Path._get_symbol(direction=self.direction)
 
     def __init__(self, game, x: int, y: int, width: int, height: int, direction: str):
-        super().__init__(game=game, x=x, y=y, groups=(game.paths,))
-
-        self.rect = pg.Rect(x, y, width, height)
-        self.x = x
-        self.y = y
-        self.rect.x = x
-        self.rect.y = y
+        super().__init__(game=game, x=x, y=y, width=width, height=height, groups=(game.paths,))
 
         self.direction = direction
         self.font = pg.font.SysFont(**Path._font)
@@ -61,6 +55,15 @@ class Path(Road):
         self.image = self.font.render(self._symbol, True, WHITE)
         # self.rect = self.image.get_rect()  # ! Bug! Font renders on screen's top-left
         self.game.screen.blit(source=self.image, dest=(self.x, self.y))
+
+    def update(self):
+        pass
+
+
+class Sidewalk(Road):
+    def __init__(self, game, x: int, y: int, width: int, height: int):
+        super().__init__(game=game, x=x, y=y, width=width, height=height, groups=(game.sidewalks,))
+        self.image = pg.Surface(size=(self.rect.width, self.rect.height))
 
     def update(self):
         pass
