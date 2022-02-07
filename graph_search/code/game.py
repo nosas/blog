@@ -38,31 +38,32 @@ class Game:
 
     def _draw(self):
         """Draw all game images to screen: sprites, roads, paths, debug info"""
+        # Draw the map
         self.screen.blit(source=self.map_img, dest=self.map_rect)
 
+        # Draw all sprites' `image` attributes
         self.all_sprites.draw(surface=self.screen)
-        # ? Why doesn't self.roads.draw() execute all object's .draw() method?
-        # self.roads.draw(surface=self.screen)
         if self.debug:
             self._draw_debug()
         pg.display.update()
 
     def _draw_debug(self):
         # Agent-specific debug outputs
-        pg.draw.rect(self.screen, BLUE, self.agent.hit_rect, 0)
+        pg.draw.rect(self.screen, WHITE, self.agent.hit_rect, 0)
         self._draw_grid()
 
+        # Draw green rectangles around sidewalks
         for sidewalk in self.sidewalks:
             pg.draw.rect(self.screen, GREEN, sidewalk.rect, 3)
 
-        # Wall-specific debug outputs
+        # Draw white rectangles around walls
         for wall in self.walls:
-            pg.draw.rect(self.screen, YELLOW, wall.hit_rect, 3)
+            pg.draw.rect(self.screen, WHITE, wall.hit_rect, 3)
 
-        # Draw white rectangles over objects
+        # Draw yellow rectangles over Path objects
         for p in self.paths:
             temp_rect = pg.Rect(p.x, p.y, p.rect.width, p.rect.height)
-            pg.draw.rect(self.screen, WHITE, temp_rect, 2)
+            pg.draw.rect(self.screen, YELLOW, temp_rect, 2)
 
     def _draw_fps():
         """Draw the FPS count"""
@@ -93,6 +94,8 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key in [pg.K_ESCAPE, pg.K_q]:
                     self._quit()
+                if event.key == pg.K_r:
+                    self.new()
                 if event.key == pg.K_SPACE:
                     self.debug = not self.debug
                     print("agent pos   ", self.agent.pos)
@@ -172,9 +175,8 @@ class Game:
                     if len(self.mobs.sprites()) < NUM_MOBS:
                         Mob(
                             game=self,
-                            x=x,
-                            y=y,
                             path=p,
+                            # spawn_coords=(x, y)
                         )
             elif type == "wall":
                 Wall(

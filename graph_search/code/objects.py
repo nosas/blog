@@ -17,7 +17,15 @@ class Wall(pg.sprite.Sprite):
 
 
 class Road(pg.sprite.Sprite):
-    def __init__(self, game, x: int, y: int, width: int, height: int, groups: tuple[pg.sprite.Group] = None):
+    def __init__(
+        self,
+        game,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        groups: tuple[pg.sprite.Group] = None,
+    ):
         self.game = game
         if groups is not None:
             self.groups = groups + (game.all_sprites, game.roads)
@@ -45,7 +53,9 @@ class Path(Road):
         return Path._get_symbol(direction=self.direction)
 
     def __init__(self, game, x: int, y: int, width: int, height: int, direction: str):
-        super().__init__(game=game, x=x, y=y, width=width, height=height, groups=(game.paths,))
+        super().__init__(
+            game=game, x=x, y=y, width=width, height=height, groups=(game.paths,)
+        )
 
         self.direction = direction
         self.font = pg.font.SysFont(**Path._font)
@@ -62,7 +72,9 @@ class Path(Road):
 
 class Sidewalk(Road):
     def __init__(self, game, x: int, y: int, width: int, height: int):
-        super().__init__(game=game, x=x, y=y, width=width, height=height, groups=(game.sidewalks,))
+        super().__init__(
+            game=game, x=x, y=y, width=width, height=height, groups=(game.sidewalks,)
+        )
         self.image = pg.Surface(size=(self.rect.width, self.rect.height))
 
     def update(self):
