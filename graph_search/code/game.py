@@ -7,7 +7,6 @@ from agents import AgentManual, Mob
 from config import (
     AGENT_IMG,
     AGENT_RANDOM_SPAWN,
-    BLUE,
     DEBUG,
     FPS,
     GREEN,
@@ -43,6 +42,7 @@ class Game:
 
         # Draw all sprites' `image` attributes
         self.all_sprites.draw(surface=self.screen)
+        self.paths.draw(surface=self.screen)
         if self.debug:
             self._draw_debug()
         pg.display.update()
@@ -128,7 +128,6 @@ class Game:
     def _update(self):
         """Update all sprite interactions"""
         self.all_sprites.update()
-        self.roads.update()
 
     def new(self):
         """Create sprite groups and convert tiles into game objects"""
@@ -185,10 +184,6 @@ class Game:
                     y=y,
                     width=width,
                     height=height,
-                )
-            elif name == "teleport":
-                self.img_bitmap = self.map.tmxdata.get_tile_image_by_gid(
-                    tile_object.gid
                 )
 
     def run(self):

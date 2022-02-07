@@ -28,9 +28,9 @@ class Road(pg.sprite.Sprite):
     ):
         self.game = game
         if groups is not None:
-            self.groups = groups + (game.all_sprites, game.roads)
+            self.groups = groups + (game.roads,)
         else:
-            self.groups = game.all_sprites, game.roads
+            self.groups = game.roads
         pg.sprite.Sprite.__init__(self, self.groups)
 
         self.rect = pg.Rect(x, y, width, height)
@@ -75,7 +75,6 @@ class Sidewalk(Road):
         super().__init__(
             game=game, x=x, y=y, width=width, height=height, groups=(game.sidewalks,)
         )
-        self.image = pg.Surface(size=(self.rect.width, self.rect.height))
 
     def update(self):
         pass
