@@ -9,6 +9,8 @@ BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
+ORANGE = (255, 165, 0)
+BROWN = (150, 75, 0)
 
 # Game window settings
 TILESIZE = 16
@@ -19,7 +21,7 @@ HEIGHT = 40 * TILESIZE
 BG_COLOR = BLACK
 DEBUG = False
 FPS = 144
-HIT_RECT_SCALE = 0.7
+HIT_RECT_SCALE = 0.5
 TITLE = "Agent Movement Demo"
 
 # Map settings
@@ -36,5 +38,5 @@ AGENT_SPEED = 0.026 * 1.5
 
 # Mob settings
 MOB_SIZE = (TILESIZE * HIT_RECT_SCALE, TILESIZE * HIT_RECT_SCALE)
-MOB_SPEED = AGENT_SPEED * 0.55
+MOB_SPEED = AGENT_SPEED * 0.50
 NUM_MOBS = 100

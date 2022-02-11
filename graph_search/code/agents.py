@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from random import randrange
+from random import choice, randrange
 
 import pygame as pg
 
@@ -7,9 +7,12 @@ from config import (
     AGENT_HIT_RECT,
     AGENT_ROT_SPEED,
     AGENT_SPEED,
+    BROWN,
     MOB_SIZE,
     MOB_SPEED,
+    ORANGE,
     RED,
+    YELLOW,
 )
 from objects import Path
 
@@ -180,7 +183,23 @@ class AgentManual(Agent):
 
 
 class Mob(pg.sprite.Sprite):
-    def __init__(self, game, path: Path, spawn_coords: tuple[int, int] = None):
+    _symbols = {"A": RED, "B": YELLOW, "C": ORANGE, "D": BROWN}
+
+    @staticmethod
+    def _get_symbol(mob_type: str) -> str:
+        return Mob._symbols[mob_type]
+
+    @property
+    def _symbol(self) -> str:
+        return Mob._get_symbol(mob_type=self.mob_type)
+
+    def __init__(
+        self,
+        game,
+        path: Path,
+        spawn_coords: tuple[int, int] = None,
+        mob_type: str = None,
+    ):
         self.game = game
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -196,8 +215,12 @@ class Mob(pg.sprite.Sprite):
         self.vel = pg.Vector2(0, 0)
         self.direction = path.direction
 
+        if not mob_type:
+            mob_type = choice(list(Mob._symbols))
+        self.mob_type = mob_type
         self.image = pg.Surface(MOB_SIZE)
-        self.image.fill(color=RED)
+        self.image.fill(color=self._symbol)
+
         self.rect = self.image.get_rect()
         self.hit_rect = AGENT_HIT_RECT.copy()
         self._align_with_path()
@@ -225,16 +248,16 @@ class Mob(pg.sprite.Sprite):
     def _collision_path(self):
         paths = pg.sprite.spritecollide(sprite=self, group=self.game.paths, dokill=0)
         if len(paths) == 1 and paths[0] != self.path:
-            np = paths[0]
+            new_p = paths[0]
             # Update self.path only when the Mob reaches the new_path's centerx or centery
             # This is necessary to prevent Mobs teleporting from the Path's edge to Path's center
             if (
-                (self.path.direction == "left" and self.pos.x <= np.rect.centerx)
-                or (self.path.direction == "right" and self.pos.x >= np.rect.centerx)
-                or (self.path.direction == "up" and self.pos.y <= np.rect.centery)
-                or (self.path.direction == "down" and self.pos.y >= np.rect.centery)
+                (self.path.direction == "left" and self.pos.x <= new_p.rect.centerx)
+                or (self.path.direction == "right" and self.pos.x >= new_p.rect.centerx)
+                or (self.path.direction == "up" and self.pos.y <= new_p.rect.centery)
+                or (self.path.direction == "down" and self.pos.y >= new_p.rect.centery)
             ):
-                self.path = np
+                self.path = new_p
                 self.direction = self.path.direction
                 self._align_with_path()
 
