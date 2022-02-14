@@ -17,3 +17,8 @@ class Goal(pg.sprite.Sprite):
         self.image = pg.Surface((width, height))
         self.image.fill(color=GREEN)
         self.rect = pg.Rect(self.pos.x, self.pos.y, width, height)
+
+
+class Teleport(Goal):
+    def __init__(self, game, x: float, y: float):
+        super().__init__(game, x, y)

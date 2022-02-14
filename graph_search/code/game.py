@@ -20,7 +20,7 @@ from config import (
     WIDTH,
     YELLOW,
 )
-from goals import Goal
+from goals import Goal, Teleport
 from map import TiledMap
 from objects import Wall, Path, Sidewalk
 from random import choice, random, randrange
@@ -143,6 +143,8 @@ class Game:
 
         # ! Object conversions will be moved to the classes' own methods
         for tile_object in self.map.tmxdata.objects:
+            if not tile_object.visible:
+                continue
             name = tile_object.name
             type = tile_object.type
             x = tile_object.x
@@ -181,16 +183,19 @@ class Game:
                     width=width,
                     height=height,
                 )
+            elif type == "goal":
+                if name == "teleport":
+                    Teleport(game=self, x=x, y=y)
 
         while len(self.mobs.sprites()) < NUM_MOBS:
             Mob(game=self, path=choice(self.paths.sprites()))
 
-        random_road = choice(self.roads.sprites())
-        Goal(
-            game=self,
-            x=random_road.x + randrange(random_road.rect.width),
-            y=random_road.y + randrange(random_road.rect.height),
-        )
+        # random_road = choice(self.roads.sprites())
+        # Goal(
+        #     game=self,
+        #     x=random_road.x + randrange(random_road.rect.width),
+        #     y=random_road.y + randrange(random_road.rect.height),
+        # )
 
     def run(self):
         """Start the game"""
