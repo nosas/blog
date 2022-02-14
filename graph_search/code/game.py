@@ -20,9 +20,10 @@ from config import (
     WIDTH,
     YELLOW,
 )
+from goals import Goal
 from map import TiledMap
 from objects import Wall, Path, Sidewalk
-from random import choice, random
+from random import choice, random, randrange
 
 
 class Game:
@@ -138,6 +139,7 @@ class Game:
         self.paths = pg.sprite.Group()
         self.sidewalks = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.goals = pg.sprite.Group()
 
         # ! Object conversions will be moved to the classes' own methods
         for tile_object in self.map.tmxdata.objects:
@@ -185,6 +187,13 @@ class Game:
                     width=width,
                     height=height,
                 )
+
+        random_road = choice(self.roads.sprites())
+        Goal(
+            game=self,
+            x=random_road.x + randrange(random_road.rect.width),
+            y=random_road.y + randrange(random_road.rect.height),
+        )
 
     def run(self):
         """Start the game"""

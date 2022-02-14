@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import abstractmethod
 from random import choice, randrange
 
@@ -128,6 +130,14 @@ class AgentManual(Agent):
     def _collision(self):
         self._collision_mob()
         self._collision_wall()
+        self._collision_goal()
+
+    def _collision_goal(self):
+        goal = pg.sprite.spritecollide(
+            sprite=self, group=self.game.goals, dokill=False, collided=collide_hit_rect
+        )
+        if goal:
+            self.game.new()
 
     def _collision_mob(self):
         # If Agent collides with any Mob, both enter Battle and cannot move
@@ -197,7 +207,7 @@ class Mob(pg.sprite.Sprite):
         self,
         game,
         path: Path,
-        spawn_coords: tuple[int, int] = None,
+        spawn_coords: tuple[float, float] = None,
         mob_type: str = None,
     ):
         self.game = game

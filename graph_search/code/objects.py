@@ -3,7 +3,7 @@ from config import WHITE
 
 
 class Wall(pg.sprite.Sprite):
-    def __init__(self, game, x: int, y: int, width: int, height: int):
+    def __init__(self, game, x: float, y: float, width: float, height: float):
         self.groups = game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
 
@@ -20,10 +20,10 @@ class Road(pg.sprite.Sprite):
     def __init__(
         self,
         game,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: float,
+        y: float,
+        width: float,
+        height: float,
         groups: tuple[pg.sprite.Group] = None,
     ):
         self.game = game
@@ -52,7 +52,9 @@ class Path(Road):
     def _symbol(self) -> str:
         return Path._get_symbol(direction=self.direction)
 
-    def __init__(self, game, x: int, y: int, width: int, height: int, direction: str):
+    def __init__(
+        self, game, x: float, y: float, width: float, height: float, direction: str
+    ):
         super().__init__(
             game=game, x=x, y=y, width=width, height=height, groups=(game.paths,)
         )
@@ -71,7 +73,7 @@ class Path(Road):
 
 
 class Sidewalk(Road):
-    def __init__(self, game, x: int, y: int, width: int, height: int):
+    def __init__(self, game, x: float, y: float, width: float, height: float):
         super().__init__(
             game=game, x=x, y=y, width=width, height=height, groups=(game.sidewalks,)
         )
