@@ -165,7 +165,7 @@ class Game:
                 if name == "sidewalk":
                     Sidewalk(game=self, x=x, y=y, width=width, height=height)
                 if name == "path":
-                    p = Path(
+                    Path(
                         game=self,
                         x=x,
                         y=y,
@@ -173,12 +173,6 @@ class Game:
                         height=height,
                         direction=tile_object.properties["direction"],
                     )
-                    if len(self.mobs.sprites()) < NUM_MOBS:
-                        Mob(
-                            game=self,
-                            path=p,
-                            # spawn_coords=(x, y)
-                        )
             elif type == "wall":
                 Wall(
                     game=self,
@@ -187,6 +181,9 @@ class Game:
                     width=width,
                     height=height,
                 )
+
+        while len(self.mobs.sprites()) < NUM_MOBS:
+            Mob(game=self, path=choice(self.paths.sprites()))
 
         random_road = choice(self.roads.sprites())
         Goal(
