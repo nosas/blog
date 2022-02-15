@@ -1,12 +1,14 @@
 from os import path
 from sys import exit
 
+import numpy as np
 import pygame as pg
 
 from agents import AgentManual, Mob
 from config import (
     AGENT_IMG,
     AGENT_RANDOM_SPAWN,
+    BLACK,
     DEBUG,
     FPS,
     GREEN,
@@ -20,10 +22,10 @@ from config import (
     WIDTH,
     YELLOW,
 )
-from goals import Goal, Teleport
+from goals import Teleport
 from map import TiledMap
 from objects import Wall, Path, Sidewalk
-from random import choice, random, randrange
+from random import choice, random
 
 
 class Game:
@@ -44,6 +46,7 @@ class Game:
         # Draw all sprites' `image` attributes
         self.all_sprites.draw(surface=self.screen)
         self.paths.draw(surface=self.screen)
+        self._draw_game_info()
         if self.debug:
             self._draw_debug()
         pg.display.update()
@@ -86,6 +89,40 @@ class Game:
                 start_pos=(0, y),
                 end_pos=(WIDTH, y),
             )
+
+    def _draw_game_info(self):
+        """Draw Agent's coords, velocity, sensors"""
+
+        def _calculate_point_dist(point1, point2) -> np.array:
+            return np.sqrt(np.sum((point1 - point2) ** 2))
+
+        box = pg.Rect(25, 25, 300, 150)
+        pg.draw.rect(surface=self.screen, color=WHITE, rect=box)
+
+        font = pg.font.SysFont("comicsansms", 16, bold=True)
+
+        agent_pos = np.asarray(self.agent.pos)
+        text_agent_pos = font.render(
+            f"Agent's Position: {(agent_pos/16).astype('int')}", False, BLACK
+        )
+        self.screen.blit(text_agent_pos, (box.x + 5, box.y))
+
+        mouse_pos = np.asarray(pg.mouse.get_pos())
+        text_mouse_pos = font.render(
+            f"Mouse's Position: {(mouse_pos/16).astype('int')}", False, BLACK
+        )
+        self.screen.blit(
+            text_mouse_pos, (box.x + 5, box.y + text_agent_pos.get_height() * 1)
+        )
+
+        # mouse_agent_dist_tuple = tuple(map(sub, agent_pos, mouse_pos))
+        mouse_agent_dist = _calculate_point_dist(mouse_pos, agent_pos)
+        text_mouse_agent_dist = font.render(
+            f"Mouse Distance:  {mouse_agent_dist/16:.1f}", False, BLACK
+        )
+        self.screen.blit(
+            text_mouse_agent_dist, (box.x + 5, box.y + text_agent_pos.get_height() * 2)
+        )
 
     def _events(self):
         """Handle key buttons, mouse clicks, etc."""
