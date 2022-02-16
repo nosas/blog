@@ -9,6 +9,7 @@ from config import (
     AGENT_HIT_RECT,
     AGENT_ROT_SPEED,
     AGENT_SPEED,
+    BLUE,
     BROWN,
     MOB_SIZE,
     MOB_SPEED,
@@ -16,6 +17,7 @@ from config import (
     RED,
     YELLOW,
 )
+from helper import calculate_point_dist
 from helper import collide_hit_rect, collide_with_walls
 from objects import Path
 
@@ -56,6 +58,11 @@ class Agent(pg.sprite.Sprite):
         self.vel = pg.Vector2(0, 0)
         self.rot = rot
         self.hit_rect = AGENT_HIT_RECT.copy()
+        self._nearest_mob = None
+
+    @property
+    def nearest_mob(self) -> Mob:
+        return self._nearest_mob
 
     @abstractmethod
     def _move(self):
@@ -91,31 +98,51 @@ class AgentManual(Agent):
         self.battle = False
 
     def _collision(self):
-        self._collision_mob()
-        self._collision_wall()
-        self._collision_goal()
+        def collision_goal():
+            goal = pg.sprite.spritecollide(
+                sprite=self,
+                group=self.game.goals,
+                dokill=False,
+                collided=collide_hit_rect,
+            )
+            if goal:
+                self.game.new()
 
-    def _collision_goal(self):
-        goal = pg.sprite.spritecollide(
-            sprite=self, group=self.game.goals, dokill=False, collided=collide_hit_rect
-        )
-        if goal:
-            self.game.new()
+        def collision_mob():
+            # If Agent collides with any Mob, both enter Battle and cannot move
+            mobs = _collisison_with_mobs(sprite=self)
+            if any(mobs) and not self.battle:
+                print("Entering battle")
+                self.battle = True
+                mobs[0].battle = True
 
-    def _collision_mob(self):
-        # If Agent collides with any Mob, both enter Battle and cannot move
-        mobs = _collisison_with_mobs(sprite=self)
-        if any(mobs) and not self.battle:
-            print("Entering battle")
-            self.battle = True
-            mobs[0].battle = True
+        def collision_wall():
+            # Handle wall collisions
+            self.hit_rect.centerx = self.pos.x
+            collide_with_walls(sprite=self, group=self.game.walls, direction="x")
+            self.hit_rect.centery = self.pos.y
+            collide_with_walls(sprite=self, group=self.game.walls, direction="y")
 
-    def _collision_wall(self):
-        # Handle wall collisions
-        self.hit_rect.centerx = self.pos.x
-        collide_with_walls(sprite=self, group=self.game.walls, direction="x")
-        self.hit_rect.centery = self.pos.y
-        collide_with_walls(sprite=self, group=self.game.walls, direction="y")
+        collision_mob()
+        collision_wall()
+        collision_goal()
+
+    def _find_nearest_mob(self):
+        def is_closer(mob: Mob, dist: int) -> bool:
+            return (mob is not self.nearest_mob) and (
+                dist < calculate_point_dist(self.pos, self.nearest_mob.pos)
+            )
+
+        def set_nearest_mob(new_mob: Mob) -> None:
+            if self.nearest_mob is not None:
+                self._nearest_mob.is_nearest_mob = False
+            self._nearest_mob = mob
+            self._nearest_mob.is_nearest_mob = True
+
+        for mob in self.game.mobs.sprites():
+            dist = calculate_point_dist(point1=self.pos, point2=mob.pos)
+            if self.nearest_mob is None or is_closer(mob=mob, dist=dist):
+                set_nearest_mob(new_mob=mob)
 
     def _move(self):
         self.rot_speed = 0
@@ -152,6 +179,7 @@ class AgentManual(Agent):
             self.pos += self.vel * self.game.dt
             # Handle collisions
             self._collision()
+            self._find_nearest_mob()
             self.rect.center = self.hit_rect.center
 
 
@@ -164,7 +192,9 @@ class Mob(pg.sprite.Sprite):
 
     @property
     def _symbol(self) -> str:
-        return Mob._get_symbol(mob_type=self.mob_type)
+        return (
+            Mob._get_symbol(mob_type=self.mob_type) if not self.is_nearest_mob else BLUE
+        )
 
     def __init__(
         self,
@@ -187,6 +217,7 @@ class Mob(pg.sprite.Sprite):
         self.pos = pg.Vector2(x, y)  # * TILESIZE
         self.vel = pg.Vector2(0, 0)
         self.direction = path.direction
+        self.is_nearest_mob = False
 
         if not mob_type:
             mob_type = choice(list(Mob._symbols))
@@ -257,3 +288,4 @@ class Mob(pg.sprite.Sprite):
             self.hit_rect.center = self.rect.center
             # Update self.path when Mob collides with a new Path
             self._collision()
+            # self.image.fill(color=self._symbol)

@@ -1,4 +1,14 @@
 import pygame as pg
+import numpy as np
+
+
+def calculate_point_dist(point1, point2) -> float:
+    """Calculate the distance between two points"""
+    # if type(point1) == pg.math.Vector2:
+    point1 = np.asarray(point1)
+    # if type(point2) == pg.math.Vector2:
+    point2 = np.asarray(point2)
+    return np.sqrt(np.sum((point1 - point2) ** 2))
 
 
 def collide_hit_rect(obj_with_rect1, obj_with_rect2):

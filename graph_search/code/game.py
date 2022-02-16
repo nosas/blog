@@ -23,6 +23,7 @@ from config import (
     YELLOW,
 )
 from goals import Teleport
+from helper import calculate_point_dist
 from map import TiledMap
 from objects import Wall, Path, Sidewalk
 from random import choice, random
@@ -93,36 +94,67 @@ class Game:
     def _draw_game_info(self):
         """Draw Agent's coords, velocity, sensors"""
 
-        def _calculate_point_dist(point1, point2) -> np.array:
-            return np.sqrt(np.sum((point1 - point2) ** 2))
-
         box = pg.Rect(25, 25, 300, 150)
         pg.draw.rect(surface=self.screen, color=WHITE, rect=box)
 
-        font = pg.font.SysFont("comicsansms", 16, bold=True)
+        font = pg.font.SysFont("monospace", 16)
 
         agent_pos = np.asarray(self.agent.pos)
         text_agent_pos = font.render(
-            f"Agent's Position: {(agent_pos/16).astype('int')}", False, BLACK
+            f"Agent Position: {(agent_pos/16).astype('int')}{self.agent.rot}",
+            False,
+            BLACK,
         )
         self.screen.blit(text_agent_pos, (box.x + 5, box.y))
 
         mouse_pos = np.asarray(pg.mouse.get_pos())
         text_mouse_pos = font.render(
-            f"Mouse's Position: {(mouse_pos/16).astype('int')}", False, BLACK
+            f"Mouse Position: {(mouse_pos/16).astype('int')}", False, BLACK
         )
         self.screen.blit(
             text_mouse_pos, (box.x + 5, box.y + text_agent_pos.get_height() * 1)
         )
 
         # mouse_agent_dist_tuple = tuple(map(sub, agent_pos, mouse_pos))
-        mouse_agent_dist = _calculate_point_dist(mouse_pos, agent_pos)
+        mouse_agent_dist = calculate_point_dist(mouse_pos, agent_pos)
         text_mouse_agent_dist = font.render(
-            f"Mouse Distance:  {mouse_agent_dist/16:.1f}", False, BLACK
+            f"Mouse Distance: {mouse_agent_dist/16:.1f}", False, BLACK
         )
         self.screen.blit(
             text_mouse_agent_dist, (box.x + 5, box.y + text_agent_pos.get_height() * 2)
         )
+
+        nearest_mob_dist = calculate_point_dist(
+            point1=self.agent.pos, point2=self.agent.nearest_mob.pos
+        )
+        text_nearest_mob_dist = font.render(
+            f"Near Mob Dist : {nearest_mob_dist/16:.1f}", False, BLACK
+        )
+        self.screen.blit(
+            text_nearest_mob_dist, (box.x + 5, box.y + text_agent_pos.get_height() * 3)
+        )
+        pg.draw.line(
+            surface=self.screen,
+            color=BLACK,
+            start_pos=self.agent.pos,
+            end_pos=self.agent.nearest_mob.pos,
+            width=3,
+        )
+
+        # Ordered: North, South, East, West
+        # for direction, color, end_pos in [
+        #     ("N", RED, (self.agent.hit_rect.centerx, 0)),
+        #     ("S", BLACK, (self.agent.hit_rect.centerx, self.screen.get_height())),
+        #     ("E", BLACK, (self.screen.get_width(), self.agent.hit_rect.centery)),
+        #     ("W", BLACK, (0, self.agent.hit_rect.centery)),
+        # ]:
+        #     pg.draw.line(
+        #         surface=self.screen,
+        #         color=color,
+        #         start_pos=self.agent.hit_rect.center,
+        #         end_pos=end_pos,
+        #         width=1
+        #     )
 
     def _events(self):
         """Handle key buttons, mouse clicks, etc."""
