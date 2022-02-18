@@ -17,13 +17,13 @@ from config import (
     RED,
     YELLOW,
 )
-from helper import calculate_point_dist
-from helper import collide_hit_rect, collide_with_walls
+from helper import calculate_point_dist, collide_hit_rect, collide_with_walls
 from objects import Path
+from sensor import CardinalSensor
 
 
 def _collisison_with_mobs(sprite: pg.sprite.Sprite) -> list[pg.sprite.Sprite]:
-    """Return a list of Mobs that are colliding with a sprite (Agent/Mob)
+    """Return None or a list of Mobs that are colliding with a sprite (Agent/Mob)
 
     If the Mob is not Battling:
         Agent: Both sprites engage in Battle
@@ -96,6 +96,7 @@ class AgentManual(Agent):
         self.rect = self.image.get_rect()
         self.hit_rect.center = self.rect.center
         self.battle = False
+        self.sensor = CardinalSensor(game=self.game, agent=self)
 
     def _collision(self):
         def collision_goal():

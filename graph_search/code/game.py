@@ -1,4 +1,5 @@
 from os import path
+from random import choice, random
 from sys import exit
 
 import numpy as np
@@ -25,8 +26,7 @@ from config import (
 from goals import Teleport
 from helper import calculate_point_dist
 from map import TiledMap
-from objects import Wall, Path, Sidewalk
-from random import choice, random
+from objects import Path, Sidewalk, Wall
 
 
 class Game:
@@ -44,12 +44,13 @@ class Game:
         # Draw the map
         self.screen.blit(source=self.map_img, dest=self.map_rect)
 
-        # Draw all sprites' `image` attributes
+        # Draw all sprites' `image` and `rect` attributes
         self.all_sprites.draw(surface=self.screen)
         self.paths.draw(surface=self.screen)
-        self._draw_game_info()
+        self.agent.sensor.draw()  # TODO Add event for toggling sensors
         if self.debug:
             self._draw_debug()
+        self._draw_game_info()
         pg.display.update()
 
     def _draw_debug(self):
@@ -124,54 +125,44 @@ class Game:
             text_mouse_agent_dist, (box.x + 5, box.y + text_agent_pos.get_height() * 2)
         )
 
-        nearest_mob_dist = calculate_point_dist(
-            point1=self.agent.pos, point2=self.agent.nearest_mob.pos
-        )
-        text_nearest_mob_dist = font.render(
-            f"Near Mob Dist : {nearest_mob_dist/16:.1f}", False, BLACK
-        )
-        self.screen.blit(
-            text_nearest_mob_dist, (box.x + 5, box.y + text_agent_pos.get_height() * 3)
-        )
-        pg.draw.line(
-            surface=self.screen,
-            color=BLACK,
-            start_pos=self.agent.pos,
-            end_pos=self.agent.nearest_mob.pos,
-            width=3,
-        )
-
-        # Ordered: North, South, East, West
-        # for direction, color, end_pos in [
-        #     ("N", RED, (self.agent.hit_rect.centerx, 0)),
-        #     ("S", BLACK, (self.agent.hit_rect.centerx, self.screen.get_height())),
-        #     ("E", BLACK, (self.screen.get_width(), self.agent.hit_rect.centery)),
-        #     ("W", BLACK, (0, self.agent.hit_rect.centery)),
-        # ]:
-        #     pg.draw.line(
-        #         surface=self.screen,
-        #         color=color,
-        #         start_pos=self.agent.hit_rect.center,
-        #         end_pos=end_pos,
-        #         width=1
-        #     )
+        # TODO Move drawing and distance to Sensor object within AgentManual
+        if self.agent.nearest_mob:  # ! Required to prevent race condition in game.new()
+            nearest_mob_dist = calculate_point_dist(
+                point1=self.agent.pos, point2=self.agent.nearest_mob.pos
+            )
+            text_nearest_mob_dist = font.render(
+                f"Near Mob Dist : {nearest_mob_dist/16:.1f}", False, BLACK
+            )
+            self.screen.blit(
+                text_nearest_mob_dist,
+                (box.x + 5, box.y + text_agent_pos.get_height() * 3),
+            )
+            pg.draw.line(
+                surface=self.screen,
+                color=BLACK,
+                start_pos=self.agent.pos,
+                end_pos=self.agent.nearest_mob.pos,
+                width=2,
+            )
 
     def _events(self):
         """Handle key buttons, mouse clicks, etc."""
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self._quit()
-            if event.type == pg.KEYDOWN:
+            elif event.type == pg.KEYDOWN:
                 if event.key in [pg.K_ESCAPE, pg.K_q]:
                     self._quit()
-                if event.key == pg.K_r:
+                elif event.key == pg.K_r:
                     self.new()
-                if event.key == pg.K_SPACE:
+                elif event.key == pg.K_SPACE:
                     self.debug = not self.debug
                     print("agent pos   ", self.agent.pos)
                     print("agent posxy ", self.agent.pos.x, self.agent.pos.y)
                     print("agent rect  ", self.agent.rect.x, self.agent.rect.y)
                     print("agent hrect ", self.agent.hit_rect.x, self.agent.hit_rect.y)
+            elif event.type == pg.MOUSEBUTTONUP and event.button == 3:  # RIGHT button
+                self.agent.pos = pg.mouse.get_pos()
 
     def _load_data(self):
         """Load game, image, and map data"""
@@ -209,6 +200,7 @@ class Game:
         self.sidewalks = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.goals = pg.sprite.Group()
+        self.sensors = pg.sprite.Group()
 
         # ! Object conversions will be moved to the classes' own methods
         for tile_object in self.map.tmxdata.objects:
