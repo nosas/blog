@@ -33,37 +33,45 @@ class CardinalSensor(Sensor):
         self._screen_height = game.screen.get_height()
         self._screen_width = game.screen.get_height()
 
-    # TODO Refactor to be more generalize, find_nearest_object. Replace collisions with
-    # TODO list of groups to include, use spritecollideany and filter.
+    # TODO Replace collisions with list of groups to include
     @staticmethod
-    def _find_nearest_wall(
+    def _find_nearest_object(
         sprite: pg.sprite.Sprite, collisions: list[pg.sprite.Sprite], direction: str
-    ) -> Wall:
-        nearest_wall = None
+    ) -> pg.sprite.Sprite:
+        nearest_obj = None
 
         if len(collisions) == 1:
-            nearest_wall = collisions[0]
+            nearest_obj = collisions[0]
         elif len(collisions) > 1:
-            nearest_dist = maxsize
-            for wall in collisions:
-                wall_coord = {
-                    "N": wall.rect.midbottom,
-                    "S": wall.rect.midtop,
-                    "E": wall.rect.midleft,
-                    "W": wall.rect.midright,
+            nearest_obj_dist = maxsize
+            for obj in collisions:
+                obj_rect_coord = {
+                    "N": obj.rect.midbottom,
+                    "S": obj.rect.midtop,
+                    "E": obj.rect.midleft,
+                    "W": obj.rect.midright,
                 }
                 dist = calculate_point_dist(
-                    point1=sprite.hit_rect.center, point2=wall_coord[direction]
+                    point1=sprite.hit_rect.center, point2=obj_rect_coord[direction]
                 )
-                if dist < nearest_dist:
-                    nearest_wall = wall
-                    nearest_dist = dist
+                if dist < nearest_obj_dist:
+                    nearest_obj = obj
+                    nearest_obj_dist = dist
 
-        return nearest_wall
+        return nearest_obj
 
     @property
     def _collisions(self) -> list[pg.sprite.Sprite]:
-        return pg.sprite.spritecollide(sprite=self, group=self.game.walls, dokill=False)
+        # return pg.sprite.spritecollide(sprite=self, group=self.game.walls, dokill=False)
+        groups = [self.game.mobs, self.game.goals, self.game.walls]
+        collisions = []
+        for group in groups:
+            new_collisions = pg.sprite.spritecollide(
+                sprite=self, group=group, dokill=False
+            )
+            if new_collisions:
+                collisions += new_collisions
+        return collisions
 
     @property
     def _north(self) -> Wall:
@@ -73,7 +81,7 @@ class CardinalSensor(Sensor):
             (self.line_thickness, self._screen_height),
         )
         self.rect.bottom = self.agent.hit_rect.top
-        nearest_wall = CardinalSensor._find_nearest_wall(
+        nearest_wall = CardinalSensor._find_nearest_object(
             sprite=self.agent, collisions=self._collisions, direction="N"
         )
         return nearest_wall
@@ -86,7 +94,7 @@ class CardinalSensor(Sensor):
             (self.line_thickness, self._screen_height),
         )
         self.rect.top = self.agent.hit_rect.bottom
-        nearest_wall = CardinalSensor._find_nearest_wall(
+        nearest_wall = CardinalSensor._find_nearest_object(
             sprite=self.agent, collisions=self._collisions, direction="S"
         )
         return nearest_wall
@@ -99,7 +107,7 @@ class CardinalSensor(Sensor):
             (self._screen_width, self.line_thickness),
         )
         self.rect.left = self.agent.hit_rect.right
-        nearest_wall = CardinalSensor._find_nearest_wall(
+        nearest_wall = CardinalSensor._find_nearest_object(
             sprite=self.agent, collisions=self._collisions, direction="E"
         )
         return nearest_wall
@@ -112,7 +120,7 @@ class CardinalSensor(Sensor):
             (self._screen_width, self.line_thickness),
         )
         self.rect.right = self.agent.hit_rect.left
-        nearest_wall = CardinalSensor._find_nearest_wall(
+        nearest_wall = CardinalSensor._find_nearest_object(
             sprite=self.agent, collisions=self._collisions, direction="W"
         )
         return nearest_wall
