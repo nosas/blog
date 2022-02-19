@@ -47,7 +47,10 @@ class Game:
         # Draw all sprites' `image` and `rect` attributes
         self.all_sprites.draw(surface=self.screen)
         self.paths.draw(surface=self.screen)
-        self.agent.sensor.draw()  # TODO Add event for toggling sensors
+        # self.agent.sensor.draw()  # TODO Add event for toggling sensors
+        # ! Temp for loop until I make proper rectangles for sensor lines
+        for sensor in self.sensors:
+            sensor.draw()
         if self.debug:
             self._draw_debug()
         self._draw_game_info()
@@ -127,22 +130,14 @@ class Game:
 
         # TODO Move drawing and distance to Sensor object within AgentManual
         if self.agent.nearest_mob:  # ! Required to prevent race condition in game.new()
-            nearest_mob_dist = calculate_point_dist(
-                point1=self.agent.pos, point2=self.agent.nearest_mob.pos
-            )
             text_nearest_mob_dist = font.render(
-                f"Near Mob Dist : {nearest_mob_dist/16:.1f}", False, BLACK
+                f"Near Mob Dist : {self.agent.mob_sensor.nearest_mob_dist/16:.1f}",
+                False,
+                BLACK,
             )
             self.screen.blit(
                 text_nearest_mob_dist,
                 (box.x + 5, box.y + text_agent_pos.get_height() * 3),
-            )
-            pg.draw.line(
-                surface=self.screen,
-                color=BLACK,
-                start_pos=self.agent.pos,
-                end_pos=self.agent.nearest_mob.pos,
-                width=2,
             )
 
     def _events(self):

@@ -17,9 +17,9 @@ from config import (
     RED,
     YELLOW,
 )
-from helper import calculate_point_dist, collide_hit_rect, collide_with_walls
+from helper import collide_hit_rect, collide_with_walls
 from objects import Path
-from sensor import CardinalSensor
+from sensor import CardinalSensor, MobSensor
 
 
 def _collisison_with_mobs(sprite: pg.sprite.Sprite) -> list[pg.sprite.Sprite]:
@@ -58,11 +58,6 @@ class Agent(pg.sprite.Sprite):
         self.vel = pg.Vector2(0, 0)
         self.rot = rot
         self.hit_rect = AGENT_HIT_RECT.copy()
-        self._nearest_mob = None
-
-    @property
-    def nearest_mob(self) -> Mob:
-        return self._nearest_mob
 
     @abstractmethod
     def _move(self):
@@ -96,7 +91,12 @@ class AgentManual(Agent):
         self.rect = self.image.get_rect()
         self.hit_rect.center = self.rect.center
         self.battle = False
+        self.mob_sensor = MobSensor(game=self.game, agent=self)
         self.sensor = CardinalSensor(game=self.game, agent=self)
+
+    @property
+    def nearest_mob(self) -> Mob:
+        return self.mob_sensor.nearest_mob
 
     def _collision(self):
         def collision_goal():
@@ -127,23 +127,6 @@ class AgentManual(Agent):
         collision_mob()
         collision_wall()
         collision_goal()
-
-    def _find_nearest_mob(self):
-        def is_closer(mob: Mob, dist: int) -> bool:
-            return (mob is not self.nearest_mob) and (
-                dist < calculate_point_dist(self.pos, self.nearest_mob.pos)
-            )
-
-        def set_nearest_mob(new_mob: Mob) -> None:
-            if self.nearest_mob is not None:
-                self._nearest_mob.is_nearest_mob = False
-            self._nearest_mob = mob
-            self._nearest_mob.is_nearest_mob = True
-
-        for mob in self.game.mobs.sprites():
-            dist = calculate_point_dist(point1=self.pos, point2=mob.pos)
-            if self.nearest_mob is None or is_closer(mob=mob, dist=dist):
-                set_nearest_mob(new_mob=mob)
 
     def _move(self):
         self.rot_speed = 0
@@ -180,7 +163,6 @@ class AgentManual(Agent):
             self.pos += self.vel * self.game.dt
             # Handle collisions
             self._collision()
-            self._find_nearest_mob()
             self.rect.center = self.hit_rect.center
 
 

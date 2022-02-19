@@ -26,9 +26,54 @@ class Sensor(pg.sprite.Sprite):
         self.draw()
 
 
+# TODO Add `visible_mobs` property
+class MobSensor(Sensor):
+    def __init__(self, game, agent):
+        super().__init__(game=game, agent=agent)
+        self._nearest_mob = None
+
+    @property
+    def nearest_mob(self) -> pg.sprite.Sprite:
+        return self._nearest_mob
+
+    @property
+    def nearest_mob_dist(self) -> pg.sprite.Sprite:
+        return (
+            calculate_point_dist(point1=self.agent.pos, point2=self.nearest_mob.pos)
+            if self.nearest_mob
+            else None
+        )
+
+    def _find_nearest_mob(self) -> None:
+        def is_closer(mob, dist: int) -> bool:
+            return (mob is not self.nearest_mob) and (dist < self.nearest_mob_dist)
+
+        def set_nearest_mob(new_mob) -> None:
+            if self.nearest_mob is not None:
+                self._nearest_mob.is_nearest_mob = False
+            self._nearest_mob = new_mob
+            self._nearest_mob.is_nearest_mob = True
+
+        for mob in self.game.mobs.sprites():
+            dist = calculate_point_dist(point1=self.agent.pos, point2=mob.pos)
+            if self.nearest_mob is None or is_closer(mob=mob, dist=dist):
+                set_nearest_mob(new_mob=mob)
+
+    def draw(self) -> None:
+        self._find_nearest_mob()
+        if self.nearest_mob:
+            pg.draw.line(
+                surface=self.game.screen,
+                color=BLACK,
+                start_pos=self.agent.pos,
+                end_pos=self.nearest_mob.pos,
+                width=2,
+            )
+
+
 class CardinalSensor(Sensor):
     def __init__(self, game, agent):
-        super().__init__(game, agent)
+        super().__init__(game=game, agent=agent)
         self.line_thickness = 2  # 2px
         self._screen_height = game.screen.get_height()
         self._screen_width = game.screen.get_height()
@@ -52,7 +97,7 @@ class CardinalSensor(Sensor):
                     "W": obj.rect.midright,
                 }
                 dist = calculate_point_dist(
-                    point1=sprite.hit_rect.center, point2=obj_rect_coord[direction]
+                    point1=sprite.pos, point2=obj_rect_coord[direction]
                 )
                 if dist < nearest_obj_dist:
                     nearest_obj = obj
@@ -132,7 +177,7 @@ class CardinalSensor(Sensor):
                 pg.draw.line(
                     surface=self.game.screen,
                     color=color,
-                    start_pos=self.agent.hit_rect.center,
+                    start_pos=self.agent.pos,
                     end_pos=(self.agent.hit_rect.centerx, y),
                     width=self.line_thickness,
                 )
@@ -144,7 +189,7 @@ class CardinalSensor(Sensor):
                 pg.draw.line(
                     surface=self.game.screen,
                     color=BLACK,
-                    start_pos=self.agent.hit_rect.center,
+                    start_pos=self.agent.pos,
                     end_pos=(x, self.agent.hit_rect.centery),
                     width=self.line_thickness,
                 )
