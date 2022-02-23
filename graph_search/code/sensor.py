@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from sys import maxsize
 
 import pygame as pg
@@ -19,8 +20,9 @@ class Sensor(pg.sprite.Sprite):
         self.groups = (self.game.sensors,)
         pg.sprite.Sprite.__init__(self, self.groups)
 
+    @abstractmethod
     def draw(self):
-        pass
+        raise NotImplementedError
 
     def update(self):
         self.draw()
@@ -69,6 +71,9 @@ class MobSensor(Sensor):
                 end_pos=self.nearest_mob.pos,
                 width=2,
             )
+
+    def update(self):
+        return super().update()
 
 
 class CardinalSensor(Sensor):
@@ -197,3 +202,6 @@ class CardinalSensor(Sensor):
     def draw(self):
         self._draw_north_south()
         self._draw_east_west()
+
+    def update(self):
+        return super().update()

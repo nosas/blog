@@ -11,14 +11,18 @@ def calculate_point_dist(point1, point2) -> float:
     return np.sqrt(np.sum((point1 - point2) ** 2))
 
 
-def collide_hit_rect(obj_with_rect1, obj_with_rect2):
+def collide_hit_rect(obj_with_rect1, obj_with_rect2) -> bool:
+    """Return bool of obj1.hit_rect colliding with obj2.rect"""
     return obj_with_rect1.hit_rect.colliderect(obj_with_rect2.rect)
 
 
 def collide_with_walls(
     sprite: pg.sprite.Sprite, group: pg.sprite.Group, direction: str
-):
-    """Check if a sprite (Agent) collides with a Wall
+) -> None:
+    """Adjust an Agent's position and velocity if it collides with a Wall
+
+    Prevents the Agent from clipping into/beyond the Wall.
+    Ensures the Agent stays within the confines of the Walls.
 
     Args:
         sprite (pg.sprite.Sprite): Typically an Agent object

@@ -20,7 +20,7 @@ class Goal(pg.sprite.Sprite):
         self.rect = pg.Rect(self.pos.x, self.pos.y, width, height)
         self._collision_wall()
 
-    def _collision_wall(self):
+    def _collision_wall(self) -> None:
         """Hacky solution to prevent Goals from sticking inside Walls"""
         hits = pg.sprite.spritecollide(sprite=self, group=self.game.walls, dokill=False)
         while hits:

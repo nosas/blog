@@ -39,7 +39,7 @@ class Game:
         self.clock = pg.time.Clock()
         self._load_data()
 
-    def _draw(self):
+    def _draw(self) -> None:
         """Draw all game images to screen: sprites, roads, paths, debug info"""
         # Draw the map
         self.screen.blit(source=self.map_img, dest=self.map_rect)
@@ -56,7 +56,7 @@ class Game:
         self._draw_game_info()
         pg.display.update()
 
-    def _draw_debug(self):
+    def _draw_debug(self) -> None:
         # Agent-specific debug outputs
         pg.draw.rect(self.screen, WHITE, self.agent.hit_rect, 0)
         self._draw_grid()
@@ -74,11 +74,7 @@ class Game:
             temp_rect = pg.Rect(p.x, p.y, p.rect.width, p.rect.height)
             pg.draw.rect(self.screen, YELLOW, temp_rect, 2)
 
-    def _draw_fps():
-        """Draw the FPS count"""
-        pass
-
-    def _draw_grid(self):
+    def _draw_grid(self) -> None:
         """Draw a screen-wide grid"""
         for x in range(0, WIDTH, TILESIZE):
             pg.draw.line(
@@ -95,7 +91,7 @@ class Game:
                 end_pos=(WIDTH, y),
             )
 
-    def _draw_game_info(self):
+    def _draw_game_info(self) -> None:
         """Draw Agent's coords, velocity, sensors"""
 
         box = pg.Rect(25, 25, 300, 150)
@@ -140,7 +136,7 @@ class Game:
                 (box.x + 5, box.y + text_agent_pos.get_height() * 3),
             )
 
-    def _events(self):
+    def _events(self) -> None:
         """Handle key buttons, mouse clicks, etc."""
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -159,7 +155,7 @@ class Game:
             elif event.type == pg.MOUSEBUTTONUP and event.button == 3:  # RIGHT button
                 self.agent.pos = pg.mouse.get_pos()
 
-    def _load_data(self):
+    def _load_data(self) -> None:
         """Load game, image, and map data"""
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, "img")
@@ -177,15 +173,15 @@ class Game:
             surface=self.agent_img, size=(TILESIZE, TILESIZE)
         )
 
-    def _quit(self):
+    def _quit(self) -> None:
         pg.quit()
         exit()
 
-    def _update(self):
+    def _update(self) -> None:
         """Update all sprite interactions"""
         self.all_sprites.update()
 
-    def new(self):
+    def new(self) -> None:
         """Create sprite groups and convert tiles into game objects"""
         # PyGame object containers
         self.all_sprites = pg.sprite.Group()
@@ -253,7 +249,7 @@ class Game:
         #     y=random_road.y + randrange(random_road.rect.height),
         # )
 
-    def run(self):
+    def run(self) -> None:
         """Start the game"""
         self.playing = True
         while self.playing:

@@ -10,7 +10,7 @@ class TiledMap:
         self.height = int(tm.height * TILESIZE)
         self.tmxdata = tm
 
-    def render(self, surface: pg.Surface):
+    def render(self, surface: pg.Surface) -> None:
         ti = self.tmxdata.get_tile_image_by_gid
         for layer in self.tmxdata.visible_layers:
             if isinstance(layer, TiledTileLayer):
@@ -31,7 +31,8 @@ class TiledMap:
                             ),
                         )
 
-    def make_map(self):
+    def make_map(self) -> pg.Surface:
+        """Create Surface and render images/tiles/sprites/etc."""
         temp_surface = pg.Surface((self.width, self.height))
         self.render(temp_surface)
         return temp_surface

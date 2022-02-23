@@ -9,7 +9,6 @@ class Wall(pg.sprite.Sprite):
 
         self.game = game
         self.rect = pg.Rect(x, y, width, height)
-        self.hit_rect = self.rect
         self.x = x
         self.y = y
         self.rect.x = x
@@ -27,10 +26,7 @@ class Road(pg.sprite.Sprite):
         groups: tuple[pg.sprite.Group] = None,
     ):
         self.game = game
-        if groups is not None:
-            self.groups = groups + (game.roads,)
-        else:
-            self.groups = game.roads
+        self.groups = groups + (game.roads,) if groups else game.roads
         pg.sprite.Sprite.__init__(self, self.groups)
 
         self.rect = pg.Rect(x, y, width, height)
@@ -63,13 +59,10 @@ class Path(Road):
         self.font = pg.font.SysFont(**Path._font)
         self.image = self.font.render(self._symbol, True, WHITE)
 
-    def draw(self):
+    def draw(self) -> None:
         self.image = self.font.render(self._symbol, True, WHITE)
         # self.rect = self.image.get_rect()  # ! Bug! Font renders on screen's top-left
         self.game.screen.blit(source=self.image, dest=(self.x, self.y))
-
-    def update(self):
-        pass
 
 
 class Sidewalk(Road):
@@ -77,6 +70,3 @@ class Sidewalk(Road):
         super().__init__(
             game=game, x=x, y=y, width=width, height=height, groups=(game.sidewalks,)
         )
-
-    def update(self):
-        pass
