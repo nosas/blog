@@ -22,7 +22,7 @@ from objects import Path
 from sensor import CardinalSensor, MobSensor
 
 
-def _collisison_with_mobs(sprite: pg.sprite.Sprite) -> list[pg.sprite.Sprite]:
+def _collision_with_mobs(sprite: pg.sprite.Sprite) -> list[pg.sprite.Sprite]:
     """Return None or a list of Mobs that are colliding with a sprite (Agent/Mob)
 
     If the Mob is not Battling:
@@ -115,7 +115,7 @@ class AgentManual(Agent):
 
         def collision_mob() -> None:
             """If Agent collides with any Mob, both enter Battle and cannot move"""
-            mobs = _collisison_with_mobs(sprite=self)
+            mobs = _collision_with_mobs(sprite=self)
             if any(mobs) and not self.battle:
                 print("Entering battle")
                 self.battle = True
@@ -222,7 +222,7 @@ class Mob(pg.sprite.Sprite):
 
     def _collision_mob(self):
         """Despawn if collides with another Mob who's in Battle"""
-        mobs = _collisison_with_mobs(sprite=self)
+        mobs = _collision_with_mobs(sprite=self)
         if any(mobs) and not self.battle:
             # TODO Add chance for self.battle = True
             self.despawn()
