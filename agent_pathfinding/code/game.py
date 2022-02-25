@@ -129,7 +129,7 @@ class Game:
 
         if self.agent.nearest_mob:  # ! Required to prevent race condition in game.new()
             text_nearest_mob_dist = font.render(
-                f"Near Mob Dist : {self.agent.mob_sensor.nearest_mob_dist/16:.1f}",
+                f"Near Mob Dist : {self.agent.mob_sensor.dist/16:.1f}",
                 False,
                 BLACK,
             )
@@ -140,7 +140,7 @@ class Game:
 
         if self.agent.nearest_goal:
             text_nearest_goal_dist = font.render(
-                f"Near Goal Dist: {self.agent.goal_sensor.nearest_goal_dist/16:.1f}",
+                f"Near Goal Dist: {self.agent.goal_sensor.dist/16:.1f}",
                 False,
                 BLACK,
             )

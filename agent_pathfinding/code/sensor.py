@@ -145,90 +145,47 @@ class CardinalSensor(Sensor):
         return super().update()
 
 
-class GoalSensor(Sensor):
-    def __init__(self, game, agent):
+class ObjectSensor(Sensor):
+    def __init__(self, game, agent, group: pg.sprite.Group):
         super().__init__(game=game, agent=agent)
-        self._nearest_goal = None
+        self._obj_group = group
+        self._nearest_obj = None
 
     @property
-    def nearest_goal(self) -> pg.sprite.Sprite:
-        return self._nearest_goal
+    def nearest(self) -> pg.sprite.Sprite:
+        return self._nearest_obj
 
     @property
-    def nearest_goal_dist(self) -> pg.sprite.Sprite:
+    def dist(self) -> pg.sprite.Sprite:
         return (
-            calculate_point_dist(point1=self.agent.pos, point2=self.nearest_goal.pos)
-            if self.nearest_goal
+            calculate_point_dist(point1=self.agent.pos, point2=self.nearest.rect.center)
+            if self.nearest
             else None
         )
 
-    def _find_nearest_goal(self) -> None:
-        def is_closer(goal, dist: int) -> bool:
-            return (goal is not self.nearest_goal) and (dist < self.nearest_goal_dist)
+    def _find_nearest_obj(self) -> None:
+        def is_closer(obj, dist: int) -> bool:
+            return (obj is not self.nearest) and (dist < self.dist)
 
-        def set_nearest_goal(new_goal) -> None:
-            if self.nearest_goal is not None:
-                self._nearest_goal.is_nearest_goal = False
-            self._nearest_goal = new_goal
-            self._nearest_goal.is_nearest_goal = True
+        def set_nearest_obj(new_obj) -> None:
+            if self.nearest is not None:
+                self._nearest_obj.is_nearest_obj = False
+            self._nearest_obj = new_obj
+            self._nearest_obj.is_nearest_obj = True
 
-        for goal in self.game.goals.sprites():
-            dist = calculate_point_dist(point1=self.agent.pos, point2=goal.pos)
-            if self.nearest_goal is None or is_closer(goal=goal, dist=dist):
-                set_nearest_goal(new_goal=goal)
+        for obj in self._obj_group.sprites():
+            dist = calculate_point_dist(point1=self.agent.pos, point2=obj.pos)
+            if self.nearest is None or is_closer(obj=obj, dist=dist):
+                set_nearest_obj(new_obj=obj)
 
     def draw(self) -> None:
-        self._find_nearest_goal()
-        if self.nearest_goal:
+        self._find_nearest_obj()
+        if self.nearest:
             pg.draw.line(
                 surface=self.game.screen,
                 color=BLACK,
                 start_pos=self.agent.pos,
-                end_pos=self.nearest_goal.rect.center,
-                width=2,
-            )
-
-
-class MobSensor(Sensor):
-    def __init__(self, game, agent):
-        super().__init__(game=game, agent=agent)
-        self._nearest_mob = None
-
-    @property
-    def nearest_mob(self) -> pg.sprite.Sprite:
-        return self._nearest_mob
-
-    @property
-    def nearest_mob_dist(self) -> pg.sprite.Sprite:
-        return (
-            calculate_point_dist(point1=self.agent.pos, point2=self.nearest_mob.pos)
-            if self.nearest_mob
-            else None
-        )
-
-    def _find_nearest_mob(self) -> None:
-        def is_closer(mob, dist: int) -> bool:
-            return (mob is not self.nearest_mob) and (dist < self.nearest_mob_dist)
-
-        def set_nearest_mob(new_mob) -> None:
-            if self.nearest_mob is not None:
-                self._nearest_mob.is_nearest_mob = False
-            self._nearest_mob = new_mob
-            self._nearest_mob.is_nearest_mob = True
-
-        for mob in self.game.mobs.sprites():
-            dist = calculate_point_dist(point1=self.agent.pos, point2=mob.pos)
-            if self.nearest_mob is None or is_closer(mob=mob, dist=dist):
-                set_nearest_mob(new_mob=mob)
-
-    def draw(self) -> None:
-        self._find_nearest_mob()
-        if self.nearest_mob:
-            pg.draw.line(
-                surface=self.game.screen,
-                color=BLACK,
-                start_pos=self.agent.pos,
-                end_pos=self.nearest_mob.pos,
+                end_pos=self.nearest.rect.center,
                 width=2,
             )
 

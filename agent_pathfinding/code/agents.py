@@ -18,7 +18,7 @@ from config import (
 )
 from helper import collide_hit_rect, collide_with_walls
 from objects import Path
-from sensor import CardinalSensor, GoalSensor, MobSensor
+from sensor import CardinalSensor, ObjectSensor
 
 
 def _collision_with_mobs(sprite: pg.sprite.Sprite) -> list[pg.sprite.Sprite]:
@@ -92,17 +92,17 @@ class AgentManual(Agent):
         self.hit_rect.center = self.rect.center
         self.battle = False
 
-        self.goal_sensor = GoalSensor(game=self.game, agent=self)
-        self.mob_sensor = MobSensor(game=self.game, agent=self)
+        self.goal_sensor = ObjectSensor(game=self.game, agent=self, group=self.game.goals)
+        self.mob_sensor = ObjectSensor(game=self.game, agent=self, group=self.game.mobs)
         self.sensor = CardinalSensor(game=self.game, agent=self)
 
     @property
     def nearest_mob(self) -> Mob:
-        return self.mob_sensor.nearest_mob
+        return self.mob_sensor.nearest
 
     @property
     def nearest_goal(self) -> Mob:
-        return self.goal_sensor.nearest_goal
+        return self.goal_sensor.nearest
 
     def _collision(self) -> None:
         """Handle Agent reactions when colliding with Walls, Goals, Mobs, or Agents"""
