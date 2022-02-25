@@ -8,8 +8,10 @@ from config import (
     AGENT_HIT_RECT,
     AGENT_ROT_SPEED,
     AGENT_SPEED,
+    BLACK,
     BLUE,
     BROWN,
+    GREEN,
     MOB_SIZE,
     MOB_SPEED,
     ORANGE,
@@ -92,8 +94,12 @@ class AgentManual(Agent):
         self.hit_rect.center = self.rect.center
         self.battle = False
 
-        self.goal_sensor = ObjectSensor(game=self.game, agent=self, group=self.game.goals)
-        self.mob_sensor = ObjectSensor(game=self.game, agent=self, group=self.game.mobs)
+        self.goal_sensor = ObjectSensor(
+            game=self.game, agent=self, group=self.game.goals, color=GREEN
+        )
+        self.mob_sensor = ObjectSensor(
+            game=self.game, agent=self, group=self.game.mobs, color=BLACK
+        )
         self.sensor = CardinalSensor(game=self.game, agent=self)
 
     @property

@@ -146,10 +146,13 @@ class CardinalSensor(Sensor):
 
 
 class ObjectSensor(Sensor):
-    def __init__(self, game, agent, group: pg.sprite.Group):
+    def __init__(
+        self, game, agent, group: pg.sprite.Group, color: tuple[int, int, int]
+    ):
         super().__init__(game=game, agent=agent)
-        self._obj_group = group
+        self._color = color
         self._nearest_obj = None
+        self._obj_group = group
 
     @property
     def nearest(self) -> pg.sprite.Sprite:
@@ -183,7 +186,7 @@ class ObjectSensor(Sensor):
         if self.nearest:
             pg.draw.line(
                 surface=self.game.screen,
-                color=BLACK,
+                color=self._color,
                 start_pos=self.agent.pos,
                 end_pos=self.nearest.rect.center,
                 width=2,
