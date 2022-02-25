@@ -138,6 +138,17 @@ class Game:
                 (box.x + 5, box.y + text_agent_pos.get_height() * 3),
             )
 
+        if self.agent.nearest_goal:
+            text_nearest_goal_dist = font.render(
+                f"Near Goal Dist: {self.agent.goal_sensor.nearest_goal_dist/16:.1f}",
+                False,
+                BLACK,
+            )
+            self.screen.blit(
+                text_nearest_goal_dist,
+                (box.x + 5, box.y + text_agent_pos.get_height() * 4),
+            )
+
     def _events(self) -> None:
         """Handle key buttons, mouse clicks, etc."""
         for event in pg.event.get():
@@ -218,7 +229,9 @@ class Game:
                     x = road.x
                     y = road.y
                     heading = random() * 360
-                self.agent = AgentManual(game=self, x=x + offset, y=y + offset, heading=heading)
+                self.agent = AgentManual(
+                    game=self, x=x + offset, y=y + offset, heading=heading
+                )
             elif type == "road":
                 if name == "sidewalk":
                     Sidewalk(game=self, x=x, y=y, width=width, height=height)

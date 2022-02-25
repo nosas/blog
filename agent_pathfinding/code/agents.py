@@ -4,7 +4,6 @@ from abc import abstractmethod
 from random import choice, randrange
 
 import pygame as pg
-
 from config import (
     AGENT_HIT_RECT,
     AGENT_ROT_SPEED,
@@ -19,7 +18,7 @@ from config import (
 )
 from helper import collide_hit_rect, collide_with_walls
 from objects import Path
-from sensor import CardinalSensor, MobSensor
+from sensor import CardinalSensor, GoalSensor, MobSensor
 
 
 def _collision_with_mobs(sprite: pg.sprite.Sprite) -> list[pg.sprite.Sprite]:
@@ -92,12 +91,18 @@ class AgentManual(Agent):
         self.rect = self.image.get_rect()
         self.hit_rect.center = self.rect.center
         self.battle = False
+
+        self.goal_sensor = GoalSensor(game=self.game, agent=self)
         self.mob_sensor = MobSensor(game=self.game, agent=self)
         self.sensor = CardinalSensor(game=self.game, agent=self)
 
     @property
     def nearest_mob(self) -> Mob:
         return self.mob_sensor.nearest_mob
+
+    @property
+    def nearest_goal(self) -> Mob:
+        return self.goal_sensor.nearest_goal
 
     def _collision(self) -> None:
         """Handle Agent reactions when colliding with Walls, Goals, Mobs, or Agents"""
@@ -154,7 +159,9 @@ class AgentManual(Agent):
     def draw(self) -> None:
         # Agent's visual attributes are loaded in `game.py` and updated in self.update()
         # Adjust image based on Agent's headingation
-        self.image = pg.transform.rotate(surface=self.game.agent_img, angle=self.heading)
+        self.image = pg.transform.rotate(
+            surface=self.game.agent_img, angle=self.heading
+        )
         self.rect = self.image.get_rect()
 
     def update(self) -> None:
@@ -186,12 +193,7 @@ class Mob(pg.sprite.Sprite):
 
     @property
     def heading(self) -> int:
-        heading = {
-            'up': 90,
-            'down': 270,
-            'left': 180,
-            'right': 0
-        }
+        heading = {"up": 90, "down": 270, "left": 180, "right": 0}
         return heading[self.direction]
 
     def __init__(self, game, path: Path, mob_type: str = None):
