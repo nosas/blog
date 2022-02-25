@@ -184,6 +184,16 @@ class Mob(pg.sprite.Sprite):
             Mob._get_symbol(mob_type=self.mob_type) if not self.is_nearest_mob else BLUE
         )
 
+    @property
+    def heading(self) -> int:
+        heading = {
+            'up': 90,
+            'down': 270,
+            'left': 180,
+            'right': 0
+        }
+        return heading[self.direction]
+
     def __init__(self, game, path: Path, mob_type: str = None):
         self.game = game
         self.groups = game.all_sprites, game.mobs
@@ -220,7 +230,7 @@ class Mob(pg.sprite.Sprite):
         self._collision_mob()
         self._collision_path()
 
-    def _collision_mob(self):
+    def _collision_mob(self) -> None:
         """Despawn if collides with another Mob who's in Battle"""
         mobs = _collision_with_mobs(sprite=self)
         if any(mobs) and not self.battle:
