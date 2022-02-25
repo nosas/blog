@@ -1,6 +1,8 @@
-import pygame as pg
-from config import TILESIZE, GREEN
 from random import choice, randrange
+
+import pygame as pg
+
+from config import GREEN, TILESIZE
 
 
 class Goal(pg.sprite.Sprite):

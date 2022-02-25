@@ -4,6 +4,7 @@ from abc import abstractmethod
 from random import choice, randrange
 
 import pygame as pg
+
 from config import (
     AGENT_HIT_RECT,
     AGENT_ROT_SPEED,

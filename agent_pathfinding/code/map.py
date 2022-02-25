@@ -1,5 +1,6 @@
 import pygame as pg
-from pytmx import load_pygame, TiledTileLayer
+from pytmx import TiledTileLayer, load_pygame
+
 from config import TILESIZE
 
 

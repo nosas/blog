@@ -1,5 +1,5 @@
-import pygame as pg
 import numpy as np
+import pygame as pg
 
 
 def calculate_point_dist(point1, point2) -> float:
