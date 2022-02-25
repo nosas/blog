@@ -47,7 +47,7 @@ def _collision_with_mobs(sprite: pg.sprite.Sprite) -> list[pg.sprite.Sprite]:
 
 
 class Agent(pg.sprite.Sprite):
-    def __init__(self, game, x: float, y: float, rot: int = 0):
+    def __init__(self, game, x: float, y: float, heading: int = 0):
         self.game = game
 
         # PyGame-specific attributes
@@ -57,7 +57,7 @@ class Agent(pg.sprite.Sprite):
         # Position and movement attributes
         self.pos = pg.Vector2(x, y)  # * TILESIZE
         self.vel = pg.Vector2(0, 0)
-        self.rot = rot
+        self.heading = heading
         self.hit_rect = AGENT_HIT_RECT.copy()
 
     @abstractmethod
@@ -86,8 +86,8 @@ class Agent(pg.sprite.Sprite):
 
 
 class AgentManual(Agent):
-    def __init__(self, game, x: float, y: float, rot: int = 0):
-        super().__init__(game=game, x=x, y=y, rot=rot)
+    def __init__(self, game, x: float, y: float, heading: int = 0):
+        super().__init__(game=game, x=x, y=y, heading=heading)
         self.image = game.agent_img
         self.rect = self.image.get_rect()
         self.hit_rect.center = self.rect.center
@@ -134,27 +134,27 @@ class AgentManual(Agent):
 
     def _move(self) -> None:
         """Handle key input and Agent movement"""
-        self.rot_speed = 0
+        self.heading_speed = 0
         self.vel = pg.Vector2(0, 0)
         keys = pg.key.get_pressed()
 
         # Not using if/elif so Agent can simultaneously press multiple keys
         if keys[pg.K_LEFT] or keys[pg.K_a]:
-            self.rot_speed = AGENT_ROT_SPEED
+            self.heading_speed = AGENT_ROT_SPEED
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.rot_speed = -AGENT_ROT_SPEED
+            self.heading_speed = -AGENT_ROT_SPEED
         if keys[pg.K_UP] or keys[pg.K_w]:
-            self.vel = pg.Vector2(AGENT_SPEED, 0).rotate(-self.rot)
+            self.vel = pg.Vector2(AGENT_SPEED, 0).rotate(-self.heading)
         if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.vel = pg.Vector2(-AGENT_SPEED / 2, 0).rotate(-self.rot)
+            self.vel = pg.Vector2(-AGENT_SPEED / 2, 0).rotate(-self.heading)
 
-        self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
+        self.heading = (self.heading + self.heading_speed * self.game.dt) % 360
         self.pos += self.vel * self.game.dt
 
     def draw(self) -> None:
         # Agent's visual attributes are loaded in `game.py` and updated in self.update()
-        # Adjust image based on Agent's rotation
-        self.image = pg.transform.rotate(surface=self.game.agent_img, angle=self.rot)
+        # Adjust image based on Agent's headingation
+        self.image = pg.transform.rotate(surface=self.game.agent_img, angle=self.heading)
         self.rect = self.image.get_rect()
 
     def update(self) -> None:

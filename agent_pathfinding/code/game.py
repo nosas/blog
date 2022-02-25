@@ -104,7 +104,7 @@ class Game:
 
         agent_pos = np.asarray(self.agent.pos)
         text_agent_pos = font.render(
-            f"Agent Position: {(agent_pos/16).astype('int')}{self.agent.rot}",
+            f"Agent Position: {(agent_pos/16).astype('int')}{self.agent.heading}",
             False,
             BLACK,
         )
@@ -211,14 +211,14 @@ class Game:
             # if tile_object.type == "agent" and tile_object.name == "agent":
             if name == "agent":
                 offset = TILESIZE / 2  # Center Agent's position to tile's center
-                rot = 0
+                heading = 0
                 if AGENT_RANDOM_SPAWN:
                     # TODO Verify Agent doesn't spawn on mob, battle, agent, tp, door
                     road = choice(self.roads.sprites())
                     x = road.x
                     y = road.y
-                    rot = random() * 360
-                self.agent = AgentManual(game=self, x=x + offset, y=y + offset, rot=rot)
+                    heading = random() * 360
+                self.agent = AgentManual(game=self, x=x + offset, y=y + offset, heading=heading)
             elif type == "road":
                 if name == "sidewalk":
                     Sidewalk(game=self, x=x, y=y, width=width, height=height)
