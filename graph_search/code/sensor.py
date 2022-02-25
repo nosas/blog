@@ -8,10 +8,8 @@ from helper import calculate_point_dist
 from objects import Wall
 
 
-# TODO Refactor Sensor to be an abstract base class
-# TODO Create MobSensor
 class Sensor(pg.sprite.Sprite):
-    """Draw lines from Agent to some point"""
+    """Base clsas for Agent's Sensors. Draws lines from Agent to some point"""
 
     def __init__(self, game, agent):
         self.game = game
@@ -22,13 +20,12 @@ class Sensor(pg.sprite.Sprite):
 
     @abstractmethod
     def draw(self):
-        raise NotImplementedError
+        raise NotImplementedError(f"Class {self.__class__} does not have a move method")
 
     def update(self):
         self.draw()
 
 
-# TODO Add `visible_mobs` property
 class MobSensor(Sensor):
     def __init__(self, game, agent):
         super().__init__(game=game, agent=agent)
@@ -83,18 +80,14 @@ class CardinalSensor(Sensor):
         self._screen_height = game.screen.get_height()
         self._screen_width = game.screen.get_height()
 
-    # TODO Replace collisions with list of groups to include
-    @staticmethod
-    def _find_nearest_object(
-        sprite: pg.sprite.Sprite, collisions: list[pg.sprite.Sprite], direction: str
-    ) -> pg.sprite.Sprite:
+    def _find_nearest_object(self, direction: str) -> pg.sprite.Sprite:
+        """Return an object from that is closest to the sprite in some direction NSEW"""
         nearest_obj = None
-
-        if len(collisions) == 1:
-            nearest_obj = collisions[0]
-        elif len(collisions) > 1:
+        if len(self._collisions) == 1:
+            nearest_obj = self._collisions[0]
+        elif len(self._collisions) > 1:
             nearest_obj_dist = maxsize
-            for obj in collisions:
+            for obj in self._collisions:
                 obj_rect_coord = {
                     "N": obj.rect.midbottom,
                     "S": obj.rect.midtop,
@@ -102,7 +95,7 @@ class CardinalSensor(Sensor):
                     "W": obj.rect.midright,
                 }
                 dist = calculate_point_dist(
-                    point1=sprite.pos, point2=obj_rect_coord[direction]
+                    point1=self.agent.pos, point2=obj_rect_coord[direction]
                 )
                 if dist < nearest_obj_dist:
                     nearest_obj = obj
@@ -131,9 +124,7 @@ class CardinalSensor(Sensor):
             (self.line_thickness, self._screen_height),
         )
         self.rect.bottom = self.agent.hit_rect.top
-        nearest_wall = CardinalSensor._find_nearest_object(
-            sprite=self.agent, collisions=self._collisions, direction="N"
-        )
+        nearest_wall = self._find_nearest_object(direction="N")
         return nearest_wall
 
     @property
@@ -144,9 +135,7 @@ class CardinalSensor(Sensor):
             (self.line_thickness, self._screen_height),
         )
         self.rect.top = self.agent.hit_rect.bottom
-        nearest_wall = CardinalSensor._find_nearest_object(
-            sprite=self.agent, collisions=self._collisions, direction="S"
-        )
+        nearest_wall = self._find_nearest_object(direction="S")
         return nearest_wall
 
     @property
@@ -157,9 +146,7 @@ class CardinalSensor(Sensor):
             (self._screen_width, self.line_thickness),
         )
         self.rect.left = self.agent.hit_rect.right
-        nearest_wall = CardinalSensor._find_nearest_object(
-            sprite=self.agent, collisions=self._collisions, direction="E"
-        )
+        nearest_wall = self._find_nearest_object(direction="E")
         return nearest_wall
 
     @property
@@ -170,9 +157,7 @@ class CardinalSensor(Sensor):
             (self._screen_width, self.line_thickness),
         )
         self.rect.right = self.agent.hit_rect.left
-        nearest_wall = CardinalSensor._find_nearest_object(
-            sprite=self.agent, collisions=self._collisions, direction="W"
-        )
+        nearest_wall = self._find_nearest_object(direction="W")
         return nearest_wall
 
     def _draw_north_south(self) -> None:

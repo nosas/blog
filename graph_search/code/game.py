@@ -47,7 +47,7 @@ class Game:
         # Draw all sprites' `image` and `rect` attributes
         self.all_sprites.draw(surface=self.screen)
         self.paths.draw(surface=self.screen)
-        # self.agent.sensor.draw()  # TODO Add event for toggling sensors
+        # self.agent.sensor.draw()
         # ! Temp for loop until I make proper rectangles for sensor lines
         for sensor in self.sensors:
             sensor.draw()
@@ -67,7 +67,7 @@ class Game:
 
         # Draw white rectangles around walls
         for wall in self.walls:
-            pg.draw.rect(self.screen, WHITE, wall.hit_rect, 3)
+            pg.draw.rect(self.screen, WHITE, wall.rect, 3)
 
         # Draw yellow rectangles over Path objects
         for p in self.paths:
@@ -124,7 +124,6 @@ class Game:
             text_mouse_agent_dist, (box.x + 5, box.y + text_agent_pos.get_height() * 2)
         )
 
-        # TODO Move drawing and distance to Sensor object within AgentManual
         if self.agent.nearest_mob:  # ! Required to prevent race condition in game.new()
             text_nearest_mob_dist = font.render(
                 f"Near Mob Dist : {self.agent.mob_sensor.nearest_mob_dist/16:.1f}",
