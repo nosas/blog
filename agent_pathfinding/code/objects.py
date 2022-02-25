@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import pygame as pg
 
 from config import WHITE
+from typing import Tuple
 
 
 class Wall(pg.sprite.Sprite):
@@ -24,7 +27,7 @@ class Road(pg.sprite.Sprite):
         y: float,
         width: float,
         height: float,
-        groups: tuple[pg.sprite.Group] = None,
+        groups: Tuple[pg.sprite.Group] = None,
     ):
         self.game = game
         self.groups = groups + (game.roads,) if groups else game.roads

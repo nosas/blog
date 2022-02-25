@@ -6,6 +6,7 @@ import pygame as pg
 from config import BLACK, RED
 from helper import calculate_point_dist
 from objects import Wall
+from typing import List, Tuple
 
 
 class Sensor(pg.sprite.Sprite):
@@ -34,7 +35,7 @@ class CardinalSensor(Sensor):
         self._screen_width = game.screen.get_height()
 
     @property
-    def _collisions(self) -> list[pg.sprite.Sprite]:
+    def _collisions(self) -> List[pg.sprite.Sprite]:
         # return pg.sprite.spritecollide(sprite=self, group=self.game.walls, dokill=False)
         groups = [self.game.mobs, self.game.goals, self.game.walls]
         collisions = []
@@ -147,7 +148,7 @@ class CardinalSensor(Sensor):
 
 class ObjectSensor(Sensor):
     def __init__(
-        self, game, agent, group: pg.sprite.Group, color: tuple[int, int, int]
+        self, game, agent, group: pg.sprite.Group, color: Tuple[int, int, int]
     ):
         super().__init__(game=game, agent=agent)
         self._color = color

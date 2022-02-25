@@ -22,9 +22,10 @@ from config import (
 from helper import collide_hit_rect, collide_with_walls
 from objects import Path
 from sensor import CardinalSensor, ObjectSensor
+from typing import List, Tuple
 
 
-def _collision_with_mobs(sprite: pg.sprite.Sprite) -> list[pg.sprite.Sprite]:
+def _collision_with_mobs(sprite: pg.sprite.Sprite) -> List[pg.sprite.Sprite]:
     """Return None or a list of Mobs that are colliding with a sprite (Agent/Mob)
 
     If the Mob is not Battling:
@@ -189,11 +190,11 @@ class Mob(pg.sprite.Sprite):
     _symbols = {"A": RED, "B": YELLOW, "C": ORANGE, "D": BROWN}
 
     @staticmethod
-    def _get_symbol(mob_type: str) -> tuple[int, int, int]:
+    def _get_symbol(mob_type: str) -> Tuple[int, int, int]:
         return Mob._symbols[mob_type]
 
     @property
-    def _symbol(self) -> tuple[int, int, int]:
+    def _symbol(self) -> Tuple[int, int, int]:
         return (
             Mob._get_symbol(mob_type=self.mob_type) if not self.is_nearest_mob else BLUE
         )
