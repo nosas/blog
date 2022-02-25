@@ -9,7 +9,7 @@ from objects import Wall
 
 
 class Sensor(pg.sprite.Sprite):
-    """Base clsas for Agent's Sensors. Draws lines from Agent to some point"""
+    """Base class for Agent's Sensors. Draws lines from Agent to some point"""
 
     def __init__(self, game, agent):
         self.game = game

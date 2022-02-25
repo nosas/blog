@@ -33,11 +33,14 @@ class Game:
     def __init__(self):
         """Initialize the screen, game clock, and load game data"""
         pg.init()
-        self.debug = DEBUG
         self.screen = pg.display.set_mode(size=(WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self._load_data()
+
+        # Booleans for drawing
+        self.debug = DEBUG
+        self.draw_sensors = True
 
     def _draw(self) -> None:
         """Draw all game images to screen: sprites, roads, paths, debug info"""
@@ -49,8 +52,8 @@ class Game:
         self.paths.draw(surface=self.screen)
         # self.agent.sensor.draw()
         # ! Temp for loop until I make proper rectangles for sensor lines
-        for sensor in self.sensors:
-            sensor.draw()
+        if self.draw_sensors:
+            [sensor.draw() for sensor in self.sensors]
         if self.debug:
             self._draw_debug()
         self._draw_game_info()
@@ -151,6 +154,8 @@ class Game:
                     print("agent posxy ", self.agent.pos.x, self.agent.pos.y)
                     print("agent rect  ", self.agent.rect.x, self.agent.rect.y)
                     print("agent hrect ", self.agent.hit_rect.x, self.agent.hit_rect.y)
+                elif event.key == pg.K_1:
+                    self.draw_sensors = not self.draw_sensors
             elif event.type == pg.MOUSEBUTTONUP and event.button == 3:  # RIGHT button
                 self.agent.pos = pg.mouse.get_pos()
 
