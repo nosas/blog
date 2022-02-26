@@ -19,7 +19,7 @@ from config import (
     RED,
     YELLOW,
 )
-from helper import collide_hit_rect, collide_with_walls
+from helper import calculate_point_dist, collide_hit_rect, collide_with_walls
 from objects import Path
 from sensor import CardinalSensor, ObjectSensor
 from typing import List, Tuple
@@ -94,6 +94,7 @@ class AgentManual(Agent):
         self.image = game.agent_img
         self.rect = self.image.get_rect()
         self.hit_rect.center = self.rect.center
+        self.distance_traveled = 0
         self.battle = False
 
         self.goal_sensor = ObjectSensor(
@@ -162,7 +163,9 @@ class AgentManual(Agent):
             self.vel = pg.Vector2(-AGENT_SPEED / 2, 0).rotate(-self.heading)
 
         self.heading = (self.heading + self.heading_speed * self.game.dt) % 360
-        self.pos += self.vel * self.game.dt
+        new_pos = self.pos + (self.vel * self.game.dt)
+        self.distance_traveled += calculate_point_dist(point1=self.pos, point2=new_pos)
+        self.pos = new_pos
 
     def draw(self) -> None:
         # Agent's visual attributes are loaded in `game.py` and updated in self.update()

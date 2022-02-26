@@ -96,6 +96,7 @@ class Game:
 
     def _draw_game_info(self) -> None:
         """Draw Agent's coords, velocity, sensors"""
+        # ! We need a cleaner way to display text, this is getting out of control
 
         box = pg.Rect(25, 25, 300, 150)
         pg.draw.rect(surface=self.screen, color=WHITE, rect=box)
@@ -148,6 +149,14 @@ class Game:
                 text_nearest_goal_dist,
                 (box.x + 5, box.y + text_agent_pos.get_height() * 4),
             )
+
+        text_agent_dist_traveled = font.render(
+            f"Distance Moved: {self.agent.distance_traveled/16:.1f}", False, BLACK
+        )
+        self.screen.blit(
+            text_agent_dist_traveled,
+            (box.x + 5, box.y + text_agent_pos.get_height() * 5),
+        )
 
     def _events(self) -> None:
         """Handle key buttons, mouse clicks, etc."""
