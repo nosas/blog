@@ -163,9 +163,7 @@ class AgentManual(Agent):
             self.vel = pg.Vector2(-AGENT_SPEED / 2, 0).rotate(-self.heading)
 
         self.heading = (self.heading + self.heading_speed * self.game.dt) % 360
-        new_pos = self.pos + (self.vel * self.game.dt)
-        self.distance_traveled += calculate_point_dist(point1=self.pos, point2=new_pos)
-        self.pos = new_pos
+        self.pos += self.vel * self.game.dt
 
     def draw(self) -> None:
         # Agent's visual attributes are loaded in `game.py` and updated in self.update()
@@ -178,6 +176,7 @@ class AgentManual(Agent):
     def update(self) -> None:
         """Update Agent's position, image, and collisions on every Game tick"""
         if not self.battle:
+            old_pos = pg.Vector2((self.pos.x, self.pos.y))
             # Update position
             self._move()
             # Adjust image
@@ -186,6 +185,10 @@ class AgentManual(Agent):
             self._collision()
             # Re-align image.rect to hit_rect
             self.rect.center = self.hit_rect.center
+            # Accumulate distance traveled
+            self.distance_traveled += calculate_point_dist(
+                point1=old_pos, point2=self.pos
+            )
 
 
 class Mob(pg.sprite.Sprite):
