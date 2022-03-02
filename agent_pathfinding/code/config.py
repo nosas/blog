@@ -20,7 +20,7 @@ HEIGHT = 40 * TILESIZE
 # Game settings
 BG_COLOR = BLACK
 DEBUG = False
-FPS = 144
+FPS = 60
 HIT_RECT_SCALE = 0.5
 SPEED_SCALE = 1
 TITLE = "Agent Movement Demo"
