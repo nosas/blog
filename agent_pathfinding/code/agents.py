@@ -176,7 +176,7 @@ class AgentManual(Agent):
     def update(self) -> None:
         """Update Agent's position, image, and collisions on every Game tick"""
         if not self.battle:
-            old_pos = pg.Vector2((self.pos.x, self.pos.y))
+            old_pos = pg.Vector2(self.pos)
             # Update position
             self._move()
             # Adjust image
