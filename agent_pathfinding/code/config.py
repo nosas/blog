@@ -22,7 +22,7 @@ BG_COLOR = BLACK
 DEBUG = False
 FPS = 60
 HIT_RECT_SCALE = 0.5
-SPEED_SCALE = 1
+SPEED_SCALE = 2
 TITLE = "Agent Movement Demo"
 
 # Map settings

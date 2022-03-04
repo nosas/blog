@@ -2,7 +2,8 @@ import numpy as np
 
 import gym
 
-from config import TILESIZE
+from config import TILESIZE, WIDTH, HEIGHT
+from math import sqrt
 from typing import Tuple
 
 
@@ -24,29 +25,49 @@ class GameEnv(gym.Env):
         - Nearest Goal Dist = range(0, goal.distance/sqrt(WIDTH^2 + HEIGHT^2))
         - Distance Moved = range(0, inf)
         """
-        self.observation_space = gym.spaces.Box(
-            low=np.array([0]), high=np.array([np.inf]), dtype=np.float32
+        self.observation_space = gym.spaces.Dict(
+            {
+                "posx": gym.spaces.Box(
+                    low=0, high=WIDTH / TILESIZE, dtype=np.float32, shape=(1, 1)
+                ),
+                "posy": gym.spaces.Box(
+                    low=0, high=HEIGHT / TILESIZE, dtype=np.float32, shape=(1, 1)
+                ),
+                "heading": gym.spaces.Box(
+                    low=0, high=360, dtype=np.float32, shape=(1, 1)
+                ),
+                "dist_to_goal": gym.spaces.Box(
+                    low=0,
+                    high=sqrt(WIDTH**2 + HEIGHT**2) / TILESIZE,
+                    dtype=np.float32,
+                    shape=(1, 1),
+                ),
+                "dist_traveled": gym.spaces.Box(
+                    low=0, high=np.inf, dtype=np.float32, shape=(1, 1)
+                ),
+            }
         )
 
         self.game = game
 
     def calculate_reward(self, obs) -> float:
-        return obs / TILESIZE / 1.3
+        reward_factors = {
+            "dist_to_goal": 0,   # +1000 if dist_to_goal < 1.0
+            "dist_traveled": 0,  # Increase reward when Agent travels further distance
+        }
 
-    def render(self) -> None:
-        self.game._draw()
+        return obs["dist_traveled"] / TILESIZE
 
     def reset(self) -> float:
         """Set Game to clean state and return Agent's initial observation"""
         self.game.new()
-        return self.game.agent.distance_traveled
+        return self.game.agent.observation
 
     def step(self, action) -> Tuple[float, float, bool, dict]:
         """Return observation (obj), reward (float), done (bool), info (dict)"""
-        # action = self.action_space.sample()  # Select random action
         self.game._update(action=action)
-        obs = self.game.agent.distance_traveled
-        reward = self.calculate_reward(obs)
+        obs = self.game.agent.observation
+        reward = self.calculate_reward(obs=obs)
         done = not self.game.playing
         info = {}
 

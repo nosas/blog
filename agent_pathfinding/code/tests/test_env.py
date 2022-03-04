@@ -10,7 +10,8 @@ class TestEnv:
 
     def test_env_observation(self):
         obs = self.env.reset()
-        assert obs is not None
+        assert type(obs) == dict
+        assert len(obs.keys()) == 5
 
     def test_env_step(self):
         self.env.reset()

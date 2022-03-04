@@ -17,8 +17,10 @@ from config import (
     MOB_SPEED,
     ORANGE,
     RED,
+    TILESIZE,
     YELLOW,
 )
+from goals import Goal
 from helper import calculate_point_dist, collide_hit_rect, collide_with_walls
 from objects import Path
 from sensor import CardinalSensor, ObjectSensor
@@ -112,7 +114,7 @@ class AgentManual(Agent):
         return self.mob_sensor.nearest
 
     @property
-    def nearest_goal(self) -> Mob:
+    def nearest_goal(self) -> Goal:
         return self.goal_sensor.nearest
 
     def _collision(self) -> None:
@@ -200,6 +202,16 @@ class AgentAuto(AgentManual):
     def __init__(self, game, x: float, y: float, heading: int = 0):
         super().__init__(game, x, y, heading)
         self._moves = []
+
+    @property
+    def observation(self) -> dict:
+        return {
+            "posx": self.pos.x / TILESIZE,
+            "posy": self.pos.y / TILESIZE,
+            "heading": self.heading,
+            "dist_to_goal": self.goal_sensor.dist / 16,
+            "dist_traveled": self.distance_traveled / 16,
+        }
 
     def move(self, key: int) -> None:
         """Append a move (key press) to move list"""
