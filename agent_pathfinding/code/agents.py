@@ -89,6 +89,8 @@ class Agent(pg.sprite.Sprite):
 
 
 class AgentManual(Agent):
+    """Agent to be manually controlled with WASD or arrow keys"""
+
     def __init__(self, game, x: float, y: float, heading: int = 0):
         super().__init__(game=game, x=x, y=y, heading=heading)
         self.image = game.agent_img
@@ -117,7 +119,7 @@ class AgentManual(Agent):
         """Handle Agent reactions when colliding with Walls, Goals, Mobs, or Agents"""
 
         def collision_goal() -> None:
-            """If Agent collides with Goal, start a new Game"""
+            """If Agent collides with Goal, end the Game"""
             goal = pg.sprite.spritecollide(
                 sprite=self,
                 group=self.game.goals,
@@ -125,7 +127,8 @@ class AgentManual(Agent):
                 collided=collide_hit_rect,
             )
             if goal:
-                self.game.new()
+                # TODO Different interaction based on Goal type: Teleport, Mob, Door
+                self.game.playing = False
 
         def collision_mob() -> None:
             """If Agent collides with any Mob, both enter Battle and cannot move"""
@@ -189,6 +192,38 @@ class AgentManual(Agent):
             self.distance_traveled += calculate_point_dist(
                 point1=old_pos, point2=self.pos
             )
+
+
+class AgentAuto(AgentManual):
+    """Agent to be controlled by the OpenAI Gym environment"""
+
+    def __init__(self, game, x: float, y: float, heading: int = 0):
+        super().__init__(game, x, y, heading)
+        self._moves = []
+
+    def move(self, key: int) -> None:
+        """Append a move (key press) to move list"""
+        self._moves.append(key)
+
+    def _move(self) -> None:
+        """Handle key input and Agent movement"""
+        self.heading_speed = 0
+        self.vel = pg.Vector2(0, 0)
+
+        # Not using if/elif so Agent can simultaneously press multiple keys
+        for key in self._moves:
+            if key in [pg.K_LEFT, pg.K_a]:
+                self.heading_speed = AGENT_ROT_SPEED
+            if key in [pg.K_RIGHT, pg.K_d]:
+                self.heading_speed = -AGENT_ROT_SPEED
+            if key in [pg.K_UP, pg.K_w]:
+                self.vel = pg.Vector2(AGENT_SPEED, 0).rotate(-self.heading)
+            if key in [pg.K_DOWN, pg.K_s]:
+                self.vel = pg.Vector2(-AGENT_SPEED / 2, 0).rotate(-self.heading)
+
+        self.heading = (self.heading + self.heading_speed * self.game.dt) % 360
+        self.pos += self.vel * self.game.dt
+        self._moves.clear()
 
 
 class Mob(pg.sprite.Sprite):

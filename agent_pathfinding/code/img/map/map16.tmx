@@ -477,7 +477,7 @@
  <group id="18" name="goal">
   <objectgroup id="17" name="teleport">
    <object id="71" name="teleport" type="goal" x="16" y="448" width="16" height="16" visible="0"/>
-   <object id="72" name="teleport" type="goal" x="288" y="400" width="16" height="16"/>
+   <object id="72" name="teleport" type="goal" x="128" y="448" width="16" height="16"/>
   </objectgroup>
   <layer id="19" name="teleport" width="100" height="40">
    <data encoding="csv">

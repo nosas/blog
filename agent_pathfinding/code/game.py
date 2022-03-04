@@ -5,7 +5,7 @@ from sys import exit
 import numpy as np
 import pygame as pg
 
-from agents import AgentManual, Mob
+from agents import AgentAuto, AgentManual, Mob
 from config import (
     AGENT_IMG,
     AGENT_RANDOM_SPAWN,
@@ -27,10 +27,32 @@ from goals import Teleport
 from helper import calculate_point_dist
 from map import TiledMap
 from objects import Path, Sidewalk, Wall
+from typing import List, Tuple
 
 
 class Game:
-    def __init__(self):
+    # ! Prevent black from formatting this dictionary like a maniac
+    # fmt: off
+    event_ids = {
+        1: ("w", pg.K_w),
+        2: ("a", pg.K_a,),
+        3: ("s", pg.K_s,),
+        4: ("d", pg.K_d,),
+        5: [("w", pg.K_w,), ("a", pg.K_a,)],
+        6: [("w", pg.K_w,), ("d", pg.K_d,)],
+        7: [("s", pg.K_s,), ("a", pg.K_a,)],
+        8: [("s", pg.K_s,), ("d", pg.K_d,)],
+        9: [("a", pg.K_a,), ("d", pg.K_d,)],
+    }
+    # fmt: on
+    event_dict = {
+        pg.K_w: {"unicode": "w", "key": 119, "mod": 0, "scancode": 26, "window": None},
+        pg.K_a: {"unicode": "a", "key": 97, "mod": 0, "scancode": 4, "window": None},
+        pg.K_s: {"unicode": "s", "key": 115, "mod": 0, "scancode": 22, "window": None},
+        pg.K_d: {"unicode": "d", "key": 100, "mod": 0, "scancode": 7, "window": None},
+    }
+
+    def __init__(self, manual: bool = False):
         """Initialize the screen, game clock, and load game data"""
         pg.init()
         self.screen = pg.display.set_mode(size=(WIDTH, HEIGHT))
@@ -41,6 +63,9 @@ class Game:
         # Booleans for drawing
         self.debug = DEBUG
         self.draw_sensors = True
+
+        self._agent_type = AgentManual if manual else AgentAuto
+        self.playing = True
 
     def _draw(self) -> None:
         """Draw all game images to screen: sprites, roads, paths, debug info"""
@@ -162,10 +187,13 @@ class Game:
         """Handle key buttons, mouse clicks, etc."""
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                self._quit()
+                self.quit()
             elif event.type == pg.KEYDOWN:
+                if type(self.agent) == AgentAuto:
+                    if event.key in [pg.K_w, pg.K_a, pg.K_s, pg.K_d]:
+                        self.agent.move(key=event.key)
                 if event.key in [pg.K_ESCAPE, pg.K_q]:
-                    self._quit()
+                    self.quit()
                 elif event.key == pg.K_r:
                     self.new()
                 elif event.key == pg.K_SPACE:
@@ -197,13 +225,27 @@ class Game:
             surface=self.agent_img, size=(TILESIZE, TILESIZE)
         )
 
-    def _quit(self) -> None:
-        pg.quit()
-        exit()
+    def _post_event(self, events: List[Tuple[str, pg.event.Event]]) -> None:
+        """Add a custom event (key press) to the Game's Event queue"""
+        if type(events) == tuple:
+            events = [events]
 
-    def _update(self) -> None:
+        for unicode, event_id in events:
+            print(f"Pressed {unicode}")
+            event = pg.event.Event(pg.KEYDOWN, self.event_dict[event_id])
+            pg.event.post(event)
+            event = pg.event.Event(pg.KEYUP, self.event_dict[event_id])
+            pg.event.post(event)
+
+    def _update(self, action: int = None) -> None:
         """Update all sprite interactions"""
+        self.dt = self.clock.tick(FPS)
+        if action:
+            events = self.event_ids[action]
+            self._post_event(events=events)
+        self._events()
         self.all_sprites.update()
+        self._draw()
 
     def new(self) -> None:
         """Create sprite groups and convert tiles into game objects"""
@@ -238,7 +280,7 @@ class Game:
                     x = road.x
                     y = road.y
                     heading = random() * 360
-                self.agent = AgentManual(
+                self.agent = self._agent_type(
                     game=self, x=x + offset, y=y + offset, heading=heading
                 )
             elif type == "road":
@@ -268,18 +310,11 @@ class Game:
         while len(self.mobs.sprites()) < NUM_MOBS:
             Mob(game=self, path=choice(self.paths.sprites()))
 
-        # random_road = choice(self.roads.sprites())
-        # Goal(
-        #     game=self,
-        #     x=random_road.x + randrange(random_road.rect.width),
-        #     y=random_road.y + randrange(random_road.rect.height),
-        # )
+    def quit(self) -> None:
+        pg.quit()
+        exit()
 
     def run(self) -> None:
         """Start the game"""
-        self.playing = True
         while self.playing:
-            self.dt = self.clock.tick(FPS)
-            self._events()
             self._update()
-            self._draw()

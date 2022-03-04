@@ -154,6 +154,7 @@ class ObjectSensor(Sensor):
         self._color = color
         self._nearest_obj = None
         self._obj_group = group
+        self._find_nearest_obj()
 
     @property
     def nearest(self) -> pg.sprite.Sprite:
@@ -169,7 +170,11 @@ class ObjectSensor(Sensor):
 
     def _find_nearest_obj(self) -> None:
         def is_closer(obj, dist: int) -> bool:
-            return (obj is not self.nearest) and (dist < self.dist)
+            return (
+                True
+                if self._nearest_obj is None
+                else (obj is not self.nearest) and (dist < self.dist)
+            )
 
         def set_nearest_obj(new_obj) -> None:
             if self.nearest is not None:
@@ -179,7 +184,7 @@ class ObjectSensor(Sensor):
 
         for obj in self._obj_group.sprites():
             dist = calculate_point_dist(point1=self.agent.pos, point2=obj.pos)
-            if self.nearest is None or is_closer(obj=obj, dist=dist):
+            if is_closer(obj=obj, dist=dist):
                 set_nearest_obj(new_obj=obj)
 
     def draw(self) -> None:
