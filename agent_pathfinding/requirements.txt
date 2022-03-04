@@ -6,7 +6,7 @@ attrs==21.4.0
 black==22.1.0
 cached-property==1.5.2
 click==8.0.4
-cloudpickle==2.0.0
+cloudpickle==1.6.0
 colorama==0.4.4
 cycler==0.11.0
 Cython==0.29.28
@@ -15,7 +15,7 @@ fonttools==4.29.1
 gast==0.2.2
 google-pasta==0.2.0
 grpcio==1.44.0
-gym==0.22.0
+gym==0.19.0
 gym-notices==0.0.4
 h5py==3.6.0
 importlib-metadata==4.2.0
@@ -53,12 +53,13 @@ pytz==2021.3
 scipy==1.7.3
 six==1.16.0
 slim==0.1
-stable-baselines==2.10.2
+stable-baselines3==1.4.0
 tensorboard==1.15.0
 tensorflow==1.15.0
 tensorflow-estimator==1.15.1
 termcolor==1.1.0
 tomli==2.0.1
+torch==1.10.2
 typed-ast==1.5.2
 typing-extensions==4.1.1
 Werkzeug==2.0.3
