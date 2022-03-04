@@ -11,7 +11,7 @@ class TestEnv:
     def test_env_observation(self):
         obs = self.env.reset()
         assert type(obs) == dict
-        assert len(obs.keys()) == 5
+        assert len(obs) == 6
 
     def test_env_step(self):
         self.env.reset()

@@ -27,15 +27,6 @@ class GameEnv(gym.Env):
         """
         self.observation_space = gym.spaces.Dict(
             {
-                "posx": gym.spaces.Box(
-                    low=0, high=WIDTH / TILESIZE, dtype=np.float32, shape=(1, 1)
-                ),
-                "posy": gym.spaces.Box(
-                    low=0, high=HEIGHT / TILESIZE, dtype=np.float32, shape=(1, 1)
-                ),
-                "heading": gym.spaces.Box(
-                    low=0, high=360, dtype=np.float32, shape=(1, 1)
-                ),
                 "dist_to_goal": gym.spaces.Box(
                     low=0,
                     high=sqrt(WIDTH**2 + HEIGHT**2) / TILESIZE,
@@ -45,23 +36,38 @@ class GameEnv(gym.Env):
                 "dist_traveled": gym.spaces.Box(
                     low=0, high=np.inf, dtype=np.float32, shape=(1, 1)
                 ),
+                "heading": gym.spaces.Box(
+                    low=0, high=360, dtype=np.float32, shape=(1, 1)
+                ),
+                "is_battling": gym.spaces.Discrete(2),
+                "posx": gym.spaces.Box(
+                    low=0, high=WIDTH / TILESIZE, dtype=np.float32, shape=(1, 1)
+                ),
+                "posy": gym.spaces.Box(
+                    low=0, high=HEIGHT / TILESIZE, dtype=np.float32, shape=(1, 1)
+                ),
             }
         )
 
         self.game = game
 
     def calculate_reward(self, obs) -> float:
-        reward_factors = {
-            "dist_to_goal": 0,   # +1000 if dist_to_goal < 1.0
-            "dist_traveled": 0,  # Increase reward when Agent travels further distance
-        }
+        if obs['is_battling']:  # -1000 if Battle is not the Goal
+            reward = -1000
+        elif obs['dist_to_goal'] < 0.8:  # +1000 if dist_to_goal < 0.8
+            reward = 1000
+        else:  # Increase reward when Agent travels further distance
+            reward = (obs["dist_traveled"] - self.prev_dist_traveled) / TILESIZE
+        self.prev_dist_traveled = obs["dist_traveled"]
 
-        return obs["dist_traveled"] / TILESIZE
+        return reward
 
     def reset(self) -> float:
         """Set Game to clean state and return Agent's initial observation"""
         self.game.new()
-        return self.game.agent.observation
+        obs = self.game.agent.observation
+        self.prev_dist_traveled = obs['dist_traveled']
+        return obs
 
     def step(self, action) -> Tuple[float, float, bool, dict]:
         """Return observation (obj), reward (float), done (bool), info (dict)"""

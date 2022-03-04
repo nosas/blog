@@ -206,11 +206,12 @@ class AgentAuto(AgentManual):
     @property
     def observation(self) -> dict:
         return {
-            "posx": self.pos.x / TILESIZE,
-            "posy": self.pos.y / TILESIZE,
-            "heading": self.heading,
             "dist_to_goal": self.goal_sensor.dist / 16,
             "dist_traveled": self.distance_traveled / 16,
+            "heading": self.heading,
+            "is_battling": self.battle,
+            "posx": self.pos.x / TILESIZE,
+            "posy": self.pos.y / TILESIZE,
         }
 
     def move(self, key: int) -> None:
