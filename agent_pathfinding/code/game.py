@@ -65,7 +65,6 @@ class Game:
         self.draw_sensors = True
 
         self._agent_type = AgentManual if manual else AgentAuto
-        self.playing = True
 
     def _draw(self) -> None:
         """Draw all game images to screen: sprites, roads, paths, debug info"""
@@ -130,7 +129,7 @@ class Game:
 
         agent_pos = np.asarray(self.agent.pos)
         text_agent_pos = font.render(
-            f"Agent Position: {(agent_pos/16).astype('int')}{self.agent.heading}",
+            f"Agent Position: {(agent_pos/TILESIZE).astype('int')}",
             False,
             BLACK,
         )
@@ -138,7 +137,7 @@ class Game:
 
         mouse_pos = np.asarray(pg.mouse.get_pos())
         text_mouse_pos = font.render(
-            f"Mouse Position: {(mouse_pos/16).astype('int')}", False, BLACK
+            f"Mouse Position: {(mouse_pos/TILESIZE).astype('int')}", False, BLACK
         )
         self.screen.blit(
             text_mouse_pos, (box.x + 5, box.y + text_agent_pos.get_height() * 1)
@@ -147,7 +146,7 @@ class Game:
         # mouse_agent_dist_tuple = tuple(map(sub, agent_pos, mouse_pos))
         mouse_agent_dist = calculate_point_dist(mouse_pos, agent_pos)
         text_mouse_agent_dist = font.render(
-            f"Mouse Distance: {mouse_agent_dist/16:.1f}", False, BLACK
+            f"Mouse Distance: {mouse_agent_dist/TILESIZE:.1f}", False, BLACK
         )
         self.screen.blit(
             text_mouse_agent_dist, (box.x + 5, box.y + text_agent_pos.get_height() * 2)
@@ -155,7 +154,7 @@ class Game:
 
         if self.agent.nearest_mob:  # ! Required to prevent race condition in game.new()
             text_nearest_mob_dist = font.render(
-                f"Near Mob Dist : {self.agent.mob_sensor.dist/16:.1f}",
+                f"Near Mob Dist : {self.agent.mob_sensor.dist/TILESIZE:.1f}",
                 False,
                 BLACK,
             )
@@ -165,8 +164,11 @@ class Game:
             )
 
         if self.agent.nearest_goal:
+            goal_dist = f"{self.agent.goal_sensor.dist/TILESIZE:.1f}"
+            goal_pos = np.asarray(self.agent.nearest_goal.pos)
+            goal_pos = f"{(goal_pos/TILESIZE).astype('int')}"
             text_nearest_goal_dist = font.render(
-                f"Near Goal Dist: {self.agent.goal_sensor.dist/16:.1f}",
+                f"Near Goal Dist: {goal_dist} {goal_pos}",
                 False,
                 BLACK,
             )
@@ -176,7 +178,7 @@ class Game:
             )
 
         text_agent_dist_traveled = font.render(
-            f"Distance Moved: {self.agent.distance_traveled/16:.1f}", False, BLACK
+            f"Distance Moved: {self.agent.distance_traveled/TILESIZE:.1f}", False, BLACK
         )
         self.screen.blit(
             text_agent_dist_traveled,
@@ -231,7 +233,7 @@ class Game:
             events = [events]
 
         for unicode, event_id in events:
-            print(f"Pressed {unicode}")
+            # print(f"Pressed {unicode}")
             event = pg.event.Event(pg.KEYDOWN, self.event_dict[event_id])
             pg.event.post(event)
             event = pg.event.Event(pg.KEYUP, self.event_dict[event_id])
@@ -249,6 +251,8 @@ class Game:
 
     def new(self) -> None:
         """Create sprite groups and convert tiles into game objects"""
+        self.playing = True
+
         # PyGame object containers
         self.all_sprites = pg.sprite.Group()
         self.mobs = pg.sprite.Group()

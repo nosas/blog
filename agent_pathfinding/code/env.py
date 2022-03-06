@@ -11,7 +11,7 @@ class GameEnv(gym.Env):
     def __init__(self, game) -> None:
         super().__init__()
         # [W, A, S, D, WA, WD, SA, SD, None/Neutral]
-        self.action_space = gym.spaces.Discrete(n=9, start=1)
+        self.action_space = gym.spaces.Discrete(n=9)
         """
         ! NOTE This is incomplete and only a rough idea
         Observations include: [low, high]
@@ -46,19 +46,33 @@ class GameEnv(gym.Env):
                 "posy": gym.spaces.Box(
                     low=0, high=HEIGHT / TILESIZE, dtype=np.float32, shape=(1, 1)
                 ),
+                "goal_posx": gym.spaces.Box(
+                    low=0, high=WIDTH / TILESIZE, dtype=np.float32, shape=(1, 1)
+                ),
+                "goal_posy": gym.spaces.Box(
+                    low=0, high=HEIGHT / TILESIZE, dtype=np.float32, shape=(1, 1)
+                ),
             }
         )
 
         self.game = game
 
     def calculate_reward(self, obs) -> float:
-        if obs['is_battling']:  # -1000 if Battle is not the Goal
-            reward = -1000
-        elif obs['dist_to_goal'] < 0.8:  # +1000 if dist_to_goal < 0.8
-            reward = 1000
+        if obs["is_battling"]:  # -1000 if Battle is not the Goal
+            reward = -10
+        elif obs["dist_to_goal"] < 0.7:  # +1000 if dist_to_goal < 0.8
+            reward = 500
         else:  # Increase reward when Agent travels further distance
-            reward = (obs["dist_traveled"] - self.prev_dist_traveled) / TILESIZE
+            reward = -0.1
+            # If the Agent moved at least 0.1 of a tile
+            if self.prev_dist_traveled - obs["dist_traveled"] > 0.1:
+                reward += 0.2
+            if self.prev_dist_to_goal - obs["dist_to_goal"] > 0.3:
+                reward += 0.5
+            else:
+                reward -= 0.1
         self.prev_dist_traveled = obs["dist_traveled"]
+        self.prev_dist_to_goal = obs["dist_to_goal"]
 
         return reward
 
@@ -66,7 +80,10 @@ class GameEnv(gym.Env):
         """Set Game to clean state and return Agent's initial observation"""
         self.game.new()
         obs = self.game.agent.observation
-        self.prev_dist_traveled = obs['dist_traveled']
+
+        self.prev_dist_traveled = obs["dist_traveled"]
+        self.prev_dist_to_goal = obs["dist_to_goal"]
+
         return obs
 
     def step(self, action) -> Tuple[float, float, bool, dict]:
@@ -74,6 +91,8 @@ class GameEnv(gym.Env):
         self.game._update(action=action)
         obs = self.game.agent.observation
         reward = self.calculate_reward(obs=obs)
+        if obs["dist_traveled"] > 150:
+            self.game.playing = False
         done = not self.game.playing
         info = {}
 

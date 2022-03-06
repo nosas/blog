@@ -60,7 +60,8 @@ class Agent(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
 
         # Position and movement attributes
-        self.pos = pg.Vector2(x, y)  # * TILESIZE
+        self.pos = pg.Vector2(x, y)
+        self.spawn = pg.Vector2(x, y)
         self.vel = pg.Vector2(0, 0)
         self.heading = heading
         self.hit_rect = AGENT_HIT_RECT.copy()
@@ -129,6 +130,7 @@ class AgentManual(Agent):
                 collided=collide_hit_rect,
             )
             if goal:
+                print(f"Reached goal, traveled {int(self.distance_traveled/TILESIZE)}")
                 # TODO Different interaction based on Goal type: Teleport, Mob, Door
                 self.game.playing = False
 
@@ -139,6 +141,7 @@ class AgentManual(Agent):
                 print("Entering battle")
                 self.battle = True
                 mobs[0].battle = True
+                self.game.playing = False
 
         def collision_wall() -> None:
             """Check for Wall collisions, prevent Agent from breaching Wall perimeter"""
@@ -188,8 +191,14 @@ class AgentManual(Agent):
             self.draw()
             # Handle collisions
             self._collision()
-            # Re-align image.rect to hit_rect
-            self.rect.center = self.hit_rect.center
+            if self.game.map.is_a_tile(self.pos):
+                # Re-align image.rect to hit_rect
+                self.rect.center = self.hit_rect.center
+            else:
+                # ! Fixes #16 Prevent Agent from escaping Map's perimeter in training
+                self.pos = self.spawn
+                self.rect.center = self.pos
+                self.hit_rect.center = self.rect.center
             # Accumulate distance traveled
             self.distance_traveled += calculate_point_dist(
                 point1=old_pos, point2=self.pos
@@ -206,12 +215,14 @@ class AgentAuto(AgentManual):
     @property
     def observation(self) -> dict:
         return {
-            "dist_to_goal": self.goal_sensor.dist / 16,
-            "dist_traveled": self.distance_traveled / 16,
+            "dist_to_goal": self.goal_sensor.dist / TILESIZE,
+            "dist_traveled": self.distance_traveled / TILESIZE,
             "heading": self.heading,
             "is_battling": self.battle,
             "posx": self.pos.x / TILESIZE,
             "posy": self.pos.y / TILESIZE,
+            "goal_posx": self.nearest_goal.pos.x / TILESIZE,
+            "goal_posy": self.nearest_goal.pos.y / TILESIZE,
         }
 
     def move(self, key: int) -> None:
@@ -267,7 +278,7 @@ class Mob(pg.sprite.Sprite):
         x = randrange(self.path.x, self.path.rect.x + self.path.rect.width)
         y = randrange(self.path.y, self.path.rect.y + self.path.rect.height)
 
-        self.pos = pg.Vector2(x, y)  # * TILESIZE
+        self.pos = pg.Vector2(x, y)
         self.vel = pg.Vector2(0, 0)
         self.direction = path.direction
         self.is_nearest_mob = False
