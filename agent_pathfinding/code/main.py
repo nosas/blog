@@ -1,7 +1,7 @@
 from game import Game
 
 if __name__ == "__main__":
-    manual = 1
+    manual = 0
     g = Game(manual=manual)
 
     if manual:
@@ -10,14 +10,15 @@ if __name__ == "__main__":
             g.run()
             g.quit()
     else:
+        import gym
         from env import GameEnv
         from stable_baselines3 import PPO
 
-        env = GameEnv(game=g)
+        env = gym.wrappers.FlattenObservation(GameEnv(game=g))
 
         model_class = PPO
-        model_dir = "models/PPO"
-        model_path = f"{model_dir}/200000.zip"
+        model_dir = "models/PPO1_straight_line"
+        model_path = f"{model_dir}/100000.zip"
         model = model_class.load(path=model_path)
 
         obs = env.reset()
