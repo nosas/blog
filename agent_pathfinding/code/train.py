@@ -23,16 +23,16 @@ env.reset()
 # Create the model
 model = model_class(policy="MlpPolicy", env=env, tensorboard_log=log_dir, verbose=1)
 
-# Train the model for 1million timesteps
+# Train the model for 2.5million timesteps
 timesteps = 25000
-episodes = 40
+episodes = 100
 
 # Change Map at some timestep
 maps = {
-    100000: "map_goal2_left.tmx",
-    300000: "map_goal3_right_down.tmx",
-    500000: "map_goal4_behind_wall.tmx",
-    700000: "map_goal5_end.tmx",
+    250000: "map_goal2_left.tmx",
+    750000: "map_goal3_right_down.tmx",
+    1250000: "map_goal4_behind_wall.tmx",
+    2000000: "map_goal5_end.tmx",
 }
 
 for episode in range(1, episodes + 1):
@@ -43,7 +43,7 @@ for episode in range(1, episodes + 1):
     model.save(f"{model_dir}/{timesteps*episode}")
 
     if timesteps * episode in maps:
-        env.env.game._load_map(map_name=maps[timesteps])
+        env.env.game._load_map(map_name=maps[timesteps*episode])
     env.reset()
 
 env.close()

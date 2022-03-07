@@ -1,8 +1,16 @@
 from game import Game
 
+maps = {
+    1: "map_goal1_straight.tmx",
+    2: "map_goal2_left.tmx",
+    3: "map_goal3_right_down.tmx",
+    4: "map_goal4_behind_wall.tmx",
+    5: "map_goal5_end.tmx",
+}
+
 if __name__ == "__main__":
-    manual = 1
-    g = Game(manual=manual)
+    manual = 0
+    g = Game(manual=manual, map_name=maps[2])
 
     if manual:
         while True:
@@ -17,14 +25,15 @@ if __name__ == "__main__":
         env = gym.wrappers.FlattenObservation(GameEnv(game=g))
 
         model_class = PPO
-        model_dir = "models/PPO1_straight_line"
-        model_path = f"{model_dir}/100000.zip"
+        model_dir = "../models/PPO"
+        model_path = f"{model_dir}/625000.zip"
         model = model_class.load(path=model_path)
 
-        obs = env.reset()
-        done = False
-        while not done:
-            action, _ = model.predict(observation=obs)
-            obs, reward, done, info = env.step(action=action)
+        for _ in range(10):
+            obs = env.reset()
+            done = False
+            while not done:
+                action, _ = model.predict(observation=obs)
+                obs, reward, done, info = env.step(action=action)
 
         env.close()

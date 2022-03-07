@@ -61,7 +61,7 @@ class GameEnv(gym.Env):
         if obs["is_battling"]:  # -1000 if Battle is not the Goal
             reward = -10
         elif obs["dist_to_goal"] < 0.7:  # +1000 if dist_to_goal < 0.8
-            reward = 500
+            reward = 300
         else:  # Increase reward when Agent travels further distance
             reward = -0.1
             # If the Agent moved at least 0.1 of a tile
@@ -91,7 +91,7 @@ class GameEnv(gym.Env):
         self.game._update(action=action)
         obs = self.game.agent.observation
         reward = self.calculate_reward(obs=obs)
-        if obs["dist_traveled"] > 150:
+        if obs["dist_traveled"] > 40:
             self.game.playing = False
         done = not self.game.playing
         info = {}
