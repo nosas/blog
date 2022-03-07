@@ -6,9 +6,9 @@ from gym import wrappers
 from stable_baselines3 import PPO
 
 log_dir = "logs"
-model_dir = "models/PPO"
+model_dir = "models/PPO1"
 model_class = PPO
-model_name = "PPO"
+model_name = "PPO1"
 
 # Create the log and model directories
 for dir in [log_dir, model_dir]:
@@ -24,15 +24,15 @@ env.reset()
 model = model_class(policy="MlpPolicy", env=env, tensorboard_log=log_dir, verbose=1)
 
 # Train the model for 2.5million timesteps
-timesteps = 25000
+timesteps = 2500
 episodes = 100
 
 # Change Map at some timestep
 maps = {
-    250000: "map_goal2_left.tmx",
-    750000: "map_goal3_right_down.tmx",
-    1250000: "map_goal4_behind_wall.tmx",
-    2000000: "map_goal5_end.tmx",
+    timesteps * 5: "map_goal2_left.tmx",
+    timesteps * 20: "map_goal3_right_down.tmx",
+    timesteps * 40: "map_goal4_behind_wall.tmx",
+    timesteps * 65: "map_goal5_end.tmx",
 }
 
 for episode in range(1, episodes + 1):

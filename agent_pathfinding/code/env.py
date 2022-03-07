@@ -59,20 +59,20 @@ class GameEnv(gym.Env):
 
     def calculate_reward(self, obs) -> float:
         if obs["is_battling"]:  # -1000 if Battle is not the Goal
-            reward = -10
-        elif obs["dist_to_goal"] < 0.7:  # +1000 if dist_to_goal < 0.8
-            reward = 300
+            reward = -100
+        elif obs["dist_to_goal"] < 0.7:  # +1000 if dist_to_goal < 0.7
+            reward = 500
         else:  # Increase reward when Agent travels further distance
-            reward = -0.1
+            reward = -2
             # If the Agent moved at least 0.1 of a tile
-            if self.prev_dist_traveled - obs["dist_traveled"] > 0.1:
-                reward += 0.2
-            if self.prev_dist_to_goal - obs["dist_to_goal"] > 0.3:
-                reward += 0.5
+            if self.prev_dist_traveled - obs["dist_traveled"] > 0.5:
+                self.prev_dist_traveled = obs["dist_traveled"]
+                reward += 5
+            if self.prev_dist_to_goal - obs["dist_to_goal"] >= 1:
+                self.prev_dist_to_goal = obs["dist_to_goal"]
+                reward += 10
             else:
-                reward -= 0.1
-        self.prev_dist_traveled = obs["dist_traveled"]
-        self.prev_dist_to_goal = obs["dist_to_goal"]
+                reward -= 2
 
         return reward
 
