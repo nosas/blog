@@ -1,7 +1,7 @@
 from game import Game
 
 if __name__ == "__main__":
-    manual = 0
+    manual = 1
     g = Game(manual=manual)
 
     if manual:

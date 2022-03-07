@@ -20,7 +20,7 @@ class TestEnv:
             assert var is not None
 
     def test_env_done(self):
-        # TODO Create simple maps specifically for testing autonomous Agent's movement
+        self.env.game._load_map(map_name="map_goal1_straight.tmx")
         _ = self.env.reset()
 
         for i in range(1000):

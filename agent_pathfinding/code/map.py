@@ -20,11 +20,13 @@ class TiledMap:
 
     def is_a_tile(self, pos: pg.Vector2) -> bool:
         # TODO Check if pos is out of binary map's bounds/shape
-        x = int(pos.x/TILESIZE)
-        y = int(pos.y/TILESIZE)
+        x = int(pos.x / TILESIZE)
+        y = int(pos.y / TILESIZE)
 
-        checks = [0 > x or x >= self.binary.shape[1],
-                  0 > y or y >= self.binary.shape[0]]
+        checks = [
+            0 > x or x >= self.binary.shape[1],
+            0 > y or y >= self.binary.shape[0],
+        ]
         if any(checks):
             return False
         return self.binary[y][x]

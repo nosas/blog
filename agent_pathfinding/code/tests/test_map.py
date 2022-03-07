@@ -19,14 +19,7 @@ class TestMap:
 
     def test_map_is_a_tile_out_of_bounds_fail(self):
         """Verify a position (x,y) is not out of the map's bounds"""
-        out_of_bounds = [
-            (-100, -40),
-            (-1, -1),
-            (-1, 1),
-            (1, -1),
-            (100, 40),
-            (400, 500)
-        ]
+        out_of_bounds = [(-100, -40), (-1, -1), (-1, 1), (1, -1), (100, 40), (400, 500)]
 
         for x, y in out_of_bounds:
             assert not self.g.map.is_a_tile(pg.Vector2(x, y) * TILESIZE)

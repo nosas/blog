@@ -17,17 +17,23 @@ for dir in [log_dir, model_dir]:
 
 # Create Game Environment for stable-baselines to utilize
 # Flatten the observation space from a dict to a vectorized np.array
-env = wrappers.FlattenObservation(GameEnv(game=Game()))
+env = wrappers.FlattenObservation(GameEnv(game=Game(map_name="map_goal1_straight.tmx")))
 env.reset()
 
 # Create the model
-model = model_class(
-    policy="MlpPolicy", env=env, tensorboard_log=log_dir, verbose=1
-)
+model = model_class(policy="MlpPolicy", env=env, tensorboard_log=log_dir, verbose=1)
 
 # Train the model for 1million timesteps
 timesteps = 25000
 episodes = 40
+
+# Change Map at some timestep
+maps = {
+    100000: "map_goal2_left.tmx",
+    300000: "map_goal3_right_down.tmx",
+    500000: "map_goal4_behind_wall.tmx",
+    700000: "map_goal5_end.tmx",
+}
 
 for episode in range(1, episodes + 1):
     print("Episode", episode)
@@ -35,6 +41,9 @@ for episode in range(1, episodes + 1):
         total_timesteps=timesteps, reset_num_timesteps=False, tb_log_name=model_name
     )
     model.save(f"{model_dir}/{timesteps*episode}")
+
+    if timesteps * episode in maps:
+        env.env.game._load_map(map_name=maps[timesteps])
     env.reset()
 
 env.close()

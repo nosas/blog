@@ -52,8 +52,13 @@ class Game:
         pg.K_d: {"unicode": "d", "key": 100, "mod": 0, "scancode": 7, "window": None},
     }
 
-    def __init__(self, manual: bool = False):
+    def __init__(self, manual: bool = False, map_name: str = MAP):
         """Initialize the screen, game clock, and load game data"""
+
+        self._agent_type = AgentManual if manual else AgentAuto
+        self._map_name = map_name
+
+        # Initialize pygame display and clock
         pg.init()
         self.screen = pg.display.set_mode(size=(WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
@@ -64,12 +69,10 @@ class Game:
         self.debug = DEBUG
         self.draw_sensors = True
 
-        self._agent_type = AgentManual if manual else AgentAuto
-
     def _draw(self) -> None:
         """Draw all game images to screen: sprites, roads, paths, debug info"""
         # Draw the map
-        self.screen.blit(source=self.map_img, dest=self.map_rect)
+        self.screen.blit(source=self.map_img, dest=self._map_rect)
 
         # Draw all sprites' `image` and `rect` attributes
         self.all_sprites.draw(surface=self.screen)
@@ -213,11 +216,8 @@ class Game:
         """Load game, image, and map data"""
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, "img")
-        map_folder = path.join(img_folder, "map")
 
-        self.map = TiledMap(filename=path.join(map_folder, MAP))
-        self.map_img = self.map.make_map()
-        self.map_rect = self.map_img.get_rect()
+        self._load_map(map_name=self._map_name)
 
         self.agent_img = pg.image.load(path.join(img_folder, AGENT_IMG)).convert_alpha()
         self.agent_img = pg.transform.flip(
@@ -226,6 +226,16 @@ class Game:
         self.agent_img = pg.transform.scale(
             surface=self.agent_img, size=(TILESIZE, TILESIZE)
         )
+
+    def _load_map(self, map_name) -> None:
+        game_folder = path.dirname(__file__)
+        img_folder = path.join(game_folder, "img")
+        map_folder = path.join(img_folder, "map")
+
+        self.map = TiledMap(filename=path.join(map_folder, map_name))
+        self.map_img = self.map.make_map()
+        self._map_name = map_name
+        self._map_rect = self.map_img.get_rect()
 
     def _post_event(self, events: List[Tuple[str, pg.event.Event]]) -> None:
         """Add a custom event (key press) to the Game's Event queue"""
