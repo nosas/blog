@@ -62,6 +62,7 @@ class Agent(pg.sprite.Sprite):
         # Position and movement attributes
         self.pos = pg.Vector2(x, y)
         self.spawn = pg.Vector2(x, y)
+        self.last_valid_pos = pg.Vector2(x, y)
         self.vel = pg.Vector2(0, 0)
         self.heading = heading
         self.hit_rect = AGENT_HIT_RECT.copy()
@@ -209,9 +210,10 @@ class AgentManual(Agent):
             if self.game.map.is_a_tile(self.pos):
                 # Re-align image.rect to hit_rect
                 self.rect.center = self.hit_rect.center
+                self.last_valid_pos = pg.Vector2(self.pos.x, self.pos.y)
             else:
                 # ! Fixes #16 Prevent Agent from escaping Map's perimeter in training
-                self.pos = self.spawn
+                self.pos = pg.Vector2(self.last_valid_pos.x, self.last_valid_pos.y)
                 self.rect.center = self.pos
                 self.hit_rect.center = self.rect.center
             # Accumulate distance traveled
