@@ -79,9 +79,7 @@ class CardinalSensor(Sensor):
     def objs(self) -> List[pg.sprite.Sprite]:
         objs = [obj[0] for obj in [self._north, self._south, self._east, self._west]]
         # Replace None objects with -1
-        return [
-            self._obj_types[type(obj).__name__] for obj in objs
-        ]
+        return [self._obj_types[type(obj).__name__] for obj in objs]
 
     @property
     def _north(self) -> Tuple[pg.sprite.Sprite, float]:
