@@ -49,39 +49,6 @@ class CardinalSensor(Sensor):
                 collisions += new_collisions
         return collisions
 
-    def _find_nearest_collision(self, direction: str) -> pg.sprite.Sprite:
-        """Return an object that is closest to the sprite in some direction NSEW"""
-        nearest_obj = None
-        nearest_obj_dist = maxsize
-        # This for loop can be refactored. Lots of unneeded calculations here
-        for obj in self._collisions:
-            obj_rect_coord = {
-                "N": pg.Vector2(self.agent.pos.x, obj.rect.bottom),
-                "S": pg.Vector2(self.agent.pos.x, obj.rect.top),
-                "E": pg.Vector2(obj.rect.left, self.agent.pos.y),
-                "W": pg.Vector2(obj.rect.right, self.agent.pos.y),
-            }
-            dist = calculate_point_dist(
-                point1=self.agent.pos, point2=obj_rect_coord[direction]
-            )
-            if dist < nearest_obj_dist:
-                nearest_obj = obj
-                nearest_obj_dist = dist
-
-        return (nearest_obj, nearest_obj_dist)
-
-    @property
-    def dists(self) -> List[float]:
-        return np.array(
-            [obj[1] for obj in [self._north, self._south, self._east, self._west]]
-        )
-
-    @property
-    def objs(self) -> List[pg.sprite.Sprite]:
-        objs = [obj[0] for obj in [self._north, self._south, self._east, self._west]]
-        # Replace None objects with -1
-        return [self._obj_types[type(obj).__name__] for obj in objs]
-
     @property
     def _north(self) -> Tuple[pg.sprite.Sprite, float]:
         """Return the object (Wall/Mob/Goal) located directly North of the Agent"""
@@ -122,6 +89,34 @@ class CardinalSensor(Sensor):
         self.rect.right = self.agent.hit_rect.left
         return self._find_nearest_collision(direction="W")
 
+    @property
+    def dists(self) -> List[float]:
+        """Return how far away, or how long, each cardinal sensor is"""
+        return np.array(
+            [obj[1] for obj in [self._north, self._south, self._east, self._west]]
+        )
+
+    @property
+    def is_in_corner(self) -> bool:
+        """Check if Agent is in a corner"""
+        checks = [
+            [self.dists[0], self.dists[2]],  # North, East
+            [self.dists[0], self.dists[3]],  # North, West
+            [self.dists[1], self.dists[2]],  # South, East
+            [self.dists[1], self.dists[3]],  # South, West
+        ]
+        for check in checks:
+            if (np.asarray(check) <= 8).sum() > 1:
+                return True
+        return False
+
+    @property
+    def objs(self) -> List[pg.sprite.Sprite]:
+        """Return what object type each cardinal sensor is pointing at"""
+        objs = [obj[0] for obj in [self._north, self._south, self._east, self._west]]
+        # Replace None objects with -1
+        return [self._obj_types[type(obj).__name__] for obj in objs]
+
     def _draw_north_south(self) -> None:
         for obj, _ in [self._north, self._south]:
             if obj:
@@ -146,6 +141,27 @@ class CardinalSensor(Sensor):
                     width=self.line_thickness,
                 )
 
+    def _find_nearest_collision(self, direction: str) -> pg.sprite.Sprite:
+        """Return an object that is closest to the sprite in some direction NSEW"""
+        nearest_obj = None
+        nearest_obj_dist = maxsize
+        # This for loop can be refactored. Lots of unneeded calculations here
+        for obj in self._collisions:
+            obj_rect_coord = {
+                "N": pg.Vector2(self.agent.pos.x, obj.rect.bottom),
+                "S": pg.Vector2(self.agent.pos.x, obj.rect.top),
+                "E": pg.Vector2(obj.rect.left, self.agent.pos.y),
+                "W": pg.Vector2(obj.rect.right, self.agent.pos.y),
+            }
+            dist = calculate_point_dist(
+                point1=self.agent.pos, point2=obj_rect_coord[direction]
+            )
+            if dist < nearest_obj_dist:
+                nearest_obj = obj
+                nearest_obj_dist = dist
+
+        return (nearest_obj, nearest_obj_dist)
+
     def draw(self):
         self._draw_north_south()
         self._draw_east_west()
@@ -165,16 +181,16 @@ class ObjectSensor(Sensor):
         self._find_nearest_obj()
 
     @property
-    def nearest(self) -> pg.sprite.Sprite:
-        return self._nearest_obj
-
-    @property
     def dist(self) -> pg.sprite.Sprite:
         return (
             calculate_point_dist(point1=self.agent.pos, point2=self.nearest.rect.center)
             if self.nearest
             else None
         )
+
+    @property
+    def nearest(self) -> pg.sprite.Sprite:
+        return self._nearest_obj
 
     def _find_nearest_obj(self) -> None:
         def is_closer(obj, dist: int) -> bool:

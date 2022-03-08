@@ -126,6 +126,7 @@ class AgentManual(Agent):
             "dist_traveled": self.distance_traveled / TILESIZE,
             "heading": self.heading,
             "is_battling": self.battle,
+            "is_in_corner": self.sensor.is_in_corner,
             "posx": self.pos.x / TILESIZE,
             "posy": self.pos.y / TILESIZE,
             "goal_posx": self.nearest_goal.pos.x / TILESIZE,
