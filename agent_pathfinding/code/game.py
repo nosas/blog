@@ -24,7 +24,6 @@ from config import (
     YELLOW,
 )
 from goals import Teleport
-from helper import calculate_point_dist
 from map import TiledMap
 from objects import Path, Sidewalk, Wall
 from typing import List, Tuple
@@ -71,6 +70,20 @@ class Game:
         # Booleans for drawing
         self.debug = DEBUG
         self.draw_sensors = True
+
+    @property
+    def _game_info(self) -> dict:
+        gi = {"Version": 0.1}
+        gi["Agent Position"] = (np.asarray(self.agent.pos),)
+        gi["Mouse Position"] = (np.asarray(pg.mouse.get_pos()),)
+        gi["Mouse AngleToAgent"] = self.agent.pos.angle_to(
+            pg.Vector2(pg.mouse.get_pos())
+        )
+        gi["Distance Traveled"] = self.agent.distance_traveled
+        gi["Reward Multiplier"] = 1000 - (self.agent.distance_traveled)
+        gi["Nearest Mob Dist"] = self.agent.mob_sensor.dist
+        gi["Nearest Goal Dist"] = self.agent.nearest_goal.pos
+        return gi
 
     def _draw(self) -> None:
         """Draw all game images to screen: sprites, roads, paths, debug info"""
@@ -152,65 +165,23 @@ class Game:
         box = pg.Rect(25, 25, 300, 150)
         pg.draw.rect(surface=self.screen, color=WHITE, rect=box)
 
-        font = pg.font.SysFont("monospace", 16)
+        font = pg.font.SysFont("monospace", 14)
 
-        agent_pos = np.asarray(self.agent.pos)
-        text_agent_pos = font.render(
-            f"Agent Position: {(agent_pos/TILESIZE).astype('int')}",
-            False,
-            BLACK,
-        )
-        self.screen.blit(text_agent_pos, (box.x + 5, box.y))
+        gi = self._game_info
+        for offset, key in enumerate(gi):
+            val = gi[key]
 
-        mouse_pos = np.asarray(pg.mouse.get_pos())
-        text_mouse_pos = font.render(
-            f"Mouse Position: {(mouse_pos/TILESIZE).astype('int')}", False, BLACK
-        )
-        self.screen.blit(
-            text_mouse_pos, (box.x + 5, box.y + text_agent_pos.get_height() * 1)
-        )
+            if isinstance(val, float):
+                s = f"{key}: {val:.2f}"
+            # elif "Position" in key:  # this is hacky, sorry :(
 
-        # mouse_agent_dist_tuple = tuple(map(sub, agent_pos, mouse_pos))
-        mouse_agent_dist = calculate_point_dist(mouse_pos, agent_pos)
-        text_mouse_agent_dist = font.render(
-            f"Mouse Distance: {mouse_agent_dist/TILESIZE:.1f}", False, BLACK
-        )
-        self.screen.blit(
-            text_mouse_agent_dist, (box.x + 5, box.y + text_agent_pos.get_height() * 2)
-        )
+            # s = f"{key}: ({val[0]:.2f}, {val[1]:.2f})"
 
-        if self.agent.nearest_mob:  # ! Required to prevent race condition in game.new()
-            text_nearest_mob_dist = font.render(
-                f"Near Mob Dist : {self.agent.mob_sensor.dist/TILESIZE:.1f}",
-                False,
-                BLACK,
-            )
-            self.screen.blit(
-                text_nearest_mob_dist,
-                (box.x + 5, box.y + text_agent_pos.get_height() * 3),
-            )
+            else:
+                s = f"{key}: {val}"
 
-        if self.agent.nearest_goal:
-            goal_dist = f"{self.agent.goal_sensor.dist/TILESIZE:.1f}"
-            goal_pos = np.asarray(self.agent.nearest_goal.pos)
-            goal_pos = f"{(goal_pos/TILESIZE).astype('int')}"
-            text_nearest_goal_dist = font.render(
-                f"Near Goal Dist: {goal_dist} {goal_pos}",
-                False,
-                BLACK,
-            )
-            self.screen.blit(
-                text_nearest_goal_dist,
-                (box.x + 5, box.y + text_agent_pos.get_height() * 4),
-            )
-
-        text_agent_dist_traveled = font.render(
-            f"Distance Moved: {self.agent.distance_traveled/TILESIZE:.1f}", False, BLACK
-        )
-        self.screen.blit(
-            text_agent_dist_traveled,
-            (box.x + 5, box.y + text_agent_pos.get_height() * 5),
-        )
+            text = font.render(s, False, BLACK)
+            self.screen.blit(text, (box.x + 5, box.y + text.get_height() * offset))
 
     def _events(self) -> None:
         """Handle key buttons, mouse clicks, etc."""

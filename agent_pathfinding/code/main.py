@@ -26,8 +26,8 @@ if __name__ == "__main__":
         env = gym.wrappers.FlattenObservation(genv)
 
         model_class = PPO
-        model_dir = "models/PPO3"
-        model_path = f"{model_dir}/500000.zip"
+        model_dir = "models/PPO10_random_spawns"
+        model_path = f"{model_dir}/455000.zip"
         model = model_class.load(path=model_path)
 
         for _ in range(10):

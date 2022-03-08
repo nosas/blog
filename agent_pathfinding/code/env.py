@@ -41,6 +41,7 @@ class GameEnv(gym.Env):
                     low=0, high=360, dtype=np.float32, shape=(1, 1)
                 ),
                 "is_battling": gym.spaces.Discrete(2),
+                "is_in_corner": gym.spaces.Discrete(2),
                 "posx": gym.spaces.Box(
                     low=0, high=WIDTH / TILESIZE, dtype=np.float32, shape=(1, 1)
                 ),
@@ -73,21 +74,27 @@ class GameEnv(gym.Env):
         if obs["is_battling"]:  # -1000 if Battle is not the Goal
             reward = -100
         elif obs["dist_to_goal"] < 0.7:  # +1000 if dist_to_goal < 0.7
-            reward = 500
+            # ! This is not good, we will refactor in the following commit
+            reward = 500 + (
+                2000 * min(0, (1 - obs["dist_traveled"] / self.max_distance))
+            )
         else:  # Increase reward when Agent travels further distance
             reward = -1
             # If the Agent moved at least 0.1 of a tile
             if self.prev_dist_traveled - obs["dist_traveled"] > 0.5:
                 self.prev_dist_traveled = obs["dist_traveled"]
-                reward += 25
-                if self.prev_dist_to_goal - obs["dist_to_goal"] >= 1:
-                    reward += 50
+                reward += 10
+
             if self.prev_dist_to_goal - obs["dist_to_goal"] >= 1:
                 self.prev_dist_to_goal = obs["dist_to_goal"]
-                reward += 50
+                reward += 20
+            elif self.prev_dist_to_goal - obs["dist_to_goal"] <= 0:
+                self.prev_dist_to_goal = obs["dist_to_goal"]
+                reward -= 5
+
             else:
                 reward -= 1
-            if any([dist < 0.3 for dist in obs["cardinal_dists"]]):
+            if obs["is_in_corner"]:
                 reward -= 20
 
         return reward
@@ -99,11 +106,12 @@ class GameEnv(gym.Env):
 
         self.prev_dist_traveled = obs["dist_traveled"]
         self.prev_dist_to_goal = obs["dist_to_goal"]
+        self.set_max_distance(max_distance=max(50, obs["dist_to_goal"] * 2))
 
         return obs
 
     def set_max_distance(self, max_distance: int) -> None:
-        self._max_distance = max_distance
+        self._max_distance = int(max_distance)
 
     def step(self, action) -> Tuple[float, float, bool, dict]:
         """Return observation (obj), reward (float), done (bool), info (dict)"""

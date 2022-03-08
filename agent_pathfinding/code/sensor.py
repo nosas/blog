@@ -185,7 +185,7 @@ class ObjectSensor(Sensor):
         return (
             calculate_point_dist(point1=self.agent.pos, point2=self.nearest.rect.center)
             if self.nearest
-            else None
+            else -1
         )
 
     @property
