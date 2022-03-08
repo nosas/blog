@@ -223,6 +223,8 @@ class AgentAuto(AgentManual):
             "posy": self.pos.y / TILESIZE,
             "goal_posx": self.nearest_goal.pos.x / TILESIZE,
             "goal_posy": self.nearest_goal.pos.y / TILESIZE,
+            "cardinal_objs": self.sensor.objs,
+            "cardinal_dists": self.sensor.dists / TILESIZE,
         }
 
     def move(self, key: int) -> None:

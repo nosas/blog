@@ -1,11 +1,11 @@
 from abc import abstractmethod
 from sys import maxsize
 
+import numpy as np
 import pygame as pg
 
 from config import BLACK, RED
 from helper import calculate_point_dist
-from objects import Wall
 from typing import List, Tuple
 
 
@@ -28,6 +28,8 @@ class Sensor(pg.sprite.Sprite):
 
 
 class CardinalSensor(Sensor):
+    _obj_types = {"NoneType": -1, "Wall": 0, "Goal": 1, "Teleport": 1, "Mob": 2}
+
     def __init__(self, game, agent):
         super().__init__(game=game, agent=agent)
         self.line_thickness = 2  # 2px
@@ -50,10 +52,19 @@ class CardinalSensor(Sensor):
     def _find_nearest_collision(self, direction: str) -> pg.sprite.Sprite:
         """Return an object that is closest to the sprite in some direction NSEW"""
         nearest_obj = None
+        nearest_obj_dist = maxsize
         if len(self._collisions) == 1:
             nearest_obj = self._collisions[0]
+            obj_rect_coord = {
+                "N": nearest_obj.rect.midbottom,
+                "S": nearest_obj.rect.midtop,
+                "E": nearest_obj.rect.midleft,
+                "W": nearest_obj.rect.midright,
+            }
+            nearest_obj_dist = calculate_point_dist(
+                point1=self.agent.pos, point2=obj_rect_coord[direction]
+            )
         elif len(self._collisions) > 1:
-            nearest_obj_dist = maxsize
             for obj in self._collisions:
                 obj_rect_coord = {
                     "N": obj.rect.midbottom,
@@ -68,68 +79,78 @@ class CardinalSensor(Sensor):
                     nearest_obj = obj
                     nearest_obj_dist = dist
 
-        return nearest_obj
+        return (nearest_obj, nearest_obj_dist)
 
     @property
-    def _north(self) -> Wall:
+    def dists(self) -> List[float]:
+        return np.array(
+            [obj[1] for obj in [self._north, self._south, self._east, self._west]]
+        )
+
+    @property
+    def objs(self) -> List[pg.sprite.Sprite]:
+        objs = [obj[0] for obj in [self._north, self._south, self._east, self._west]]
+        # Replace None objects with -1
+        return [
+            self._obj_types[type(obj).__name__] for obj in objs
+        ]
+
+    @property
+    def _north(self) -> Tuple[pg.sprite.Sprite, float]:
         """Return the object (Wall/Mob/Goal) located directly North of the Agent"""
         self.rect = pg.Rect(
             self.agent.hit_rect.center,
             (self.line_thickness, self._screen_height),
         )
         self.rect.bottom = self.agent.hit_rect.top
-        nearest_wall = self._find_nearest_collision(direction="N")
-        return nearest_wall
+        return self._find_nearest_collision(direction="N")
 
     @property
-    def _south(self) -> Wall:
+    def _south(self) -> Tuple[pg.sprite.Sprite, float]:
         """Return the object (Wall/Mob/Goal) located directly South of the Agent"""
         self.rect = pg.Rect(
             self.agent.hit_rect.center,
             (self.line_thickness, self._screen_height),
         )
         self.rect.top = self.agent.hit_rect.bottom
-        nearest_wall = self._find_nearest_collision(direction="S")
-        return nearest_wall
+        return self._find_nearest_collision(direction="S")
 
     @property
-    def _east(self) -> Wall:
+    def _east(self) -> Tuple[pg.sprite.Sprite, float]:
         """Return the object (Wall/Mob/Goal) located directly East of the Agent"""
         self.rect = pg.Rect(
             self.agent.hit_rect.center,
             (self._screen_width, self.line_thickness),
         )
         self.rect.left = self.agent.hit_rect.right
-        nearest_wall = self._find_nearest_collision(direction="E")
-        return nearest_wall
+        return self._find_nearest_collision(direction="E")
 
     @property
-    def _west(self) -> Wall:
+    def _west(self) -> Tuple[pg.sprite.Sprite, float]:
         """Return the object (Wall/Mob/Goal) located directly West of the Agent"""
         self.rect = pg.Rect(
             self.agent.hit_rect.center,
             (self._screen_width, self.line_thickness),
         )
         self.rect.right = self.agent.hit_rect.left
-        nearest_wall = self._find_nearest_collision(direction="W")
-        return nearest_wall
+        return self._find_nearest_collision(direction="W")
 
     def _draw_north_south(self) -> None:
-        for wall, color in zip([self._north, self._south], [RED, BLACK]):
-            if wall:
-                y = wall.rect.bottom if wall == self._north else wall.rect.top
+        for obj, _ in [self._north, self._south]:
+            if obj:
+                y = obj.rect.bottom if obj == self._north[0] else obj.rect.top
                 pg.draw.line(
                     surface=self.game.screen,
-                    color=color,
+                    color=RED if obj == self._north[0] else BLACK,
                     start_pos=self.agent.pos,
                     end_pos=(self.agent.hit_rect.centerx, y),
                     width=self.line_thickness,
                 )
 
     def _draw_east_west(self) -> None:
-        for wall in [self._east, self._west]:
-            if wall:
-                x = wall.rect.left if wall == self._east else wall.rect.right
+        for obj, _ in [self._east, self._west]:
+            if obj:
+                x = obj.rect.left if obj == self._east[0] else obj.rect.right
                 pg.draw.line(
                     surface=self.game.screen,
                     color=BLACK,

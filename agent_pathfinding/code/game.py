@@ -294,9 +294,7 @@ class Game:
                     x = road.x
                     y = road.y
                     heading = random() * 360
-                self.agent = self._agent_type(
-                    game=self, x=x + offset, y=y + offset, heading=heading
-                )
+                agent_spawn = {"x": x + offset, "y": y + offset, "heading": heading}
             elif type == "road":
                 if name == "sidewalk":
                     Sidewalk(game=self, x=x, y=y, width=width, height=height)
@@ -323,6 +321,8 @@ class Game:
 
         while len(self.mobs.sprites()) < NUM_MOBS:
             Mob(game=self, path=choice(self.paths.sprites()))
+
+        self.agent = self._agent_type(game=self, **agent_spawn)
 
     def quit(self) -> None:
         pg.quit()

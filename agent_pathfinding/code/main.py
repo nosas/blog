@@ -22,11 +22,12 @@ if __name__ == "__main__":
         from env import GameEnv
         from stable_baselines3 import PPO
 
-        env = gym.wrappers.FlattenObservation(GameEnv(game=g))
+        genv = GameEnv(game=g)
+        env = gym.wrappers.FlattenObservation(genv)
 
         model_class = PPO
-        model_dir = "../models/PPO"
-        model_path = f"{model_dir}/625000.zip"
+        model_dir = "models/PPO3"
+        model_path = f"{model_dir}/500000.zip"
         model = model_class.load(path=model_path)
 
         for _ in range(10):

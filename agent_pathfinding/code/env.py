@@ -4,6 +4,7 @@ import gym
 
 from config import TILESIZE, WIDTH, HEIGHT
 from math import sqrt
+from sys import maxsize
 from typing import Tuple
 
 
@@ -52,10 +53,21 @@ class GameEnv(gym.Env):
                 "goal_posy": gym.spaces.Box(
                     low=0, high=HEIGHT / TILESIZE, dtype=np.float32, shape=(1, 1)
                 ),
+                "cardinal_objs": gym.spaces.Box(
+                    low=-1, high=2, dtype=np.int8, shape=(1, 4)
+                ),
+                "cardinal_dists": gym.spaces.Box(
+                    low=0, high=np.inf, dtype=np.float32, shape=(1, 4)
+                ),
             }
         )
 
         self.game = game
+        self._max_distance = maxsize
+
+    @property
+    def max_distance(self) -> int:
+        return self._max_distance
 
     def calculate_reward(self, obs) -> float:
         if obs["is_battling"]:  # -1000 if Battle is not the Goal
@@ -63,16 +75,20 @@ class GameEnv(gym.Env):
         elif obs["dist_to_goal"] < 0.7:  # +1000 if dist_to_goal < 0.7
             reward = 500
         else:  # Increase reward when Agent travels further distance
-            reward = -2
+            reward = -1
             # If the Agent moved at least 0.1 of a tile
             if self.prev_dist_traveled - obs["dist_traveled"] > 0.5:
                 self.prev_dist_traveled = obs["dist_traveled"]
-                reward += 5
+                reward += 25
+                if self.prev_dist_to_goal - obs["dist_to_goal"] >= 1:
+                    reward += 50
             if self.prev_dist_to_goal - obs["dist_to_goal"] >= 1:
                 self.prev_dist_to_goal = obs["dist_to_goal"]
-                reward += 10
+                reward += 50
             else:
-                reward -= 2
+                reward -= 1
+            if any([dist < 0.3 for dist in obs["cardinal_dists"]]):
+                reward -= 20
 
         return reward
 
@@ -86,12 +102,16 @@ class GameEnv(gym.Env):
 
         return obs
 
+    def set_max_distance(self, max_distance: int) -> None:
+        self._max_distance = max_distance
+
     def step(self, action) -> Tuple[float, float, bool, dict]:
         """Return observation (obj), reward (float), done (bool), info (dict)"""
         self.game._update(action=action)
         obs = self.game.agent.observation
         reward = self.calculate_reward(obs=obs)
-        if obs["dist_traveled"] > 40:
+        if obs["dist_traveled"] > self.max_distance:
+            # TODO Detect if Agent is stuck in a corner for too long
             self.game.playing = False
         done = not self.game.playing
         info = {}
