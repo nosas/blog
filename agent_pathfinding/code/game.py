@@ -65,6 +65,9 @@ class Game:
         self.clock = pg.time.Clock()
         self._load_data()
 
+        self.paused = False
+        self.playing = True
+
         # Booleans for drawing
         self.debug = DEBUG
         self.draw_sensors = True
@@ -230,6 +233,8 @@ class Game:
                     print("agent hrect ", self.agent.hit_rect.x, self.agent.hit_rect.y)
                 elif event.key == pg.K_1:
                     self.draw_sensors = not self.draw_sensors
+                elif event.key == pg.K_p:
+                    self.paused = not self.paused
             elif event.type == pg.MOUSEBUTTONUP and event.button == 3:  # RIGHT button
                 self.agent.pos = pg.mouse.get_pos()
 
@@ -272,16 +277,20 @@ class Game:
 
     def _update(self, action: int = None) -> None:
         """Update all sprite interactions"""
-        self.dt = self.clock.tick(FPS)
-        if action:
-            events = self.event_ids[action]
-            self._post_event(events=events)
-        self._events()
-        self.all_sprites.update()
-        self._draw()
+        if not self.paused:
+            self.dt = self.clock.tick(FPS)
+            if action:
+                events = self.event_ids[action]
+                self._post_event(events=events)
+            self._events()
+            self.all_sprites.update()
+            self._draw()
+        else:
+            self._events()
 
     def new(self) -> None:
         """Create sprite groups and convert tiles into game objects"""
+        self.paused = False
         self.playing = True
 
         # PyGame object containers
