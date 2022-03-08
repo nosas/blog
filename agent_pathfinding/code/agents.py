@@ -118,6 +118,21 @@ class AgentManual(Agent):
     def nearest_goal(self) -> Goal:
         return self.goal_sensor.nearest
 
+    @property
+    def observation(self) -> dict:
+        return {
+            "dist_to_goal": self.goal_sensor.dist / TILESIZE,
+            "dist_traveled": self.distance_traveled / TILESIZE,
+            "heading": self.heading,
+            "is_battling": self.battle,
+            "posx": self.pos.x / TILESIZE,
+            "posy": self.pos.y / TILESIZE,
+            "goal_posx": self.nearest_goal.pos.x / TILESIZE,
+            "goal_posy": self.nearest_goal.pos.y / TILESIZE,
+            "cardinal_objs": self.sensor.objs,
+            "cardinal_dists": self.sensor.dists / TILESIZE,
+        }
+
     def _collision(self) -> None:
         """Handle Agent reactions when colliding with Walls, Goals, Mobs, or Agents"""
 
@@ -211,21 +226,6 @@ class AgentAuto(AgentManual):
     def __init__(self, game, x: float, y: float, heading: int = 0):
         super().__init__(game, x, y, heading)
         self._moves = []
-
-    @property
-    def observation(self) -> dict:
-        return {
-            "dist_to_goal": self.goal_sensor.dist / TILESIZE,
-            "dist_traveled": self.distance_traveled / TILESIZE,
-            "heading": self.heading,
-            "is_battling": self.battle,
-            "posx": self.pos.x / TILESIZE,
-            "posy": self.pos.y / TILESIZE,
-            "goal_posx": self.nearest_goal.pos.x / TILESIZE,
-            "goal_posy": self.nearest_goal.pos.y / TILESIZE,
-            "cardinal_objs": self.sensor.objs,
-            "cardinal_dists": self.sensor.dists / TILESIZE,
-        }
 
     def move(self, key: int) -> None:
         """Append a move (key press) to move list"""

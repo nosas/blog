@@ -53,12 +53,13 @@ class CardinalSensor(Sensor):
         """Return an object that is closest to the sprite in some direction NSEW"""
         nearest_obj = None
         nearest_obj_dist = maxsize
+        # This for loop can be refactored. Lots of unneeded calculations here
         for obj in self._collisions:
             obj_rect_coord = {
-                "N": obj.rect.midbottom,
-                "S": obj.rect.midtop,
-                "E": obj.rect.midleft,
-                "W": obj.rect.midright,
+                "N": pg.Vector2(self.agent.pos.x, obj.rect.bottom),
+                "S": pg.Vector2(self.agent.pos.x, obj.rect.top),
+                "E": pg.Vector2(obj.rect.left, self.agent.pos.y),
+                "W": pg.Vector2(obj.rect.right, self.agent.pos.y),
             }
             dist = calculate_point_dist(
                 point1=self.agent.pos, point2=obj_rect_coord[direction]

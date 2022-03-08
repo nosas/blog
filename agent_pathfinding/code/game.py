@@ -83,8 +83,29 @@ class Game:
             [sensor.draw() for sensor in self.sensors]
         if self.debug:
             self._draw_debug()
+        self._draw_agent_obs()
         self._draw_game_info()
         pg.display.update()
+
+    def _draw_agent_obs(self) -> None:
+        obs = self.agent.observation
+        # x, y, width, height
+        box = pg.Rect(76 * TILESIZE, 1 * TILESIZE, 22 * TILESIZE, (len(obs) + 1) * 16)
+        pg.draw.rect(surface=self.screen, color=WHITE, rect=box)
+
+        font = pg.font.SysFont("monospace", 12)
+
+        for offset, key in enumerate(obs.keys()):
+            value = obs[key]
+            if isinstance(value, float):
+                s = f"{key}: {obs[key]:.2f}"
+            elif key == "cardinal_dists":  # this is hacky, sorry :(
+                s = f"{key}: {obs['cardinal_dists'].round(2)}"
+            else:
+                s = f"{key}: {obs[key]}"
+
+            text = font.render(s, False, BLACK)
+            self.screen.blit(text, (box.x + 5, box.y + text.get_height() * offset))
 
     def _draw_debug(self) -> None:
         # Agent-specific debug outputs

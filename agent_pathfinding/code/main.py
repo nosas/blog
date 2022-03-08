@@ -9,7 +9,7 @@ maps = {
 }
 
 if __name__ == "__main__":
-    manual = 0
+    manual = 1
     g = Game(manual=manual, map_name=maps[2])
 
     if manual:
