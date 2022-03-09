@@ -120,17 +120,42 @@ class AgentManual(Agent):
         return self.goal_sensor.nearest
 
     @property
+    def is_headed_to_goal(self) -> bool:
+        def angle_is_between(angle: float, min_a: float, max_a: float) -> bool:
+            min_a = min_a % 360
+            max_a = max_a % 360
+
+            if (min_a < max_a):
+                return min_a <= angle <= max_a
+            return min_a <= angle or angle <= max_a
+
+        angle_range = 15
+        angles = [
+            (90-angle_range, 90+angle_range),    # North
+            (270-angle_range, 270+angle_range),  # South
+            (0-angle_range, 0+angle_range),      # East
+            (180-angle_range, 180+angle_range)   # West
+        ]
+        if 1 in self.sensor.objs:  # If there's a Goal in Agent's line-of-sight
+            idx = self.sensor.objs.index(1)
+            min_angle, max_angle = angles[idx]
+            return angle_is_between(self.heading, min_angle, max_angle)
+        return False
+
+    @property
     def observation(self) -> dict:
         return {
             "dist_to_goal": self.goal_sensor.dist / TILESIZE,
             "dist_traveled": self.distance_traveled / TILESIZE,
             "heading": self.heading,
             "is_battling": self.battle,
+            "is_headed_to_goal": self.is_headed_to_goal,
+            "is_hitting_wall": self.sensor.is_hitting_wall,
             "is_in_corner": self.sensor.is_in_corner,
             "posx": self.pos.x / TILESIZE,
             "posy": self.pos.y / TILESIZE,
-            "goal_posx": self.nearest_goal.pos.x / TILESIZE,
-            "goal_posy": self.nearest_goal.pos.y / TILESIZE,
+            "delta_goal_posx": (self.nearest_goal.pos.x - self.pos.x) / TILESIZE,
+            "delta_goal_posy": (self.nearest_goal.pos.y - self.pos.y) / TILESIZE,
             "cardinal_objs": self.sensor.objs,
             "cardinal_dists": self.sensor.dists / TILESIZE,
         }

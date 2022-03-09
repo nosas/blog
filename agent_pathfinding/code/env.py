@@ -1,7 +1,9 @@
 import numpy as np
+import pandas as pd
 
 import gym
 
+from collections import deque
 from config import TILESIZE, WIDTH, HEIGHT
 from math import sqrt
 from sys import maxsize
@@ -41,6 +43,7 @@ class GameEnv(gym.Env):
                     low=0, high=360, dtype=np.float32, shape=(1, 1)
                 ),
                 "is_battling": gym.spaces.Discrete(2),
+                "is_headed_to_goal": gym.spaces.Discrete(2),
                 "is_in_corner": gym.spaces.Discrete(2),
                 "posx": gym.spaces.Box(
                     low=0, high=WIDTH / TILESIZE, dtype=np.float32, shape=(1, 1)
@@ -48,11 +51,17 @@ class GameEnv(gym.Env):
                 "posy": gym.spaces.Box(
                     low=0, high=HEIGHT / TILESIZE, dtype=np.float32, shape=(1, 1)
                 ),
-                "goal_posx": gym.spaces.Box(
-                    low=0, high=WIDTH / TILESIZE, dtype=np.float32, shape=(1, 1)
+                "delta_goal_posx": gym.spaces.Box(
+                    low=-WIDTH / TILESIZE,
+                    high=WIDTH / TILESIZE,
+                    dtype=np.float32,
+                    shape=(1, 1),
                 ),
-                "goal_posy": gym.spaces.Box(
-                    low=0, high=HEIGHT / TILESIZE, dtype=np.float32, shape=(1, 1)
+                "delta_goal_posy": gym.spaces.Box(
+                    low=-HEIGHT / TILESIZE,
+                    high=HEIGHT / TILESIZE,
+                    dtype=np.float32,
+                    shape=(1, 1),
                 ),
                 "cardinal_objs": gym.spaces.Box(
                     low=-1, high=2, dtype=np.int8, shape=(1, 4)
@@ -64,38 +73,54 @@ class GameEnv(gym.Env):
         )
 
         self.game = game
+        self._history_len = 100
+        self._prev_obs = deque(maxlen=self._history_len)
         self._max_distance = maxsize
 
     @property
     def max_distance(self) -> int:
         return self._max_distance
 
+    @property
+    def _prev_obs_df(self) -> pd.DataFrame:
+        return pd.DataFrame(self._prev_obs)
+
     def calculate_reward(self, obs) -> float:
-        if obs["is_battling"]:  # -1000 if Battle is not the Goal
-            reward = -100
-        elif obs["dist_to_goal"] < 0.7:  # +1000 if dist_to_goal < 0.7
-            # ! This is not good, we will refactor in the following commit
-            reward = 500 + (
-                2000 * min(0, (1 - obs["dist_traveled"] / self.max_distance))
-            )
-        else:  # Increase reward when Agent travels further distance
-            reward = -1
-            # If the Agent moved at least 0.1 of a tile
-            if self.prev_dist_traveled - obs["dist_traveled"] > 0.5:
-                self.prev_dist_traveled = obs["dist_traveled"]
-                reward += 10
+        self._prev_obs.append(obs)
+        df = self._prev_obs_df
+        reward = 0
+        additional_reward = 0
 
-            if self.prev_dist_to_goal - obs["dist_to_goal"] >= 1:
-                self.prev_dist_to_goal = obs["dist_to_goal"]
-                reward += 20
-            elif self.prev_dist_to_goal - obs["dist_to_goal"] <= 0:
-                self.prev_dist_to_goal = obs["dist_to_goal"]
-                reward -= 5
+        if obs["dist_to_goal"] < 0.7:
+            reward += 100000 * max(0, (1 - obs["dist_traveled"] / self.max_distance))
+        if df["is_in_corner"][-95:].sum() >= 95:
+            print("Get outta the corner you dingus!")
+            reward -= 50
+        # if df["is_hitting_wall"]
+        # if avg tile_position hasn't changed much in last 20-40 steps, punishment
+        # if calculate_point_dist((int(posx), int(posy)), avg_tile_pos) < 5
+        # self._prev_obs_df['dist_traveled'].diff(60)[-10:].round(2)
 
-            else:
-                reward -= 1
-            if obs["is_in_corner"]:
-                reward -= 20
+        # additional_reward = df["cardinal_objs"][:10].apply(lambda x: 1 in x).sum()
+        additional_reward = 0
+        if 1 in obs['cardinal_objs']:
+            additional_reward += 2
+        if obs['is_headed_to_goal']:
+            additional_reward += 40
+        slowed_down = self._prev_obs_df['dist_traveled'].diff(60)[-40:].mean() < 3
+        if slowed_down:
+            reward -= 1
+        if any(obs["is_hitting_wall"]) and slowed_down:
+            reward -= 10
+
+        # Reward 0 to 14 for being close to the goal (within 100 tiles)
+        if obs["dist_to_goal"] < 15:
+            reward += (
+                max(1, (100 - int(obs["dist_to_goal"]))) * max(1, additional_reward)
+            ) / 100
+        else:
+            reward -= 1
+        reward += additional_reward
 
         return reward
 
@@ -103,6 +128,7 @@ class GameEnv(gym.Env):
         """Set Game to clean state and return Agent's initial observation"""
         self.game.new()
         obs = self.game.agent.observation
+        self._prev_obs = deque([obs] * self._history_len, maxlen=self._history_len)
 
         self.prev_dist_traveled = obs["dist_traveled"]
         self.prev_dist_to_goal = obs["dist_to_goal"]

@@ -3,7 +3,7 @@ import pygame as pg
 
 
 def calculate_point_dist(point1, point2) -> float:
-    """Calculate the distance between two points"""
+    """Calculate the (Euclidean) distance between two points"""
     # if type(point1) == pg.math.Vector2:
     point1 = np.asarray(point1)
     # if type(point2) == pg.math.Vector2:
