@@ -1,6 +1,7 @@
 from game import Game
 
 maps = {
+    0: "map_train1.tmx",
     1: "map_goal1_straight.tmx",
     2: "map_goal2_left.tmx",
     3: "map_goal3_right_down.tmx",
@@ -9,8 +10,14 @@ maps = {
 }
 
 if __name__ == "__main__":
-    manual = 1
-    g = Game(manual=manual, map_name=maps[2])
+    manual = False
+    # g = Game(manual=manual, map_name=maps[2])
+    g = Game(
+        manual=True,
+        map_name="map_train1.tmx",
+        rand_agent_spawn=True,
+        rand_goal_spawn=True,
+    )
 
     if manual:
         while True:
@@ -26,8 +33,8 @@ if __name__ == "__main__":
         env = gym.wrappers.FlattenObservation(genv)
 
         model_class = PPO
-        model_dir = "models/PPO10_random_spawns"
-        model_path = f"{model_dir}/455000.zip"
+        model_dir = "models/PPO20_new_training_map_1"
+        model_path = f"{model_dir}/420000.zip"
         model = model_class.load(path=model_path)
 
         for _ in range(10):

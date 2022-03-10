@@ -8,7 +8,8 @@ from stable_baselines3 import A2C, PPO
 log_dir = "logs"
 model_dir = "models"
 model_class = PPO
-model_name = "PPO18_best_reward_3_1"
+model_name = "PPO20_new_training_map_4"
+old_model_name = "PPO20_new_training_map_1"
 
 # Create the log and model directories
 for dir in [log_dir, model_dir]:
@@ -17,13 +18,17 @@ for dir in [log_dir, model_dir]:
 
 # Create Game Environment for stable-baselines to utilize
 # Flatten the observation space from a dict to a vectorized np.array
-env = wrappers.FlattenObservation(GameEnv(game=Game()))
+g = Game(rand_agent_spawn=True, rand_goal_spawn=True)
+env = wrappers.FlattenObservation(GameEnv(game=g))
 env.reset()
 
 # Create the model
 # model = model_class(policy="MlpPolicy", env=env, tensorboard_log=log_dir, verbose=1)
 model = model_class.load(
-    path=f"{model_dir}/{model_name.replace('_3_1', '_3')}/500000_1.zip", env=env, tensorboard_log=log_dir, verbose=1
+    path=f"{model_dir}/{old_model_name}/500000.zip",
+    env=env,
+    tensorboard_log=log_dir,
+    verbose=1,
 )
 
 # Train the model for 2.5million timesteps
@@ -31,18 +36,7 @@ timesteps = 5000
 episodes = 100
 
 # Change Map at some timestep
-maps = {
-    timesteps: ("map_goal1_straight.tmx", 100),
-    timesteps * 5: ("map_goal2_left.tmx", 100),
-    timesteps * 10: ("map_goal3_right_down.tmx", 100),
-    timesteps * 15: ("map_goal2_left.tmx", 100),
-    timesteps * 20: ("map_goal3_right_down.tmx", 100),
-    timesteps * 38: ("map_goal1_straight.tmx", 100),
-    timesteps * 40: ("map_goal4_behind_wall.tmx", 100),
-    timesteps * 55: ("map_goal3_right_down.tmx", 100),
-    timesteps * 60: ("map_goal4_behind_wall.tmx", 100),
-    timesteps * 65: ("map_goal5_end.tmx", 150),
-}
+maps = {timesteps: ("map_train1.tmx", 75)}
 
 for episode in range(1, episodes + 1):
     print("Episode", episode)
@@ -56,6 +50,6 @@ for episode in range(1, episodes + 1):
     model.learn(
         total_timesteps=timesteps, reset_num_timesteps=False, tb_log_name=model_name
     )
-    model.save(f"{model_dir}/{model_name}/{timesteps*episode}_1")
+    model.save(f"{model_dir}/{model_name}/{timesteps*episode}")
 
 env.close()

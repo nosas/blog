@@ -12,6 +12,7 @@ from config import (
     BLACK,
     DEBUG,
     FPS,
+    GOAL_RANDOM_SPAWN,
     GREEN,
     HEIGHT,
     LIGHTGREY,
@@ -23,7 +24,7 @@ from config import (
     WIDTH,
     YELLOW,
 )
-from goals import Teleport
+from goals import Goal, Teleport
 from map import TiledMap
 from objects import Path, Sidewalk, Wall
 from typing import List, Tuple
@@ -51,7 +52,13 @@ class Game:
         pg.K_d: {"unicode": "d", "key": 100, "mod": 0, "scancode": 7, "window": None},
     }
 
-    def __init__(self, manual: bool = False, map_name: str = MAP):
+    def __init__(
+        self,
+        manual: bool = False,
+        map_name: str = MAP,
+        rand_agent_spawn: bool = AGENT_RANDOM_SPAWN,
+        rand_goal_spawn: bool = GOAL_RANDOM_SPAWN,
+    ):
         """Initialize the screen, game clock, and load game data"""
 
         self._agent_type = AgentManual if manual else AgentAuto
@@ -59,13 +66,16 @@ class Game:
 
         # Initialize pygame display and clock
         pg.init()
-        self.screen = pg.display.set_mode(size=(WIDTH, HEIGHT))
+        self.screen = pg.display.set_mode(size=(100, 100))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self._load_data()
+        self.screen = pg.display.set_mode(size=(self.map.width, self.map.height))
 
         self.paused = False
         self.playing = True
+        self._rand_agent_spawn = rand_agent_spawn
+        self._rand_goal_spawn = rand_goal_spawn
 
         # Booleans for drawing
         self.debug = DEBUG
@@ -105,9 +115,17 @@ class Game:
 
     def _draw_agent_obs(self) -> None:
         obs = self.agent.observation
-        # x, y, width, height
-        box = pg.Rect(76 * TILESIZE, 1 * TILESIZE, 22 * TILESIZE, (len(obs) + 1) * 16)
-        pg.draw.rect(surface=self.screen, color=WHITE, rect=box)
+        if "box_obs" in self.map.properties:
+            box_obs = self.map.properties["box_obs"]
+            box = pg.Rect(
+                # x, y, width, height
+                box_obs[0], box_obs[1], 22 * TILESIZE, (len(obs) + 1) * TILESIZE
+            )
+        else:
+            box = pg.Rect(
+                76 * TILESIZE, 1 * TILESIZE, 22 * TILESIZE, (len(obs) + 1) * TILESIZE
+            )
+        pg.draw.rect(surface=self.screen, color=BLACK, rect=box)
 
         font = pg.font.SysFont("monospace", 12)
 
@@ -120,7 +138,7 @@ class Game:
             else:
                 s = f"{key}: {obs[key]}"
 
-            text = font.render(s, False, BLACK)
+            text = font.render(s, False, WHITE)
             self.screen.blit(text, (box.x + 5, box.y + text.get_height() * offset))
 
     def _draw_debug(self) -> None:
@@ -162,10 +180,14 @@ class Game:
         """Draw Agent's coords, velocity, sensors"""
         # ! We need a cleaner way to display text, this is getting out of control
 
-        box = pg.Rect(25, 25, 300, 150)
-        pg.draw.rect(surface=self.screen, color=WHITE, rect=box)
+        if "box_game" in self.map.properties:
+            box_game = self.map.properties["box_game"]
+            box = pg.Rect(box_game[0], box_game[1], 300, 150)
+        else:
+            box = pg.Rect(25, 25, 300, 150)
+        pg.draw.rect(surface=self.screen, color=BLACK, rect=box)
 
-        font = pg.font.SysFont("monospace", 14)
+        font = pg.font.SysFont("monospace", 12)
 
         gi = self._game_info
         for offset, key in enumerate(gi):
@@ -174,13 +196,11 @@ class Game:
             if isinstance(val, float):
                 s = f"{key}: {val:.2f}"
             # elif "Position" in key:  # this is hacky, sorry :(
-
             # s = f"{key}: ({val[0]:.2f}, {val[1]:.2f})"
-
             else:
                 s = f"{key}: {val}"
 
-            text = font.render(s, False, BLACK)
+            text = font.render(s, False, WHITE)
             self.screen.blit(text, (box.x + 5, box.y + text.get_height() * offset))
 
     def _events(self) -> None:
@@ -233,6 +253,7 @@ class Game:
         self.map_img = self.map.make_map()
         self._map_name = map_name
         self._map_rect = self.map_img.get_rect()
+        return self.map
 
     def _post_event(self, events: List[Tuple[str, pg.event.Event]]) -> None:
         """Add a custom event (key press) to the Game's Event queue"""
@@ -289,12 +310,6 @@ class Game:
             if name == "agent":
                 offset = TILESIZE / 2  # Center Agent's position to tile's center
                 heading = 0
-                if AGENT_RANDOM_SPAWN:
-                    # TODO Verify Agent doesn't spawn on mob, battle, agent, tp, door
-                    road = choice(self.roads.sprites())
-                    x = road.x
-                    y = road.y
-                    heading = random() * 360
                 agent_spawn = {"x": x + offset, "y": y + offset, "heading": heading}
             elif type == "road":
                 if name == "sidewalk":
@@ -322,6 +337,24 @@ class Game:
 
         while len(self.mobs.sprites()) < NUM_MOBS:
             Mob(game=self, path=choice(self.paths.sprites()))
+
+        if self._rand_goal_spawn:
+            rand_tpos = self.map.get_random_tile()
+            while self.map.get_tile_type(rand_tpos.x, rand_tpos.y) == "wall":
+                rand_tpos = self.map.get_random_tile()
+            goal_spawn = {"x": rand_tpos.x * TILESIZE, "y": rand_tpos.y * TILESIZE}
+            Goal(game=self, **goal_spawn)
+
+        if self._rand_agent_spawn:
+            # TODO Verify Agent doesn't spawn on mob, battle, agent, tp, door
+            rand_tpos = self.map.get_random_tile()
+            while self.map.get_tile_type(rand_tpos.x, rand_tpos.y) == "wall":
+                rand_tpos = self.map.get_random_tile()
+            agent_spawn = {
+                "x": rand_tpos.x * TILESIZE,
+                "y": rand_tpos.y * TILESIZE,
+                "heading": random() * 360,
+            }
 
         self.agent = self._agent_type(game=self, **agent_spawn)
 

@@ -67,6 +67,11 @@ class Agent(pg.sprite.Sprite):
         self.heading = heading
         self.hit_rect = AGENT_HIT_RECT.copy()
 
+    @property
+    def tpos(self) -> pg.Vector2:
+        """Return Agent's tile position instead of pixel (world) position"""
+        return pg.Vector2(self.pos) / TILESIZE
+
     @abstractmethod
     def _move(self) -> None:
         """Handle key input and Agent movement"""
@@ -125,19 +130,20 @@ class AgentManual(Agent):
             min_a = min_a % 360
             max_a = max_a % 360
 
-            if (min_a < max_a):
+            if min_a < max_a:
                 return min_a <= angle <= max_a
             return min_a <= angle or angle <= max_a
 
         angle_range = 15
         angles = [
-            (90-angle_range, 90+angle_range),    # North
-            (270-angle_range, 270+angle_range),  # South
-            (0-angle_range, 0+angle_range),      # East
-            (180-angle_range, 180+angle_range)   # West
+            (90 - angle_range, 90 + angle_range),  # North
+            (270 - angle_range, 270 + angle_range),  # South
+            (0 - angle_range, 0 + angle_range),  # East
+            (180 - angle_range, 180 + angle_range),  # West
         ]
-        if 1 in self.sensor.objs:  # If there's a Goal in Agent's line-of-sight
-            idx = self.sensor.objs.index(1)
+        goal_id = CardinalSensor._obj_types["Goal"]
+        if goal_id in self.sensor.objs:  # If there's a Goal in Agent's line-of-sight
+            idx = self.sensor.objs.index(goal_id)
             min_angle, max_angle = angles[idx]
             return angle_is_between(self.heading, min_angle, max_angle)
         return False
@@ -145,19 +151,19 @@ class AgentManual(Agent):
     @property
     def observation(self) -> dict:
         return {
-            "dist_to_goal": self.goal_sensor.dist / TILESIZE,
-            "dist_traveled": self.distance_traveled / TILESIZE,
+            "dist_to_goal": self.goal_sensor.dist,
+            "dist_traveled": self.distance_traveled,
             "heading": self.heading,
             "is_battling": self.battle,
             "is_headed_to_goal": self.is_headed_to_goal,
             "is_hitting_wall": self.sensor.is_hitting_wall,
             "is_in_corner": self.sensor.is_in_corner,
-            "posx": self.pos.x / TILESIZE,
-            "posy": self.pos.y / TILESIZE,
-            "delta_goal_posx": (self.nearest_goal.pos.x - self.pos.x) / TILESIZE,
-            "delta_goal_posy": (self.nearest_goal.pos.y - self.pos.y) / TILESIZE,
+            "tposx": self.tpos.x,
+            "tposy": self.tpos.y,
+            "delta_goal_tposx": self.nearest_goal.tpos.x - self.tpos.x,
+            "delta_goal_tposy": self.nearest_goal.tpos.y - self.tpos.y,
             "cardinal_objs": self.sensor.objs,
-            "cardinal_dists": self.sensor.dists / TILESIZE,
+            "cardinal_dists": self.sensor.dists,
         }
 
     def _collision(self) -> None:
@@ -172,7 +178,7 @@ class AgentManual(Agent):
                 collided=collide_hit_rect,
             )
             if goal:
-                print(f"Reached goal, traveled {int(self.distance_traveled/TILESIZE)}")
+                print(f"Reached goal, traveled {self.distance_traveled:.2f}")
                 # TODO Different interaction based on Goal type: Teleport, Mob, Door
                 self.game.playing = False
 
@@ -226,14 +232,14 @@ class AgentManual(Agent):
     def update(self) -> None:
         """Update Agent's position, image, and collisions on every Game tick"""
         if not self.battle:
-            old_pos = pg.Vector2(self.pos)
+            old_tpos = self.tpos
             # Update position
             self._move()
             # Adjust image
             self.draw()
             # Handle collisions
             self._collision()
-            if self.game.map.is_a_tile(self.pos):
+            if self.game.map.is_a_tile(tx=self.tpos.x, ty=self.tpos.y):
                 # Re-align image.rect to hit_rect
                 self.rect.center = self.hit_rect.center
                 self.last_valid_pos = pg.Vector2(self.pos.x, self.pos.y)
@@ -243,9 +249,10 @@ class AgentManual(Agent):
                 self.rect.center = self.pos
                 self.hit_rect.center = self.rect.center
             # Accumulate distance traveled
-            self.distance_traveled += calculate_point_dist(
-                point1=old_pos, point2=self.pos
-            )
+            if not self.observation['is_in_corner']:
+                self.distance_traveled += calculate_point_dist(
+                    point1=old_tpos, point2=self.tpos
+                )
 
 
 class AgentAuto(AgentManual):

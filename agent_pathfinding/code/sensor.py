@@ -4,7 +4,7 @@ from sys import maxsize
 import numpy as np
 import pygame as pg
 
-from config import BLACK, RED
+from config import BLACK, RED, TILESIZE
 from helper import calculate_point_dist
 from typing import List, Tuple
 
@@ -52,7 +52,7 @@ class CardinalSensor(Sensor):
     @property
     def is_hitting_wall(self) -> List[bool]:
         # Return a list of 4 booleans [NSEW], True if Agent is hitting a Wall
-        dists = self.dists/16 < 0.7
+        dists = self.dists < 0.5
         objs = [obj == self._obj_types["Wall"] for obj in self.objs]
         return np.logical_and(dists, objs)
 
@@ -98,9 +98,12 @@ class CardinalSensor(Sensor):
 
     @property
     def dists(self) -> List[float]:
-        """Return how far away, or how long, each cardinal sensor is"""
-        return np.array(
-            [obj[1] for obj in [self._north, self._south, self._east, self._west]]
+        """Return how many tiles away, or how long, each cardinal sensor is"""
+        return (
+            np.array(
+                [obj[1] for obj in [self._north, self._south, self._east, self._west]]
+            )
+            / TILESIZE
         )
 
     @property
@@ -113,7 +116,7 @@ class CardinalSensor(Sensor):
             [self.dists[1], self.dists[3]],  # South, West
         ]
         for check in checks:
-            if (np.asarray(check) <= 8).sum() > 1:
+            if (np.asarray(check) <= 0.4).sum() > 1:
                 return True
         return False
 
@@ -189,11 +192,11 @@ class ObjectSensor(Sensor):
 
     @property
     def dist(self) -> pg.sprite.Sprite:
-        return (
-            calculate_point_dist(point1=self.agent.pos, point2=self.nearest.rect.center)
-            if self.nearest
-            else -1
-        )
+        if self.nearest:
+            nearest_tpos = pg.Vector2(self.nearest.rect.center) / TILESIZE
+            return calculate_point_dist(point1=self.agent.tpos, point2=nearest_tpos)
+        else:
+            return -1
 
     @property
     def nearest(self) -> pg.sprite.Sprite:

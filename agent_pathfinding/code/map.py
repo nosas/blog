@@ -3,6 +3,7 @@ import pygame as pg
 from pytmx import TiledTileLayer, load_pygame
 
 from config import TILESIZE
+from random import choice
 
 
 class TiledMap:
@@ -10,32 +11,57 @@ class TiledMap:
         tm = load_pygame(filename=filename, pixelalpha=True)
         self.width = int(tm.width * TILESIZE)
         self.height = int(tm.height * TILESIZE)
-        self._binary = np.zeros(shape=(tm.height, tm.width), dtype=np.bool8)
         self.tmxdata = tm
+        # Map properties for displaying game/obs/train info boxes
+        self.properties = {
+            k: np.array(v.split(",")).astype("int") * TILESIZE
+            for k, v in self.tmxdata.properties.items()
+        }
+
+        self._binary = np.zeros(shape=(tm.height, tm.width), dtype=np.bool8)
 
     @property
     def binary(self) -> np.array:
         """Return a numpy array representation of the map's tiles"""
         return self._binary
 
-    def is_a_tile(self, pos: pg.Vector2) -> bool:
-        # TODO Check if pos is out of binary map's bounds/shape
-        x = int(pos.x / TILESIZE)
-        y = int(pos.y / TILESIZE)
+    def get_random_tile(self) -> pg.Vector2:
+        """Return tile position of a random tile"""
+        tx, ty = choice(np.argwhere(np.array(self._binary) == 1))
+        return pg.Vector2(tx, ty)
+
+    def get_tile_type(self, tx: int, ty: int) -> str:
+        tx = int(tx)
+        ty = int(ty)
+
+        if not self.is_a_tile(tx=tx, ty=ty):
+            return None
+
+        for lid in self.tmxdata.visible_tile_layers:
+            lname = self.tmxdata.layers[lid].name
+            ldata = np.asarray(self.tmxdata.layers[lid].data)
+            try:
+                if ldata[ty][tx] != 0:
+                    return lname
+            except ValueError:
+                pass
+
+    def is_a_tile(self, tx: int, ty: int) -> bool:
+        # TODO Check if pos (tilex, tiley) is out of binary map's bounds/shape
+        tx, ty = (int(tx), int(ty))
 
         checks = [
-            0 > x or x >= self.binary.shape[1],
-            0 > y or y >= self.binary.shape[0],
+            0 > tx or tx >= self.binary.shape[1],
+            0 > ty or ty >= self.binary.shape[0],
         ]
         if any(checks):
             return False
-        return self.binary[y][x]
+        return self.binary[ty][tx]
 
     def render(self, surface: pg.Surface) -> None:
         ti = self.tmxdata.get_tile_image_by_gid
         for layer in self.tmxdata.visible_layers:
             if isinstance(layer, TiledTileLayer):
-                # ! Not a fan of black's formatting decision here
                 for (x, y, gid) in layer:
                     tile = ti(gid)
                     if tile:
