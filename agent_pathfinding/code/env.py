@@ -6,6 +6,7 @@ import gym
 from collections import deque
 from config import TILESIZE, WIDTH, HEIGHT
 from math import sqrt
+from sensor import CardinalSensor
 from typing import Tuple
 
 
@@ -26,6 +27,9 @@ class GameEnv(gym.Env):
                     low=0, high=np.inf, dtype=np.float32, shape=(1, 1)
                 ),
                 "heading": gym.spaces.Box(
+                    low=0, high=360, dtype=np.float32, shape=(1, 1)
+                ),
+                "heading_goal": gym.spaces.Box(
                     low=0, high=360, dtype=np.float32, shape=(1, 1)
                 ),
                 "is_battling": gym.spaces.Discrete(2),
@@ -79,7 +83,7 @@ class GameEnv(gym.Env):
         additional_reward = 0
 
         if obs["dist_to_goal"] < 0.7:
-            # [0, [10,000, 1,000,000]] reward
+            # [0, [1.0000, 1,000.000]] reward
             print("WOOHOOOOOOOOOOOOOOOOOOOOOO")
             reward += 1000000 * max(0, (1 - obs["dist_traveled"] / self.max_distance))
         if df["is_in_corner"].sum() >= 95:
@@ -92,40 +96,30 @@ class GameEnv(gym.Env):
 
         # additional_reward = df["cardinal_objs"][:10].apply(lambda x: 1 in x).sum()
         additional_reward = 0
-        if 1 in obs["cardinal_objs"]:
-            additional_reward += 1
+        if CardinalSensor._obj_types["Goal"] in obs["cardinal_objs"]:
+            additional_reward += 0.5
         if obs["is_headed_to_goal"]:
-            # TODO improve headed to goal
+            additional_reward += 1
+        # Hacky way to reward movement towards the Goal
+        if (df.dist_to_goal[-60:] - df.dist_to_goal[-60:].shift(1)).sum() < -1 and (
+            df.dist_traveled[-60:] - df.dist_traveled[-60:].shift(1)
+        ).sum() > 1:
             additional_reward += 3
 
-        # dt = df['dist_traveled'].diff()
-        # dg = df['dist_to_goal'].diff()
-        # dtg = np.array(dt-dg)
-        # if dtg[-30:].sum() > 2:
-        #     print("good")
         # past 60 observations < 1 tile movement
-        delta_dist_last_second = self._prev_obs_df["dist_traveled"].diff()[-60:].sum()
-        if delta_dist_last_second < 4:
+        delta_dist_last_second = df["dist_traveled"].diff()[-60:].sum()
+        if delta_dist_last_second < 8:
             print("Slow poke")
-            reward -= 0.8
-        elif delta_dist_last_second > 14:
-            print("Holy moly")
-            additional_reward += 0.45
-        else:
-            additional_reward += 0.05
+            reward -= 4.75
 
-        slowed_down = self._prev_obs_df["dist_traveled"].diff(2)[-60:].mean() < 0.22
+        slowed_down = df["dist_traveled"].diff(2)[-60:].mean() < 0.24
         if any(obs["is_hitting_wall"]) and slowed_down:
             print("Stop hitting walls and slowing down!")
             reward -= 10
 
-        # Reward 0.05 -> 0.75 for being close to the goal (within 100 tiles)
-        if obs["dist_to_goal"] < 15:
-            reward += (
-                max(1, (15 - int(obs["dist_to_goal"]))) * max(1, additional_reward)
-            ) / 100
-        else:
-            reward -= 0.3
+        # Reward 0.005 -> 0.025  for being close to the goal (within 10 tiles)
+        if obs["dist_to_goal"] < 10:
+            reward += max(1, (5 - int(obs["dist_to_goal"]))) / 200
         reward += additional_reward
 
         return reward
@@ -138,9 +132,6 @@ class GameEnv(gym.Env):
 
         self.prev_dist_traveled = obs["dist_traveled"]
         self.prev_dist_to_goal = obs["dist_to_goal"]
-        self.set_max_distance(
-            max_distance=max(self.max_distance, obs["dist_to_goal"] * 2)
-        )
 
         return obs
 

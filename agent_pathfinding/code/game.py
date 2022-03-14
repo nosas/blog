@@ -84,15 +84,13 @@ class Game:
     @property
     def _game_info(self) -> dict:
         gi = {"Version": 0.1}
-        gi["Agent Position"] = (np.asarray(self.agent.pos),)
-        gi["Mouse Position"] = (np.asarray(pg.mouse.get_pos()),)
-        gi["Mouse AngleToAgent"] = self.agent.pos.angle_to(
-            pg.Vector2(pg.mouse.get_pos())
-        )
+        gi["Agent Position"] = np.array(self.agent.tpos).astype("int")
+        gi["Mouse Position"] = (np.array(pg.mouse.get_pos()) / TILESIZE).astype("int")
+        gi["Goal AngleToAgent"] = self.agent.goal_sensor.angle_to
         gi["Distance Traveled"] = self.agent.distance_traveled
-        gi["Reward Multiplier"] = 1000 - (self.agent.distance_traveled)
+        gi["Distance TraveledFromSpawn"] = self.agent.distance_traveled_from_spawn
         gi["Nearest Mob Dist"] = self.agent.mob_sensor.dist
-        gi["Nearest Goal Dist"] = self.agent.nearest_goal.pos
+        gi["Nearest Goal Dist"] = self.agent.nearest_goal.tpos
         return gi
 
     def _draw(self) -> None:
@@ -119,7 +117,10 @@ class Game:
             box_obs = self.map.properties["box_obs"]
             box = pg.Rect(
                 # x, y, width, height
-                box_obs[0], box_obs[1], 22 * TILESIZE, (len(obs) + 1) * TILESIZE
+                box_obs[0],
+                box_obs[1],
+                22 * TILESIZE,
+                (len(obs) + 1) * TILESIZE,
             )
         else:
             box = pg.Rect(
@@ -195,8 +196,6 @@ class Game:
 
             if isinstance(val, float):
                 s = f"{key}: {val:.2f}"
-            # elif "Position" in key:  # this is hacky, sorry :(
-            # s = f"{key}: ({val[0]:.2f}, {val[1]:.2f})"
             else:
                 s = f"{key}: {val}"
 

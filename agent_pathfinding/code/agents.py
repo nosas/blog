@@ -21,7 +21,12 @@ from config import (
     YELLOW,
 )
 from goals import Goal
-from helper import calculate_point_dist, collide_hit_rect, collide_with_walls
+from helper import (
+    angle_is_between,
+    calculate_point_dist,
+    collide_hit_rect,
+    collide_with_walls,
+)
 from objects import Path
 from sensor import CardinalSensor, ObjectSensor
 from typing import List, Tuple
@@ -60,12 +65,19 @@ class Agent(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
 
         # Position and movement attributes
+        self.distance_traveled = 0
         self.pos = pg.Vector2(x, y)
-        self.spawn = pg.Vector2(x, y)
         self.last_valid_pos = pg.Vector2(x, y)
+        self.spawn = pg.Vector2(x, y)
+
         self.vel = pg.Vector2(0, 0)
         self.heading = heading
         self.hit_rect = AGENT_HIT_RECT.copy()
+
+    @property
+    def distance_traveled_from_spawn(self) -> float:
+        """Return distance traveled (in tiles) from the Agent's spawn"""
+        return calculate_point_dist(point1=self.pos, point2=self.spawn) / TILESIZE
 
     @property
     def tpos(self) -> pg.Vector2:
@@ -105,7 +117,6 @@ class AgentManual(Agent):
         self.image = game.agent_img
         self.rect = self.image.get_rect()
         self.hit_rect.center = self.rect.center
-        self.distance_traveled = 0
         self.battle = False
 
         self.goal_sensor = ObjectSensor(
@@ -122,38 +133,25 @@ class AgentManual(Agent):
 
     @property
     def nearest_goal(self) -> Goal:
-        return self.goal_sensor.nearest
+        return self.goal_sensor.nearest if self.goal_sensor.nearest else self
 
     @property
     def is_headed_to_goal(self) -> bool:
-        def angle_is_between(angle: float, min_a: float, max_a: float) -> bool:
-            min_a = min_a % 360
-            max_a = max_a % 360
-
-            if min_a < max_a:
-                return min_a <= angle <= max_a
-            return min_a <= angle or angle <= max_a
-
-        angle_range = 15
-        angles = [
-            (90 - angle_range, 90 + angle_range),  # North
-            (270 - angle_range, 270 + angle_range),  # South
-            (0 - angle_range, 0 + angle_range),  # East
-            (180 - angle_range, 180 + angle_range),  # West
-        ]
-        goal_id = CardinalSensor._obj_types["Goal"]
-        if goal_id in self.sensor.objs:  # If there's a Goal in Agent's line-of-sight
-            idx = self.sensor.objs.index(goal_id)
-            min_angle, max_angle = angles[idx]
-            return angle_is_between(self.heading, min_angle, max_angle)
-        return False
+        angle_range = 30  # FOV, Agent's field of view
+        return angle_is_between(
+            angle=self.heading,
+            min_a=self.goal_sensor.angle_to - angle_range,
+            max_a=self.goal_sensor.angle_to + angle_range,
+        )
 
     @property
     def observation(self) -> dict:
         return {
             "dist_to_goal": self.goal_sensor.dist,
             "dist_traveled": self.distance_traveled,
+            # "dist_traveled_from_spawn": self.distance_traveled_from_spawn,
             "heading": self.heading,
+            "heading_goal": self.goal_sensor.angle_to,
             "is_battling": self.battle,
             "is_headed_to_goal": self.is_headed_to_goal,
             "is_hitting_wall": self.sensor.is_hitting_wall,
@@ -249,7 +247,7 @@ class AgentManual(Agent):
                 self.rect.center = self.pos
                 self.hit_rect.center = self.rect.center
             # Accumulate distance traveled
-            if not self.observation['is_in_corner']:
+            if not self.observation["is_in_corner"]:
                 self.distance_traveled += calculate_point_dist(
                     point1=old_tpos, point2=self.tpos
                 )

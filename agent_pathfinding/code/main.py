@@ -13,8 +13,8 @@ if __name__ == "__main__":
     manual = False
     # g = Game(manual=manual, map_name=maps[2])
     g = Game(
-        manual=True,
-        map_name="map_train1.tmx",
+        manual=manual,
+        map_name=maps[0],
         rand_agent_spawn=True,
         rand_goal_spawn=True,
     )
@@ -33,8 +33,8 @@ if __name__ == "__main__":
         env = gym.wrappers.FlattenObservation(genv)
 
         model_class = PPO
-        model_dir = "models/PPO20_new_training_map_1"
-        model_path = f"{model_dir}/420000.zip"
+        model_dir = "models/PPO27_genius"
+        model_path = f"{model_dir}/940000.zip"
         model = model_class.load(path=model_path)
 
         for _ in range(10):

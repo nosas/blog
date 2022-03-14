@@ -2,6 +2,15 @@ import numpy as np
 import pygame as pg
 
 
+def angle_is_between(angle: float, min_a: float, max_a: float) -> bool:
+    min_a = min_a % 360
+    max_a = max_a % 360
+
+    if min_a < max_a:
+        return min_a <= angle <= max_a
+    return min_a <= angle or angle <= max_a
+
+
 def calculate_point_dist(point1, point2) -> float:
     """Calculate the (Euclidean) distance between two points"""
     # if type(point1) == pg.math.Vector2:

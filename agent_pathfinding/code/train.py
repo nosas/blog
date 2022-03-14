@@ -8,8 +8,8 @@ from stable_baselines3 import A2C, PPO
 log_dir = "logs"
 model_dir = "models"
 model_class = PPO
-model_name = "PPO20_new_training_map_4"
-old_model_name = "PPO20_new_training_map_1"
+model_name = "PPO31_full_map"
+# old_model_name = "PPO22_GARBO"
 
 # Create the log and model directories
 for dir in [log_dir, model_dir]:
@@ -18,25 +18,25 @@ for dir in [log_dir, model_dir]:
 
 # Create Game Environment for stable-baselines to utilize
 # Flatten the observation space from a dict to a vectorized np.array
-g = Game(rand_agent_spawn=True, rand_goal_spawn=True)
+g = Game(rand_agent_spawn=0, rand_goal_spawn=0)
 env = wrappers.FlattenObservation(GameEnv(game=g))
 env.reset()
 
 # Create the model
-# model = model_class(policy="MlpPolicy", env=env, tensorboard_log=log_dir, verbose=1)
-model = model_class.load(
-    path=f"{model_dir}/{old_model_name}/500000.zip",
-    env=env,
-    tensorboard_log=log_dir,
-    verbose=1,
-)
+model = model_class(policy="MlpPolicy", env=env, tensorboard_log=log_dir, verbose=1)
+# model = model_class.load(
+#     path=f"{model_dir}/{old_model_name}/45000.zip",
+#     env=env,
+#     tensorboard_log=log_dir,
+#     verbose=1,
+# )
 
 # Train the model for 2.5million timesteps
-timesteps = 5000
+timesteps = 10000
 episodes = 100
 
 # Change Map at some timestep
-maps = {timesteps: ("map_train1.tmx", 75)}
+maps = {timesteps: ("map_goal5_end.tmx", 150)}
 
 for episode in range(1, episodes + 1):
     print("Episode", episode)
@@ -44,7 +44,7 @@ for episode in range(1, episodes + 1):
     if timesteps * episode in maps:
         map_name, max_distance = maps[timesteps * episode]
         env.env.game._load_map(map_name=map_name)
-        # env.set_max_distance(max_distance)
+        env.set_max_distance(max_distance)
         env.reset()
 
     model.learn(

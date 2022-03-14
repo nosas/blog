@@ -1,10 +1,11 @@
 from abc import abstractmethod
 from sys import maxsize
 
+import math
 import numpy as np
 import pygame as pg
 
-from config import BLACK, RED, TILESIZE
+from config import BLACK, RED, TILESIZE, WHITE
 from helper import calculate_point_dist
 from typing import List, Tuple
 
@@ -151,6 +152,54 @@ class CardinalSensor(Sensor):
                     width=self.line_thickness,
                 )
 
+    def _draw_rotated(self) -> None:
+        heading = self.agent.heading
+        pos = self.agent.pos
+        sensor_length = 50
+
+        # Forward
+        x = pos[0] + math.cos(math.radians(heading)) * sensor_length
+        y = pos[1] - math.sin(math.radians(heading)) * sensor_length
+        r = pg.draw.line(
+            surface=self.game.screen,
+            color=WHITE,
+            start_pos=self.agent.pos,
+            end_pos=(x, y),
+            width=self.line_thickness,
+        )
+        # print(r.collidepoint(self.agent.goal_sensor.nearest.pos))
+
+        # # Right/Under
+        # x = pos[0] + math.cos(math.radians(heading + 90)) * sensor_length
+        # y = pos[1] - math.sin(math.radians(heading + 90)) * sensor_length
+        # pg.draw.line(
+        #             surface=self.game.screen,
+        #             color=WHITE,
+        #             start_pos=self.agent.pos,
+        #             end_pos=(x, y),
+        #             width=self.line_thickness,
+        #         )
+        # # Behind
+        # x = pos[0] + math.cos(math.radians(heading + 180)) * sensor_length
+        # y = pos[1] - math.sin(math.radians(heading + 180)) * sensor_length
+        # pg.draw.line(
+        #             surface=self.game.screen,
+        #             color=WHITE,
+        #             start_pos=self.agent.pos,
+        #             end_pos=(x, y),
+        #             width=self.line_thickness,
+        #         )
+        # # Left/Above
+        # x = pos[0] + math.cos(math.radians(heading + 270)) * sensor_length
+        # y = pos[1] - math.sin(math.radians(heading + 270)) * sensor_length
+        # pg.draw.line(
+        #             surface=self.game.screen,
+        #             color=WHITE,
+        #             start_pos=self.agent.pos,
+        #             end_pos=(x, y),
+        #             width=self.line_thickness,
+        #         )
+
     def _find_nearest_collision(self, direction: str) -> pg.sprite.Sprite:
         """Return an object that is closest to the sprite in some direction NSEW"""
         nearest_obj = None
@@ -175,6 +224,7 @@ class CardinalSensor(Sensor):
     def draw(self):
         self._draw_north_south()
         self._draw_east_west()
+        self._draw_rotated()
 
     def update(self):
         return super().update()
@@ -189,6 +239,14 @@ class ObjectSensor(Sensor):
         self._nearest_obj = None
         self._obj_group = group
         self._find_nearest_obj()
+
+    @property
+    def angle_to(self) -> float:
+        dy = self.nearest.pos.y - self.agent.pos.y
+        dx = self.nearest.pos.x - self.agent.pos.x
+        rads = math.atan2(-dy, dx)
+        rads %= 2 * math.pi
+        return math.degrees(rads) - 180
 
     @property
     def dist(self) -> pg.sprite.Sprite:
