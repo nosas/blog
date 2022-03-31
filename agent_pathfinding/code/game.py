@@ -58,6 +58,7 @@ class Game:
         map_name: str = MAP,
         rand_agent_spawn: bool = AGENT_RANDOM_SPAWN,
         rand_goal_spawn: bool = GOAL_RANDOM_SPAWN,
+        draw_info_boxes: bool = True
     ):
         """Initialize the screen, game clock, and load game data"""
 
@@ -80,10 +81,11 @@ class Game:
         # Booleans for drawing
         self.debug = DEBUG
         self.draw_sensors = True
+        self.draw_info_boxes = draw_info_boxes
 
     @property
     def _game_info(self) -> dict:
-        gi = {"Version": 0.1}
+        gi = {"Version": 0.2}
         gi["Agent Position"] = np.array(self.agent.tpos).astype("int")
         gi["Mouse Position"] = (np.array(pg.mouse.get_pos()) / TILESIZE).astype("int")
         gi["Goal AngleToAgent"] = self.agent.goal_sensor.angle_to
@@ -107,8 +109,9 @@ class Game:
             [sensor.draw() for sensor in self.sensors]
         if self.debug:
             self._draw_debug()
-        self._draw_agent_obs()
-        self._draw_game_info()
+        if self.draw_info_boxes:
+            self._draw_agent_obs()
+            self._draw_game_info()
         pg.display.update()
 
     def _draw_agent_obs(self) -> None:
@@ -331,6 +334,8 @@ class Game:
                     height=height,
                 )
             elif type == "goal":
+                if name == "goal":
+                    Goal(game=self, x=x, y=y)
                 if name == "teleport":
                     Teleport(game=self, x=x, y=y)
 

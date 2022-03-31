@@ -116,6 +116,8 @@ class AgentManual(Agent):
         super().__init__(game=game, x=x, y=y, heading=heading)
         self.image = game.agent_img
         self.rect = self.image.get_rect()
+        # Move agent.rect to agent.spawn position
+        self.rect.move_ip(self.spawn.x, self.spawn.y)
         self.hit_rect.center = self.rect.center
         self.battle = False
 
