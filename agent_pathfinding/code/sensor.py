@@ -51,13 +51,6 @@ class CardinalSensor(Sensor):
         return collisions
 
     @property
-    def is_hitting_wall(self) -> List[bool]:
-        # Return a list of 4 booleans [NSEW], True if Agent is hitting a Wall
-        dists = self.dists < 0.5
-        objs = [obj == self._obj_types["Wall"] for obj in self.objs]
-        return np.logical_and(dists, objs)
-
-    @property
     def _north(self) -> Tuple[pg.sprite.Sprite, float]:
         """Return the object (Wall/Mob/Goal) located directly North of the Agent"""
         self.rect = pg.Rect(
@@ -106,6 +99,13 @@ class CardinalSensor(Sensor):
             )
             / TILESIZE
         )
+
+    @property
+    def is_hitting_wall(self) -> List[bool]:
+        # Return a list of 4 booleans [NSEW], True if Agent is hitting a Wall
+        dists = self.dists < 0.5
+        objs = [obj == self._obj_types["Wall"] for obj in self.objs]
+        return np.logical_and(dists, objs)
 
     @property
     def is_in_corner(self) -> bool:
@@ -246,7 +246,7 @@ class ObjectSensor(Sensor):
         dx = self.nearest.pos.x - self.agent.pos.x
         rads = math.atan2(-dy, dx)
         rads %= 2 * math.pi
-        return math.degrees(rads) - 180
+        return math.degrees(rads)
 
     @property
     def dist(self) -> pg.sprite.Sprite:

@@ -133,7 +133,8 @@ class AgentManual(Agent):
 
     @property
     def nearest_goal(self) -> Goal:
-        return self.goal_sensor.nearest if self.goal_sensor.nearest else self
+        # return self.goal_sensor.nearest if self.goal_sensor.nearest else self
+        return self.goal_sensor.nearest
 
     @property
     def is_headed_to_goal(self) -> bool:
@@ -145,17 +146,26 @@ class AgentManual(Agent):
         )
 
     @property
+    def reached_goal(self) -> List[pg.sprite.Sprite]:
+        # return self.goal_sensor.dist < 0.7
+        return pg.sprite.spritecollide(
+            sprite=self,
+            group=self.game.goals,
+            dokill=False,
+            collided=collide_hit_rect,
+        )
+
+    @property
     def observation(self) -> dict:
         return {
             "dist_to_goal": self.goal_sensor.dist,
             "dist_traveled": self.distance_traveled,
-            # "dist_traveled_from_spawn": self.distance_traveled_from_spawn,
             "heading": self.heading,
             "heading_goal": self.goal_sensor.angle_to,
             "is_battling": self.battle,
             "is_headed_to_goal": self.is_headed_to_goal,
-            "is_hitting_wall": self.sensor.is_hitting_wall,
-            "is_in_corner": self.sensor.is_in_corner,
+            "is_hitting_wall": any(self.sensor.is_hitting_wall),
+            "is_reached_goal": self.reached_goal != [],
             "tposx": self.tpos.x,
             "tposy": self.tpos.y,
             "delta_goal_tposx": self.nearest_goal.tpos.x - self.tpos.x,
@@ -169,16 +179,11 @@ class AgentManual(Agent):
 
         def collision_goal() -> None:
             """If Agent collides with Goal, end the Game"""
-            goal = pg.sprite.spritecollide(
-                sprite=self,
-                group=self.game.goals,
-                dokill=False,
-                collided=collide_hit_rect,
-            )
-            if goal:
-                print(f"Reached goal, traveled {self.distance_traveled:.2f}")
-                # TODO Different interaction based on Goal type: Teleport, Mob, Door
-                self.game.playing = False
+            if self.reached_goal:
+                # print(f"Reached goal, traveled {self.distance_traveled:.2f}")
+                # # TODO Different interaction based on Goal type: Teleport, Mob, Door
+                # self.game.playing = False
+                pass
 
         def collision_mob() -> None:
             """If Agent collides with any Mob, both enter Battle and cannot move"""
@@ -187,7 +192,7 @@ class AgentManual(Agent):
                 print("Entering battle")
                 self.battle = True
                 mobs[0].battle = True
-                self.game.playing = False
+                # self.game.playing = False
 
         def collision_wall() -> None:
             """Check for Wall collisions, prevent Agent from breaching Wall perimeter"""
@@ -241,16 +246,15 @@ class AgentManual(Agent):
                 # Re-align image.rect to hit_rect
                 self.rect.center = self.hit_rect.center
                 self.last_valid_pos = pg.Vector2(self.pos.x, self.pos.y)
+                # Accumulate distance traveled
+                self.distance_traveled += calculate_point_dist(
+                    point1=old_tpos, point2=self.tpos
+                )
             else:
                 # ! Fixes #16 Prevent Agent from escaping Map's perimeter in training
                 self.pos = pg.Vector2(self.last_valid_pos.x, self.last_valid_pos.y)
                 self.rect.center = self.pos
                 self.hit_rect.center = self.rect.center
-            # Accumulate distance traveled
-            if not self.observation["is_in_corner"]:
-                self.distance_traveled += calculate_point_dist(
-                    point1=old_tpos, point2=self.tpos
-                )
 
 
 class AgentAuto(AgentManual):

@@ -339,7 +339,7 @@ class Game:
 
         if self._rand_goal_spawn:
             rand_tpos = self.map.get_random_tile()
-            while self.map.get_tile_type(rand_tpos.x, rand_tpos.y) == "wall":
+            while self.map.get_tile_type(rand_tpos.x, rand_tpos.y) in ["wall", None]:
                 rand_tpos = self.map.get_random_tile()
             goal_spawn = {"x": rand_tpos.x * TILESIZE, "y": rand_tpos.y * TILESIZE}
             Goal(game=self, **goal_spawn)
@@ -347,7 +347,7 @@ class Game:
         if self._rand_agent_spawn:
             # TODO Verify Agent doesn't spawn on mob, battle, agent, tp, door
             rand_tpos = self.map.get_random_tile()
-            while self.map.get_tile_type(rand_tpos.x, rand_tpos.y) == "wall":
+            while self.map.get_tile_type(rand_tpos.x, rand_tpos.y) in ["wall", None]:
                 rand_tpos = self.map.get_random_tile()
             agent_spawn = {
                 "x": rand_tpos.x * TILESIZE,

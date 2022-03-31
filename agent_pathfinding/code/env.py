@@ -6,7 +6,6 @@ import gym
 from collections import deque
 from config import TILESIZE, WIDTH, HEIGHT
 from math import sqrt
-from sensor import CardinalSensor
 from typing import Tuple
 
 
@@ -34,7 +33,8 @@ class GameEnv(gym.Env):
                 ),
                 "is_battling": gym.spaces.Discrete(2),
                 "is_headed_to_goal": gym.spaces.Discrete(2),
-                "is_in_corner": gym.spaces.Discrete(2),
+                "is_hitting_wall": gym.spaces.Discrete(2),
+                "is_reached_goal": gym.spaces.Discrete(2),
                 "tposx": gym.spaces.Box(
                     low=0, high=WIDTH / TILESIZE, dtype=np.float32, shape=(1, 1)
                 ),
@@ -76,53 +76,27 @@ class GameEnv(gym.Env):
         return pd.DataFrame(self._prev_obs)
 
     def calculate_reward(self, obs) -> float:
-        self._prev_obs.append(obs)
-        df = self._prev_obs_df
+        def collision():
+            """Calculate the reward given when the Agent collides"""
+            if obs["is_hitting_wall"]:
+                print("Stop hitting walls!")
+                return -10
+            return 0
 
-        reward = 0
-        additional_reward = 0
+        def goal() -> int:
+            """Calculate the reward given when the Agent reaches the Goal or moves"""
+            if obs["is_reached_goal"]:
+                print(
+                    f"Reached Goal in {int(obs['dist_traveled'])}/{self.max_distance} tiles"
+                )
+                return 10
+            return self._prev_obs[-1]["dist_to_goal"] - obs["dist_to_goal"]
 
-        if obs["dist_to_goal"] < 0.7:
-            # [0, [1.0000, 1,000.000]] reward
-            print("WOOHOOOOOOOOOOOOOOOOOOOOOO")
-            reward += 1000000 * max(0, (1 - obs["dist_traveled"] / self.max_distance))
-        if df["is_in_corner"].sum() >= 95:
-            print("Get outta the corner you dingus!")
-            reward -= 10
-        # if df["is_hitting_wall"]
-        # if avg tile_position hasn't changed much in last 20-40 steps, punishment
-        # if calculate_point_dist((int(posx), int(posy)), avg_tile_pos) < 5
-        # self._prev_obs_df['dist_traveled'].diff(60)[-10:].round(2)
+        rew_coll = collision()
+        rew_goal = goal()
+        rew_total = rew_coll + rew_goal
 
-        # additional_reward = df["cardinal_objs"][:10].apply(lambda x: 1 in x).sum()
-        additional_reward = 0
-        if CardinalSensor._obj_types["Goal"] in obs["cardinal_objs"]:
-            additional_reward += 0.5
-        if obs["is_headed_to_goal"]:
-            additional_reward += 1
-        # Hacky way to reward movement towards the Goal
-        if (df.dist_to_goal[-60:] - df.dist_to_goal[-60:].shift(1)).sum() < -1 and (
-            df.dist_traveled[-60:] - df.dist_traveled[-60:].shift(1)
-        ).sum() > 1:
-            additional_reward += 3
-
-        # past 60 observations < 1 tile movement
-        delta_dist_last_second = df["dist_traveled"].diff()[-60:].sum()
-        if delta_dist_last_second < 8:
-            print("Slow poke")
-            reward -= 4.75
-
-        slowed_down = df["dist_traveled"].diff(2)[-60:].mean() < 0.24
-        if any(obs["is_hitting_wall"]) and slowed_down:
-            print("Stop hitting walls and slowing down!")
-            reward -= 10
-
-        # Reward 0.005 -> 0.025  for being close to the goal (within 10 tiles)
-        if obs["dist_to_goal"] < 10:
-            reward += max(1, (5 - int(obs["dist_to_goal"]))) / 200
-        reward += additional_reward
-
-        return reward
+        return rew_total
 
     def reset(self) -> float:
         """Set Game to clean state and return Agent's initial observation"""
@@ -143,8 +117,15 @@ class GameEnv(gym.Env):
         self.game._update(action=action)
         obs = self.game.agent.observation
         reward = self.calculate_reward(obs=obs)
-        if obs["dist_traveled"] > self.max_distance:
-            # TODO Detect if Agent is stuck in a corner for too long
+        self._prev_obs.append(obs)
+
+        termination = [
+            obs["dist_traveled"] > self.max_distance,
+            obs["is_reached_goal"],
+            obs["is_hitting_wall"],
+        ]
+
+        if any(termination):
             self.game.playing = False
         done = not self.game.playing
         info = {}
