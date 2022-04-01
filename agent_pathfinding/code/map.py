@@ -27,7 +27,7 @@ class TiledMap:
 
     def get_random_tile(self) -> pg.Vector2:
         """Return tile position of a random tile"""
-        ty, tx = choice(np.argwhere(np.array(self._binary) == 1))
+        ty, tx = choice(np.argwhere(np.array(self.binary) == 1))
         return pg.Vector2(tx, ty)
 
     def get_tile_type(self, tx: int, ty: int) -> str:
