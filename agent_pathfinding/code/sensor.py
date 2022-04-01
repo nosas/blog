@@ -242,8 +242,8 @@ class ObjectSensor(Sensor):
 
     @property
     def angle_to(self) -> float:
-        dy = self.nearest.pos.y - self.agent.pos.y
-        dx = self.nearest.pos.x - self.agent.pos.x
+        dy = self.nearest.rect.centery - self.agent.rect.centery
+        dx = self.nearest.rect.centerx - self.agent.rect.centerx
         rads = math.atan2(-dy, dx)
         rads %= 2 * math.pi
         return math.degrees(rads)
@@ -274,8 +274,11 @@ class ObjectSensor(Sensor):
             self._nearest_obj = new_obj
             self._nearest_obj.is_nearest_obj = True
 
+        self._nearest_obj = None
         for obj in self._obj_group.sprites():
-            dist = calculate_point_dist(point1=self.agent.pos, point2=obj.pos)
+            dist = calculate_point_dist(
+                point1=self.agent.rect.center, point2=obj.rect.center
+            )
             if is_closer(obj=obj, dist=dist):
                 set_nearest_obj(new_obj=obj)
 

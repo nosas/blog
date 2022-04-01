@@ -58,7 +58,7 @@ class Game:
         map_name: str = MAP,
         rand_agent_spawn: bool = AGENT_RANDOM_SPAWN,
         rand_goal_spawn: bool = GOAL_RANDOM_SPAWN,
-        draw_info_boxes: bool = True
+        draw_info_boxes: bool = True,
     ):
         """Initialize the screen, game clock, and load game data"""
 

@@ -1,4 +1,5 @@
 from game import Game
+from goals import Goal
 
 maps = {
     0: "map_train1.tmx",
@@ -7,16 +8,18 @@ maps = {
     3: "map_goal3_right_down.tmx",
     4: "map_goal4_behind_wall.tmx",
     5: "map_goal5_end.tmx",
+    6: "map_test_sensor.tmx",
 }
 
 if __name__ == "__main__":
-    manual = False
+    manual = True
     # g = Game(manual=manual, map_name=maps[2])
     g = Game(
         manual=manual,
         map_name=maps[0],
-        rand_agent_spawn=True,
-        rand_goal_spawn=True,
+        rand_agent_spawn=False,
+        rand_goal_spawn=False,
+        draw_info_boxes=False,
     )
 
     if manual:

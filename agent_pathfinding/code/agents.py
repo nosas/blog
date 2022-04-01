@@ -117,7 +117,7 @@ class AgentManual(Agent):
         self.image = game.agent_img
         self.rect = self.image.get_rect()
         # Move agent.rect to agent.spawn position
-        self.rect.move_ip(self.spawn.x, self.spawn.y)
+        self.rect.center = pg.Vector2(self.spawn.x, self.spawn.y)
         self.hit_rect.center = self.rect.center
         self.battle = False
 
