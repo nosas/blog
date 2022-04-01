@@ -1,3 +1,4 @@
+from config import TILESIZE
 from game import Game
 from goals import Goal
 from pygame import Vector2
@@ -22,7 +23,7 @@ class TestSensor:
     game.new()
     goals = get_goal_objects(tmxdata=game.map.tmxdata)
 
-    def test_sensor_angle_to(self):
+    def test_sensor_angle_to_nsew(self):
         """Place Goals NSEW of the Agent and verify angle_to are multiples of 90 deg"""
         assert self.game._map_name == "map_test_sensor.tmx"
         expected_angles = {"north": 90, "south": 270, "east": 0, "west": 180}
@@ -30,7 +31,35 @@ class TestSensor:
         agent = self.game.agent
 
         for direction, position in self.goals.items():
-            goal = Goal(game=self.game, x=position.x, y=position.y)
+            Goal(game=self.game, x=position.x, y=position.y)
+            self.game._update()
+            angle = agent.goal_sensor.angle_to
+            assert angle == expected_angles[direction], (
+                f"{direction} angle {angle} does not match expected angle "
+                f"{expected_angles[direction]} "
+            )
+            self.game.goals.empty()
+
+    def test_sensor_angle_to_corners(self):
+        """Place Goals in corner of the Agent and verify angle_to are multiples of 90+-45 deg"""
+        assert self.game._map_name == "map_test_sensor.tmx"
+        goals = {
+            "northeast": Vector2(7, 1) * TILESIZE,
+            "northwest": Vector2(1, 1) * TILESIZE,
+            "southeast": Vector2(7, 7) * TILESIZE,
+            "southwest": Vector2(1, 7) * TILESIZE,
+        }
+        expected_angles = {
+            "northeast": 90 - 45,
+            "northwest": 90 + 45,
+            "southeast": 270 + 45,
+            "southwest": 270 - 45,
+        }
+
+        agent = self.game.agent
+
+        for direction, position in goals.items():
+            Goal(game=self.game, x=position.x, y=position.y)
             self.game._update()
             angle = agent.goal_sensor.angle_to
             assert angle == expected_angles[direction], (
