@@ -149,6 +149,7 @@ class Game:
         # Agent-specific debug outputs
         pg.draw.rect(self.screen, WHITE, self.agent.hit_rect, 0)
         self._draw_grid()
+        self._draw_path_distance()
 
         # Draw green rectangles around sidewalks
         for sidewalk in self.sidewalks:
@@ -204,6 +205,21 @@ class Game:
 
             text = font.render(s, False, WHITE)
             self.screen.blit(text, (box.x + 5, box.y + text.get_height() * offset))
+
+    def _draw_path_distance(self) -> None:
+        """Display path distance of each tile"""
+        # NOTE: Any font under 8 is unreadable
+        font = pg.font.SysFont("monospace", 8)
+
+        for tiley, row in enumerate(self.path_distance):
+            worldy = tiley * TILESIZE
+            for tilex, column in enumerate(row):
+                text = font.render(str(column), False, BLACK)
+                worldx = tilex * TILESIZE
+                self.screen.blit(
+                    text,
+                    (worldx + text.get_height() / 2, worldy + text.get_height() / 2),
+                )
 
     def _events(self) -> None:
         """Handle key buttons, mouse clicks, etc."""
@@ -286,6 +302,7 @@ class Game:
         """Create sprite groups and convert tiles into game objects"""
         self.paused = False
         self.playing = True
+        self.path_distance = []
 
         # PyGame object containers
         self.all_sprites = pg.sprite.Group()
@@ -335,9 +352,10 @@ class Game:
                 )
             elif type == "goal":
                 if name == "goal":
-                    Goal(game=self, x=x, y=y)
+                    g = Goal(game=self, x=x, y=y)
                 if name == "teleport":
-                    Teleport(game=self, x=x, y=y)
+                    g = Teleport(game=self, x=x, y=y)
+                self.generate_flow_field(tx=g.tpos.x, ty=g.tpos.y)
 
         while len(self.mobs.sprites()) < NUM_MOBS:
             Mob(game=self, path=choice(self.paths.sprites()))
@@ -361,6 +379,50 @@ class Game:
             }
 
         self.agent = self._agent_type(game=self, **agent_spawn)
+
+    def calculate_path_distance(self, startx: int, starty: int) -> List[List[int]]:
+        """Calculate each tile's path distance from a tile's pos (usually a Goal pos)
+
+        NOTE: Path distance differs from Euclidean distance because it accounts
+              for unwalkable tiles - such as Walls or obstacles - whereas Euc. distance
+              is the point-to-point, or straight-line, distance.
+        """
+
+        def is_visited(tx: int, ty: int) -> bool:
+            return path_distance[ty][tx] != 0
+
+        # Mark Wall tiles as -1 using the data from map.walls
+        # Convert boolean nparray to integer array (True values turn into 1)
+        path_distance = self.map.walls.astype("int").copy()
+        # Replace all True values (1) with -1 to indicate a Wall is present
+        path_distance[self.map.walls == 1] = -1
+
+        # Begin recursive wavefront algorithm
+        queue = []  # Keep track of unvisited, adjacent tiles
+        path_distance[starty][startx] = 1  # Initialize Goal tile with value 1
+        queue.append((startx, starty))  # Append tile to queue so we can visit adj tiles
+
+        while len(queue) > 0:
+            tx, ty = queue.pop(0)
+            # Adjacent tiles: North, South, East, West
+            adjacent_tiles = [(tx, ty - 1), (tx, ty + 1), (tx + 1, ty), (tx - 1, ty)]
+            # Append unvisited adjacent tiles to queue
+            for tile in adjacent_tiles:
+                adjx, adjy = tile
+                # Verify the adjacent tile is a valid tile (Wall, Road, in Map's bounds)
+                if self.map.is_a_tile(tx=adjx, ty=adjy):
+                    # Don't append adjacent tiles if the current tile is a Wall
+                    if not is_visited(tx=adjx, ty=adjy):
+                        # Increment distance of walkable (Road, Street, Sidewalk) tiles
+                        path_distance[adjy][adjx] = path_distance[ty][tx] + 1
+                        # Append tile to queue so we can increment its adj tiles too
+                        queue.append(tile)
+
+        return path_distance
+
+    def generate_flow_field(self, tx: int, ty: int) -> None:
+        path_distance = self.calculate_path_distance(int(tx), int(ty))
+        self.path_distance = path_distance
 
     def quit(self) -> None:
         pg.quit()
