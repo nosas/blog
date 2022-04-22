@@ -43,7 +43,7 @@ if __name__ == "__main__":
     # *          python3 scripts/generate_html.py ./second_post/article.md
     # *          python3 ../scripts/generate_html.py article.md
     if len(sys.argv) == 2:
-        article = abspath(sys.argv[1])
+        article = abspath(sys.argv[1]).replace("\\", '/')
         article_split = article.split('/')
         # Make sure filename is article.md and is located within the blog directory before
         # converting the file to index.html
