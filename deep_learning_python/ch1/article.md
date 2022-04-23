@@ -1,4 +1,4 @@
-<title>Deep Learning with Python: Chapter 1</title>
+<title>Deep Learning with Python: Chapter 1 - What is deep learning?</title>
 
 # Deep Learning with Python
 
