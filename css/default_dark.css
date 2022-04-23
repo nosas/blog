@@ -102,12 +102,39 @@
       color: inherit;
     }
 
-    h1, h2, h3 {
-      font-size: 18px;
+    h1 {
+      font-size: 22px;
       font-weight: bold;
       text-transform: uppercase;
       margin-top: 4ch;
       margin-bottom: 1ch;
+    }
+    h2, h3, h4 {
+      font-size: 20px;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-top: 4ch;
+      margin-bottom: 1ch;
+    }
+
+    h1:before {
+      content: "# ";
+      color: greenyellow;
+    }
+
+    h2:before {
+      content: "## ";
+      color: greenyellow;
+    }
+
+    h3:before {
+      content: "### ";
+      color: greenyellow;
+    }
+
+    h4:before {
+      content: "#### ";
+      color: greenyellow;
     }
 
     table {
