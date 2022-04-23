@@ -34,15 +34,18 @@ FOOTER = """
 """
 
 
-def convert_md_to_html(article: str):
+def convert_md_to_html(article: str, depth: int = 1):
     article_dir = article.strip('article.md')
 
     with open(article) as a:
         article_contents = "".join(line for line in a.readlines())
 
     article_html = markdown2.markdown(text=article_contents, extras=EXTRAS)
+    header = HEADER.format(date=date.today().strftime("%B %d, %Y"))
+    header = header.replace('../', '../' * depth)
+
     with open(f'{article_dir}/index.html', 'w+') as f:
-        f.write(HEADER.format(date=date.today().strftime("%B %d, %Y")))
+        f.write(header)
         f.write(article_html)
         f.write(FOOTER)
     print(f"\t[+] Finished converting {article}, don't forget to add the title!")
