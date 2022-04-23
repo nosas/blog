@@ -47,7 +47,7 @@ if __name__ == "__main__":
         article_split = article.split('/')
         # Make sure filename is article.md and is located within the blog directory before
         # converting the file to index.html
-        if article_split[-1] == ARTICLE_FILENAME and article_split[-3] == 'blog':
+        if article_split[-1] == ARTICLE_FILENAME and 'blog' in article_split:
             convert_md_to_html(article=article)
         else:
             print(f"ERROR: Make sure CLI argument is a file named {ARTICLE_FILENAME} located in a "
