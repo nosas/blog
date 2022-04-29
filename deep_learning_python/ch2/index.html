@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">April 28, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">April 29, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 2 - Mathematical building blocks of neural networks</title></p>
 
@@ -100,7 +100,7 @@ Note that in the context of tensors, a dimension is often called an <em>axis</em
 
 <h3 id="scalars-rank-0-tensors">Scalars (rank-0 tensors)</h3>
 
-<p>A tensor that contains only one number is called a <em>scalar</em> - or scalar tensor, rank-0 tensor, or 0D tensor).
+<p>A tensor that contains only one number is called a <em>scalar</em> - or scalar tensor, rank-0 tensor, or 0D tensor.
 Using NumPy's <code>ndim</code> attribute, you'll notice a scalar tensor has 0 <em>axes</em> (<code>ndim == 0</code>).
 The number of axes of a tensor is also called its <em>rank</em>.</p>
 
@@ -114,9 +114,54 @@ The number of axes of a tensor is also called its <em>rank</em>.</p>
 
 <h3 id="vectors-rank-1-tensors">Vectors (rank-1 tensors)</h3>
 
+<p>An array of numbers is called a <em>vector</em> - or rank-1 tensor, 1D tensor, tensor of rank 1.
+A rank-1 tensor has exactly one axis.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">15</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">93</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">15</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">93</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+<span class="mi">1</span>
+</code></pre></div>
+
+<p>The vector above has five entries and so is called a <em>5-dimensional vector</em>.
+It's important to not confuse a 5D <em>vector</em> with a 5D <em>tensor</em>.
+A 5D vector has a single axis and has five dimensions along its axis.
+A 5D tensor - or <em>tensor of rank 5</em> -  on the other hand, has five axes and any number of dimensions along each axes.</p>
+
 <h3 id="matrices-rank-2-tensors">Matrices (rank-2 tensors)</h3>
 
+<p>An array of vectors is a <em>matrix</em> - or rank-2 tensor, 2D tensor, tensor of rank 2.
+A matrix has two axes often referred to as <em>rows</em> and <em>columns</em>.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">42</span><span class="p">],</span>
+                  <span class="p">[</span><span class="mi">24</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+                  <span class="p">[</span><span class="mi">44</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">62</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+<span class="mi">2</span>
+</code></pre></div>
+
+<p>The entries from the first axis are called the <em>rows</em>, and the entries from the second axis are called the <em>columns</em>.
+<code>[4, 8, 15, 16, 23, 42]</code> is the first row of <code>x</code>, and <code>[4, 24, 44]</code> is the first column.</p>
+
 <h3 id="rank-3-and-higher-rank-tensors">Rank-3 and higher-rank tensors</h3>
+
+<p>If you insert matrices (rank-2 tensors) into an array, you obtain a rank-3 tensor.
+Rank-3 tensors can be visualized as a cube of numbers.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">22</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">23</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">29</span><span class="p">]],</span>
+                  <span class="p">[[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">42</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">23</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">29</span><span class="p">]]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+<span class="mi">3</span>
+</code></pre></div>
+
+<p>Inserting rank-3 tensors in an array will create a rank-4 tensor, and so on.
+In deep learning, we'll generally only work with rank-0 to rank-4 tensors.
+Although, rank-5 tensors may be used if processing video data.</p>
 
 <h3 id="key-attributes">Key attributes</h3>
 
@@ -125,7 +170,7 @@ The number of axes of a tensor is also called its <em>rank</em>.</p>
 <li><em>Shape</em>: This is a tuple of integers that describes how many dimensions the tensor has along each axis.
 For instance, a matrix with shape <code>(3, 5)</code> has three rows and five columns.
 A vector with a single element could have the shape <code>(5,)</code>, whereas a scalar has an empty shape, <code>()</code>.
-Lastly, a rank-3 tensor, such as the example above, has shape <code>(3, 3, 5)</code>.</li>
+Lastly, a rank-3 tensor, such as the example above, has shape <code>(2, 3, 5)</code>.</li>
 <li><em>Data type</em>: Usually called the<code>dtype</code> in Python libraries, this is the type of the data contained in the tensor.
 For instance, a tensor's type could be <code>float16</code>, <code>float32</code>, <code>uint8</code>, and so on.
 It's also possible to come across <code>string</code> tensors in TensorFlow.</li>

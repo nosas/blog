@@ -70,7 +70,7 @@ Let's take a look at definitions and examples of rank-0 to rank-3 and higher ten
 
 ### Scalars (rank-0 tensors)
 
-A tensor that contains only one number is called a *scalar* - or scalar tensor, rank-0 tensor, or 0D tensor).
+A tensor that contains only one number is called a *scalar* - or scalar tensor, rank-0 tensor, or 0D tensor.
 Using NumPy's `ndim` attribute, you'll notice a scalar tensor has 0 *axes* (`ndim == 0`).
 The number of axes of a tensor is also called its *rank*.
 
@@ -85,9 +85,57 @@ array(12)
 
 ### Vectors (rank-1 tensors)
 
+An array of numbers is called a *vector* - or rank-1 tensor, 1D tensor, tensor of rank 1.
+A rank-1 tensor has exactly one axis.
+
+```python
+>>> x = np.array([15, 2, 3, 11, 93])
+>>> x
+array([15, 2, 3, 11, 93])
+>>> x.ndim
+1
+```
+
+The vector above has five entries and so is called a *5-dimensional vector*.
+It's important to not confuse a 5D *vector* with a 5D *tensor*.
+A 5D vector has a single axis and has five dimensions along its axis.
+A 5D tensor - or *tensor of rank 5* -  on the other hand, has five axes and any number of dimensions along each axes.
+
 ### Matrices (rank-2 tensors)
 
+An array of vectors is a *matrix* - or rank-2 tensor, 2D tensor, tensor of rank 2.
+A matrix has two axes often referred to as *rows* and *columns*.
+
+```python
+>>> x = np.array([[4, 8, 15, 16, 23, 42],
+                  [24, 2, 61, 51, 8, 3],
+                  [44, 3, 52, 62, 9, 9]])
+>>> x.ndim
+2
+```
+
+The entries from the first axis are called the *rows*, and the entries from the second axis are called the *columns*.
+`[4, 8, 15, 16, 23, 42]` is the first row of `x`, and `[4, 24, 44]` is the first column.
+
 ### Rank-3 and higher-rank tensors
+
+If you insert matrices (rank-2 tensors) into an array, you obtain a rank-3 tensor.
+Rank-3 tensors can be visualized as a cube of numbers.
+
+```python
+>>> x = np.array([[[4, 18, 15, 6, 23, 22],
+                   [5, 32, 61, 1, 28, 23],
+                   [6, 33, 52, 2, 29, 29]],
+                  [[4, 18, 15, 6, 23, 42],
+                   [5, 32, 61, 1, 28, 23],
+                   [6, 33, 52, 2, 29, 29]]])
+>>> x.ndim
+3
+```
+
+Inserting rank-3 tensors in an array will create a rank-4 tensor, and so on.
+In deep learning, we'll generally only work with rank-0 to rank-4 tensors.
+Although, rank-5 tensors may be used if processing video data.
 
 ### Key attributes
 
@@ -95,7 +143,7 @@ array(12)
 - *Shape*: This is a tuple of integers that describes how many dimensions the tensor has along each axis.
 For instance, a matrix with shape `(3, 5)` has three rows and five columns.
 A vector with a single element could have the shape `(5,)`, whereas a scalar has an empty shape, `()`.
-Lastly, a rank-3 tensor, such as the example above, has shape `(3, 3, 5)`.
+Lastly, a rank-3 tensor, such as the example above, has shape `(2, 3, 5)`.
 - *Data type*: Usually called the` dtype` in Python libraries, this is the type of the data contained in the tensor.
 For instance, a tensor's type could be `float16`, `float32`, `uint8`, and so on.
 It's also possible to come across `string` tensors in TensorFlow.
