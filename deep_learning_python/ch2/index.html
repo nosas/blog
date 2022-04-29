@@ -87,7 +87,7 @@ This problem is commonly referred to as the "Hello World" of deep learning - it'
 
 <hr />
 
-<h2 id="tensors-and-tensor-operations">Tensors and tensor operations</h2>
+<h2 id="data-representations-tensors">Data representations: Tensors</h2>
 
 <p><em>Tensors</em> are fundamental data structures used in machine learning.
 At its core, a tensor is a container for data - usually numeric data.
@@ -99,6 +99,18 @@ Note that in the context of tensors, a dimension is often called an <em>axis</em
 <p>Let's take a look at definitions and examples of rank-0 to rank-3 and higher tensors.</p>
 
 <h3 id="scalars-rank-0-tensors">Scalars (rank-0 tensors)</h3>
+
+<p>A tensor that contains only one number is called a <em>scalar</em> - or scalar tensor, rank-0 tensor, or 0D tensor).
+Using NumPy's <code>ndim</code> attribute, you'll notice a scalar tensor has 0 <em>axes</em> (<code>ndim == 0</code>).
+The number of axes of a tensor is also called its <em>rank</em>.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">22</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span>
+<span class="n">array</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+<span class="mi">0</span>
+</code></pre></div>
 
 <h3 id="vectors-rank-1-tensors">Vectors (rank-1 tensors)</h3>
 

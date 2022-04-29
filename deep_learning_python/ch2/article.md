@@ -57,7 +57,7 @@ from tensorflow.keras.datasets import mnist
 1. *Metrics to monitor during training and testing*
 
 ---
-## Tensors and tensor operations
+## Data representations: Tensors
 
 *Tensors* are fundamental data structures used in machine learning.
 At its core, a tensor is a container for data - usually numeric data.
@@ -69,6 +69,19 @@ Note that in the context of tensors, a dimension is often called an *axis*.
 Let's take a look at definitions and examples of rank-0 to rank-3 and higher tensors.
 
 ### Scalars (rank-0 tensors)
+
+A tensor that contains only one number is called a *scalar* - or scalar tensor, rank-0 tensor, or 0D tensor).
+Using NumPy's `ndim` attribute, you'll notice a scalar tensor has 0 *axes* (`ndim == 0`).
+The number of axes of a tensor is also called its *rank*.
+
+```python
+>>> import numpy as np
+>>> x = np.array(22)
+>>> x
+array(12)
+>>> x.ndim
+0
+```
 
 ### Vectors (rank-1 tensors)
 
