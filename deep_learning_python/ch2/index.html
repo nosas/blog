@@ -180,12 +180,27 @@ In Keras, training the model is done via a call to the model's <code>fit()</code
 
 <p>Now that the model is trained, we can use it to make class predictions on the <em>new</em>, unseen data - such as the testing images.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">test_digits</span> <span class="o">=</span> <span class="n">test_images</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_digits</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">test_digit</span> <span class="o">=</span> <span class="n">test_images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_digit</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">prediction</span>
 <span class="n">array</span><span class="p">([</span><span class="mf">1.0726176e-10</span><span class="p">,</span> <span class="mf">1.6918376e-10</span><span class="p">,</span> <span class="mf">6.1314843e-08</span><span class="p">,</span> <span class="mf">8.4106023e-06</span><span class="p">,</span>
        <span class="mf">2.9967067e-11</span><span class="p">,</span> <span class="mf">3.0331331e-09</span><span class="p">,</span> <span class="mf">8.3651971e-14</span><span class="p">,</span> <span class="mf">9.9999106e-01</span><span class="p">,</span>
        <span class="mf">2.6657624e-08</span><span class="p">,</span> <span class="mf">3.8127661e-07</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Each index <em>i</em> in <code>predictions[0]</code> corresponds to the probability that <code>prediction</code> belongs to class <em>i</em>.
+In this example, the highest probability is index 7, meaning the model believes that <code>test_digit</code> is the number 7.</p>
+
+<p>We can verify if the model's prediction is correct by comparing the prediction against the test_labels data.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>  <span class="c1"># Return the index of the highest probability</span>
+<span class="mi">7</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
+<span class="mf">0.99999106</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">test_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="mi">7</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span> <span class="o">==</span> <span class="n">test_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="kc">True</span>
 </code></pre></div>
 
 <hr />
