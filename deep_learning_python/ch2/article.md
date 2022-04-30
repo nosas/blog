@@ -45,16 +45,83 @@ The MNIST dataset is preloaded in `Keras`, in the form of four `NumPy` arrays
 from tensorflow.keras.datasets import mnist
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 ```
+Let's take a peek at the shape of the data.
+We should see 60,000 training images and labels, 10,000 test images and labels.
+
+```python
+>>> train_images.shape
+(60000, 28, 28)
+>>> len(train_labels)
+60000
+>>> train_labels
+array([5, 0, 4, ..., 5, 6, 8], dtype=uint8)
+>>>
+>>> test_images.shape
+(10000, 28, 28)
+>>> len(test_labels)
+10000
+>>> test_labels
+array([7, 2, 1, ..., 4, 5, 6], dtype=uint8)
+```
+
+Let's look at a sample image using the `matplotlib` library:
+
+```python
+import matplotlib.pyplot as plt
+digit = train_images[4]
+plt.imgshow(digit, cmap=plit.cm.binary)
+plt.show()
+```
 
 <font style="color:red">TODO: Insert MNIST sample digits</font>
 
+Lastly, let's look at what label corresponds to the previous image:
+
+```python
+>>> train_labels[4]
+9
+```
+
 ### Defining the network architecture
+
+The core building block of a neural network is the *layer*.
+A layer can be considered as a data filter: data goes in, and comes out more purified - more useful.
+Specifically, layers extract *representations* out of the input data.
+
+In deep learning models, simple layers are chains together to form a *data distillation* network.
+Deep learning models could be visualized as a sieve for data processing - successive layers refining input data more and more.
+
+The following example is a two-layer neural network.
+We aren't expected to know exactly what the example means - we'll learn throughout the next two chapters.
+
+The model consists of a sequence of two `Dense` layers, which are densely connected (also called *fully connected*).
+The second layer is a 10-way *softmax classification* layer, which means it will return an array of 10 probability scores (summing to 1).
+Each score will be the probability that the current digit image belongs to on our of 10 digit classes.
+
+```python
+from tensorflow import keras
+from tensorflow.keras import layers
+model = keras.Sequential([
+    layers.Dense(512, activation="relu"),
+    layers.Dense(10, activation="softmax")
+])
+```
 
 ### Preparing the model for training
 
-1. *An optimizer*
-1. *A loss function*
-1. *Metrics to monitor during training and testing*
+Before we begin training, we must compile three more things, in addition to the training and testing data, as part of the *compilation* step:
+We brushed over the jobs of the loss score and optimizer in the previous chapter.
+The specifics of their jobs will be made clear throughout the next two chapters.
+
+1. *An optimizer*: How the model will update itself - its weights - based on the training data it sees, so as a to improve its performance
+1. *A loss function*: How the model will measure its performance on the training data and how it will be able to steer itself in the more correct direction
+1. *Metrics to monitor during training and testing*: For now, we'll only care about accuracy - the fraction of images that were correctly classified
+
+### Preparing the data
+
+### "Fitting" (Training) the model
+
+### Making e
 
 ---
 ## Data representations: Tensors
@@ -218,3 +285,9 @@ That's a total of 6,220,800,000 values!
 
 ---
 ## How neural networks learn via backpropagation and gradient descent
+
+### Backpropagation algorithm
+
+How can we get the gradient of the loss with respect to the weights?
+Using the *Backpropagation algorithm*.
+

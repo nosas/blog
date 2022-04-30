@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">April 29, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">April 30, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 2 - Mathematical building blocks of neural networks</title></p>
 
@@ -73,17 +73,81 @@ This problem is commonly referred to as the "Hello World" of deep learning - it'
 <span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">),</span> <span class="p">(</span><span class="n">test_images</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span> <span class="o">=</span> <span class="n">mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
 </code></pre></div>
 
+<p>Let's take a peek at the shape of the data.
+We should see 60,000 training images and labels, 10,000 test images and labels.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">train_images</span><span class="o">.</span><span class="n">shape</span>
+<span class="p">(</span><span class="mi">60000</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_labels</span><span class="p">)</span>
+<span class="mi">60000</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">train_labels</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">uint8</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">test_images</span><span class="o">.</span><span class="n">shape</span>
+<span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_labels</span><span class="p">)</span>
+<span class="mi">10000</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">test_labels</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">uint8</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Let's look at a sample image using the <code>matplotlib</code> library:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">digit</span> <span class="o">=</span> <span class="n">train_images</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imgshow</span><span class="p">(</span><span class="n">digit</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plit</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">binary</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+
 <p><font style="color:red">TODO: Insert MNIST sample digits</font></p>
+
+<p>Lastly, let's look at what label corresponds to the previous image:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">train_labels</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+<span class="mi">9</span>
+</code></pre></div>
 
 <h3 id="defining-the-network-architecture">Defining the network architecture</h3>
 
+<p>The core building block of a neural network is the <em>layer</em>.
+A layer can be considered as a data filter: data goes in and comes out more purified - more useful.
+Specifically, layers extract <em>representations</em> out of the input data.</p>
+
+<p>In deep learning models, simple layers are chains together to form a <em>data distillation</em> network.
+Deep learning models could be visualized as a sieve for data processing - successive layers refining input data.</p>
+
+<p>The following example is a two-layer neural network.
+We aren't expected to know exactly what the example means - we'll learn throughout the next two chapters.</p>
+
+<p>The model below consists of a sequence of two <code>Dense</code> layers, which are densely connected (also called <em>fully connected</em>).
+The second layer is a 10-way <em>softmax classification</em> layer, which means it will return an array of 10 probability scores (summing to 1).
+Each score will be the probability that the current digit image belongs to on our of 10 digit classes.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span>
+    <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">),</span>
+    <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;softmax&quot;</span><span class="p">)</span>
+<span class="p">])</span>
+</code></pre></div>
+
 <h3 id="preparing-the-model-for-training">Preparing the model for training</h3>
 
+<p>Before we begin training, we must compile three more things, in addition to the training and testing data, as part of the <em>compilation</em> step:
+We brushed over the jobs of the loss score and optimizer in the previous chapter.
+The specifics of their jobs will be made clear throughout the next two chapters.</p>
+
 <ol>
-<li><em>An optimizer</em></li>
-<li><em>A loss function</em></li>
-<li><em>Metrics to monitor during training and testing</em></li>
+<li><em>An optimizer</em>: How the model will update itself - its weights - based on the training data it sees, so as a to improve its performance</li>
+<li><em>A loss function</em>: How the model will measure its performance on the training data and how it will be able to steer itself in the more correct direction</li>
+<li><em>Metrics to monitor during training and testing</em>: For now, we'll only care about accuracy - the fraction of images that were correctly classified</li>
 </ol>
+
+<h3 id="preparing-the-data">Preparing the data</h3>
+
+<h3 id="fitting-training-the-model">"Fitting" (Training) the model</h3>
+
+<h3 id="making-e">Making e</h3>
 
 <hr />
 
@@ -253,6 +317,11 @@ That's a total of 6,220,800,000 values!</p>
 <hr />
 
 <h2 id="how-neural-networks-learn-via-backpropagation-and-gradient-descent">How neural networks learn via backpropagation and gradient descent</h2>
+
+<h3 id="backpropagation-algorithm">Backpropagation algorithm</h3>
+
+<p>How can we get the gradient of the loss with respect to the weights?
+Using the <em>Backpropagation algorithm</em>.</p>
 
 </body>
 </html>
