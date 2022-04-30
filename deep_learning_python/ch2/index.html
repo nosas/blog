@@ -32,7 +32,7 @@ Articles in this series will sequentially review key concepts, examples, and int
 
 <hr />
 
-<h1 id="chapter-2-the-mathematical-building-blocks-of-neural-networks">Chapter 2: The mathematical building blocks of neural networks?</h1>
+<h1 id="chapter-2-the-mathematical-building-blocks-of-neural-networks">Chapter 2: The mathematical building blocks of neural networks</h1>
 
 <p>This chapter covers...</p>
 
@@ -110,16 +110,16 @@ We should see 60,000 training images and labels, 10,000 test images and labels.<
 <h3 id="defining-the-network-architecture">Defining the network architecture</h3>
 
 <p>The core building block of a neural network is the <em>layer</em>.
-A layer can be considered as a data filter: data goes in and comes out more purified - more useful.
+A layer can be considered as a data filter: data goes in, and comes out more purified - more useful.
 Specifically, layers extract <em>representations</em> out of the input data.</p>
 
 <p>In deep learning models, simple layers are chains together to form a <em>data distillation</em> network.
-Deep learning models could be visualized as a sieve for data processing - successive layers refining input data.</p>
+Deep learning models could be visualized as a sieve for data processing - successive layers refining input data more and more.</p>
 
 <p>The following example is a two-layer neural network.
 We aren't expected to know exactly what the example means - we'll learn throughout the next two chapters.</p>
 
-<p>The model below consists of a sequence of two <code>Dense</code> layers, which are densely connected (also called <em>fully connected</em>).
+<p>The model consists of a sequence of two <code>Dense</code> layers, which are densely connected (also called <em>fully connected</em>).
 The second layer is a 10-way <em>softmax classification</em> layer, which means it will return an array of 10 probability scores (summing to 1).
 Each score will be the probability that the current digit image belongs to on our of 10 digit classes.</p>
 
@@ -143,11 +143,50 @@ The specifics of their jobs will be made clear throughout the next two chapters.
 <li><em>Metrics to monitor during training and testing</em>: For now, we'll only care about accuracy - the fraction of images that were correctly classified</li>
 </ol>
 
+<div class="codehilite"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s2">&quot;rmsprop&quot;</span><span class="p">,</span>
+              <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;sparse_categorical_crossentropy&quot;</span><span class="p">,</span>
+              <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">])</span>
+</code></pre></div>
+
 <h3 id="preparing-the-data">Preparing the data</h3>
+
+<p>Before training, we'll preprocess the data to ensure consistent data shapes and scales.
+We'll reshape the data into the shape the model expects and scale it so that all values are in the [0, 1] interval instead of [0, 255] interval.</p>
+
+<p>The training image data will be transformed from a <code>uint8</code> array of shape <code>(60000, 28, 28)</code> with values between [0, 255] to a <code>float32</code> array of shape <code>(60000, 28*28)</code> with values between [0, 1].
+The same will be done to the testing image data.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">train_images</span> <span class="o">=</span> <span class="n">train_images</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">60000</span><span class="p">,</span> <span class="mi">28</span><span class="o">*</span><span class="mi">28</span><span class="p">))</span>
+<span class="n">train_images</span> <span class="o">=</span> <span class="n">train_images</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+<span class="n">test_images</span> <span class="o">=</span> <span class="n">test_images</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">28</span><span class="o">*</span><span class="mi">28</span><span class="p">))</span>
+<span class="n">test_images</span> <span class="o">=</span> <span class="n">test_images</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+</code></pre></div>
 
 <h3 id="fitting-training-the-model">"Fitting" (Training) the model</h3>
 
-<h3 id="making-e">Making e</h3>
+<p>With the data properly pre-processed, we are finally read to train the model!
+In Keras, training the model is done via a call to the model's <code>fit()</code> method - we <em>fit</em> the model to its training data.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+<span class="n">Epoch</span> <span class="mi">1</span><span class="o">/</span><span class="mi">5</span>
+<span class="mi">60000</span><span class="o">/</span><span class="mi">60000</span> <span class="p">[</span><span class="o">==========================</span><span class="p">]</span> <span class="o">-</span> <span class="mi">5</span><span class="n">s</span> <span class="o">-</span> <span class="n">loss</span><span class="p">:</span> <span class="mf">0.2524</span> <span class="o">-</span> <span class="n">acc</span><span class="p">:</span> <span class="mf">0.9273</span>
+<span class="n">Epoch</span> <span class="mi">2</span><span class="o">/</span><span class="mi">5</span>
+<span class="mi">51328</span><span class="o">/</span><span class="mi">60000</span> <span class="p">[</span><span class="o">====================&gt;.....</span><span class="p">]</span> <span class="o">-</span> <span class="n">ETA</span><span class="p">:</span> <span class="mi">1</span><span class="n">s</span> <span class="o">-</span> <span class="n">loss</span><span class="p">:</span> <span class="mf">0.1035</span> <span class="o">-</span> <span class="n">acc</span><span class="p">:</span> <span class="mf">0.9692</span>
+</code></pre></div>
+
+<p>The model swiftly reaches a decent accuracy of 96% after roughly 2 epochs of fitting to the training data.</p>
+
+<h3 id="making-predictions-with-the-trained-model">Making predictions with the trained model</h3>
+
+<p>Now that the model is trained, we can use it to make class predictions on the <em>new</em>, unseen data - such as the testing images.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">test_digits</span> <span class="o">=</span> <span class="n">test_images</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_digits</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mf">1.0726176e-10</span><span class="p">,</span> <span class="mf">1.6918376e-10</span><span class="p">,</span> <span class="mf">6.1314843e-08</span><span class="p">,</span> <span class="mf">8.4106023e-06</span><span class="p">,</span>
+       <span class="mf">2.9967067e-11</span><span class="p">,</span> <span class="mf">3.0331331e-09</span><span class="p">,</span> <span class="mf">8.3651971e-14</span><span class="p">,</span> <span class="mf">9.9999106e-01</span><span class="p">,</span>
+       <span class="mf">2.6657624e-08</span><span class="p">,</span> <span class="mf">3.8127661e-07</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
+</code></pre></div>
 
 <hr />
 

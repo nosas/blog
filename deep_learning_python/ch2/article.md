@@ -9,7 +9,7 @@ In this series, I will read through the second edition of *Deep Learning with Py
 Articles in this series will sequentially review key concepts, examples, and interesting facts from each chapter of the book.
 
 ---
-# Chapter 2: The mathematical building blocks of neural networks?
+# Chapter 2: The mathematical building blocks of neural networks
 
 This chapter covers...
 
@@ -117,11 +117,70 @@ The specifics of their jobs will be made clear throughout the next two chapters.
 1. *A loss function*: How the model will measure its performance on the training data and how it will be able to steer itself in the more correct direction
 1. *Metrics to monitor during training and testing*: For now, we'll only care about accuracy - the fraction of images that were correctly classified
 
+```python
+model.compile(optimizer="rmsprop",
+              loss="sparse_categorical_crossentropy",
+              metrics=["accuracy"])
+```
+
 ### Preparing the data
+
+Before training, we'll preprocess the data to ensure consistent data shapes and scales.
+We'll reshape the data into the shape the model expects and scale it so that all values are in the [0, 1] interval instead of [0, 255] interval.
+
+The training image data will be transformed from a `uint8 ` array of shape `(60000, 28, 28)` with values between [0, 255] to a `float32` array of shape `(60000, 28*28)` with values between [0, 1].
+The same will be done to the testing image data.
+
+```python
+train_images = train_images.reshape((60000, 28*28))
+train_images = train_images.astype("float32") / 255
+test_images = test_images.reshape((10000, 28*28))
+test_images = test_images.astype("float32") / 255
+```
 
 ### "Fitting" (Training) the model
 
-### Making e
+With the data properly pre-processed, we are finally read to train the model!
+In Keras, training the model is done via a call to the model's `fit()` method - we *fit* the model to its training data.
+
+```python
+>>> model.fit(train_images, train_labels, epochs=5, batch_size=128)
+Epoch 1/5
+60000/60000 [==========================] - 5s - loss: 0.2524 - acc: 0.9273
+Epoch 2/5
+51328/60000 [====================>.....] - ETA: 1s - loss: 0.1035 - acc: 0.9692
+```
+
+The model swiftly reaches a decent accuracy of 96% after roughly 2 epochs of fitting to the training data.
+
+### Making predictions with the trained model
+
+Now that the model is trained, we can use it to make class predictions on the *new*, unseen data - such as the testing images.
+
+```python
+>>> test_digit = test_images[0]
+>>> prediction = model.predict(test_digit)
+>>> prediction
+array([1.0726176e-10, 1.6918376e-10, 6.1314843e-08, 8.4106023e-06,
+       2.9967067e-11, 3.0331331e-09, 8.3651971e-14, 9.9999106e-01,
+       2.6657624e-08, 3.8127661e-07], dtype=float32)
+```
+
+Each index *i* in `predictions[0]` corresponds to the probability that `prediction` belongs to class *i*.
+In this example, the highest probability is index 7, meaning the model believes that `test_digit` is the number 7.
+
+We can verify if the model's prediction is correct by comparing the prediction against the test_labels data.
+
+```python
+>>> predictions.argmax()  # Return the index of the highest probability
+7
+>>> predictions[7]
+0.99999106
+>>> test_labels[0]
+7
+>>> predictions.argmax() == test_labels[0]
+True
+```
 
 ---
 ## Data representations: Tensors
