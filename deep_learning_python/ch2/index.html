@@ -433,6 +433,20 @@ Weight tensors, which are attributes of the layers, are where the <em>knowledge<
 
 <h3 id="loss-function-and-optimizer">Loss function and optimizer</h3>
 
+<p>This was the model-compilation step:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s2">&quot;rmsprop&quot;</span><span class="p">,</span>
+              <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;sparse_categorical_crossentropy&quot;</span><span class="p">,</span>
+              <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">])</span>
+</code></pre></div>
+
+<p>We understand that <code>sparse_categorical_crossentropy</code> is the loss function that's used as to calculate the loss score.
+The loss score is used as a feedback signal for learning the weight tensors.
+During the training phase, the training loop will attempt to minimize the loss score.</p>
+
+<p>The reduction of the loss happens via mini-batch stochastic (random) gradient descent.
+The exact rules and specifications of loss reduction are defined by the <code>rmsprop</code> optimizer passed as the model's first argument.</p>
+
 <h3 id="training-loop">Training loop</h3>
 
 </body>
