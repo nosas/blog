@@ -182,6 +182,22 @@ We can verify if the model's prediction is correct by comparing the prediction a
 True
 ```
 
+### Evaluating the model on new data
+
+We can evaluate the model's accuracy against data it has never seen before using the model's `evaluate()` method.
+This method will allow us to compute the average accuracy against an entire test set.
+
+```python
+>>> test_loss, test_acc = model.evaluate(test_images, test_labels)
+>>> print(f"test_acc: {test_acc}")
+test_acc: 0.9785
+```
+
+This concludes our first example.
+We just saw how easy it is to build and train a neural network classification model in less than 15 lines of Python code.
+
+Let's learn more about data representations and how the neural network interprets and refines input data using tensors.
+
 ---
 ## Data representations: Tensors
 
