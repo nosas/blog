@@ -392,5 +392,32 @@ That's a total of 6,220,800,000 values!</p>
 <p>How can we get the gradient of the loss with respect to the weights?
 Using the <em>Backpropagation algorithm</em>.</p>
 
+<hr />
+
+<h2 id="recap-looking-back-at-our-first-example">Recap: Looking back at our first example</h2>
+
+<p>We should now have a general understanding of what's going on behind the scenes in a neural network.
+What was previously a mysterious black box has turned into a clearer picture seen below: the <strong>model</strong>, composed of sequential <strong>layers</strong>, maps the input data to predictions.
+The loss function then compares the predictions to the target values, producing a <strong>loss value</strong>: a measure of how well the model's predictions match what was expected.
+The <strong>optimizer</strong> uses this loss value to update the model's <strong>weights</strong>.</p>
+
+<h3 id="input">Input</h3>
+
+<p>Now we understand that the input images are stored in NumPy tensors.
+Prior to training the model, the input images - training and testing images - were pre-processed: training tensors were converted to type <code>float32</code> and reshaped to shape <code>(60000, 28*28)</code> from <code>(60000, 28, 28)</code>, and testing tensors were similarly reformatted and reshaped <code>(10000, 28*28)</code> from <code>(10000, 28, 28)</code>.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">),</span> <span class="p">(</span><span class="n">test_images</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span> <span class="o">=</span> <span class="n">mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+<span class="n">train_images</span> <span class="o">=</span> <span class="n">train_images</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">60000</span><span class="p">,</span> <span class="mi">28</span> <span class="o">*</span> <span class="mi">28</span><span class="p">))</span>
+<span class="n">train_images</span> <span class="o">=</span> <span class="n">train_images</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+<span class="n">test_images</span> <span class="o">=</span> <span class="n">test_images</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">28</span> <span class="o">*</span> <span class="mi">28</span><span class="p">))</span>
+<span class="n">test_images</span> <span class="o">=</span> <span class="n">test_images</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+</code></pre></div>
+
+<h3 id="layers">Layers</h3>
+
+<h3 id="loss-function-and-optimizer">Loss function and optimizer</h3>
+
+<h3 id="training-loop">Training loop</h3>
+
 </body>
 </html>

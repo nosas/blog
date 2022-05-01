@@ -366,3 +366,32 @@ That's a total of 6,220,800,000 values!
 How can we get the gradient of the loss with respect to the weights?
 Using the *Backpropagation algorithm*.
 
+---
+
+## Recap: Looking back at our first example
+
+We should now have a general understanding of what's going on behind the scenes in a neural network.
+What was previously a mysterious black box has turned into a clearer picture seen below: the **model**, composed of sequential **layers**, maps the input data to predictions.
+The loss function then compares the predictions to the target values, producing a **loss value**: a measure of how well the model's predictions match what was expected.
+The **optimizer** uses this loss value to update the model's **weights**.
+
+### Input
+
+Now we understand that the input images are stored in NumPy tensors.
+Prior to training the model, the input images - training and testing images - were pre-processed: training tensors were converted to type `float32` and reshaped to shape `(60000, 28*28)` from `(60000, 28, 28)`, and testing tensors were similarly reformatted and reshaped `(10000, 28*28)` from `(10000, 28, 28)`.
+
+```python
+(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+train_images = train_images.reshape((60000, 28 * 28))
+train_images = train_images.astype("float32") / 255
+test_images = test_images.reshape((10000, 28 * 28))
+test_images = test_images.astype("float32") / 255
+```
+
+### Layers
+
+
+
+### Loss function and optimizer
+
+### Training loop
