@@ -449,5 +449,20 @@ The exact rules and specifications of loss reduction are defined by the <code>rm
 
 <h3 id="training-loop">Training loop</h3>
 
+<p>Finally, this was the model's training loop:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Fitting the model to the training data is simple: the model will iterate on the training data in mini-batch of 128 samples, 5 times over.
+Each iteration over the entire training dataset is called an <em>epoch</em>.
+Given that there are 60000 training images, there are a total of 60000/128 (~469, or 500) mini-batches.</p>
+
+<p>For each mini-batch, the model will compute the gradient of the loss with regard to the weights.
+Using the <em>Backpropagation</em> algorithm (which derives from the chain rule in calculus), the optimizer moves the weights in the direction that will reduce the value of the loss for this batch.</p>
+
+<p>And that's it!
+It sounds complicated when all the keywords are used, but we firmly understand that it's simply matrix multiplication, addition, subtraction, and derivatives.</p>
+
 </body>
 </html>

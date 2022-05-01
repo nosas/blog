@@ -367,7 +367,6 @@ How can we get the gradient of the loss with respect to the weights?
 Using the *Backpropagation algorithm*.
 
 ---
-
 ## Recap: Looking back at our first example
 
 We should now have a general understanding of what's going on behind the scenes in a neural network.
@@ -425,3 +424,20 @@ The reduction of the loss happens via mini-batch stochastic (random) gradient de
 The exact rules and specifications of loss reduction are defined by the `rmsprop` optimizer passed as the model's first argument.
 
 ### Training loop
+
+Finally, this was the model's training loop:
+
+```python
+model.fit(train_images, train_labels, epochs=5, batch_size=128)
+```
+
+Fitting the model to the training data is simple: the model will iterate on the training data in mini-batch of 128 samples, 5 times over.
+Each iteration over the entire training dataset is called an *epoch*.
+Given that there are 60000 training images, there are a total of 60000/128 (~469, or 500) mini-batches.
+
+For each mini-batch, the model will compute the gradient of the loss with regard to the weights.
+Using the *Backpropagation* algorithm (which derives from the chain rule in calculus), the optimizer moves the weights in the direction that will reduce the value of the loss for this batch.
+
+And that's it!
+It sounds complicated when all the keywords are used, but we firmly understand that it's simply matrix multiplication, addition, subtraction, and derivatives.
+
