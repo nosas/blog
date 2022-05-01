@@ -390,7 +390,22 @@ test_images = test_images.astype("float32") / 255
 
 ### Layers
 
+Recall that our two-layer neural network model was created like so:
 
+```python
+from tensorflow import keras
+from tensorflow.keras import layers
+model = keras.Sequential([
+    layers.Dense(512, activation="relu"),
+    layers.Dense(10, activation="softmax")
+])
+```
+
+We now understand that this model consists of a chain of two `Dense` layers.
+Each layer performs simple tensor operations to the input data, further refining the data to more useful data representations.
+
+These layers are incorporate the usage of layer *weight* tensors.
+Weight tensors, which are attributes of the layers, are where the *knowledge* of the model persists.
 
 ### Loss function and optimizer
 

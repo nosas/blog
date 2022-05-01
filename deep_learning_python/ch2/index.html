@@ -415,6 +415,22 @@ Prior to training the model, the input images - training and testing images - we
 
 <h3 id="layers">Layers</h3>
 
+<p>Recall that our two-layer neural network model was created like so:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span>
+    <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">),</span>
+    <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;softmax&quot;</span><span class="p">)</span>
+<span class="p">])</span>
+</code></pre></div>
+
+<p>We now understand that this model consists of a chain of two <code>Dense</code> layers.
+Each layer performs simple tensor operations to the input data, further refining the data to more useful data representations.</p>
+
+<p>These layers are incorporate the usage of layer <em>weight</em> tensors.
+Weight tensors, which are attributes of the layers, are where the <em>knowledge</em> of the model persists.</p>
+
 <h3 id="loss-function-and-optimizer">Loss function and optimizer</h3>
 
 <h3 id="training-loop">Training loop</h3>
