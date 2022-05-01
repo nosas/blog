@@ -441,3 +441,27 @@ Using the *Backpropagation* algorithm (which derives from the chain rule in calc
 And that's it!
 It sounds complicated when all the keywords are used, but we firmly understand that it's simply matrix multiplication, addition, subtraction, and derivatives.
 
+---
+## Summary
+
+- *Tensors* form the foundation of modern machine learning systems. They come in various flavors of `rank`, `shape`, and `dtype`.
+
+- We can manipulate numerical tensors via *tensor operations*: addition, tensor product, or element-wise multiplication.
+In general, everything in deep learning is comparable to a geometric transformation.
+
+- Deep learning models consist of sequences of simple tensor operations, parameterized by *weights*, which are tensors themselves.
+The weights of a model are where the model's "knowledge" is stored.
+
+- *Learning* means finding a set of values for the model's weights such that the *loss score* is minimized for a given batch of training data samples.
+
+- Learning happens by drawing random batches of data samples and their targets, and computing the gradient of the model parameters with respect to the batch's loss score.
+The model's parameters are then moved - the magnitude of which is determined by the learning rate - in the opposite direction from gradient.
+This is called *mini-batch stochastic gradient descent*.
+
+- The entire learning process is made possible by the fact that all tensor operations in neural networks are differentiable, making it possible to apply the chain rule of derivation.
+The chain rule of derivation allows us to find the gradient function mapping the current parameters and current batch of data to a gradient value.
+This is called *backpropagation*.
+
+- Two key concepts we'll see frequently in future chapters are *loss* and *optimizers*.
+    - The *loss* is the quantity we'll attempt to minimize during training, so it should represent a measure of success for the task we're trying to solve.
+    - The *optimizer* specifies the exact way in which the gradient of the loss will be used to update parameters.
