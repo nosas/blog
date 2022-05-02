@@ -1,7 +1,9 @@
 import math
 from typing import Callable
 
+import matplotlib.pyplot as plt
 import numpy as np
+import os
 import tensorflow as tf
 
 LEARNING_RATE = 0.001
@@ -162,17 +164,38 @@ print(f"Accuracy: {np.mean(matches)}")
 
 
 def image_to_tensor(path_to_img: str) -> np.ndarray:
+    """Convert a grayscale, 28x28 image to a tensor normalized between [0, 1]"""
     img = tf.io.read_file(filename=path_to_img)
     tensor = tf.io.decode_png(img, channels=1)
     tensor = tensor.numpy().astype("float32") / 255.0
-    tensor[tensor == 1] = 0
     tensor = tensor.reshape((28 * 28))
     return tensor
 
 
-path_to_img = "code/images/4.png"
+def tensor_to_image(tensor: np.ndarray) -> np.ndarray:
+    """Convert a normalized tensor to a grayscale, 28x28 image"""
+    tensor = tensor.reshape((28, 28))
+    tensor = tensor * 255
+    tensor = tensor.astype("uint8")
+    return tensor
+
+
+# Change directory to the folder containing the code
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+# Retrieve the absolute path to my handwritten image
+path_to_img = os.path.join(os.getcwd(), "images/4.png")
+# Convert the image to a tensor
 tensor = image_to_tensor(path_to_img)
-pred = model([tensor])
-pred_np = pred.numpy()
-pred_label = pred_np.argmax()
-print(pred_label)
+# Predict the image's label using the trained model
+predictions = model([tensor])
+# Convert the prediction to a numpy array
+predictions = predictions.numpy()
+# Retrieve the index of the highest probability
+predicted_label = np.argmax(predictions)
+# Print the predicted label
+print(f"Predicted label: {predicted_label}")
+
+# Plot the predictions as a bar chart with the highest number colored green
+plt.bar(range(10), predictions[0], color=["green" if i == predicted_label else "blue" for i in range(10)])
+plt.xticks(range(10), ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"])
+plt.show()
