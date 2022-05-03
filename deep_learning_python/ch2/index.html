@@ -414,7 +414,15 @@ In Keras, a <code>Dense</code> layer with 512 nodes and activation function <cod
 
 <h3 id="element-wise-operations">Element-wise operations</h3>
 
+<p>Element-wise operations are applied independently to each entry in the tensors being considered.</p>
+
 <h3 id="broadcasting">Broadcasting</h3>
+
+<p>Broadcasting is the process of performing element-wise operations on tensors with different shapes.
+For example, consider two tensors <code>t1</code> and <code>t2</code> with shapes <code>(2, 3)</code> and <code>(3,)</code>.
+The result of <code>t1 + t2</code> is a tensor <code>t3</code> of shape <code>(2, 3)</code> and the result of <code>t1 * t2</code> is a tensor <code>t4</code> of shape <code>(2, 3)</code>.</p>
+
+<p><font style="color:red">TODO: Add code block example of broadcasting</font></p>
 
 <h3 id="tensor-product">Tensor product</h3>
 

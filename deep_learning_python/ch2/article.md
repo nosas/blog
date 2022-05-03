@@ -388,7 +388,15 @@ keras.layers.Dense(512, activation="relu")
 
 ### Element-wise operations
 
+Element-wise operations are applied independently to each entry in the tensors being considered.
+
 ### Broadcasting
+
+Broadcasting is the process of performing element-wise operations on tensors with different shapes.
+For example, consider two tensors `t1` and `t2` with shapes `(2, 3)` and `(3,)`.
+The result of `t1 + t2` is a tensor `t3` of shape `(2, 3)` and the result of `t1 * t2` is a tensor `t4` of shape `(2, 3)`.
+
+<font style="color:red">TODO: Add code block example of broadcasting</font>
 
 ### Tensor product
 
