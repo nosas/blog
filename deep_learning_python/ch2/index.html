@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">April 30, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 02, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 2 - Mathematical building blocks of neural networks</title></p>
 
@@ -383,9 +383,62 @@ That's a total of 6,220,800,000 values!</p>
 
 <h2 id="tensor-operations">Tensor operations</h2>
 
+<p>Similar to how to computer programs can be reduced to a small set of binary operations (AND, OR, XOR, and so on), all transformations learned by deep neural networks can be reduced to a handful of <em>tensor operations</em>.</p>
+
+<p>In our initial example, we built our model by sequentially stacking <code>Dense</code> layers.
+In Keras, a <code>Dense</code> layer with 512 nodes and activation function <code>relu</code> looks like this:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="basic-operations">Basic operations</h3>
+
+<ul>
+<li><em>Addition</em>: <code>t1 + t2</code></li>
+<li><em>Subtraction</em>: <code>t1 - t2</code></li>
+<li><em>Element-wise multiplication</em>: <code>t1 * t2</code></li>
+<li><em>Element-wise division</em>: <code>t1 / t2</code></li>
+<li><em>Exponentiation</em>: <code>t1 ** t2</code></li>
+<li><em>Modulo</em>: <code>t1 % t2</code></li>
+<li><em>Floor division</em>: <code>t1 // t2</code></li>
+<li><em>Element-wise maximum</em>: <code>tf.maximum(t1, t2)</code></li>
+<li><em>Element-wise minimum</em>: <code>tf.minimum(t1, t2)</code></li>
+<li><em>Element-wise greater than</em>: <code>tf.greater(t1, t2)</code></li>
+<li><em>Element-wise less than</em>: <code>tf.less(t1, t2)</code></li>
+<li><em>Element-wise greater than or equal to</em>: <code>tf.greater_equal(t1, t2)</code></li>
+<li><em>Element-wise less than or equal to</em>: <code>tf.less_equal(t1, t2)</code></li>
+<li><em>Element-wise equality</em>: <code>tf.equal(t1, t2)</code></li>
+<li><em>Element-wise not equal</em>: <code>tf.not_equal(t1, t2)</code></li>
+<li><em>Element-wise logical AND</em>: `tf.logical_and</li>
+</ul>
+
+<h3 id="element-wise-operations">Element-wise operations</h3>
+
+<h3 id="broadcasting">Broadcasting</h3>
+
+<h3 id="tensor-product">Tensor product</h3>
+
+<h3 id="tensor-reshaping">Tensor reshaping</h3>
+
+<h3 id="geometric-interpretations">Geometric interpretations</h3>
+
 <hr />
 
 <h2 id="how-neural-networks-learn-via-backpropagation-and-gradient-descent">How neural networks learn via backpropagation and gradient descent</h2>
+
+<h3 id="backpropagation">Backpropagation</h3>
+
+<p>Backpropagation is the process of finding the derivative of the loss function with respect to the weights and biases of a neural network.</p>
+
+<h3 id="gradient-descent">Gradient descent</h3>
+
+<p>Gradient descent is a common technique for optimizing neural networks.
+It is a process of iteratively moving the weights and biases of a neural network towards the minimum of the loss function.</p>
+
+<h3 id="stochastic-gradient-descent">Stochastic gradient descent</h3>
+
+<p>Stochastic gradient descent (SGD) is a variant of gradient descent that is used to train neural networks.
+It is a stochastic approach to gradient descent, where the learning rate is not constant, but rather is a function of the iteration number.</p>
 
 <h3 id="backpropagation-algorithm">Backpropagation algorithm</h3>
 

@@ -358,8 +358,60 @@ That's a total of 6,220,800,000 values!
 ---
 ## Tensor operations
 
+Similar to how to computer programs can be reduced to a small set of binary operations (AND, OR, XOR, and so on), all transformations learned by deep neural networks can be reduced to a handful of *tensor operations*.
+
+In our initial example, we built our model by sequentially stacking `Dense` layers.
+In Keras, a `Dense` layer with 512 nodes and activation function `relu` looks like this:
+
+```python
+keras.layers.Dense(512, activation="relu")
+```
+
+### Basic operations
+
+- *Addition*: `t1 + t2`
+- *Subtraction*: `t1 - t2`
+- *Element-wise multiplication*: `t1 * t2`
+- *Element-wise division*: `t1 / t2`
+- *Exponentiation*: `t1 ** t2`
+- *Modulo*: `t1 % t2`
+- *Floor division*: `t1 // t2`
+- *Element-wise maximum*: `tf.maximum(t1, t2)`
+- *Element-wise minimum*: `tf.minimum(t1, t2)`
+- *Element-wise greater than*: `tf.greater(t1, t2)`
+- *Element-wise less than*: `tf.less(t1, t2)`
+- *Element-wise greater than or equal to*: `tf.greater_equal(t1, t2)`
+- *Element-wise less than or equal to*: `tf.less_equal(t1, t2)`
+- *Element-wise equality*: `tf.equal(t1, t2)`
+- *Element-wise not equal*: `tf.not_equal(t1, t2)`
+- *Element-wise logical AND*: `tf.logical_and
+
+### Element-wise operations
+
+### Broadcasting
+
+### Tensor product
+
+### Tensor reshaping
+
+### Geometric interpretations
+
 ---
 ## How neural networks learn via backpropagation and gradient descent
+
+### Backpropagation
+
+Backpropagation is the process of finding the derivative of the loss function with respect to the weights and biases of a neural network.
+
+### Gradient descent
+
+Gradient descent is a common technique for optimizing neural networks.
+It is a process of iteratively moving the weights and biases of a neural network towards the minimum of the loss function.
+
+### Stochastic gradient descent
+
+Stochastic gradient descent (SGD) is a variant of gradient descent that is used to train neural networks.
+It is a stochastic approach to gradient descent, where the learning rate is not constant, but rather is a function of the iteration number.
 
 ### Backpropagation algorithm
 
