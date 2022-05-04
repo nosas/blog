@@ -474,7 +474,50 @@ They're wicked fast!</p>
 For example, consider two tensors <code>t1</code> and <code>t2</code> with shapes <code>(2, 3)</code> and <code>(3,)</code>.
 The result of <code>t1 + t2</code> is a tensor <code>t3</code> of shape <code>(2, 3)</code> and the result of <code>t1 * t2</code> is a tensor <code>t4</code> of shape <code>(2, 3)</code>.</p>
 
-<p><font style="color:red">TODO: Add code block example of broadcasting</font></p>
+<p>Below is the simplest example of multiplying tensor <code>a</code> by scalar <code>b</code>.
+This example and the image following were taken directly from NumPy's documentation found <a href="https://numpy.org/doc/stable/user/basics.broadcasting.html">here</a>.</p>
+
+<p>I encourage reading NumPy's documentation - at least read the <em>NumPy fundamentals</em> section - to gain a deep understanding of the topics discussed in this article.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+
+<span class="n">array</span><span class="p">([</span> <span class="mf">2.</span><span class="p">,</span>  <span class="mf">4.</span><span class="p">,</span>  <span class="mf">6.</span><span class="p">])</span>
+</code></pre></div>
+
+<figure class="right ">
+    <img src="img/broadcasting.png" style="width:100%;background-color:lightgray;"/>
+    <figcaption>Scalar `b` is "stretched" to become the same shape as `a`</figcaption>
+</figure>
+
+<p>Simply put, the scalar <code>b</code> is <em>stretched</em> - the original scalar is copied - to become a tensor of same shape as <code>a</code>.</p>
+
+<p>Getting a little more technical - broadcasting consists of two steps:</p>
+
+<ol>
+<li>Axes (called <em>broadcast axes</em>) are added to the smaller tensor to match the <code>ndim</code> of the larger tensor</li>
+<li>The smaller tensor is repeated alongside these new axes to match the full shape of the larger tensor</li>
+</ol>
+
+<p>Values from <code>b</code> are not actually copied - and <code>b</code> is not actually reshaped - as that would be resource-intensive and computationally wasteful.
+Rather, NumPy is smart enough to use the original scalar value without making copies so that broadcasting operations are as memory and resource efficient as possible.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="sd">&quot;&quot;&quot;Example of how broadcasting &quot;stretches&quot; a vector into a matrix&quot;&quot;&quot;</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">28</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>  <span class="c1"># random matrix with shape (28, 10)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">10</span><span class="p">,))</span>     <span class="c1"># random vector with shape (10,)</span>
+
+<span class="c1"># add empty first axis to y, y.shape == (1, 10)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># repeat y 28 times along axis 0, shape == (28, 10)</span>
+<span class="n">y_stretched</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">y</span><span class="p">]</span> <span class="o">*</span> <span class="mi">28</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">y_stretched</span><span class="o">.</span><span class="n">shape</span>
+</code></pre></div>
+
+<p>The stretching of scalar <code>b</code> qualifies the pair of variables for element-wise operations that take two input tensors.
+One of the most common and useful broadcasting applications include the <em>tensor product</em> or <em>dot product</em>.</p>
 
 <h3 id="tensor-product">Tensor product</h3>
 

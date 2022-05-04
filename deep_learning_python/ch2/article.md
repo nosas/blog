@@ -451,7 +451,50 @@ Broadcasting is the process of performing element-wise operations on tensors wit
 For example, consider two tensors `t1` and `t2` with shapes `(2, 3)` and `(3,)`.
 The result of `t1 + t2` is a tensor `t3` of shape `(2, 3)` and the result of `t1 * t2` is a tensor `t4` of shape `(2, 3)`.
 
-<font style="color:red">TODO: Add code block example of broadcasting</font>
+Below is the simplest example of multiplying tensor `a` by scalar `b`.
+This example and the image following were taken directly from NumPy's documentation found [here](https://numpy.org/doc/stable/user/basics.broadcasting.html).
+
+I encourage reading NumPy's documentation - at least read the *NumPy fundamentals* section - to gain a deep understanding of the topics discussed in this article.
+
+```python
+>>> a = np.array([1.0, 2.0, 3.0])
+>>> b = 2.0
+>>> a * b
+
+array([ 2.,  4.,  6.])
+```
+
+<figure class="right ">
+    <img src="img/broadcasting.png" style="width:100%;background-color:lightgray;"/>
+    <figcaption>Scalar `b` is "stretched" to become the same shape as `a`</figcaption>
+</figure>
+
+Simply put, the scalar `b` is *stretched* - the original scalar is copied - to become a tensor of same shape as `a`.
+
+Getting a little more technical - broadcasting consists of two steps:
+
+1. Axes (called *broadcast axes*) are added to the smaller tensor to match the `ndim` of the larger tensor
+1. The smaller tensor is repeated alongside these new axes to match the full shape of the larger tensor
+
+Values from `b` are not actually copied - and `b` is not actually reshaped - as that would be resource-intensive and computationally wasteful.
+Rather, NumPy is smart enough to use the original scalar value without making copies so that broadcasting operations are as memory and resource efficient as possible.
+
+```python
+import numpy as np
+"""Example of how broadcasting "stretches" a vector into a matrix"""
+x = np.random.random((28, 10))  # random matrix with shape (28, 10)
+y = np.random.random((10,))     # random vector with shape (10,)
+
+# add empty first axis to y, y.shape == (1, 10)
+y = np.expand_dims(y, axis=0)
+# repeat y 28 times along axis 0, shape == (28, 10)
+y_stretched = np.concatenate([y] * 28, axis=0)
+
+assert x.shape == y_stretched.shape
+```
+
+The stretching of scalar `b` qualifies the pair of variables for element-wise operations that take two input tensors.
+One of the most common and useful broadcasting applications include the *tensor product* or *dot product*.
 
 ### Tensor product
 
