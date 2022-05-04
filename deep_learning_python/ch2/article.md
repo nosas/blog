@@ -384,11 +384,66 @@ keras.layers.Dense(512, activation="relu")
 - *Element-wise less than or equal to*: `tf.less_equal(t1, t2)`
 - *Element-wise equality*: `tf.equal(t1, t2)`
 - *Element-wise not equal*: `tf.not_equal(t1, t2)`
-- *Element-wise logical AND*: `tf.logical_and
+
+More operations can be found in the `tf.math` module's API documentation here:
+[https://www.tensorflow.org/api_docs/python/tf/math](https://www.tensorflow.org/api_docs/python/tf/math)
+
 
 ### Element-wise operations
 
 Element-wise operations are applied independently to each entry in the tensors being considered.
+The `relu`, addition, and operations listed above are all element-wise operations.
+From a Python standpoint, we could use `for` loops to implement a naive element-wise operation.
+Take a look below at a naive Python implementation of the `relu` and addition operations.
+
+```python
+def naive_relu(x):
+    """Relu is the equivalent of `max(x, 0)`, or `np.maximum(x, 0.)` for NumPy tensors"""
+    assert len(x.shape) == 2  # x is a rank-2 NumPy tensor
+    x = x.copy()  # Avoid overwriting the input tensor
+    for i in range(x.shape[0]):
+        for j in range(x.shape[1]):
+            x[i, j] = max(x[i, j], 0)
+    return x
+
+def naive_addition(x, y):
+    """Naive implementation of `x+y`, where x and y are rank-2 NumPy tensors"""
+    assert len(x.shape) == 2
+    assert x.shape == y.shape
+    x = x.copy()  # Avoid overwriting the input tensor
+    for i in range(x.shape[0]):
+        for j in range(x.shape[1]):
+            x[i, j] += y[i, j]
+    return x
+```
+
+In practice, when working with NumPy arrays, it's best to utilize NumPy's highly-optimized, built-in functions rather than create naive implementations.
+NumPy's built-in functions are low-level, highly parallel, efficient tensor-manipulation routines that are typically implemented in C.
+
+As seen below in a simple example, the built-in functions are over 100x faster than naive implementations.
+They're wicked fast!
+
+```python
+import numpy as np
+import time
+
+x = np.random.random((20, 100))
+y = np.random.random((20, 100))
+
+t0 = time.time()
+
+# This takes 0.02 seconds
+for _ in range(1000):
+    z = x + y  # Element-wise addition
+    z = np.maximum(z, 0.)  # Element-wise relu
+    print(f"Took: {time.time() - t0:.2f} seconds")
+
+# This takes 2.45 seconds
+for _ in range(1000):
+    z = naive_addition(x, y)
+    z = naive_relu(z)
+    print(f"Took: {time.time() - t0:.2f} seconds")
+```
 
 ### Broadcasting
 
