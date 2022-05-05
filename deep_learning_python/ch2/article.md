@@ -498,6 +498,32 @@ One of the most common and useful broadcasting applications include the *tensor 
 
 ### Tensor product
 
+The *tensor product*, or *dot product*, is one of the most common tensor operations.
+In NumPy, the tensor product is done using the `np.dot` function.
+In mathematical notation, the dot product is denoted with a dot (⋅) symbol: `z = x ⋅ y`
+
+```python
+# two random, 28-dimension vectors
+x = np.random.random((28,))
+y = np.random.random((28,))
+z = np.dot(x, y)
+
+# the (dot) product of two vectors is a scalar
+assert isinstance(z, (int, float))
+```
+
+The most common application of the dot product in deep learning may be between two matrices: `dot(x, y)`.
+The dot product between two matrices is only possible when `x.shape[1] == y.shape[0]`.
+The result is a matrix with shape `(x.shape[0], y.shape[1])`, where the coefficients are the vector products between the *rows* of `x` and the *columns* of `y`.
+
+<font style="color:red">TODO: Insert photo of matrix dot-product</font>
+
+More generally, we can take the dot product between higher-dimensional tensors following the same rules for shape compatibility as outlined earlier for the 2D case:
+```
+(a, b, c, d) ⋅ (d,)   -> (a, b, c)
+(a, b, c, d) ⋅ (d, e) -> (a, b, c, e)
+```
+
 ### Tensor reshaping
 
 ### Geometric interpretations
