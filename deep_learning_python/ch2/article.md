@@ -594,6 +594,22 @@ For example, we can reshape a vector to a scalar:
 
 ### Geometric interpretations
 
+The book goes into deep detail about the geometric interpretations of deep learning and tensors operations.
+
+François compares tensor operations to vector/matrix addition, translation, rotation, scaling, and other geometric operations.
+I believe these are fundamental concepts for understanding how data transformations are performed in neural networks as they provide a different perspective on the way data is processed.
+However, I will not be covering these concepts in this article because they diverge from the high-level concepts I wish to cover.
+I recommend reading the book's chapter on geometric interpretations of tensor operations.
+
+However, I will briefly summarize how François collates deep learning to the uncrumpling of a crumpled piece of paper as this perspective was an eye-opener for me.
+
+### Geometric interpretation of deep learning
+
+We learned that neural network consist entirely of chains of tensor operations, and that these tensor operations are simple geometric transformations of the input data.
+It follows that we can interpret a neural network as a complex geometric transformation in a high-dimensional space, implemented via a series of simple steps.
+
+
+
 ---
 ## How neural networks learn via backpropagation and gradient descent
 
