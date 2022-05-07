@@ -601,14 +601,16 @@ I believe these are fundamental concepts for understanding how data transformati
 However, I will not be covering these concepts in this article because they diverge from the high-level concepts I wish to cover.
 I recommend reading the book's chapter on geometric interpretations of tensor operations.
 
-
-
 ---
 ## How neural networks learn via backpropagation and gradient descent
 
 ### Backpropagation
 
 Backpropagation is the process of finding the derivative of the loss function with respect to the weights and biases of a neural network.
+
+### Backpropagation algorithm
+
+Using the backpropagation algorithm, we can get the gradient of the loss with respect to the weights and biases of the network.
 
 ### Gradient descent
 
@@ -619,11 +621,6 @@ It is a process of iteratively moving the weights and biases of a neural network
 
 Stochastic gradient descent (SGD) is a variant of gradient descent that is used to train neural networks.
 It is a stochastic approach to gradient descent, where the learning rate is not constant, but rather is a function of the iteration number.
-
-### Backpropagation algorithm
-
-How can we get the gradient of the loss with respect to the weights?
-Using the *Backpropagation algorithm*.
 
 ---
 ## Recap: Looking back at our first example
