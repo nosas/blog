@@ -1,12 +1,55 @@
 <title>Deep Learning with Python: Chapter 2 - Mathematical building blocks of neural networks</title>
 
 
-# Deep Learning with Python
+# Deep Learning with Python  <!-- omit in toc -->
 
 This article is part 2/13 (?) of a series of articles named *Deep Learning with Python*.
 
 In this series, I will read through the second edition of *Deep Learning with Python* by François Chollet.
 Articles in this series will sequentially review key concepts, examples, and interesting facts from each chapter of the book.
+
+<details>
+    <summary>Table of Contents</summary>
+
+- [Chapter 2: The mathematical building blocks of neural networks](#chapter-2-the-mathematical-building-blocks-of-neural-networks)
+    - [First look at neural networks](#first-look-at-neural-networks)
+        - [The problem](#the-problem)
+        - [Defining the network architecture](#defining-the-network-architecture)
+        - [Preparing the model for training](#preparing-the-model-for-training)
+        - [Preparing the data](#preparing-the-data)
+        - ["Fitting" (Training) the model](#fitting-training-the-model)
+        - [Making predictions with the trained model](#making-predictions-with-the-trained-model)
+        - [Evaluating the model on new data](#evaluating-the-model-on-new-data)
+    - [Data representations: Tensors](#data-representations-tensors)
+        - [Scalars (rank-0 tensors)](#scalars-rank-0-tensors)
+        - [Vectors (rank-1 tensors)](#vectors-rank-1-tensors)
+        - [Matrices (rank-2 tensors)](#matrices-rank-2-tensors)
+        - [Rank-3 and higher-rank tensors](#rank-3-and-higher-rank-tensors)
+        - [Key attributes](#key-attributes)
+    - [Real-world examples of data tensors](#real-world-examples-of-data-tensors)
+        - [Vector](#vector)
+        - [Timeseries data or sequence data](#timeseries-data-or-sequence-data)
+        - [Image data](#image-data)
+        - [Video data](#video-data)
+    - [Tensor operations](#tensor-operations)
+        - [Basic operations](#basic-operations)
+        - [Element-wise operations](#element-wise-operations)
+        - [Broadcasting](#broadcasting)
+        - [Tensor product](#tensor-product)
+        - [Tensor reshaping](#tensor-reshaping)
+        - [Geometric interpretations](#geometric-interpretations)
+    - [How neural networks learn via backpropagation and gradient descent](#how-neural-networks-learn-via-backpropagation-and-gradient-descent)
+        - [Backpropagation](#backpropagation)
+        - [Backpropagation algorithm](#backpropagation-algorithm)
+        - [Gradient descent](#gradient-descent)
+        - [Stochastic gradient descent](#stochastic-gradient-descent)
+    - [Recap: Looking back at our first example](#recap-looking-back-at-our-first-example)
+        - [Input](#input)
+        - [Layers](#layers)
+        - [Loss function and optimizer](#loss-function-and-optimizer)
+        - [Training loop](#training-loop)
+    - [Summary](#summary)
+</details>
 
 ---
 # Chapter 2: The mathematical building blocks of neural networks

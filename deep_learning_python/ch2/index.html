@@ -19,16 +19,75 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 07, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 08, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 2 - Mathematical building blocks of neural networks</title></p>
 
-<h1 id="deep-learning-with-python">Deep Learning with Python</h1>
+<h1 id="deep-learning-with-python-omit-in-toc-">Deep Learning with Python  <!-- omit in toc --></h1>
 
 <p>This article is part 2/13 (?) of a series of articles named <em>Deep Learning with Python</em>.</p>
 
 <p>In this series, I will read through the second edition of <em>Deep Learning with Python</em> by François Chollet.
 Articles in this series will sequentially review key concepts, examples, and interesting facts from each chapter of the book.</p>
+
+<p><details>
+    <summary>Table of Contents</summary></p>
+
+<ul>
+<li><a href="#chapter-2-the-mathematical-building-blocks-of-neural-networks">Chapter 2: The mathematical building blocks of neural networks</a>
+<ul>
+<li><a href="#first-look-at-neural-networks">First look at neural networks</a>
+<ul>
+<li><a href="#the-problem">The problem</a></li>
+<li><a href="#defining-the-network-architecture">Defining the network architecture</a></li>
+<li><a href="#preparing-the-model-for-training">Preparing the model for training</a></li>
+<li><a href="#preparing-the-data">Preparing the data</a></li>
+<li><a href="#fitting-training-the-model">"Fitting" (Training) the model</a></li>
+<li><a href="#making-predictions-with-the-trained-model">Making predictions with the trained model</a></li>
+<li><a href="#evaluating-the-model-on-new-data">Evaluating the model on new data</a></li>
+</ul></li>
+<li><a href="#data-representations-tensors">Data representations: Tensors</a>
+<ul>
+<li><a href="#scalars-rank-0-tensors">Scalars (rank-0 tensors)</a></li>
+<li><a href="#vectors-rank-1-tensors">Vectors (rank-1 tensors)</a></li>
+<li><a href="#matrices-rank-2-tensors">Matrices (rank-2 tensors)</a></li>
+<li><a href="#rank-3-and-higher-rank-tensors">Rank-3 and higher-rank tensors</a></li>
+<li><a href="#key-attributes">Key attributes</a></li>
+</ul></li>
+<li><a href="#real-world-examples-of-data-tensors">Real-world examples of data tensors</a>
+<ul>
+<li><a href="#vector">Vector</a></li>
+<li><a href="#timeseries-data-or-sequence-data">Timeseries data or sequence data</a></li>
+<li><a href="#image-data">Image data</a></li>
+<li><a href="#video-data">Video data</a></li>
+</ul></li>
+<li><a href="#tensor-operations">Tensor operations</a>
+<ul>
+<li><a href="#basic-operations">Basic operations</a></li>
+<li><a href="#element-wise-operations">Element-wise operations</a></li>
+<li><a href="#broadcasting">Broadcasting</a></li>
+<li><a href="#tensor-product">Tensor product</a></li>
+<li><a href="#tensor-reshaping">Tensor reshaping</a></li>
+<li><a href="#geometric-interpretations">Geometric interpretations</a></li>
+</ul></li>
+<li><a href="#how-neural-networks-learn-via-backpropagation-and-gradient-descent">How neural networks learn via backpropagation and gradient descent</a>
+<ul>
+<li><a href="#backpropagation">Backpropagation</a></li>
+<li><a href="#backpropagation-algorithm">Backpropagation algorithm</a></li>
+<li><a href="#gradient-descent">Gradient descent</a></li>
+<li><a href="#stochastic-gradient-descent">Stochastic gradient descent</a></li>
+</ul></li>
+<li><a href="#recap-looking-back-at-our-first-example">Recap: Looking back at our first example</a>
+<ul>
+<li><a href="#input">Input</a></li>
+<li><a href="#layers">Layers</a></li>
+<li><a href="#loss-function-and-optimizer">Loss function and optimizer</a></li>
+<li><a href="#training-loop">Training loop</a></li>
+</ul></li>
+<li><a href="#summary">Summary</a>
+</details></li>
+</ul></li>
+</ul>
 
 <hr />
 
