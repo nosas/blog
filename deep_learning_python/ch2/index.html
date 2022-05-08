@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 06, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 07, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 2 - Mathematical building blocks of neural networks</title></p>
 
@@ -624,6 +624,29 @@ I recommend reading the book's chapter on geometric interpretations of tensor op
 <hr />
 
 <h2 id="how-neural-networks-learn-via-backpropagation-and-gradient-descent">How neural networks learn via backpropagation and gradient descent</h2>
+
+<p>Each neural layer from our first model example transforms its input data as follows:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">output</span> <span class="o">=</span> <span class="n">relu</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+</code></pre></div>
+
+<p>In this expression, <code>W</code> and <code>b</code> are tensors from the layer attributes - <code>W</code> is the <em>weight</em> matrix and <code>b</code> is the <em>bias vector</em>.
+These variables are also called the <em>trainable parameters</em> of the layer.
+The weights contain the information learned by the model from exposure to training data.</p>
+
+<p>Upon initializing the model, the weights are randomly initialized - filled with random values.
+What comes next is the to gradually update the weights based on a feedback signal from the loss function.
+The gradual adjustment of weights, also called <em>training</em>, is what machine learning is all about.</p>
+
+<p>The model trains in what's called a <em>training loop</em>.
+At a high level, the following steps are repeated until the loss function converges:</p>
+
+<ol>
+<li>Draw a batch of training sample, <code>x</code>, and corresponding target labels, <code>y_true</code></li>
+<li>Run the model on <code>x</code> - a step called the <em>forward pass</em> - to obtain predictions, <code>y_pred</code></li>
+<li>Compute the loss of the model on the batch, a measure of the mismatch between <code>y_true</code> and <code>y_pred</code></li>
+<li>Update all weights of the model in a way that slightly reduces the loss on the batch</li>
+</ol>
 
 <h3 id="backpropagation">Backpropagation</h3>
 

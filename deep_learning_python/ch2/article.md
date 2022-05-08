@@ -604,6 +604,29 @@ I recommend reading the book's chapter on geometric interpretations of tensor op
 ---
 ## How neural networks learn via backpropagation and gradient descent
 
+Each neural layer from our first model example transforms its input data as follows:
+
+```python
+output = relu(dot(input, W) + b)
+```
+
+In this expression, `W` and `b` are tensors from the layer attributes - `W` is the *weight* matrix and `b` is the *bias vector*.
+These variables are also called the *trainable parameters* of the layer.
+The weights contain the information learned by the model from exposure to training data.
+
+
+Upon initializing the model, the weights are randomly initialized - filled with random values.
+What comes next is the to gradually update the weights based on a feedback signal from the loss function.
+The gradual adjustment of weights, also called *training*, is what machine learning is all about.
+
+The model trains in what's called a *training loop*.
+At a high level, the following steps are repeated until the loss function converges:
+
+1. Draw a batch of training sample, `x`, and corresponding target labels, `y_true`
+2. Run the model on `x` - a step called the *forward pass* - to obtain predictions, `y_pred`
+3. Compute the loss of the model on the batch, a measure of the mismatch between `y_true` and `y_pred`
+4. Update all weights of the model in a way that slightly reduces the loss on the batch
+
 ### Backpropagation
 
 Backpropagation is the process of finding the derivative of the loss function with respect to the weights and biases of a neural network.
