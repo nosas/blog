@@ -38,10 +38,10 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Tensor product](#tensor-product)
         - [Tensor reshaping](#tensor-reshaping)
         - [Geometric interpretations](#geometric-interpretations)
-    - [How neural networks learn via backpropagation and gradient descent](#how-neural-networks-learn-via-backpropagation-and-gradient-descent)
+    - [How neural networks learn](#how-neural-networks-learn)
+        - [Gradient descent](#gradient-descent)
         - [Backpropagation](#backpropagation)
         - [Backpropagation algorithm](#backpropagation-algorithm)
-        - [Gradient descent](#gradient-descent)
         - [Stochastic gradient descent](#stochastic-gradient-descent)
     - [Recap: Looking back at our first example](#recap-looking-back-at-our-first-example)
         - [Input](#input)
@@ -645,7 +645,7 @@ However, I will not be covering these concepts in this article because they dive
 I recommend reading the book's chapter on geometric interpretations of tensor operations.
 
 ---
-## How neural networks learn via backpropagation and gradient descent
+## How neural networks learn
 
 Each neural layer from our first model example transforms its input data as follows:
 
@@ -654,13 +654,13 @@ output = relu(dot(input, W) + b)
 ```
 
 In this expression, `W` and `b` are tensors from the layer attributes - `W` is the *weight* matrix and `b` is the *bias vector*.
-These variables are also called the *trainable parameters* of the layer.
+These variables are also called the *trainable parameters* (`kernel` and `bias` attributes, respectively) of the layer.
 The weights contain the information learned by the model from exposure to training data.
 
-
 Upon initializing the model, the weights are randomly initialized - filled with random values.
-What comes next is the to gradually update the weights based on a feedback signal from the loss function.
-The gradual adjustment of weights, also called *training*, is what machine learning is all about.
+What comes next is to gradually update the weights based on a feedback signal from the loss function.
+The gradual adjustment of weights, also called *training*, is how the neural networks learn.
+Training is what machine learning is all about!
 
 The model trains in what's called a *training loop*.
 At a high level, the following steps are repeated until the loss function converges:
@@ -670,6 +670,16 @@ At a high level, the following steps are repeated until the loss function conver
 3. Compute the loss of the model on the batch, a measure of the mismatch between `y_true` and `y_pred`
 4. Update all weights of the model in a way that slightly reduces the loss on the batch
 
+Step 1 is easy: we load our dataset (images, tabular data, etc.) and their corresponding labels.
+Step 2 and 3 are a handful of tensor operations and basic mathematics.
+Step 4, however, is the most difficult part.
+We will cover the high-level details of step 4 in the following *gradient descent* and *backpropagation* sections.
+
+### Gradient descent
+
+Gradient descent is a common technique for optimizing neural networks.
+It is a process of iteratively moving the weights and biases of a neural network towards the minimum of the loss function.
+
 ### Backpropagation
 
 Backpropagation is the process of finding the derivative of the loss function with respect to the weights and biases of a neural network.
@@ -677,11 +687,6 @@ Backpropagation is the process of finding the derivative of the loss function wi
 ### Backpropagation algorithm
 
 Using the backpropagation algorithm, we can get the gradient of the loss with respect to the weights and biases of the network.
-
-### Gradient descent
-
-Gradient descent is a common technique for optimizing neural networks.
-It is a process of iteratively moving the weights and biases of a neural network towards the minimum of the loss function.
 
 ### Stochastic gradient descent
 

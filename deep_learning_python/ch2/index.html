@@ -70,11 +70,11 @@ Articles in this series will sequentially review key concepts, examples, and int
 <li><a href="#tensor-reshaping">Tensor reshaping</a></li>
 <li><a href="#geometric-interpretations">Geometric interpretations</a></li>
 </ul></li>
-<li><a href="#how-neural-networks-learn-via-backpropagation-and-gradient-descent">How neural networks learn via backpropagation and gradient descent</a>
+<li><a href="#how-neural-networks-learn">How neural networks learn</a>
 <ul>
+<li><a href="#gradient-descent">Gradient descent</a></li>
 <li><a href="#backpropagation">Backpropagation</a></li>
 <li><a href="#backpropagation-algorithm">Backpropagation algorithm</a></li>
-<li><a href="#gradient-descent">Gradient descent</a></li>
 <li><a href="#stochastic-gradient-descent">Stochastic gradient descent</a></li>
 </ul></li>
 <li><a href="#recap-looking-back-at-our-first-example">Recap: Looking back at our first example</a>
@@ -682,7 +682,7 @@ I recommend reading the book's chapter on geometric interpretations of tensor op
 
 <hr />
 
-<h2 id="how-neural-networks-learn-via-backpropagation-and-gradient-descent">How neural networks learn via backpropagation and gradient descent</h2>
+<h2 id="how-neural-networks-learn">How neural networks learn</h2>
 
 <p>Each neural layer from our first model example transforms its input data as follows:</p>
 
@@ -690,12 +690,13 @@ I recommend reading the book's chapter on geometric interpretations of tensor op
 </code></pre></div>
 
 <p>In this expression, <code>W</code> and <code>b</code> are tensors from the layer attributes - <code>W</code> is the <em>weight</em> matrix and <code>b</code> is the <em>bias vector</em>.
-These variables are also called the <em>trainable parameters</em> of the layer.
+These variables are also called the <em>trainable parameters</em> (<code>kernel</code> and <code>bias</code> attributes, respectively) of the layer.
 The weights contain the information learned by the model from exposure to training data.</p>
 
 <p>Upon initializing the model, the weights are randomly initialized - filled with random values.
-What comes next is the to gradually update the weights based on a feedback signal from the loss function.
-The gradual adjustment of weights, also called <em>training</em>, is what machine learning is all about.</p>
+What comes next is to gradually update the weights based on a feedback signal from the loss function.
+The gradual adjustment of weights, also called <em>training</em>, is how the neural networks learn.
+Training is what machine learning is all about!</p>
 
 <p>The model trains in what's called a <em>training loop</em>.
 At a high level, the following steps are repeated until the loss function converges:</p>
@@ -707,6 +708,16 @@ At a high level, the following steps are repeated until the loss function conver
 <li>Update all weights of the model in a way that slightly reduces the loss on the batch</li>
 </ol>
 
+<p>Step 1 is easy: we load our dataset (images, tabular data, etc.) and their corresponding labels.
+Step 2 and 3 are a handful of tensor operations and basic mathematics.
+Step 4, however, is the most difficult part.
+We will cover the high-level details of step 4 in the following <em>gradient descent</em> and <em>backpropagation</em> sections.</p>
+
+<h3 id="gradient-descent">Gradient descent</h3>
+
+<p>Gradient descent is a common technique for optimizing neural networks.
+It is a process of iteratively moving the weights and biases of a neural network towards the minimum of the loss function.</p>
+
 <h3 id="backpropagation">Backpropagation</h3>
 
 <p>Backpropagation is the process of finding the derivative of the loss function with respect to the weights and biases of a neural network.</p>
@@ -714,11 +725,6 @@ At a high level, the following steps are repeated until the loss function conver
 <h3 id="backpropagation-algorithm">Backpropagation algorithm</h3>
 
 <p>Using the backpropagation algorithm, we can get the gradient of the loss with respect to the weights and biases of the network.</p>
-
-<h3 id="gradient-descent">Gradient descent</h3>
-
-<p>Gradient descent is a common technique for optimizing neural networks.
-It is a process of iteratively moving the weights and biases of a neural network towards the minimum of the loss function.</p>
 
 <h3 id="stochastic-gradient-descent">Stochastic gradient descent</h3>
 
