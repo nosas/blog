@@ -404,13 +404,6 @@ That's a total of 6,220,800,000 values!
 
 Similar to how to computer programs can be reduced to a small set of binary operations (AND, OR, XOR, and so on), all transformations learned by deep neural networks can be reduced to a handful of *tensor operations*.
 
-In our initial example, we built our model by sequentially stacking `Dense` layers.
-In Keras, a `Dense` layer with 512 nodes and activation function `relu` looks like this:
-
-```python
-keras.layers.Dense(512, activation="relu")
-```
-
 ### Basic operations
 
 - *Addition*: `t1 + t2`
@@ -436,7 +429,16 @@ More operations can be found in the `tf.math` module's API documentation here:
 ### Element-wise operations
 
 Element-wise operations are applied independently to each entry in the tensors being considered.
-The `relu`, addition, and operations listed above are all element-wise operations.
+The `relu`, addition, and other operations listed above are all element-wise operations.
+
+Recall in our initial example, we built our model by sequentially stacking `Dense` layers.
+Each layer is a fully-connected layer with an `activation` function.
+The first layer was a `Dense` layer with 512 nodes and activation function `relu`, like so:
+
+```python
+keras.layers.Dense(512, activation="relu")
+```
+
 From a Python standpoint, we could use `for` loops to implement a naive element-wise operation.
 Take a look below at a naive Python implementation of the `relu` and addition operations.
 

@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 08, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 09, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 2 - Mathematical building blocks of neural networks</title></p>
 
@@ -445,12 +445,6 @@ That's a total of 6,220,800,000 values!</p>
 
 <p>Similar to how to computer programs can be reduced to a small set of binary operations (AND, OR, XOR, and so on), all transformations learned by deep neural networks can be reduced to a handful of <em>tensor operations</em>.</p>
 
-<p>In our initial example, we built our model by sequentially stacking <code>Dense</code> layers.
-In Keras, a <code>Dense</code> layer with 512 nodes and activation function <code>relu</code> looks like this:</p>
-
-<div class="codehilite"><pre><span></span><code><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">)</span>
-</code></pre></div>
-
 <h3 id="basic-operations">Basic operations</h3>
 
 <ul>
@@ -477,8 +471,16 @@ In Keras, a <code>Dense</code> layer with 512 nodes and activation function <cod
 <h3 id="element-wise-operations">Element-wise operations</h3>
 
 <p>Element-wise operations are applied independently to each entry in the tensors being considered.
-The <code>relu</code>, addition, and operations listed above are all element-wise operations.
-From a Python standpoint, we could use <code>for</code> loops to implement a naive element-wise operation.
+The <code>relu</code>, addition, and other operations listed above are all element-wise operations.</p>
+
+<p>Recall in our initial example, we built our model by sequentially stacking <code>Dense</code> layers.
+Each layer is a fully-connected layer with an <code>activation</code> function.
+The first layer was a <code>Dense</code> layer with 512 nodes and activation function <code>relu</code>, like so:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>From a Python standpoint, we could use <code>for</code> loops to implement a naive element-wise operation.
 Take a look below at a naive Python implementation of the <code>relu</code> and addition operations.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">naive_relu</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
