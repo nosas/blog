@@ -173,8 +173,8 @@
       text-align: justify;
 
       padding: 1ch;
-      padding-top: 2ch;
-      padding-bottom: 2ch;
+      /* padding-top: 2ch; */
+      /* padding-bottom: 2ch; */
 
       margin: 0ch;
       margin-bottom: 2ch;
