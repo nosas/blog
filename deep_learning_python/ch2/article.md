@@ -42,6 +42,7 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Gradient: The derivative of tensor operations](#gradient-the-derivative-of-tensor-operations)
         - [Gradient descent](#gradient-descent)
         - [Variants of gradient descent](#variants-of-gradient-descent)
+        - [Gradient descent with momentum](#gradient-descent-with-momentum)
         - [Backpropagation](#backpropagation)
         - [Backpropagation algorithm](#backpropagation-algorithm)
     - [Recap: Looking back at our first example](#recap-looking-back-at-our-first-example)
@@ -735,6 +736,17 @@ If it's too small, the descent down the curve will be take many iterations and m
 If it's too large, the updates will be too big and may take you to completely random locations on the curve.
 
 ### Variants of gradient descent
+
+There exist multiple variants of gradient descent.
+These variants are known as *optimizers* or *optimization algorithms*.
+
+The variant used above is called *stochastic gradient descent* - more specifically, *mini-batch stochastic gradient descent (SGD)*.
+SGD is a simple variant that looks only at the current value of the gradients.
+
+Other variants - such as *Adagrad*, *RMSprop*, and so on - differ by taking into account previous weight updates when computing the next weight update.
+Using previous weight updates to compute the next weight updates is an important concept called *momentum*.
+
+### Gradient descent with momentum
 
 
 
