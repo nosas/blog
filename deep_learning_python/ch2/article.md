@@ -744,11 +744,38 @@ The variant used above is called *stochastic gradient descent* - more specifical
 SGD is a simple variant that looks only at the current value of the gradients.
 
 Other variants - such as *Adagrad*, *RMSprop*, and so on - differ by taking into account previous weight updates when computing the next weight update.
-Using previous weight updates to compute the next weight updates is an important concept called *momentum*.
+This is an important concept called *momentum*.
 
 ### Gradient descent with momentum
 
+Momentum is the process of using previous weight updates to compute the next weight update.
+It addresses two issues with SGD:
 
+1. Convergence speed
+2. Local minima
+
+<font style="color:red">TODO: Add curve with local minimum and global minimum</font>
+
+Around a specific point in the figure above, we can see there is a *local minimum* where moving left results in the loss increasing, but so does moving right.
+If the parameters were optimized via SGD with a small learning rate, the loss would get stuck at the local minimum instead of the global minimum.
+
+The concept of momentum is inspired from physics - such as a small ball rolling down the loss curve.
+If the ball has enough momentum, it won't get stuck in the local minimum.
+
+Momentum is implemented by moving the ball at each step based not only on the current slope value (current acceleration), but also on the current velocity (resulting from pass acceleration).
+This means updating the parameter `w` based not only on the current gradient value, but also on previous parameter updates.
+Take a look at this naive implementation:
+
+```python
+past_velocity = 0
+momentum = 0.1
+while loss > 0.01:
+    w, loss, gradient = get_model_parameters()
+    velocity = past_velocity * momentum - learning_rate * gradient
+    w = w + momentum * velocity - learning_rate * gradient
+    past_velocity = velocity
+    update_model_parameters(w)
+```
 
 ### Backpropagation
 

@@ -792,9 +792,39 @@ These variants are known as <em>optimizers</em> or <em>optimization algorithms</
 SGD is a simple variant that looks only at the current value of the gradients.</p>
 
 <p>Other variants - such as <em>Adagrad</em>, <em>RMSprop</em>, and so on - differ by taking into account previous weight updates when computing the next weight update.
-Using previous weight updates to compute the next weight updates is an important concept called <em>momentum</em>.</p>
+This is an important concept called <em>momentum</em>.</p>
 
 <h3 id="gradient-descent-with-momentum">Gradient descent with momentum</h3>
+
+<p>Momentum is the process of using previous weight updates to compute the next weight update.
+It addresses two issues with SGD:</p>
+
+<ol>
+<li>Convergence speed</li>
+<li>Local minima</li>
+</ol>
+
+<p><font style="color:red">TODO: Add curve with local minimum and global minimum</font></p>
+
+<p>Around a specific point in the figure above, we can see there is a <em>local minimum</em> where moving left results in the loss increasing, but so does moving right.
+If the parameters were optimized via SGD with a small learning rate, the loss would get stuck at the local minimum instead of the global minimum.</p>
+
+<p>The concept of momentum is inspired from physics - such as a small ball rolling down the loss curve.
+If the ball has enough momentum, it won't get stuck in the local minimum.</p>
+
+<p>Momentum is implemented by moving the ball at each step based not only on the current slope value (current acceleration), but also on the current velocity (resulting from pass acceleration).
+This means updating the parameter <code>w</code> based not only on the current gradient value, but also on previous parameter updates.
+Take a look at this naive implementation:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">past_velocity</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="k">while</span> <span class="n">loss</span> <span class="o">&gt;</span> <span class="mf">0.01</span><span class="p">:</span>
+    <span class="n">w</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">gradient</span> <span class="o">=</span> <span class="n">get_model_parameters</span><span class="p">()</span>
+    <span class="n">velocity</span> <span class="o">=</span> <span class="n">past_velocity</span> <span class="o">*</span> <span class="n">momentum</span> <span class="o">-</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">gradient</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">+</span> <span class="n">momentum</span> <span class="o">*</span> <span class="n">velocity</span> <span class="o">-</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">gradient</span>
+    <span class="n">past_velocity</span> <span class="o">=</span> <span class="n">velocity</span>
+    <span class="n">update_model_parameters</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</code></pre></div>
 
 <h3 id="backpropagation">Backpropagation</h3>
 
