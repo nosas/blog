@@ -72,6 +72,7 @@ Articles in this series will sequentially review key concepts, examples, and int
 </ul></li>
 <li><a href="#how-neural-networks-learn">How neural networks learn</a>
 <ul>
+<li><a href="#gradient-the-derivative-of-tensor-operations">Gradient: The derivative of tensor operations</a></li>
 <li><a href="#gradient-descent">Gradient descent</a></li>
 <li><a href="#backpropagation">Backpropagation</a></li>
 <li><a href="#backpropagation-algorithm">Backpropagation algorithm</a></li>
@@ -712,6 +713,22 @@ At a high level, the following steps are repeated until the loss function conver
 Step 2 and 3 are a handful of tensor operations and basic mathematics.
 Step 4, however, is the most difficult part.
 We will cover the high-level details of step 4 in the following <em>gradient descent</em> and <em>backpropagation</em> sections.</p>
+
+<h3 id="gradient-the-derivative-of-tensor-operations">Gradient: The derivative of tensor operations</h3>
+
+<blockquote>
+  <p>NOTE: Assumptions</p>
+  
+  <p>This section assumes that you are familiar with <a href="#tensor-operations">tensor operations</a> and the concept of derivatives in calculus.</p>
+</blockquote>
+
+<p>The concept of derivation can be applied to any function, as long as the surfaces they describe are continuous and smooth.
+For example, the tensor operations used in our model - such as <code>relu</code>, <code>dot</code>, addition, etc. - are all continuous and smooth.</p>
+
+<p>The derivative of a tensor operation (or tensor function) is called a gradient.
+The gradient of a tensor function represents the <em>curvature</em> of the multidimensional surface described by the function.</p>
+
+<p><strong>Gradients characterize how the output of the function varies when its input parameters vary.</strong></p>
 
 <h3 id="gradient-descent">Gradient descent</h3>
 

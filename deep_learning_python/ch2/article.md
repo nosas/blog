@@ -39,6 +39,7 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Tensor reshaping](#tensor-reshaping)
         - [Geometric interpretations](#geometric-interpretations)
     - [How neural networks learn](#how-neural-networks-learn)
+        - [Gradient: The derivative of tensor operations](#gradient-the-derivative-of-tensor-operations)
         - [Gradient descent](#gradient-descent)
         - [Backpropagation](#backpropagation)
         - [Backpropagation algorithm](#backpropagation-algorithm)
@@ -674,6 +675,21 @@ Step 1 is easy: we load our dataset (images, tabular data, etc.) and their corre
 Step 2 and 3 are a handful of tensor operations and basic mathematics.
 Step 4, however, is the most difficult part.
 We will cover the high-level details of step 4 in the following *gradient descent* and *backpropagation* sections.
+
+### Gradient: The derivative of tensor operations
+
+> NOTE: Assumptions
+>
+> This section assumes that you are familiar with [tensor operations](#tensor-operations) and the concept of derivatives in calculus.
+
+The concept of derivation can be applied to any function, as long as the surfaces they describe are continuous and smooth.
+For example, the tensor operations used in our model - such as `relu`, `dot`, addition, etc. - are all continuous and smooth.
+
+The derivative of a tensor operation (or tensor function) is called a gradient.
+The gradient of a tensor function represents the *curvature* of the multidimensional surface described by the function.
+
+**Gradients characterize how the output of the function varies when its input parameters vary.**
+
 
 ### Gradient descent
 
