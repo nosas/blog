@@ -41,9 +41,9 @@ Articles in this series will sequentially review key concepts, examples, and int
     - [How neural networks learn](#how-neural-networks-learn)
         - [Gradient: The derivative of tensor operations](#gradient-the-derivative-of-tensor-operations)
         - [Gradient descent](#gradient-descent)
+        - [Variants of gradient descent](#variants-of-gradient-descent)
         - [Backpropagation](#backpropagation)
         - [Backpropagation algorithm](#backpropagation-algorithm)
-        - [Stochastic gradient descent](#stochastic-gradient-descent)
     - [Recap: Looking back at our first example](#recap-looking-back-at-our-first-example)
         - [Input](#input)
         - [Layers](#layers)
@@ -683,20 +683,60 @@ We will cover the high-level details of step 4 in the following *gradient descen
 > NOTE: Assumptions
 >
 > This section assumes that you are familiar with [tensor operations](#tensor-operations) and the concept of derivatives in calculus.
+> Below are some helpful rules to keep in mind:
+>
+> - Gradients can be interpreted as the direction of steepest ascent of some function with respect to some variable.
+> - Given a differential function, it's possible to find its minimum when the derivative is zero.
+>     - For a neural network, the minimum can be found by solving for `grad(f(W), W) = 0` using gradient descent.
 
+The derivative of a tensor operation (or tensor function) is called a gradient.
 The concept of derivation can be applied to any function, as long as the surfaces they describe are continuous and smooth.
 For example, the tensor operations used in our model - such as `relu`, `dot`, addition, etc. - are all continuous and smooth.
 
-The derivative of a tensor operation (or tensor function) is called a gradient.
-The gradient of a tensor function represents the *curvature* of the multidimensional surface described by the function.
+All of the functions used in our models (such as `dot` or `+`) transform their input in a smooth and continuous way.
+Therefore, we can derive the gradient of all the tensor operations used in our model and use it to update the weights of the model.
 
-**Gradients characterize how the output of the function varies when its input parameters vary.**
+For instance, if we look at `z = x + y`, we can determine that a small change in `x` will not change `z` much, but a large change in `x` will change `z` much more.
+Furthermore, if we know the direction of the change in `x`, we can infer the direction of the change in `z`.
+In mathematics, we called these *differentiable* functions.
+We can use the inferred direction of change to update the model's weight in a way that will incrementally reduce the loss during training.
 
+Mathematically, the gradient of a function represents the *curvature* of the multidimensional surface described by the function.
+Simply put, **gradients characterize how the output of the function varies when its input parameters vary.**
 
 ### Gradient descent
 
-Gradient descent is a common technique for optimizing neural networks.
-It is a process of iteratively moving the weights and biases of a neural network towards the minimum of the loss function.
+Gradient descent is a common technique for optimizing neural networks by nudging the parameters of a neural network towards the minimum of the loss function.
+Essentially, it's the process for solving the equation `grad(f(W), W) = 0`.
+It's the key to figuring out what combination of weights can output the lowest loss.
+
+Tying gradients back to weight updates and loss score, the gradient can be used to move the weights of the model towards the minimum of the loss function.
+The weights are moved **opposite** to the direction of the gradient.
+
+Why are weights moved in the opposite direction of the gradient?
+
+The gradient - such as `grad(loss_score, W0)` - can be interpreted as the direction of **steepest ascent** of `loss_value = f(W)` with respect to `W0`, where `f` is the loss function.
+Intuitively, moving `W1` in the opposite direction of the steepest ascent (`grad(loss_score, W0`) will move the weights closer to a lower point of the curve - hence the name, gradient **descent**.
+When done incrementally during training, we see that the weights converge to the minimum of the loss function.
+
+Let's update the training loop process from [above](#how-neural-networks-learn) to include gradient descent:
+
+1. Draw a batch of training sample, `x`, and corresponding target labels, `y_true`
+2. Run the model on `x` - a step called the *forward pass* - to obtain predictions, `y_pred`
+3. Compute the loss of the model on the batch, a measure of the mismatch between `y_true` and `y_pred`
+4. Compute the gradient of the loss with respect to the model's parameters - a step called the *backward pass*
+5. Move the parameters a little in the opposite direction from the gradient - `W -= learning_rate * gradient` - thus reducing the loss on the batch.
+    - The *learning rate* (`learning_rate`) would be a scalar responsible for modulating the magnitude of the descent - or how big of a step the weights are moved
+
+<font style="color:red">TODO: Add image of SGD down a 1D curve</font>
+
+It's important to pick a reasonable value for the `learning_rate`.
+If it's too small, the descent down the curve will be take many iterations and may get stuck in a local minimum.
+If it's too large, the updates will be too big and may take you to completely random locations on the curve.
+
+### Variants of gradient descent
+
+
 
 ### Backpropagation
 
@@ -705,11 +745,6 @@ Backpropagation is the process of finding the derivative of the loss function wi
 ### Backpropagation algorithm
 
 Using the backpropagation algorithm, we can get the gradient of the loss with respect to the weights and biases of the network.
-
-### Stochastic gradient descent
-
-Stochastic gradient descent (SGD) is a variant of gradient descent that is used to train neural networks.
-It is a stochastic approach to gradient descent, where the learning rate is not constant, but rather is a function of the iteration number.
 
 ---
 ## Recap: Looking back at our first example

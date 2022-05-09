@@ -74,9 +74,9 @@ Articles in this series will sequentially review key concepts, examples, and int
 <ul>
 <li><a href="#gradient-the-derivative-of-tensor-operations">Gradient: The derivative of tensor operations</a></li>
 <li><a href="#gradient-descent">Gradient descent</a></li>
+<li><a href="#variants-of-gradient-descent">Variants of gradient descent</a></li>
 <li><a href="#backpropagation">Backpropagation</a></li>
 <li><a href="#backpropagation-algorithm">Backpropagation algorithm</a></li>
-<li><a href="#stochastic-gradient-descent">Stochastic gradient descent</a></li>
 </ul></li>
 <li><a href="#recap-looking-back-at-our-first-example">Recap: Looking back at our first example</a>
 <ul>
@@ -721,21 +721,68 @@ We will cover the high-level details of step 4 in the following <em>gradient des
 <blockquote>
   <p>NOTE: Assumptions</p>
   
-  <p>This section assumes that you are familiar with <a href="#tensor-operations">tensor operations</a> and the concept of derivatives in calculus.</p>
+  <p>This section assumes that you are familiar with <a href="#tensor-operations">tensor operations</a> and the concept of derivatives in calculus.
+  Below are some helpful rules to keep in mind:</p>
+  
+  <ul>
+  <li>Gradients can be interpreted as the direction of steepest ascent of some function with respect to some variable.</li>
+  <li>Given a differential function, it's possible to find its minimum when the derivative is zero.
+  <ul>
+  <li>For a neural network, the minimum can be found by solving for <code>grad(f(W), W) = 0</code> using gradient descent.</li>
+  </ul></li>
+  </ul>
 </blockquote>
 
-<p>The concept of derivation can be applied to any function, as long as the surfaces they describe are continuous and smooth.
+<p>The derivative of a tensor operation (or tensor function) is called a gradient.
+The concept of derivation can be applied to any function, as long as the surfaces they describe are continuous and smooth.
 For example, the tensor operations used in our model - such as <code>relu</code>, <code>dot</code>, addition, etc. - are all continuous and smooth.</p>
 
-<p>The derivative of a tensor operation (or tensor function) is called a gradient.
-The gradient of a tensor function represents the <em>curvature</em> of the multidimensional surface described by the function.</p>
+<p>All of the functions used in our models (such as <code>dot</code> or <code>+</code>) transform their input in a smooth and continuous way.
+Therefore, we can derive the gradient of all the tensor operations used in our model and use it to update the weights of the model.</p>
 
-<p><strong>Gradients characterize how the output of the function varies when its input parameters vary.</strong></p>
+<p>For instance, if we look at <code>z = x + y</code>, we can determine that a small change in <code>x</code> will not change <code>z</code> much, but a large change in <code>x</code> will change <code>z</code> much more.
+Furthermore, if we know the direction of the change in <code>x</code>, we can infer the direction of the change in <code>z</code>.
+In mathematics, we called these <em>differentiable</em> functions.
+We can use the inferred direction of change to update the model's weight in a way that will incrementally reduce the loss during training.</p>
+
+<p>Mathematically, the gradient of a function represents the <em>curvature</em> of the multidimensional surface described by the function.
+Simply put, <strong>gradients characterize how the output of the function varies when its input parameters vary.</strong></p>
 
 <h3 id="gradient-descent">Gradient descent</h3>
 
-<p>Gradient descent is a common technique for optimizing neural networks.
-It is a process of iteratively moving the weights and biases of a neural network towards the minimum of the loss function.</p>
+<p>Gradient descent is a common technique for optimizing neural networks by nudging the parameters of a neural network towards the minimum of the loss function.
+Essentially, it's the process for solving the equation <code>grad(f(W), W) = 0</code>.
+It's the key to figuring out what combination of weights can output the lowest loss.</p>
+
+<p>Tying gradients back to weight updates and loss score, the gradient can be used to move the weights of the model towards the minimum of the loss function.
+The weights are moved <strong>opposite</strong> to the direction of the gradient.</p>
+
+<p>Why are weights moved in the opposite direction of the gradient?</p>
+
+<p>The gradient - such as <code>grad(loss_score, W0)</code> - can be interpreted as the direction of <strong>steepest ascent</strong> of <code>loss_value = f(W)</code> with respect to <code>W0</code>, where <code>f</code> is the loss function.
+Intuitively, moving <code>W1</code> in the opposite direction of the steepest ascent (<code>grad(loss_score, W0</code>) will move the weights closer to a lower point of the curve - hence the name, gradient <strong>descent</strong>.
+When done incrementally during training, we see that the weights converge to the minimum of the loss function.</p>
+
+<p>Let's update the training loop process from <a href="#how-neural-networks-learn">above</a> to include gradient descent:</p>
+
+<ol>
+<li>Draw a batch of training sample, <code>x</code>, and corresponding target labels, <code>y_true</code></li>
+<li>Run the model on <code>x</code> - a step called the <em>forward pass</em> - to obtain predictions, <code>y_pred</code></li>
+<li>Compute the loss of the model on the batch, a measure of the mismatch between <code>y_true</code> and <code>y_pred</code></li>
+<li>Compute the gradient of the loss with respect to the model's parameters - a step called the <em>backward pass</em></li>
+<li>Move the parameters a little in the opposite direction from the gradient - <code>W -= learning_rate * gradient</code> - thus reducing the loss on the batch.
+<ul>
+<li>The <em>learning rate</em> (<code>learning_rate</code>) would be a scalar responsible for modulating the magnitude of the descent - or how big of a step the weights are moved</li>
+</ul></li>
+</ol>
+
+<p><font style="color:red">TODO: Add image of SGD down a 1D curve</font></p>
+
+<p>It's important to pick a reasonable value for the <code>learning_rate</code>.
+If it's too small, the descent down the curve will be take many iterations and may get stuck in a local minimum.
+If it's too large, the updates will be too big and may take you to completely random locations on the curve.</p>
+
+<h3 id="variants-of-gradient-descent">Variants of gradient descent</h3>
 
 <h3 id="backpropagation">Backpropagation</h3>
 
@@ -744,11 +791,6 @@ It is a process of iteratively moving the weights and biases of a neural network
 <h3 id="backpropagation-algorithm">Backpropagation algorithm</h3>
 
 <p>Using the backpropagation algorithm, we can get the gradient of the loss with respect to the weights and biases of the network.</p>
-
-<h3 id="stochastic-gradient-descent">Stochastic gradient descent</h3>
-
-<p>Stochastic gradient descent (SGD) is a variant of gradient descent that is used to train neural networks.
-It is a stochastic approach to gradient descent, where the learning rate is not constant, but rather is a function of the iteration number.</p>
 
 <hr />
 
