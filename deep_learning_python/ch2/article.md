@@ -45,6 +45,7 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Gradient descent with momentum](#gradient-descent-with-momentum)
         - [Backpropagation](#backpropagation)
         - [Backpropagation algorithm](#backpropagation-algorithm)
+        - [TensorFlow's gradient tape](#tensorflows-gradient-tape)
     - [Recap: Looking back at our first example](#recap-looking-back-at-our-first-example)
         - [Input](#input)
         - [Layers](#layers)
@@ -688,7 +689,7 @@ We will cover the high-level details of step 4 in the following *gradient descen
 >
 > - Gradients can be interpreted as the direction of steepest ascent of some function with respect to some variable.
 > - Given a differential function, it's possible to find its minimum when the derivative is zero.
->     - For a neural network, the minimum can be found by solving for `grad(f(W), W) = 0` using gradient descent.
+>     - For a neural network, the minimum can be found by solving for `grad(f(W), W) = 0` or `grad(loss_score, W) = 0` using gradient descent.
 
 The derivative of a tensor operation (or tensor function) is called a gradient.
 The concept of derivation can be applied to any function, as long as the surfaces they describe are continuous and smooth.
@@ -779,11 +780,94 @@ while loss > 0.01:
 
 ### Backpropagation
 
+A neural network consists of many tensor operations chained together: `dot`, `relu`, `softmax`, and `+`.
+Each operation has a simple, known derivative.
 Backpropagation is the process of finding the derivative of the loss function with respect to the weights and biases of a neural network.
+
+Mathematically, Calculus tells us that a chain of functions can be derived using the *chain rule*.
+Consider the two functions `f` and `g`, and the composed `fg` such that `fg(x) = f(g(x))`:
+
+```python
+def fg(x):
+    x1 = g(x)
+    y = f(x1)
+    return y
+```
+
+Mathematically, the chain rule states that `grad(y, x) == grad(y, x1) * grad(x1, x)`.
+In English, the chain rule states that the derivative of `fg` with respect to `x` is the derivative of `f` with respect to `x1` times the derivative of `g` with respect to `x`.
+This enables us to compute the derivative of `fg` as long as we know the derivatives of `f` and `g`.
+
+Let's increase the size of the composed function to further understand why it's called the *chain* rule:
+
+```python
+def fghj(x):
+    x1 = j(x)
+    x2 = h(x1)
+    x3 = g(x2)
+    y = f(x3)
+    return y
+```
+
+Then the chain rule states that `grad(y, x) == grad(y, x3) * grad(x3, x2) * grad(x2, x1) * grad(x1, x)`.
+Let's dive deeper into the algorithm using computation graphs.
+
 
 ### Backpropagation algorithm
 
+<figure class="right" style="width:auto; height:auto;">
+    <img src="img/forward_pass.png" style="width:80%; height:auto;"/>
+    <figcaption>Computation graph of a forward pass</figcaption>
+</figure>
+
 Using the backpropagation algorithm, we can get the gradient of the loss with respect to the weights and biases of the network.
+Mathematically, we're solving the following equation: `grad(loss_score, w) = 0`.
+
+*Computation graphs* are simple data structures that represent operations as data.
+It's a directed acyclic graph of operations - in our case, tensor operations.
+The image below is an example of a computation graph of a forward pass with input `x` and operations `*`, `+`, and `loss`, where `loss` is our loss function `loss_score = abs(y_true - x2)`.
+
+The forward pass has input `x = 3` with parameters `w = 2` and `b = 3`, resulting in `loss_score = 1`.
+
+Simple enough to read a computation graph, right?
+Let's look at the computation graph of a backwards pass to learn how to compute the gradients.
+Given the backward pass graph, we can compute the following gradients:
+
+<figure class="right">
+  <img src="img/backward_pass.png" style="width:85%;">
+  <figcaption>Computation graph of backward pass</figcaption>
+</figure>
+
+- `grad(loss_score, x2) = 1`, because as `x2` varies by an amount epsilon, the `loss_score = abs(8 - x2)` changes by the same amount epsilon
+- `grad(x2, x1) = 1`, because as `x1` varies by an amount epsilon, the `x2 = x1 + b = x1 + 1` changes by the same amount epsilon
+- `grad(x2, b) = 1`, because as `b` varies by an amount epsilon, the `x2 = x1 + b = 6 + b` changes by the same amount epsilon
+- `grad(x1, w) = 3`, because as `w` varies by an amount epsilon, the `x1 = w * x = 3 * x` changes by `3 * epsilon`
+
+The chain rule says that we can obtain the derivative of a node with respect to another node by *multiplying the derivatives for each edge along the path linking the two nodes*.
+Therefore, we can compute the gradient of the `loss_score` with respect to the weights (`grad(loss_score, w)`) using the chain rule.
+
+For instance, the figure below shows the path from `loss_score` to `w`.
+The path produces the following gradient calculation: `grad(loss_score, w) = grad(loss_score, x2) * grad(x2, x1) * grad(x1, w)`.
+
+<figure class="right">
+  <img src="img/backward_pass_path.png" style="width:85%;">
+  <figcaption>Path to compute gradient of loss score with respect to weights</figcaption>
+</figure>
+
+By applying the chain rule to our graph, we obtain what we were looking for:
+
+- `grad(loss_score, w) = 1 * 1 * 3 = 3`
+- `grad(loss_score, b) = 1 * 1 * 1 = 1`
+
+That's the backpropagation algorithm using a simple computation graph example.
+The algorithm starts with the final loss score and works backward from the bottom layer to the top layers, computing the contribution of each parameter had to the loss score.
+
+Now imagine a neural network with hundreds of layers and parameters.
+Calculating the gradient by hand would be tedious, error-prone, and time-consuming.
+That's why TensorFlow provides a way to compute the gradients for us.
+
+### TensorFlow's gradient tape
+
 
 ---
 ## Recap: Looking back at our first example
