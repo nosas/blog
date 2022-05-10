@@ -118,8 +118,15 @@ digit = train_images[4]
 plt.imgshow(digit, cmap=plt.cm.binary)
 plt.show()
 ```
+<details>
+    <summary>Sample image</summary>
+    <figure class="center">
+        <img src="img/mnist_sample.png" style="width: 10%"/>
+        <figcaption>Sample image from MNIST dataset, train_images[4]</figcaption>
+    </figure>
 
-<font style="color:red">TODO: Insert MNIST sample digits</font>
+</details>
+
 
 Lastly, let's look at what label corresponds to the previous image:
 
