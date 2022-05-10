@@ -914,9 +914,65 @@ The algorithm starts with the final loss score and works backward from the botto
 
 <p>Now imagine a neural network with hundreds of layers and parameters.
 Calculating the gradient by hand would be tedious, error-prone, and time-consuming.
-That's why TensorFlow provides a way to compute the gradients for us.</p>
+That's why TensorFlow provides a way to compute the gradients for us through <em>automatic differentiation</em>.</p>
 
 <h3 id="tensorflows-gradient-tape">TensorFlow's gradient tape</h3>
+
+<p>The API through used to leverage TensorFlow's automatic differentiation is the <code>GradientTape</code>.
+It's a Python context that will "record" tensor operations executed within the context in the form of computation graphs.
+The computation graphs are used to retrieve the gradient of any output with respect to any variable or set of variables (instances of the <code>tf.Variable</code> class).</p>
+
+<blockquote>
+  <p>NOTE: <code>tf.Variable</code> class</p>
+  
+  <p>The <code>tf.Variable</code> class is simply a container that holds a mutable tensor.
+  For instance, the weights of a neural network are stored in <code>tf.Variable</code> instances.
+  Read more about <code>tf.Variable</code> class in the <a href="https://www.tensorflow.org/api_docs/python/tf/Variable">TensorFlow documentation</a>.</p>
+</blockquote>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="c1"># Initialize a variable with a scalar value of 3</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)</span>
+<span class="c1"># Open a GradientTape context, or scope</span>
+<span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">tape</span><span class="p">:</span>
+    <span class="c1"># Apply some operations within the context to our variable x</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span>
+<span class="c1"># Use the tape to retrieve the gradient of y with respect to x</span>
+<span class="n">grad_of_y_wrt_x</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<span class="c1"># The gradient of y with respect to x is 5</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">grad_of_y_wrt_x</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+</code></pre></div>
+
+<p>The <code>GradientTape</code> works with tensor operations and lists of variables as well:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="c1"># Initialize a Variable of shape (2, 2) with random initial values</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">tape</span><span class="p">:</span>
+    <span class="c1"># Apply tensor operations within the context to our variable x</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span>
+<span class="n">grad_of_y_wrt_x</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<span class="c1"># The gradient of y with respect to x is [[5, 5], [5, 5]</span>
+<span class="c1"># Tensor of shape (2, 2) - just like x - describing the curvature of</span>
+<span class="c1"># y = 5 * x + 2 around randomly-initialized x</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">grad_of_y_wrt_x</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+
+<span class="n">W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">tape</span><span class="p">:</span>
+    <span class="c1"># `tf.matmul()` is the dot product equivalent in TensorFlow, or @ in numpy</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+
+<span class="c1"># List of two tensors with the same shapes as W and b, respectively</span>
+<span class="n">grad_of_y_wrt_W_and_b</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
+<span class="n">grad_of_y_wrt_W</span> <span class="o">=</span> <span class="n">grad_of_y_wrt_W_and_b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">grad_of_y_wrt_b</span> <span class="o">=</span> <span class="n">grad_of_y_wrt_W_and_b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">grad_of_y_wrt_W</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">grad_of_y_wrt_b</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+</code></pre></div>
+
+<p>More information regarding the <code>GradientTape</code> can be found in the <a href="https://www.tensorflow.org/api_docs/python/tf/GradientTape">TensorFlow documentation</a> and Chapter 3 of <em>Deep Learning with Python</em>.</p>
 
 <hr />
 

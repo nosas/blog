@@ -864,10 +864,65 @@ The algorithm starts with the final loss score and works backward from the botto
 
 Now imagine a neural network with hundreds of layers and parameters.
 Calculating the gradient by hand would be tedious, error-prone, and time-consuming.
-That's why TensorFlow provides a way to compute the gradients for us.
+That's why TensorFlow provides a way to compute the gradients for us through *automatic differentiation*.
 
 ### TensorFlow's gradient tape
 
+The API through used to leverage TensorFlow's automatic differentiation is the `GradientTape`.
+It's a Python context that will "record" tensor operations executed within the context in the form of computation graphs.
+The computation graphs are used to retrieve the gradient of any output with respect to any variable or set of variables (instances of the `tf.Variable` class).
+
+> NOTE: `tf.Variable` class
+>
+> The `tf.Variable` class is simply a container that holds a mutable tensor.
+> For instance, the weights of a neural network are stored in `tf.Variable` instances.
+> Read more about `tf.Variable` class in the [TensorFlow documentation](https://www.tensorflow.org/api_docs/python/tf/Variable).
+
+```python
+import tensorflow as tf
+# Initialize a variable with a scalar value of 3
+x = tf.Variable(3.0)
+# Open a GradientTape context, or scope
+with tf.GradientTape() as tape:
+    # Apply some operations within the context to our variable x
+    y = 5 * x + 2
+# Use the tape to retrieve the gradient of y with respect to x
+grad_of_y_wrt_x = tape.gradient(y, x)
+# The gradient of y with respect to x is 5
+print(grad_of_y_wrt_x.numpy())
+```
+
+The `GradientTape` works with tensor operations and lists of variables as well:
+
+```python
+# Initialize a Variable of shape (2, 2) with random initial values
+x = tf.Variable(tf.random.uniform((2, 2)))
+with tf.GradientTape() as tape:
+    # Apply tensor operations within the context to our variable x
+    y = 5 * x + 2
+grad_of_y_wrt_x = tape.gradient(y, x)
+# The gradient of y with respect to x is [[5, 5], [5, 5]
+# Tensor of shape (2, 2) - just like x - describing the curvature of
+# y = 5 * x + 2 around randomly-initialized x
+print(grad_of_y_wrt_x.numpy())
+
+W = tf.Variable(tf.random.uniform((2, 2)))
+b = tf.Variable(tf.zeros(2,))
+x = tf.random.uniform((2, 2))
+with tf.GradientTape() as tape:
+    # `tf.matmul()` is the dot product equivalent in TensorFlow, or @ in numpy
+    y = tf.matmul(x, W) + b
+
+# List of two tensors with the same shapes as W and b, respectively
+grad_of_y_wrt_W_and_b = tape.gradient(y, [W, b])
+grad_of_y_wrt_W = grad_of_y_wrt_W_and_b[0]
+grad_of_y_wrt_b = grad_of_y_wrt_W_and_b[1]
+
+print(grad_of_y_wrt_W.numpy())
+print(grad_of_y_wrt_b.numpy())
+```
+
+More information regarding the `GradientTape` can be found in the [TensorFlow documentation](https://www.tensorflow.org/api_docs/python/tf/GradientTape) and Chapter 3 of *Deep Learning with Python*.
 
 ---
 ## Recap: Looking back at our first example
