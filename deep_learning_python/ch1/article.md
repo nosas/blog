@@ -7,6 +7,32 @@ This article is part 1/13 (?) of a series of articles named *Deep Learning with 
 In this series, I will read through the second edition of *Deep Learning with Python* by François Chollet.
 Articles in this series will sequentially review key concepts, examples, and interesting facts from each chapter of the book.
 
+<details>
+<summary>Table of Contents</summary>
+
+- [Deep Learning with Python](#deep-learning-with-python)
+    - [Why this book?](#why-this-book)
+    - [About the author](#about-the-author)
+- [Chapter 1: What is deep learning?](#chapter-1-what-is-deep-learning)
+    - [Artificial Intelligence](#artificial-intelligence)
+        - [Symbolic AI](#symbolic-ai)
+    - [Machine Learning](#machine-learning)
+        - [Classical Programming vs Machine Learning](#classical-programming-vs-machine-learning)
+        - [What's needed to do Machine Learning?](#whats-needed-to-do-machine-learning)
+        - [How does a machine learn?](#how-does-a-machine-learn)
+        - [Machine Learning simplified](#machine-learning-simplified)
+    - [Deep Learning](#deep-learning)
+        - [Neural Networks](#neural-networks)
+        - [Layers, Weights, and Parameters](#layers-weights-and-parameters)
+        - [How does a neural network learn?](#how-does-a-neural-network-learn)
+        - [Loss Function and Optimizer](#loss-function-and-optimizer)
+        - [Neural Network training loop](#neural-network-training-loop)
+        - [Deep Learning simplified](#deep-learning-simplified)
+    - [What has Deep Learning achieved so far?](#what-has-deep-learning-achieved-so-far)
+
+</details>
+
+
 ## Why this book?
 
 There are a few reasons why I picked this book over others:
@@ -218,3 +244,6 @@ More specifically, deep learning has enabled the following breakthroughs, all in
 * Digital assistants such as Google Assistant, Apple Siri, and Amazon Alexa
 * Superhuman Go, Chess, video game playing
 * Ability to answer natural language questions
+
+
+<font style="color:red">TODO: Add recap, summary</font>
