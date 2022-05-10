@@ -815,8 +815,8 @@ Let's dive deeper into the algorithm using computation graphs.
 
 ### Backpropagation algorithm
 
-<figure class="right" style="width:auto; height:auto;">
-    <img src="img/forward_pass.png" style="width:80%; height:auto;"/>
+<figure class="right" style="width:auto;">
+    <img src="img/forward_pass.png" style="width:80%;"/>
     <figcaption>Computation graph of a forward pass</figcaption>
 </figure>
 
