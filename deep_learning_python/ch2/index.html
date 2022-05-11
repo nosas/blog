@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 10, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 11, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 2 - Mathematical building blocks of neural networks</title></p>
 
@@ -120,7 +120,7 @@ The use of precise, unambiguous executable code, instead of mathematical notatio
 This problem is commonly referred to as the "Hello World" of deep learning - it's what you do to verify your algorithms are working as expected.</p>
 
 <blockquote>
-  <p><strong>NOTE</strong>: Classification problem keywords</p>
+  <p><strong>NOTE: Classification problem keywords</strong></p>
   
   <p>In ML classification problems, a <strong>category</strong> is called a <strong>class</strong>.
   Data points - such as individual train or test images - are called <strong>samples</strong>.
@@ -728,7 +728,7 @@ We will cover the high-level details of step 4 in the following <em>gradient des
 <h3 id="gradient-the-derivative-of-tensor-operations">Gradient: The derivative of tensor operations</h3>
 
 <blockquote>
-  <p>NOTE: Assumptions</p>
+  <p><strong>NOTE: Assumptions</strong></p>
   
   <p>This section assumes that you are familiar with <a href="#tensor-operations">tensor operations</a> and the concept of derivatives in calculus.
   Below are some helpful rules to keep in mind:</p>
@@ -815,7 +815,7 @@ It addresses two issues with SGD:</p>
 <li>Local minima</li>
 </ol>
 
-<figure class="right" style="width:auto;">
+<figure class="right">
     <img src="img/global_local_minimum.png" style="width:65%;"/>
     <figcaption>Smooth, continuous loss curve with local minimum and global minimum points</figcaption>
 </figure>
@@ -936,7 +936,7 @@ It's a Python context that will "record" tensor operations executed within the c
 The computation graphs are used to retrieve the gradient of any output with respect to any variable or set of variables (instances of the <code>tf.Variable</code> class).</p>
 
 <blockquote>
-  <p>NOTE: <code>tf.Variable</code> class</p>
+  <p><strong>NOTE: <code>tf.Variable</code> class</strong></p>
   
   <p>The <code>tf.Variable</code> class is simply a container that holds a mutable tensor.
   For instance, the weights of a neural network are stored in <code>tf.Variable</code> instances.

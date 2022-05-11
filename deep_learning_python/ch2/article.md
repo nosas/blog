@@ -77,7 +77,7 @@ Concrete example of a neural network (NN) with the use of the Python library `Ke
 The problem we're trying to solve here is to classify grayscale images of handwritten digits (28x28 pixels) into their 10 categories (digits 0 through 9).
 This problem is commonly referred to as the "Hello World" of deep learning - it's what you do to verify your algorithms are working as expected.
 
-> **NOTE**: Classification problem keywords
+> **NOTE: Classification problem keywords**
 >
 > In ML classification problems, a **category** is called a **class**.
 > Data points - such as individual train or test images - are called **samples**.
@@ -689,7 +689,7 @@ We will cover the high-level details of step 4 in the following *gradient descen
 
 ### Gradient: The derivative of tensor operations
 
-> NOTE: Assumptions
+> **NOTE: Assumptions**
 >
 > This section assumes that you are familiar with [tensor operations](#tensor-operations) and the concept of derivatives in calculus.
 > Below are some helpful rules to keep in mind:
@@ -765,7 +765,7 @@ It addresses two issues with SGD:
 1. Convergence speed
 2. Local minima
 
-<figure class="right" style="width:auto;">
+<figure class="right">
     <img src="img/global_local_minimum.png" style="width:65%;"/>
     <figcaption>Smooth, continuous loss curve with local minimum and global minimum points</figcaption>
 </figure>
@@ -885,7 +885,7 @@ The API through used to leverage TensorFlow's automatic differentiation is the `
 It's a Python context that will "record" tensor operations executed within the context in the form of computation graphs.
 The computation graphs are used to retrieve the gradient of any output with respect to any variable or set of variables (instances of the `tf.Variable` class).
 
-> NOTE: `tf.Variable` class
+> **NOTE: `tf.Variable` class**
 >
 > The `tf.Variable` class is simply a container that holds a mutable tensor.
 > For instance, the weights of a neural network are stored in `tf.Variable` instances.
