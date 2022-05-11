@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 09, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 10, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 2 - Mathematical building blocks of neural networks</title></p>
 
@@ -812,7 +812,10 @@ It addresses two issues with SGD:</p>
 <li>Local minima</li>
 </ol>
 
-<p><font style="color:red">TODO: Add curve with local minimum and global minimum</font></p>
+<figure class="center" style="width:auto;">
+    <img src="img/global_local_minimum.png"/>
+    <figcaption>Curve with local minimum and global minimum points</figcaption>
+</figure>
 
 <p>Around a specific point in the figure above, we can see there is a <em>local minimum</em> where moving left results in the loss increasing, but so does moving right.
 If the parameters were optimized via SGD with a small learning rate, the loss would get stuck at the local minimum instead of the global minimum.</p>

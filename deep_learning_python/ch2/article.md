@@ -762,7 +762,10 @@ It addresses two issues with SGD:
 1. Convergence speed
 2. Local minima
 
-<font style="color:red">TODO: Add curve with local minimum and global minimum</font>
+<figure class="center" style="width:auto;">
+    <img src="img/global_local_minimum.png"/>
+    <figcaption>Curve with local minimum and global minimum points</figcaption>
+</figure>
 
 Around a specific point in the figure above, we can see there is a *local minimum* where moving left results in the loss increasing, but so does moving right.
 If the parameters were optimized via SGD with a small learning rate, the loss would get stuck at the local minimum instead of the global minimum.
