@@ -785,7 +785,10 @@ When done incrementally during training, we see that the weights converge to the
 </ul></li>
 </ol>
 
-<p><font style="color:red">TODO: Add image of SGD down a 1D curve</font></p>
+<figure class="center" style="width:auto;">
+    <img src="img/sgd_1dimensional_curve.png"/>
+    <figcaption>Gradient descent down a smooth and continuous 1D loss curve with a reasonably-sized learning rate </figcaption>
+</figure>
 
 <p>It's important to pick a reasonable value for the <code>learning_rate</code>.
 If it's too small, the descent down the curve will be take many iterations and may get stuck in a local minimum.
@@ -812,12 +815,12 @@ It addresses two issues with SGD:</p>
 <li>Local minima</li>
 </ol>
 
-<figure class="center" style="width:auto;">
-    <img src="img/global_local_minimum.png"/>
-    <figcaption>Curve with local minimum and global minimum points</figcaption>
+<figure class="right" style="width:auto;">
+    <img src="img/global_local_minimum.png" style="width:65%;"/>
+    <figcaption>Smooth, continuous loss curve with local minimum and global minimum points</figcaption>
 </figure>
 
-<p>Around a specific point in the figure above, we can see there is a <em>local minimum</em> where moving left results in the loss increasing, but so does moving right.
+<p>Around a specific point in the figure beside, we can see there is a <em>local minimum</em> where moving left results in the loss increasing, but so does moving right.
 If the parameters were optimized via SGD with a small learning rate, the loss would get stuck at the local minimum instead of the global minimum.</p>
 
 <p>The concept of momentum is inspired from physics - such as a small ball rolling down the loss curve.

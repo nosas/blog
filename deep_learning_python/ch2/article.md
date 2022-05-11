@@ -737,7 +737,10 @@ Let's update the training loop process from [above](#how-neural-networks-learn) 
 5. Move the parameters a little in the opposite direction from the gradient - `W -= learning_rate * gradient` - thus reducing the loss on the batch.
     - The *learning rate* (`learning_rate`) would be a scalar responsible for modulating the magnitude of the descent - or how big of a step the weights are moved
 
-<font style="color:red">TODO: Add image of SGD down a 1D curve</font>
+<figure class="center" style="width:auto;">
+    <img src="img/sgd_1dimensional_curve.png"/>
+    <figcaption>Gradient descent down a smooth and continuous 1D loss curve with a reasonably-sized learning rate </figcaption>
+</figure>
 
 It's important to pick a reasonable value for the `learning_rate`.
 If it's too small, the descent down the curve will be take many iterations and may get stuck in a local minimum.
@@ -762,12 +765,12 @@ It addresses two issues with SGD:
 1. Convergence speed
 2. Local minima
 
-<figure class="center" style="width:auto;">
-    <img src="img/global_local_minimum.png"/>
-    <figcaption>Curve with local minimum and global minimum points</figcaption>
+<figure class="right" style="width:auto;">
+    <img src="img/global_local_minimum.png" style="width:65%;"/>
+    <figcaption>Smooth, continuous loss curve with local minimum and global minimum points</figcaption>
 </figure>
 
-Around a specific point in the figure above, we can see there is a *local minimum* where moving left results in the loss increasing, but so does moving right.
+Around a specific point in the figure beside, we can see there is a *local minimum* where moving left results in the loss increasing, but so does moving right.
 If the parameters were optimized via SGD with a small learning rate, the loss would get stuck at the local minimum instead of the global minimum.
 
 The concept of momentum is inspired from physics - such as a small ball rolling down the loss curve.
