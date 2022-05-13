@@ -210,8 +210,8 @@ The next chapter explains in more detail how backpropagation works.
 
 ### Neural Network training loop
 
-Initially, the weights of the network are assigned random values, so the network implements a series of random transformation.
-Naturally, the network's output is far from what it should ideally be, and the loss score is accordingly very high
+Initially, the weights of the network are assigned random values, so the network implements a series of random transformations.
+Naturally, the network's output is far from what it should ideally be, and the loss score is accordingly very high.
 With every example the network processes, the weights are slightly adjusted in the correct direction, and the loss score decreases.
 
 This is the *training loop*, which, repeated a sufficient number of times (typically tens of iterations over thousands of examples), yields weight values that minimize the loss function.
