@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 11, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 12, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 2 - Mathematical building blocks of neural networks</title></p>
 
@@ -408,10 +408,13 @@ An entire dataset of 100,000 cars can be stored in a rank-2 tensor of shape <cod
 <p>Whenever time matters in your data - or the notion of sequential order - it makes sense to store it in a rank-3 tensor with an explicit time axis.
 Each sample can be encoded as a sequence of vectors (a rank-2 tensor), and thus a batch of data will be encoded as a rank-3 tensor.</p>
 
-<p><font style="color:red">TODO: Insert rank-3 timeseries data tensor</font></p>
-
 <p>By convention, the time axis is always the second axis.
 Let's take a look at an example:</p>
+
+<figure class="right">
+    <img src="img/rank3_tensor.png" style="width:100%;"/>
+    <figcaption>Rank-3 tensor containing five samples of timeseries, or sequential, data</figcaption>
+</figure>
 
 <ul>
 <li><p>A dataset of a MotoGP rider's lap around Laguna Seca.
@@ -427,20 +430,23 @@ Here, each sample would be one day's worth of data.</p></li>
 
 <h3 id="image-data">Image data</h3>
 
+<figure class="right">
+    <img src="img/rank4_tensor.png" style="width:90%;"/>
+    <figcaption>Rank-4 tensor containing RGB image data </figcaption>
+</figure>
+
 <p>Images usually have three dimensions: height, width, and color channels.
 Grayscale images (black-and-white images, like our MNIST images) have only a single color channel.
 Colored images typically have three color channels: RGB (red, green, blue).</p>
 
 <p>A batch of 500 grayscale images of size 256x256 could thus be stored in a rank-4 tensor of shape <code>(500, 256, 256, 1)</code>, whereas a batch of 500 <em>colored</em> images could be stored in a tensor a shape <code>(500, 256, 256, 3)</code>.</p>
 
-<p><font style="color:red">TODO: Insert rank-4 image data tensor</font></p>
-
 <h3 id="video-data">Video data</h3>
 
 <p>Video data is one of the few types of real-world data for which rank-5 tensors are used.
 A video can be simplified as a sequence of frames, each frame being a color image.</p>
 
-<p>Each frame can be stores in a rank-3 tensor <code>(height, width, color_channel)</code>.
+<p>Each frame can be stored in a rank-3 tensor <code>(height, width, color_channel)</code>.
 A sequence of frames can be stored in a rank-4 tensor <code>(frames, height, width, color_channel)</code>.
 Therefore, a batch of videos can be stored in a rank-5 tensor of shape <code>(samples, frames, height, width, color_channel)</code>.</p>
 

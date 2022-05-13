@@ -368,10 +368,13 @@ An entire dataset of 100,000 cars can be stored in a rank-2 tensor of shape `(10
 Whenever time matters in your data - or the notion of sequential order - it makes sense to store it in a rank-3 tensor with an explicit time axis.
 Each sample can be encoded as a sequence of vectors (a rank-2 tensor), and thus a batch of data will be encoded as a rank-3 tensor.
 
-<font style="color:red">TODO: Insert rank-3 timeseries data tensor</font>
-
 By convention, the time axis is always the second axis.
 Let's take a look at an example:
+
+<figure class="right">
+    <img src="img/rank3_tensor.png" style="width:100%;"/>
+    <figcaption>Rank-3 tensor containing five samples of timeseries, or sequential, data</figcaption>
+</figure>
 
 - A dataset of a MotoGP rider's lap around Laguna Seca.
 Every percentage of lap completed, we store the motorcycle's speed, lean angle, throttle input, brake input, and steering input.
@@ -387,20 +390,23 @@ Here, each sample would be one day's worth of data.
 
 ### Image data
 
+<figure class="right">
+    <img src="img/rank4_tensor.png" style="width:90%;"/>
+    <figcaption>Rank-4 tensor containing RGB image data </figcaption>
+</figure>
+
 Images usually have three dimensions: height, width, and color channels.
 Grayscale images (black-and-white images, like our MNIST images) have only a single color channel.
 Colored images typically have three color channels: RGB (red, green, blue).
 
 A batch of 500 grayscale images of size 256x256 could thus be stored in a rank-4 tensor of shape `(500, 256, 256, 1)`, whereas a batch of 500 *colored* images could be stored in a tensor a shape `(500, 256, 256, 3)`.
 
-<font style="color:red">TODO: Insert rank-4 image data tensor</font>
-
 ### Video data
 
 Video data is one of the few types of real-world data for which rank-5 tensors are used.
 A video can be simplified as a sequence of frames, each frame being a color image.
 
-Each frame can be stores in a rank-3 tensor `(height, width, color_channel)`.
+Each frame can be stored in a rank-3 tensor `(height, width, color_channel)`.
 A sequence of frames can be stored in a rank-4 tensor `(frames, height, width, color_channel)`.
 Therefore, a batch of videos can be stored in a rank-5 tensor of shape `(samples, frames, height, width, color_channel)`.
 
@@ -766,7 +772,7 @@ It addresses two issues with SGD:
 2. Local minima
 
 <figure class="right">
-    <img src="img/global_local_minimum.png" style="width:65%;"/>
+    <img src="img/global_local_minimum.png" style="width:85%;"/>
     <figcaption>Smooth, continuous loss curve with local minimum and global minimum points</figcaption>
 </figure>
 
