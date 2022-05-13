@@ -371,8 +371,8 @@ Each sample can be encoded as a sequence of vectors (a rank-2 tensor), and thus 
 By convention, the time axis is always the second axis.
 Let's take a look at an example:
 
-<figure class="right">
-    <img src="img/rank3_tensor.png" style="width:100%;"/>
+<figure class="right" style="width:40%">
+    <img src="img/rank3_tensor.png" style="width:80%;"/>
     <figcaption>Rank-3 tensor containing five samples of timeseries, or sequential, data</figcaption>
 </figure>
 
