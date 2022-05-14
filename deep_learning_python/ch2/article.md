@@ -577,7 +577,10 @@ The most common application of the dot product in deep learning may be between t
 The dot product between two matrices is only possible when `x.shape[1] == y.shape[0]`.
 The result is a matrix with shape `(x.shape[0], y.shape[1])`, where the coefficients are the vector products between the *rows* of `x` and the *columns* of `y`.
 
-<font style="color:red">TODO: Insert photo of matrix dot-product</font>
+<figure class="center">
+    <img src="img/matrix_dot_product.png" style="width:100%;"/>
+    <figcaption>Matrix dot-product diagram</figcaption>
+</figure>
 
 More generally, we can take the dot product between higher-dimensional tensors following the same rules for shape compatibility as outlined earlier for the 2D case:
 ```

@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 12, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 13, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 2 - Mathematical building blocks of neural networks</title></p>
 
@@ -615,7 +615,10 @@ In mathematical notation, the dot product is denoted with a dot (⋅) symbol: <c
 The dot product between two matrices is only possible when <code>x.shape[1] == y.shape[0]</code>.
 The result is a matrix with shape <code>(x.shape[0], y.shape[1])</code>, where the coefficients are the vector products between the <em>rows</em> of <code>x</code> and the <em>columns</em> of <code>y</code>.</p>
 
-<p><font style="color:red">TODO: Insert photo of matrix dot-product</font></p>
+<figure class="center">
+    <img src="img/matrix_dot_product.png" style="width:100%;"/>
+    <figcaption>Matrix dot-product diagram</figcaption>
+</figure>
 
 <p>More generally, we can take the dot product between higher-dimensional tensors following the same rules for shape compatibility as outlined earlier for the 2D case:</p>
 
