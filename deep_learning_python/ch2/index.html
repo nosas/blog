@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 13, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 9, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 2 - Mathematical building blocks of neural networks</title></p>
 
@@ -121,7 +121,7 @@ This problem is commonly referred to as the "Hello World" of deep learning - it'
 
 <blockquote>
   <p><strong>NOTE: Classification problem keywords</strong></p>
-  
+
   <p>In ML classification problems, a <strong>category</strong> is called a <strong>class</strong>.
   Data points - such as individual train or test images - are called <strong>samples</strong>.
   The class associated with a specific sample is called a <strong>label</strong>.</p>
@@ -129,7 +129,7 @@ This problem is commonly referred to as the "Hello World" of deep learning - it'
 
 <p>We'll be using the MNIST dataset: a set of 60,000 training images, plus 10,000 test images, assembled by the National Institute of Standards and Technology (the NIST in MNIST) in the 1980s.</p>
 
-<p>The MNIST dataset is preloaded in <code>Keras</code>, in the form of four <code>NumPy</code> arrays</p>
+<p>The MNIST dataset is preloaded in <code>Keras</code>, in the form of four <code>NumPy</code> arrays:</p>
 
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow.keras.datasets</span> <span class="kn">import</span> <span class="n">mnist</span>
 <span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">),</span> <span class="p">(</span><span class="n">test_images</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span> <span class="o">=</span> <span class="n">mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
@@ -179,10 +179,10 @@ We should see 60,000 training images and labels, 10,000 test images and labels.<
 <h3 id="defining-the-network-architecture">Defining the network architecture</h3>
 
 <p>The core building block of a neural network is the <em>layer</em>.
-A layer can be considered as a data filter: data goes in, and comes out more purified - more useful.
+A layer can be considered as a data filter: data goes in and comes out more purified - more useful.
 Specifically, layers extract <em>representations</em> out of the input data.</p>
 
-<p>In deep learning models, simple layers are chains together to form a <em>data distillation</em> network.
+<p>In deep learning models, simple layers are chained together to form a <em>data distillation</em> network.
 Deep learning models could be visualized as a sieve for data processing - successive layers refining input data more and more.</p>
 
 <p>The following example is a two-layer neural network.
@@ -233,7 +233,7 @@ The same reshaping and reformatting process is applied to the testing image data
 
 <h3 id="fitting-training-the-model">"Fitting" (Training) the model</h3>
 
-<p>With the data properly pre-processed, we are finally read to train the model!
+<p>With the data properly pre-processed, we are finally ready to train the model!
 In Keras, training the model is done via a call to the model's <code>fit()</code> method - we <em>fit</em> the model to its training data.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
@@ -328,8 +328,8 @@ A rank-1 tensor has exactly one axis.</p>
 
 <p>The vector above has five entries and so is called a <em>5-dimensional vector</em>.
 It's important to not confuse a 5D <em>vector</em> with a 5D <em>tensor</em>.
-A 5D vector has a single axis and has five dimensions along its axis.
-A 5D tensor - or <em>tensor of rank 5</em> -  on the other hand, has five axes and any number of dimensions along each axes.</p>
+A 5D vector has a single axis and five dimensions along its axis.
+A 5D tensor - or <em>tensor of rank 5</em> -  on the other hand, has five axes and any number of dimensions along each axis.</p>
 
 <h3 id="matrices-rank-2-tensors">Matrices (rank-2 tensors)</h3>
 
@@ -393,7 +393,7 @@ It's also possible to come across <code>string</code> tensors in TensorFlow.</li
 
 <p>This is one of the most common use cases of tensors.
 Each data point in a dataset is encoded as a vector.
-A batch of data will be encoded as a rank-2 tensor - that is, an array of vectors - where the first axis is the <code>samples axis</code> and the second axis is he <code>features axis</code>.</p>
+A batch of data will be encoded as a rank-2 tensor - that is, an array of vectors - where the first axis is the <code>samples axis</code> and the second axis is the <code>features axis</code>.</p>
 
 <p>Let's look at an example:</p>
 
@@ -418,9 +418,9 @@ Let's take a look at an example:</p>
 
 <ul>
 <li><p>A dataset of a MotoGP rider's lap around Laguna Seca.
-Every percentage of lap completed, we store the motorcycle's speed, lean angle, throttle input, brake input, and steering input.
-Ideally, it would be as close to realtime as possible instead of every single percentage, but let's keep it simple.
-Thus, every lap is encoded as a 5D vector of shape <code>(101, 5)</code>, where 101 is 0 percent to 100 percent, inclusive.
+For every percentage of lap completed, we store the motorcycle's speed, lean angle, throttle input, brake input, and steering input.
+Ideally, it would be as close to real-time as possible instead of every single percentage, but let's keep it simple.
+Thus, every lap - every sample - is encoded as a 5D vector of shape <code>(101, 5)</code>, where 101 is 0 percent to 100 percent, inclusive.
 An entire race (assuming 30 laps) is encoded as a rank-3 tensor of shape <code>(30, 101, 5)</code>.</p></li>
 <li><p>A dataset of stock prices.
 Every minute, we store the current price of the stock, the highest price in the past minute, and the lowest price in the past minute.
@@ -458,7 +458,7 @@ That's a total of 6,220,800,000 values!</p>
 
 <h2 id="tensor-operations">Tensor operations</h2>
 
-<p>Similar to how to computer programs can be reduced to a small set of binary operations (AND, OR, XOR, and so on), all transformations learned by deep neural networks can be reduced to a handful of <em>tensor operations</em>.</p>
+<p>Similar to how computer programs can be reduced to a small set of binary operations (AND, OR, XOR, and so on), all transformations learned by deep neural networks can be reduced to a handful of <em>tensor operations</em>.</p>
 
 <h3 id="basic-operations">Basic operations</h3>
 
@@ -518,7 +518,7 @@ Take a look below at a naive Python implementation of the <code>relu</code> and 
     <span class="k">return</span> <span class="n">x</span>
 </code></pre></div>
 
-<p>In practice, when working with NumPy arrays, it's best to utilize NumPy's highly-optimized, built-in functions rather than create naive implementations.
+<p>In practice, when working with NumPy arrays, it's best to utilize NumPy's highly optimized, built-in functions rather than create naive implementations.
 NumPy's built-in functions are low-level, highly parallel, efficient tensor-manipulation routines that are typically implemented in C.</p>
 
 <p>As seen below in a simple example, the built-in functions are over 100x faster than naive implementations.
@@ -568,7 +568,7 @@ This example and the image following were taken directly from NumPy's documentat
     <figcaption>Scalar `b` is "stretched" to become the same shape as `a`</figcaption>
 </figure>
 
-<p>Simply put, the scalar <code>b</code> is <em>stretched</em> - the original scalar is copied - to become a tensor of same shape as <code>a</code>.</p>
+<p>Simply put, the scalar <code>b</code> is <em>stretched</em> - the original scalar is copied - to become a tensor of the same shape as <code>a</code>.</p>
 
 <p>Getting a little more technical - broadcasting consists of two steps:</p>
 
@@ -578,7 +578,7 @@ This example and the image following were taken directly from NumPy's documentat
 </ol>
 
 <p>Values from <code>b</code> are not actually copied - and <code>b</code> is not actually reshaped - as that would be resource-intensive and computationally wasteful.
-Rather, NumPy is smart enough to use the original scalar value without making copies so that broadcasting operations are as memory and resource efficient as possible.</p>
+Rather, NumPy is smart enough to use the original scalar value without making copies so that broadcasting operations are as memory and resource-efficient as possible.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="sd">&quot;&quot;&quot;Example of how broadcasting &quot;stretches&quot; a vector into a matrix&quot;&quot;&quot;</span>
@@ -635,7 +635,7 @@ We first encountered tensor reshaping earlier in the chapter when we <a href="#p
 </code></pre></div>
 
 <p>Reshaping is the rearranging of a tensor's columns and rows.
-Expectedly, the result is a tensor with the same number of elements as the original tensor, but with the new shape.
+Expectedly, the result is a tensor with the same number of elements as the original tensor, but with a new shape.
 Consider the following example:</p>
 
 <div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span>
@@ -723,14 +723,14 @@ Training is what machine learning is all about!</p>
 At a high level, the following steps are repeated until the loss function converges:</p>
 
 <ol>
-<li>Draw a batch of training sample, <code>x</code>, and corresponding target labels, <code>y_true</code></li>
+<li>Draw a batch of training samples, <code>x</code>, and corresponding target labels, <code>y_true</code></li>
 <li>Run the model on <code>x</code> - a step called the <em>forward pass</em> - to obtain predictions, <code>y_pred</code></li>
 <li>Compute the loss of the model on the batch, a measure of the mismatch between <code>y_true</code> and <code>y_pred</code></li>
 <li>Update all weights of the model in a way that slightly reduces the loss on the batch</li>
 </ol>
 
 <p>Step 1 is easy: we load our dataset (images, tabular data, etc.) and their corresponding labels.
-Step 2 and 3 are a handful of tensor operations and basic mathematics.
+Steps 2 and 3 are a handful of tensor operations and basic mathematics.
 Step 4, however, is the most difficult part.
 We will cover the high-level details of step 4 in the following <em>gradient descent</em> and <em>backpropagation</em> sections.</p>
 
@@ -738,12 +738,12 @@ We will cover the high-level details of step 4 in the following <em>gradient des
 
 <blockquote>
   <p><strong>NOTE: Assumptions</strong></p>
-  
+
   <p>This section assumes that you are familiar with <a href="#tensor-operations">tensor operations</a> and the concept of derivatives in calculus.
   Below are some helpful rules to keep in mind:</p>
-  
+
   <ul>
-  <li>Gradients can be interpreted as the direction of steepest ascent of some function with respect to some variable.</li>
+  <li>Gradients can be interpreted as the direction of the steepest ascent of some function with respect to some variable.</li>
   <li>Given a differential function, it's possible to find its minimum when the derivative is zero.
   <ul>
   <li>For a neural network, the minimum can be found by solving for <code>grad(f(W), W) = 0</code> or <code>grad(loss_score, W) = 0</code> using gradient descent.</li>
@@ -755,7 +755,7 @@ We will cover the high-level details of step 4 in the following <em>gradient des
 The concept of derivation can be applied to any function, as long as the surfaces they describe are continuous and smooth.
 For example, the tensor operations used in our model - such as <code>relu</code>, <code>dot</code>, addition, etc. - are all continuous and smooth.</p>
 
-<p>All of the functions used in our models (such as <code>dot</code> or <code>+</code>) transform their input in a smooth and continuous way.
+<p>All of the functions used in our models (such as <code>dot</code> or <code>+</code>) transform their input smoothly and continuously.
 Therefore, we can derive the gradient of all the tensor operations used in our model and use it to update the weights of the model.</p>
 
 <p>For instance, if we look at <code>z = x + y</code>, we can determine that a small change in <code>x</code> will not change <code>z</code> much, but a large change in <code>x</code> will change <code>z</code> much more.
@@ -772,7 +772,7 @@ Simply put, <strong>gradients characterize how the output of the function varies
 Essentially, it's the process for solving the equation <code>grad(f(W), W) = 0</code>.
 It's the key to figuring out what combination of weights can output the lowest loss.</p>
 
-<p>Tying gradients back to weight updates and loss score, the gradient can be used to move the weights of the model towards the minimum of the loss function.
+<p>Tying gradients back to weight updates and loss scores, the gradient can be used to move the weights of the model towards the minimum of the loss function.
 The weights are moved <strong>opposite</strong> to the direction of the gradient.</p>
 
 <p>Why are weights moved in the opposite direction of the gradient?</p>
@@ -784,7 +784,7 @@ When done incrementally during training, we see that the weights converge to the
 <p>Let's update the training loop process from <a href="#how-neural-networks-learn">above</a> to include gradient descent:</p>
 
 <ol>
-<li>Draw a batch of training sample, <code>x</code>, and corresponding target labels, <code>y_true</code></li>
+<li>Draw a batch of training samples, <code>x</code>, and corresponding target labels, <code>y_true</code></li>
 <li>Run the model on <code>x</code> - a step called the <em>forward pass</em> - to obtain predictions, <code>y_pred</code></li>
 <li>Compute the loss of the model on the batch, a measure of the mismatch between <code>y_true</code> and <code>y_pred</code></li>
 <li>Compute the gradient of the loss with respect to the model's parameters - a step called the <em>backward pass</em></li>
@@ -800,7 +800,7 @@ When done incrementally during training, we see that the weights converge to the
 </figure>
 
 <p>It's important to pick a reasonable value for the <code>learning_rate</code>.
-If it's too small, the descent down the curve will be take many iterations and may get stuck in a local minimum.
+If it's too small, the descent down the curve will take many iterations and may get stuck in a local minimum.
 If it's too large, the updates will be too big and may take you to completely random locations on the curve.</p>
 
 <h3 id="variants-of-gradient-descent">Variants of gradient descent</h3>
@@ -832,11 +832,11 @@ It addresses two issues with SGD:</p>
 <p>Around a specific point in the figure beside, we can see there is a <em>local minimum</em> where moving left results in the loss increasing, but so does moving right.
 If the parameters were optimized via SGD with a small learning rate, the loss would get stuck at the local minimum instead of the global minimum.</p>
 
-<p>The concept of momentum is inspired from physics - such as a small ball rolling down the loss curve.
+<p>The concept of momentum is inspired by physics - such as a small ball rolling down the loss curve.
 If the ball has enough momentum, it won't get stuck in the local minimum.</p>
 
-<p>Momentum is implemented by moving the ball at each step based not only on the current slope value (current acceleration), but also on the current velocity (resulting from pass acceleration).
-This means updating the parameter <code>w</code> based not only on the current gradient value, but also on previous parameter updates.
+<p>Momentum is implemented by moving the ball at each step based not only on the current slope value (current acceleration) but also on the current velocity (resulting from pass acceleration).
+This means updating the parameter <code>w</code> based not only on the current gradient value but also on previous parameter updates.
 Take a look at this naive implementation:</p>
 
 <div class="codehilite"><pre><span></span><code><span class="n">past_velocity</span> <span class="o">=</span> <span class="mi">0</span>
@@ -898,7 +898,7 @@ The image below is an example of a computation graph of a forward pass with inpu
 <p>The forward pass has input <code>x = 3</code> with parameters <code>w = 2</code> and <code>b = 3</code>, resulting in <code>loss_score = 1</code>.</p>
 
 <p>Simple enough to read a computation graph, right?
-Let's look at the computation graph of a backwards pass to learn how to compute the gradients.
+Let's look at the computation graph of a backward pass to learn how to compute the gradients.
 Given the backward pass graph, we can compute the following gradients:</p>
 
 <figure class="right">
@@ -932,7 +932,7 @@ The path produces the following gradient calculation: <code>grad(loss_score, w) 
 </ul>
 
 <p>That's the backpropagation algorithm using a simple computation graph example.
-The algorithm starts with the final loss score and works backward from the bottom layer to the top layers, computing the contribution of each parameter had to the loss score.</p>
+The algorithm starts with the final loss score and works backward from the bottom layer to the top layers, computing the contribution of each parameter to the loss score.</p>
 
 <p>Now imagine a neural network with hundreds of layers and parameters.
 Calculating the gradient by hand would be tedious, error-prone, and time-consuming.
@@ -946,7 +946,7 @@ The computation graphs are used to retrieve the gradient of any output with resp
 
 <blockquote>
   <p><strong>NOTE: <code>tf.Variable</code> class</strong></p>
-  
+
   <p>The <code>tf.Variable</code> class is simply a container that holds a mutable tensor.
   For instance, the weights of a neural network are stored in <code>tf.Variable</code> instances.
   Read more about <code>tf.Variable</code> class in the <a href="https://www.tensorflow.org/api_docs/python/tf/Variable">TensorFlow documentation</a>.</p>
@@ -1008,7 +1008,7 @@ The <strong>optimizer</strong> uses this loss value to update the model's <stron
 <h3 id="input">Input</h3>
 
 <p>Now we understand that the input images are stored in NumPy tensors.
-Prior to training the model, the input images - training and testing images - were pre-processed: training tensors were converted to type <code>float32</code> and reshaped to shape <code>(60000, 28*28)</code> from <code>(60000, 28, 28)</code>, and testing tensors were similarly reformatted and reshaped <code>(10000, 28*28)</code> from <code>(10000, 28, 28)</code>.</p>
+Before training the model, the input images - training and testing images - were pre-processed: training tensors were converted to type <code>float32</code> and reshaped to shape <code>(60000, 28*28)</code> from <code>(60000, 28, 28)</code>, and testing tensors were similarly reformatted and reshaped <code>(10000, 28*28)</code> from <code>(10000, 28, 28)</code>.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">),</span> <span class="p">(</span><span class="n">test_images</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span> <span class="o">=</span> <span class="n">mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
 <span class="n">train_images</span> <span class="o">=</span> <span class="n">train_images</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">60000</span><span class="p">,</span> <span class="mi">28</span> <span class="o">*</span> <span class="mi">28</span><span class="p">))</span>
@@ -1032,7 +1032,7 @@ Prior to training the model, the input images - training and testing images - we
 <p>We now understand that this model consists of a chain of two <code>Dense</code> layers.
 Each layer performs simple tensor operations to the input data, further refining the data to more useful data representations.</p>
 
-<p>These layers are incorporate the usage of layer <em>weight</em> tensors.
+<p>These layers incorporate the usage of layer <em>weight</em> tensors.
 Weight tensors, which are attributes of the layers, are where the <em>knowledge</em> of the model persists.</p>
 
 <h3 id="loss-function-and-optimizer">Loss function and optimizer</h3>
@@ -1044,7 +1044,7 @@ Weight tensors, which are attributes of the layers, are where the <em>knowledge<
               <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">])</span>
 </code></pre></div>
 
-<p>We understand that <code>sparse_categorical_crossentropy</code> is the loss function that's used as to calculate the loss score.
+<p>We understand that <code>sparse_categorical_crossentropy</code> is the loss function that's used to calculate the loss score.
 The loss score is used as a feedback signal for learning the weight tensors.
 During the training phase, the training loop will attempt to minimize the loss score.</p>
 
@@ -1058,7 +1058,7 @@ The exact rules and specifications of loss reduction are defined by the <code>rm
 <div class="codehilite"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
 </code></pre></div>
 
-<p>Fitting the model to the training data is simple: the model will iterate on the training data in mini-batch of 128 samples, 5 times over.
+<p>Fitting the model to the training data is simple: the model will iterate on the training data in a mini-batch of 128 samples, 5 times over.
 Each iteration over the entire training dataset is called an <em>epoch</em>.
 Given that there are 60000 training images, there are a total of 60000/128 (~469, or 500) mini-batches.</p>
 
@@ -1079,8 +1079,8 @@ In general, everything in deep learning is comparable to a geometric transformat
 <li><p>Deep learning models consist of sequences of simple tensor operations, parameterized by <em>weights</em>, which are tensors themselves.
 The weights of a model are where the model's "knowledge" is stored.</p></li>
 <li><p><em>Learning</em> means finding a set of values for the model's weights such that the <em>loss score</em> is minimized for a given batch of training data samples.</p></li>
-<li><p>Learning happens by drawing random batches of data samples and their targets, and computing the gradient of the model parameters with respect to the batch's loss score.
-The model's parameters are then moved - the magnitude of which is determined by the learning rate - in the opposite direction from gradient.
+<li><p>Learning happens by drawing random batches of data samples and their targets and computing the gradient of the model parameters with respect to the batch's loss score.
+The model's parameters are then moved - the magnitude of which is determined by the learning rate - in the opposite direction from the gradient.
 This is called <em>mini-batch stochastic gradient descent</em>.</p></li>
 <li><p>The entire learning process is made possible by the fact that all tensor operations in neural networks are differentiable, making it possible to apply the chain rule of derivation.
 The chain rule of derivation allows us to find the gradient function mapping the current parameters and current batch of data to a gradient value.
