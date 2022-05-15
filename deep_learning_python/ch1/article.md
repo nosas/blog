@@ -67,8 +67,8 @@ AI can be described as *the effort to automate intellectual tasks normally perfo
 Artificial intelligence is a general field that encompasses machine learning and deep learning.
 
 ### Symbolic AI
-Early AI programs from 1950s - such as Chess AI - involved hardcoded rules crafted by programmers.
-This approach is known as *symbolic AI*, and was the dominant paradigm in AI from the 50s to the late 1980s.
+Early AI programs from the 1950s - such as Chess AI - involved hardcoded rules crafted by programmers.
+This approach is known as *symbolic AI*and was the dominant paradigm in AI from the 50s to the late 1980s.
 Symbolic AI reached its peak popularity during the *expert systems* boom of the 80s.
 
 Symbolic AI is successful when applied to well-defined, logical problems like Chess or Go.
@@ -140,7 +140,7 @@ If that's not simple enough: Machine learning is about mapping inputs to labels 
 ## Deep Learning
 
 Deep learning is a specific subfield of machine learning.
-It's a new take on learning representations from data that puts emphasis on learning successive layers of increasingly meaningful representations.
+It's a new take on learning representations from data that emphasizes learning successive layers of increasingly meaningful representations.
 The "deep" in "deep learning" refers to successive layers of representations.
 How many layers contributes to a model of the data is called the *depth* of the model.
 
@@ -169,7 +169,7 @@ You can think of a deep network as a multistage *information distillation* proce
 
 ### Layers, Weights, and Parameters
 
-Recall that each layer performs a simple data transformation to the input in order to create a more pure, or simple, data representation.
+Recall that each layer performs a simple data transformation to the input to create a more pure, or simple, data representation.
 The specification of what a layer does to its input data - *how* the input is transformed - is stored in the layer's *weights*, which in essence are a bunch of numbers.
 
 Technically, we'd say that the transformation implemented by a layer is *parametrized* by its weights.
@@ -221,13 +221,13 @@ A network with minimal loss is one for which the outputs are as close as they ca
 ### Deep Learning simplified
 
 Technically, deep learning is a multistage way to learn data representations.
-It's a simple idea with simple mechanisms that - when sufficiently scaled, ends up looking like magic.
+It's a simple idea with simple mechanisms that - when sufficiently scaled - end up looking like magic.
 
 ---
 ## What has Deep Learning achieved so far?
 
 Deep learning rose to prominence in the early 2010s, following the boom of publicly-available data on the internet (images, videos from widespread use of cell phones and cameras) and faster processors.
-It has achieved nothing short of a revolution in the field of machine learning, producing remarkable results on perceptual tasks and even natural language processing tasks - problems involving skills that eem natural and intuitive to humans but have long been elusive for machines.
+It has achieved nothing short of a revolution in the field of machine learning, producing remarkable results on perceptual tasks and even natural language processing tasks - problems involving skills that seem natural and intuitive to humans but have long been elusive for machines.
 
 More specifically, deep learning has enabled the following breakthroughs, all in historically difficult areas of machine learning:
 
