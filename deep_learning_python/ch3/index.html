@@ -1,0 +1,95 @@
+
+<html>
+
+<head>
+  <link rel="stylesheet" type="text/css" href="../../css/default_dark.css">
+  <link rel="stylesheet" type="text/css" href="../../css/syntax_dark.css">
+</head>
+
+<body>
+  <center>
+    <div style="display: inline-block; vertical-align:middle;">
+      <a href="/" style="text-decoration: none;">SASON REZA<br>
+      </a>
+      <hr>
+      <div style="text-align: center;display: inline-block; width: 100%;">
+        <a class="title" href="../../about">ABOUT</a> &nbsp;<a class="title" href="../../contact">CONTACT</a>
+      </div>
+    </div>
+  </center>
+
+  <br>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 15, 2022</p>
+
+<p><title>Deep Learning with Python: Chapter 3 - Introduction to Keras and TensorFlow</title></p>
+
+<h1 id="deep-learning-with-python-omit-in-toc-">Deep Learning with Python  <!-- omit in toc --></h1>
+
+<p>This article is part 3/13 (?) of a series of articles named <em>Deep Learning with Python</em>.</p>
+
+<p>In this series, I will read through the second edition of <em>Deep Learning with Python</em> by François Chollet.
+Articles in this series will sequentially review key concepts, examples, and interesting facts from each chapter of the book.</p>
+
+<p><details>
+    <summary>Table of Contents</summary>
+- <a href="#chapter-3-introduction-to-keras-and-tensorflow">Chapter 3: Introduction to Keras and TensorFlow</a>
+    - <a href="#whats-tensorflow">What's TensorFlow?</a>
+        - <a href="#tensorflow-vs-numpy">TensorFlow vs. NumPy</a>
+        - <a href="#tensorflow-ecosystem">TensorFlow ecosystem</a>
+</details></p>
+
+<hr />
+
+<h1 id="chapter-3-introduction-to-keras-and-tensorflow">Chapter 3: Introduction to Keras and TensorFlow</h1>
+
+<p>This chapter covers...</p>
+
+<ul>
+<li>A closer look at TensorFlow, Keras, and their relationship</li>
+<li>Setting up a deep learning workspace</li>
+<li>Review of how deep learning concepts learned in previous chapters translate to Keras and TensorFlow</li>
+</ul>
+
+<p>This chapter gives us everything required to get started with deep learning.
+By the end of this chapter, we'll be ready to move on to practical, real-world applications of deep learning.</p>
+
+<hr />
+
+<h2 id="whats-tensorflow">What's TensorFlow?</h2>
+
+<p>TensorFlow is a free and open-source machine learning framework for Python.
+It was primarily developed by Google.
+Similar to NumPy, it is a general-purpose and efficient numerical library used by engineers to manipulate mathematical expressions using numerical tensors.</p>
+
+<h3 id="tensorflow-vs-numpy">TensorFlow vs. NumPy</h3>
+
+<p>TensorFlow far surpasses NumPy is the following ways:</p>
+
+<ul>
+<li>Automatically computes the gradient of any differentiable expressions (as seen in Ch2 with <code>GradientTape</code>)</li>
+<li>Runs not only on CPUs, but also on GPUs and TPUs (highly-parallel hardware accelerators)</li>
+<li>Computations defined in TensorFlow can be easily distributed across multiple devices (CPUs, GPUs, and TPUs) and machines</li>
+<li>TensorFlow programs can be exported and easily deployed to other runtimes, such as C++, JavaScript (for browsers), or TensorFlow lite (for mobile devices or embedded systems)</li>
+</ul>
+
+<h3 id="tensorflow-ecosystem">TensorFlow ecosystem</h3>
+
+<p>TensorFlow is much more than a single Python library.
+Rather, it's a platform home to a vast ecosystem of components.</p>
+
+<p>Components of the ecosystem include:</p>
+
+<ul>
+<li>TF-Agents for reinforcement learning</li>
+<li>TF-Hub (repository) for pre-trained deep neural networks</li>
+<li>TensorFlow Serving for production deployment</li>
+<li>TFX for distributed training and ML workflow managements</li>
+</ul>
+
+<p>Together, these components cover a wide-range of use cases: from cutting-edge research to large-scale production, or just a simple image classification application to see if a dog or a cat is in a picture.</p>
+
+<p>Scientists from Oak Ridge National Lab have used TensorFlow to train an extreme weather forecasting model on the 27,000 GPUs within the IBM Summit supercomputer.
+Google, on the other hand, has used TensorFlow to develop deep learning applications such as the chess-playing and Go-playing agent AlphaZero.</p>
+
+</body>
+</html>
