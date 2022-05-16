@@ -15,7 +15,7 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [TensorFlow vs. NumPy](#tensorflow-vs-numpy)
         - [TensorFlow ecosystem](#tensorflow-ecosystem)
     - [What's Keras?](#whats-keras)
-        - [Keras and TensorFlow](#keras-and-tensorflow)
+        - [Keras and TensorFlow: A brief history](#keras-and-tensorflow-a-brief-history)
 </details>
 
 ---
@@ -79,4 +79,16 @@ Much like Python, Keras' large and diverse user base enables a well-documented a
 Keras does not force one to follow a single "true" way of building and training models.
 Rather, it allows the user to build and train models corresponding to their own preference, and to explore the possibilities of each approach.
 
-### Keras and TensorFlow
+### Keras and TensorFlow: A brief history
+
+Keras was designed originally in March 2015 to be used with Theano, a tensor-manipulation library developed by Montreal Institute for Learning Algorithms (MILA).
+Theano pioneered the idea of using static computation graphs for automatic differentiation and compiling code to both CPU and GPU support.
+
+Following the release of TensorFlow 1.0 in November 2015, Keras was refactored to support multiple backend architectures: starting with Theano and Tensorflow in late 2015, and adding support for CNTK and MXNet in 2017.
+
+Keras became well known as the user-friendly way to develop TensforFlow applications.
+By late 2017, a majority of TensorFlow users were using Keras.
+In 2018, the TensorFlow leadership picked Keras and TensorFlow's official high-level API.
+As a result, as of September 2019, the Keras API is the official API for TensorFlow 2.0.
+
+Enough of the history, let's learn how to set up a deep learning workspace.
