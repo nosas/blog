@@ -24,6 +24,9 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Constant tensors and variables](#constant-tensors-and-variables)
         - [A second look at the Gradient Tape API](#a-second-look-at-the-gradient-tape-api)
         - [Computing second-order gradients](#computing-second-order-gradients)
+    - [Linear classifier example in pure TensorFlow](#linear-classifier-example-in-pure-tensorflow)
+        - [What is linear classification?](#what-is-linear-classification)
+        - [Generating synthetic data](#generating-synthetic-data)
 </details>
 
 ---
@@ -316,3 +319,41 @@ with tf.GradientTape() as outer_tape:
 acceleration = outer_tape.gradient(speed, time)
 ```
 
+---
+## Linear classifier example in pure TensorFlow
+
+We now know about tensors, variables, tensor operations, and gradient computation.
+That's enough to build any machine learning model based on gradient descent.
+Let's put our knowledge to the test and build an end-to-end linear classification model purely in TensorFlow.
+
+We're going to implement a linear classifier that predicts whether a given input belongs to class A or class B.
+But first, we need to understand what linear classification is.
+
+### What is linear classification?
+
+In linear classification problems, the model is trying to find a linear combination of the input features that best predicts the target variable.
+Simply put, the model is trying to classify input data into 2+ categories (classes) by drawing a line through the the data.
+The line is best fit to separate the data into two classes.
+
+<font style="color:red">TODO: Insert image of a linear classification plot with a line separating the classes</font>
+
+This is the basic idea behind linear classification.
+Now let's generate some data and train a linear classifier.
+
+### Generating synthetic data
+
+We need some nicely linear data to train our linear classifier.
+To keep it simple, we'll create two classes of points in a 2D plane and call them class A and class B.
+To keep it more simple, we won't explain all the math behind this, but we'll just use the following formula to generate the data:
+
+```python
+num_samples_per_class = 500
+class_a_samples = np.random.multivariate_normal(
+    mean=[0, 3],
+    cov=[[1, 0], [0, 1]],
+    size=num_samples_per_class)
+class_b_samples = np.random.multivariate_normal(
+    mean=[3, 0],
+    cov=[[1, 0], [0, 1]],
+    size=num_samples_per_class)
+```

@@ -46,6 +46,9 @@ Articles in this series will sequentially review key concepts, examples, and int
         - <a href="#constant-tensors-and-variables">Constant tensors and variables</a>
         - <a href="#a-second-look-at-the-gradient-tape-api">A second look at the Gradient Tape API</a>
         - <a href="#computing-second-order-gradients">Computing second-order gradients</a>
+    - <a href="#linear-classifier-example-in-pure-tensorflow">Linear classifier example in pure TensorFlow</a>
+        - <a href="#what-is-linear-classification">What is linear classification?</a>
+        - <a href="#generating-synthetic-data">Generating synthetic data</a>
 </details></p>
 
 <hr />
@@ -345,6 +348,45 @@ The second-order gradient of the object speed is its acceleration.</p>
 
 <span class="c1"># &lt;tf.Tensor: shape=(), dtype=float32, numpy=9.8&gt;</span>
 <span class="n">acceleration</span> <span class="o">=</span> <span class="n">outer_tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
+
+<h2 id="linear-classifier-example-in-pure-tensorflow">Linear classifier example in pure TensorFlow</h2>
+
+<p>We now know about tensors, variables, tensor operations, and gradient computation.
+That's enough to build any machine learning model based on gradient descent.
+Let's put our knowledge to the test and build an end-to-end linear classification model purely in TensorFlow.</p>
+
+<p>We're going to implement a linear classifier that predicts whether a given input belongs to class A or class B.
+But first, we need to understand what linear classification is.</p>
+
+<h3 id="what-is-linear-classification">What is linear classification?</h3>
+
+<p>In linear classification problems, the model is trying to find a linear combination of the input features that best predicts the target variable.
+Simply put, the model is trying to classify input data into 2+ categories (classes) by drawing a line through the the data.
+The line is best fit to separate the data into two classes.</p>
+
+<p><font style="color:red">TODO: Insert image of a linear classification plot with a line separating the classes</font></p>
+
+<p>This is the basic idea behind linear classification.
+Now let's generate some data and train a linear classifier.</p>
+
+<h3 id="generating-synthetic-data">Generating synthetic data</h3>
+
+<p>We need some nicely linear data to train our linear classifier.
+To keep it simple, we'll create two classes of points in a 2D plane and call them class A and class B.
+To keep it more simple, we won't explain all the math behind this, but we'll just use the following formula to generate the data:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">num_samples_per_class</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">class_a_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+    <span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+    <span class="n">cov</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>
+    <span class="n">size</span><span class="o">=</span><span class="n">num_samples_per_class</span><span class="p">)</span>
+<span class="n">class_b_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
+    <span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="n">cov</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>
+    <span class="n">size</span><span class="o">=</span><span class="n">num_samples_per_class</span><span class="p">)</span>
 </code></pre></div>
 
 </body>
