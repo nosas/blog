@@ -22,6 +22,8 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Google Colab](#google-colab)
     - [First steps with TensorFlow](#first-steps-with-tensorflow)
         - [Constant tensors and variables](#constant-tensors-and-variables)
+        - [A second look at the Gradient Tape API](#a-second-look-at-the-gradient-tape-api)
+        - [Computing second-order gradients](#computing-second-order-gradients)
 </details>
 
 ---
@@ -223,7 +225,7 @@ TypeError: 'Tensor' object does not support item assignment
 ```
 
 To train a model, however, it's important to be able to change the values of the tensors - update the weights of the model.
-This is where the TensorFlow's *variables* - `tf.Variable` - come in to play:
+This is where the TensorFlow's *variable* (`tf.Variable`) comes in to play:
 
 ```python
 >>> v = tf.Variable(initial_value=tf.random.normal(shape=(3, 1)))
@@ -233,7 +235,7 @@ array([[-0.644994 ],
        [-0.6413262]], dtype=float32)>
 ```
 
-The state of a variable - the entirety or a subset of coefficients - can be modified via its `assign` method:
+The state of a variable - the entirety of or a subset of coefficients - can be modified via its `assign` method:
 
 ```python
 >>> v.assign(tf.ones((3, 1)))
@@ -258,3 +260,59 @@ array([[9.],
        [1.],
        [1.]], dtype=float32)>
 ```
+
+### A second look at the Gradient Tape API
+
+TensorFlow's ability to retrieve gradients of any expression with respect to any of its inputs is what makes the TensorFlow library so powerful.
+All we have to do is open a `GradientTape` context, manipulate the input tensors, and retrieve the gradients with respect to the inputs.
+
+```python
+import tensorflow as tf
+
+input = tf.Variable(initial_value=3.)
+with tf.GradientTape() as tape:
+    output = input * input
+
+# <tf.Tensor: shape=(), dtype=float32, numpy=6.0>
+gradient = tape.gradient(output, input)
+```
+
+The gradient tape is most commonly used to retrieve the gradients of the model's loss with respect to its weights: `gradient = tape.gradient(loss, weights)`.
+We discussed and demonstrated this functionality in the [previous article](https://fars.io/deep_learning_python/ch2/#tensorflows-gradient-tape).
+
+So far, we've only looked at the simplest case of `GradientTapes` - where the input tensors in `tape.gradient()` were TensorFlow variables.
+It's actually possible for the input tensors to be any arbitrary tensor, not just variables, by calling `tape.watch(arbitrary_tensor)` within the `GradientTape` context.
+
+```python
+arbitrary_tensor = tf.constant(value=2.)
+with tf.GradientTape() as tape:
+    tape.watch(arbitrary_tensor)
+    output = arbitrary_tensor * arbitrary_tensor
+
+# tf.Tensor(4.0, shape=(), dtype=float32)
+gradient = tape.gradient(output, arbitrary_tensor)
+```
+
+By default, only *trainable variables* are tracked because computing the gradient of a loss with regard to a trainable variable is the most common use case.
+Furthermore, it would be too expensive to preemptively store the information required to compute the gradient of anything with respect to anything.
+In an effort avoid wasting resources, only the trainable variables are tracked unless otherwise explicitly specified.
+
+### Computing second-order gradients
+
+The gradient tape is a powerful utility capable of computing *second-order gradients* - or, the gradient of a gradient.
+
+For instance, the gradient of the position of an object with respect to time is the speed of the object.
+The second-order gradient of the object speed is its acceleration.
+
+
+```python
+time = tf.Variable(initial_value=0.)
+with tf.GradientTape() as outer_tape:
+    with tf.GradientTape() as inner_tape:
+        position = 4.9 * time ** 2
+    speed = inner_tape.gradient(position, time)
+
+# <tf.Tensor: shape=(), dtype=float32, numpy=9.8>
+acceleration = outer_tape.gradient(speed, time)
+```
+

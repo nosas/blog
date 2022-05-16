@@ -44,6 +44,8 @@ Articles in this series will sequentially review key concepts, examples, and int
         - <a href="#google-colab">Google Colab</a>
     - <a href="#first-steps-with-tensorflow">First steps with TensorFlow</a>
         - <a href="#constant-tensors-and-variables">Constant tensors and variables</a>
+        - <a href="#a-second-look-at-the-gradient-tape-api">A second look at the Gradient Tape API</a>
+        - <a href="#computing-second-order-gradients">Computing second-order gradients</a>
 </details></p>
 
 <hr />
@@ -261,7 +263,7 @@ Whereas, in TensorFlow, we are greeted with an error: <code>TypeError: 'Tensor' 
 </code></pre></div>
 
 <p>To train a model, however, it's important to be able to change the values of the tensors - update the weights of the model.
-This is where the TensorFlow's <em>variables</em> - <code>tf.Variable</code> - come in to play:</p>
+This is where the TensorFlow's <em>variable</em> (<code>tf.Variable</code>) comes in to play:</p>
 
 <div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">v</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">initial_value</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
@@ -270,7 +272,7 @@ This is where the TensorFlow's <em>variables</em> - <code>tf.Variable</code> - c
        <span class="p">[</span><span class="o">-</span><span class="mf">0.6413262</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
 </code></pre></div>
 
-<p>The state of a variable - the entirety or a subset of coefficients - can be modified via its <code>assign</code> method:</p>
+<p>The state of a variable - the entirety of or a subset of coefficients - can be modified via its <code>assign</code> method:</p>
 
 <div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">v</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
 <span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">],</span>
@@ -292,6 +294,57 @@ This is where the TensorFlow's <em>variables</em> - <code>tf.Variable</code> - c
 <span class="n">array</span><span class="p">([[</span><span class="mf">9.</span><span class="p">],</span>
        <span class="p">[</span><span class="mf">1.</span><span class="p">],</span>
        <span class="p">[</span><span class="mf">1.</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
+</code></pre></div>
+
+<h3 id="a-second-look-at-the-gradient-tape-api">A second look at the Gradient Tape API</h3>
+
+<p>TensorFlow's ability to retrieve gradients of any expression with respect to any of its inputs is what makes the TensorFlow library so powerful.
+All we have to do is open a <code>GradientTape</code> context, manipulate the input tensors, and retrieve the gradients with respect to the inputs.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+
+<span class="nb">input</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">initial_value</span><span class="o">=</span><span class="mf">3.</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">tape</span><span class="p">:</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="nb">input</span> <span class="o">*</span> <span class="nb">input</span>
+
+<span class="c1"># &lt;tf.Tensor: shape=(), dtype=float32, numpy=6.0&gt;</span>
+<span class="n">gradient</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span>
+</code></pre></div>
+
+<p>The gradient tape is most commonly used to retrieve the gradients of the model's loss with respect to its weights: <code>gradient = tape.gradient(loss, weights)</code>.
+We discussed and demonstrated this functionality in the <a href="https://fars.io/deep_learning_python/ch2/#tensorflows-gradient-tape">previous article</a>.</p>
+
+<p>So far, we've only looked at the simplest case of <code>GradientTapes</code> - where the input tensors in <code>tape.gradient()</code> were TensorFlow variables.
+It's actually possible for the input tensors to be any arbitrary tensor, not just variables, by calling <code>tape.watch(arbitrary_tensor)</code> within the <code>GradientTape</code> context.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">arbitrary_tensor</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">2.</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">tape</span><span class="p">:</span>
+    <span class="n">tape</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="n">arbitrary_tensor</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">arbitrary_tensor</span> <span class="o">*</span> <span class="n">arbitrary_tensor</span>
+
+<span class="c1"># tf.Tensor(4.0, shape=(), dtype=float32)</span>
+<span class="n">gradient</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">arbitrary_tensor</span><span class="p">)</span>
+</code></pre></div>
+
+<p>By default, only <em>trainable variables</em> are tracked because computing the gradient of a loss with regard to a trainable variable is the most common use case.
+Furthermore, it would be too expensive to preemptively store the information required to compute the gradient of anything with respect to anything.
+In an effort avoid wasting resources, only the trainable variables are tracked unless otherwise explicitly specified.</p>
+
+<h3 id="computing-second-order-gradients">Computing second-order gradients</h3>
+
+<p>The gradient tape is a powerful utility capable of computing <em>second-order gradients</em> - or, the gradient of a gradient.</p>
+
+<p>For instance, the gradient of the position of an object with respect to time is the speed of the object.
+The second-order gradient of the object speed is its acceleration.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">time</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">initial_value</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">outer_tape</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">inner_tape</span><span class="p">:</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="mf">4.9</span> <span class="o">*</span> <span class="n">time</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">speed</span> <span class="o">=</span> <span class="n">inner_tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+
+<span class="c1"># &lt;tf.Tensor: shape=(), dtype=float32, numpy=9.8&gt;</span>
+<span class="n">acceleration</span> <span class="o">=</span> <span class="n">outer_tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
 </code></pre></div>
 
 </body>
