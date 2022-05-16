@@ -20,6 +20,8 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Physical machine with NVIDIA GPU](#physical-machine-with-nvidia-gpu)
         - [Cloud GPU instances](#cloud-gpu-instances)
         - [Google Colab](#google-colab)
+    - [First steps with TensorFlow](#first-steps-with-tensorflow)
+        - [Constant tensors and variables](#constant-tensors-and-variables)
 </details>
 
 ---
@@ -137,3 +139,122 @@ It's recommended for those who are not familiar with the hardware and software, 
 Francois himself recommends executing code examples found in the book using Google Colab as it requires the least amount of setup.
 The drawback of Colab is that the free GPU is time-limited and shared by users - meaning that the execution may be slower.
 
+---
+## First steps with TensorFlow
+
+Training a neural network revolves around low-level tensor manipulations and high-level deep learning concepts.
+TensorFlow takes care of the tensor manipulation through the use of:
+
+- *Tensors*, including special tensors that store the network's state (*variables*)
+- *Tensor operations* such as addition, `relu`, `matmul`, etc.
+    - The previous article details [tensor operations](https://fars.io/deep_learning_python/ch2/#tensor-operations)
+- *Backpropagation*, a way to compute gradients of mathematical operations (using TensorFlow's `GradientTape`)
+    - The previous article discusses [backpropagation](https://fars.io/deep_learning_python/ch2/#backpropagation) and [TensorFlow's GradientTape](https://fars.io/deep_learning_python/ch2/#tensorflows-gradient-tape)
+
+Let's take a deeper dive into how all of the concepts above translate to TensorFlow.
+
+### Constant tensors and variables
+
+To do anything in TensorFlow, we need to create tensors.
+Let's look at code examples for creating tensors with all ones, zeros, or random values:
+
+```python
+import tensorflow as tf
+
+# Equivalent to np.ones((2, 2))
+t_ones = tf.ones(shape=(2, 2))
+# Equivalent to np.zeros((2, 1))
+t_zeros = tf.zeros(shape=(2, 1))
+# Equivalent to np.random.normal(size=(3, 1), loc=0., scale=1)
+t_random_normal = tf.random.normal(shape=(3, 1), mean=0., stddev=1.)
+# Equivalent to np.random.uniform(size=(1, 3), low=0., high=1.)
+t_random_uniform = tf.random.uniform(shape=(1, 3), minval=0., maxvval=1.)
+```
+
+What do the outputs of each tensor look like?
+
+```python
+>>> print(t_ones)
+tf.Tensor(
+    [[1. 1.]
+     [1. 1.]], shape=(2, 2), dtype=float32)
+
+>>> print(zeros)
+tf.Tensor(
+    [[0.]
+     [0.]], shape=(2, 1), dtype=float32)
+
+>>> print(t_random_normal)
+tf.Tensor(
+    [[-0.8276905]
+     [ 0.2264915]
+     [ 0.1399505]], shape=(3, 1), dtype=float32)
+
+>>> print(t_random_uniform)
+tf.Tensor(
+    [[0.141 0.824 0.912]], shape=(1, 3), dtype=float32)
+```
+
+A significant difference between NumPy arrays and TensorFlow tensors is that tensors are not assignable: they're *constant*.
+For instance, in NumPy, we can assign a value to a tensor, as seen in the code block below.
+Whereas, in TensorFlow, we are greeted with an error: `TypeError: 'Tensor' object does not support item assignment`.
+
+```python
+>>> import numpy as np
+>>> t_ones = np.ones((2, 2))
+>>> t_ones
+array([[1., 1.],
+       [1., 1.]])
+>>> t_ones[0, 0] = 0
+>>> t_ones
+array([[0., 1.],
+       [1., 1.]])
+
+>>> import tensorflow as tf
+>>> t_ones = tf.ones((2, 2))
+>>> t_ones
+tf.Tensor(
+    [[1. 1.]
+     [1. 1.]], shape=(2, 2), dtype=float32)
+>>> t_ones[0, 0] = 0
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'Tensor' object does not support item assignment
+```
+
+To train a model, however, it's important to be able to change the values of the tensors - update the weights of the model.
+This is where the TensorFlow's *variables* - `tf.Variable` - come in to play:
+
+```python
+>>> v = tf.Variable(initial_value=tf.random.normal(shape=(3, 1)))
+>>> print(v)
+array([[-0.644994 ],
+       [ 1.47064  ],
+       [-0.6413262]], dtype=float32)>
+```
+
+The state of a variable - the entirety or a subset of coefficients - can be modified via its `assign` method:
+
+```python
+>>> v.assign(tf.ones((3, 1)))
+array([[1.],
+       [1.],
+       [1.]], dtype=float32)>
+>>> v[0,0].assign(9)
+array([[9.],
+       [1.],
+       [1.]], dtype=float32)>
+```
+
+Similarly, the `assign_add()` and `assign_sub()` are tensor-efficient equivalents of `+=` and `-=`, respectively.
+
+```python
+>>> v.assign_add(tf.ones((3, 1)))
+array([[10.],
+       [ 2.],
+       [ 2.]], dtype=float32)>
+>>> v.assign_sub(tf.ones((3, 1)))
+array([[9.],
+       [1.],
+       [1.]], dtype=float32)>
+```

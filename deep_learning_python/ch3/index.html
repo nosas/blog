@@ -42,6 +42,8 @@ Articles in this series will sequentially review key concepts, examples, and int
         - <a href="#physical-machine-with-nvidia-gpu">Physical machine with NVIDIA GPU</a>
         - <a href="#cloud-gpu-instances">Cloud GPU instances</a>
         - <a href="#google-colab">Google Colab</a>
+    - <a href="#first-steps-with-tensorflow">First steps with TensorFlow</a>
+        - <a href="#constant-tensors-and-variables">Constant tensors and variables</a>
 </details></p>
 
 <hr />
@@ -170,6 +172,127 @@ There aren't many differences between cloud instance providers other than the av
 It's recommended for those who are not familiar with the hardware and software, and for those who are new to deep learning.
 Francois himself recommends executing code examples found in the book using Google Colab as it requires the least amount of setup.
 The drawback of Colab is that the free GPU is time-limited and shared by users - meaning that the execution may be slower.</p>
+
+<hr />
+
+<h2 id="first-steps-with-tensorflow">First steps with TensorFlow</h2>
+
+<p>Training a neural network revolves around low-level tensor manipulations and high-level deep learning concepts.
+TensorFlow takes care of the tensor manipulation through the use of:</p>
+
+<ul>
+<li><em>Tensors</em>, including special tensors that store the network's state (<em>variables</em>)</li>
+<li><em>Tensor operations</em> such as addition, <code>relu</code>, <code>matmul</code>, etc.
+<ul>
+<li>The previous article details <a href="https://fars.io/deep_learning_python/ch2/#tensor-operations">tensor operations</a></li>
+</ul></li>
+<li><em>Backpropagation</em>, a way to compute gradients of mathematical operations (using TensorFlow's <code>GradientTape</code>)
+<ul>
+<li>The previous article discusses <a href="https://fars.io/deep_learning_python/ch2/#backpropagation">backpropagation</a> and <a href="https://fars.io/deep_learning_python/ch2/#tensorflows-gradient-tape">TensorFlow's GradientTape</a></li>
+</ul></li>
+</ul>
+
+<p>Let's take a deeper dive into how all of the concepts above translate to TensorFlow.</p>
+
+<h3 id="constant-tensors-and-variables">Constant tensors and variables</h3>
+
+<p>To do anything in TensorFlow, we need to create tensors.
+Let's look at code examples for creating tensors with all ones, zeros, or random values:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+
+<span class="c1"># Equivalent to np.ones((2, 2))</span>
+<span class="n">t_ones</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="c1"># Equivalent to np.zeros((2, 1))</span>
+<span class="n">t_zeros</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="c1"># Equivalent to np.random.normal(size=(3, 1), loc=0., scale=1)</span>
+<span class="n">t_random_normal</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">mean</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">stddev</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+<span class="c1"># Equivalent to np.random.uniform(size=(1, 3), low=0., high=1.)</span>
+<span class="n">t_random_uniform</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">minval</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">maxvval</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+</code></pre></div>
+
+<p>What do the outputs of each tensor look like?</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">t_ones</span><span class="p">)</span>
+<span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span>
+    <span class="p">[[</span><span class="mf">1.</span> <span class="mf">1.</span><span class="p">]</span>
+     <span class="p">[</span><span class="mf">1.</span> <span class="mf">1.</span><span class="p">]],</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">zeros</span><span class="p">)</span>
+<span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span>
+    <span class="p">[[</span><span class="mf">0.</span><span class="p">]</span>
+     <span class="p">[</span><span class="mf">0.</span><span class="p">]],</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">t_random_normal</span><span class="p">)</span>
+<span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span>
+    <span class="p">[[</span><span class="o">-</span><span class="mf">0.8276905</span><span class="p">]</span>
+     <span class="p">[</span> <span class="mf">0.2264915</span><span class="p">]</span>
+     <span class="p">[</span> <span class="mf">0.1399505</span><span class="p">]],</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">t_random_uniform</span><span class="p">)</span>
+<span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span>
+    <span class="p">[[</span><span class="mf">0.141</span> <span class="mf">0.824</span> <span class="mf">0.912</span><span class="p">]],</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
+</code></pre></div>
+
+<p>A significant difference between NumPy arrays and TensorFlow tensors is that tensors are not assignable: they're <em>constant</em>.
+For instance, in NumPy, we can assign a value to a tensor, as seen in the code block below.
+Whereas, in TensorFlow, we are greeted with an error: <code>TypeError: 'Tensor' object does not support item assignment</code>.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">t_ones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">t_ones</span>
+<span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span>
+       <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">t_ones</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">t_ones</span>
+<span class="n">array</span><span class="p">([[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span>
+       <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">t_ones</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">t_ones</span>
+<span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span>
+    <span class="p">[[</span><span class="mf">1.</span> <span class="mf">1.</span><span class="p">]</span>
+     <span class="p">[</span><span class="mf">1.</span> <span class="mf">1.</span><span class="p">]],</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">t_ones</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s2">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">TypeError</span><span class="p">:</span> <span class="s1">&#39;Tensor&#39;</span> <span class="nb">object</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">support</span> <span class="n">item</span> <span class="n">assignment</span>
+</code></pre></div>
+
+<p>To train a model, however, it's important to be able to change the values of the tensors - update the weights of the model.
+This is where the TensorFlow's <em>variables</em> - <code>tf.Variable</code> - come in to play:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">v</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">initial_value</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.644994</span> <span class="p">],</span>
+       <span class="p">[</span> <span class="mf">1.47064</span>  <span class="p">],</span>
+       <span class="p">[</span><span class="o">-</span><span class="mf">0.6413262</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
+</code></pre></div>
+
+<p>The state of a variable - the entirety or a subset of coefficients - can be modified via its <code>assign</code> method:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">v</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+<span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">],</span>
+       <span class="p">[</span><span class="mf">1.</span><span class="p">],</span>
+       <span class="p">[</span><span class="mf">1.</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">array</span><span class="p">([[</span><span class="mf">9.</span><span class="p">],</span>
+       <span class="p">[</span><span class="mf">1.</span><span class="p">],</span>
+       <span class="p">[</span><span class="mf">1.</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
+</code></pre></div>
+
+<p>Similarly, the <code>assign_add()</code> and <code>assign_sub()</code> are tensor-efficient equivalents of <code>+=</code> and <code>-=</code>, respectively.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">v</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+<span class="n">array</span><span class="p">([[</span><span class="mf">10.</span><span class="p">],</span>
+       <span class="p">[</span> <span class="mf">2.</span><span class="p">],</span>
+       <span class="p">[</span> <span class="mf">2.</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">v</span><span class="o">.</span><span class="n">assign_sub</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+<span class="n">array</span><span class="p">([[</span><span class="mf">9.</span><span class="p">],</span>
+       <span class="p">[</span><span class="mf">1.</span><span class="p">],</span>
+       <span class="p">[</span><span class="mf">1.</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
+</code></pre></div>
 
 </body>
 </html>
