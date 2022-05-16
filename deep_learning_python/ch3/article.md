@@ -16,6 +16,10 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [TensorFlow ecosystem](#tensorflow-ecosystem)
     - [What's Keras?](#whats-keras)
         - [Keras and TensorFlow: A brief history](#keras-and-tensorflow-a-brief-history)
+    - [Setting up a deep learning workspace](#setting-up-a-deep-learning-workspace)
+        - [Physical machine with NVIDIA GPU](#physical-machine-with-nvidia-gpu)
+        - [Cloud GPU instances](#cloud-gpu-instances)
+        - [Google Colab](#google-colab)
 </details>
 
 ---
@@ -39,7 +43,7 @@ Similar to NumPy, it is a general-purpose and efficient numerical library used b
 
 ### TensorFlow vs. NumPy
 
-TensorFlow far surpasses NumPy is the following ways:
+TensorFlow far surpasses NumPy in the following ways:
 
 - Automatically computes the gradient of any differentiable expressions (as seen in Ch2 with `GradientTape`)
 - Runs not only on CPUs, but also on GPUs and TPUs (highly-parallel hardware accelerators)
@@ -92,4 +96,44 @@ In 2018, the TensorFlow leadership picked Keras and TensorFlow's official high-l
 As a result, as of September 2019, the Keras API is the official API for TensorFlow 2.0.
 
 Enough of the history, let's learn how to set up a deep learning workspace.
+
+---
+## Setting up a deep learning workspace
+
+There are a handful of ways to set up a deep learning workspace:
+
+- Buy and install a physical machine with an NVIDIA GPU
+- Use GPU instances on AWS, Google Cloud, or cheaper alternatives such as Jarvis Labs
+- Use the free GPU runtime from Google Colab, a hosted Jupyter notebook service that executes code on GPUs and even TPUs
+
+Each approach has its own advantages and disadvantages in terms of flexibility, cost, and ease of use.
+I'll briefly discuss the advantages and disadvantages of each approach below, but I will not discuss setup at all.
+
+### Physical machine with NVIDIA GPU
+
+Buying a machine with a GPU is not the easiest way to get started with DL, as it requires manual setup and it's also the most expensive upfront.
+The upfront cost is amplified by the current (as of May 2022) chip shortage and GPU scalpers.
+This method involves installing proper drivers, sorting out version conflicts, and then configuring the libraries to use the GPU instead of the CPU.
+
+Most users already have NVIDIA GPUs installed in their computers.
+Given the large user base of TensorFlow, there are many tutorials for setting up NVIDIA GPUs for deep learning, so this is not a bad option for tech-savvy people.
+
+The alternative to buying a GPU is the use of embedded devices built specifically for efficient and highly-parallelized math operations, such as [NVIDIA's Jetson](https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/) or [Google's Coral](https://coral.ai/products/).
+
+### Cloud GPU instances
+
+Using GPU instances is cheaper in the short-term because you pay as you go (per hour basis), but it's not sustainable in the long run if you're a heavy user of deep learning.
+The benefit of using GPU instances is that it requires minimal setup as most instances have Python, TensorFlow, and Keras pre-installed - it's mostly plug-and-play and easy to use.
+Moreover, the GPU instance can easily be upgraded, torn down, cloned, and re-installed.
+Lastly, students and enterprise employees often get discounts - or free usage - for AWS and Google Cloud.
+
+I personally use Jarvis Labs and AWS for my deep learning needs because I have discounts for both services.
+There aren't many differences between cloud instance providers other than the availability of high-powered GPUs.
+
+### Google Colab
+
+The last approach - using free GPUs from Google Colab - is the simplest way to get started with deep learning.
+It's recommended for those who are not familiar with the hardware and software, and for those who are new to deep learning.
+Francois himself recommends executing code examples found in the book using Google Colab as it requires the least amount of setup.
+The drawback of Colab is that the free GPU is time-limited and shared by users - meaning that the execution may be slower.
 

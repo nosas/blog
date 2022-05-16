@@ -38,6 +38,10 @@ Articles in this series will sequentially review key concepts, examples, and int
         - <a href="#tensorflow-ecosystem">TensorFlow ecosystem</a>
     - <a href="#whats-keras">What's Keras?</a>
         - <a href="#keras-and-tensorflow-a-brief-history">Keras and TensorFlow: A brief history</a>
+    - <a href="#setting-up-a-deep-learning-workspace">Setting up a deep learning workspace</a>
+        - <a href="#physical-machine-with-nvidia-gpu">Physical machine with NVIDIA GPU</a>
+        - <a href="#cloud-gpu-instances">Cloud GPU instances</a>
+        - <a href="#google-colab">Google Colab</a>
 </details></p>
 
 <hr />
@@ -65,7 +69,7 @@ Similar to NumPy, it is a general-purpose and efficient numerical library used b
 
 <h3 id="tensorflow-vs-numpy">TensorFlow vs. NumPy</h3>
 
-<p>TensorFlow far surpasses NumPy is the following ways:</p>
+<p>TensorFlow far surpasses NumPy in the following ways:</p>
 
 <ul>
 <li>Automatically computes the gradient of any differentiable expressions (as seen in Ch2 with <code>GradientTape</code>)</li>
@@ -123,6 +127,49 @@ In 2018, the TensorFlow leadership picked Keras and TensorFlow's official high-l
 As a result, as of September 2019, the Keras API is the official API for TensorFlow 2.0.</p>
 
 <p>Enough of the history, let's learn how to set up a deep learning workspace.</p>
+
+<hr />
+
+<h2 id="setting-up-a-deep-learning-workspace">Setting up a deep learning workspace</h2>
+
+<p>There are a handful of ways to set up a deep learning workspace:</p>
+
+<ul>
+<li>Buy and install a physical machine with an NVIDIA GPU</li>
+<li>Use GPU instances on AWS, Google Cloud, or cheaper alternatives such as Jarvis Labs</li>
+<li>Use the free GPU runtime from Google Colab, a hosted Jupyter notebook service that executes code on GPUs and even TPUs</li>
+</ul>
+
+<p>Each approach has its own advantages and disadvantages in terms of flexibility, cost, and ease of use.
+I'll briefly discuss the advantages and disadvantages of each approach below, but I will not discuss setup at all.</p>
+
+<h3 id="physical-machine-with-nvidia-gpu">Physical machine with NVIDIA GPU</h3>
+
+<p>Buying a machine with a GPU is not the easiest way to get started with DL, as it requires manual setup and it's also the most expensive upfront.
+The upfront cost is amplified by the current (as of May 2022) chip shortage and GPU scalpers.
+This method involves installing proper drivers, sorting out version conflicts, and then configuring the libraries to use the GPU instead of the CPU.</p>
+
+<p>Most users already have NVIDIA GPUs installed in their computers.
+Given the large user base of TensorFlow, there are many tutorials for setting up NVIDIA GPUs for deep learning, so this is not a bad option for tech-savvy people.</p>
+
+<p>The alternative to buying a GPU is the use of embedded devices built specifically for efficient and highly-parallelized math operations, such as <a href="https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/">NVIDIA's Jetson</a> or <a href="https://coral.ai/products/">Google's Coral</a>.</p>
+
+<h3 id="cloud-gpu-instances">Cloud GPU instances</h3>
+
+<p>Using GPU instances is cheaper in the short-term because you pay as you go (per hour basis), but it's not sustainable in the long run if you're a heavy user of deep learning.
+The benefit of using GPU instances is that it requires minimal setup as most instances have Python, TensorFlow, and Keras pre-installed - it's mostly plug-and-play and easy to use.
+Moreover, the GPU instance can easily be upgraded, torn down, cloned, and re-installed.
+Lastly, students and enterprise employees often get discounts - or free usage - for AWS and Google Cloud.</p>
+
+<p>I personally use Jarvis Labs and AWS for my deep learning needs because I have discounts for both services.
+There aren't many differences between cloud instance providers other than the availability of high-powered GPUs.</p>
+
+<h3 id="google-colab">Google Colab</h3>
+
+<p>The last approach - using free GPUs from Google Colab - is the simplest way to get started with deep learning.
+It's recommended for those who are not familiar with the hardware and software, and for those who are new to deep learning.
+Francois himself recommends executing code examples found in the book using Google Colab as it requires the least amount of setup.
+The drawback of Colab is that the free GPU is time-limited and shared by users - meaning that the execution may be slower.</p>
 
 </body>
 </html>
