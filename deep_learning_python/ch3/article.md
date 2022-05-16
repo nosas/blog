@@ -86,9 +86,10 @@ Theano pioneered the idea of using static computation graphs for automatic diffe
 
 Following the release of TensorFlow 1.0 in November 2015, Keras was refactored to support multiple backend architectures: starting with Theano and Tensorflow in late 2015, and adding support for CNTK and MXNet in 2017.
 
-Keras became well known as the user-friendly way to develop TensforFlow applications.
+Keras became well known as the user-friendly way to develop TensorFlow applications.
 By late 2017, a majority of TensorFlow users were using Keras.
 In 2018, the TensorFlow leadership picked Keras and TensorFlow's official high-level API.
 As a result, as of September 2019, the Keras API is the official API for TensorFlow 2.0.
 
 Enough of the history, let's learn how to set up a deep learning workspace.
+
