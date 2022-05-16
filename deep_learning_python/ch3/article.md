@@ -14,6 +14,8 @@ Articles in this series will sequentially review key concepts, examples, and int
     - [What's TensorFlow?](#whats-tensorflow)
         - [TensorFlow vs. NumPy](#tensorflow-vs-numpy)
         - [TensorFlow ecosystem](#tensorflow-ecosystem)
+    - [What's Keras?](#whats-keras)
+        - [Keras and TensorFlow](#keras-and-tensorflow)
 </details>
 
 ---
@@ -61,3 +63,20 @@ Together, these components cover a wide-range of use cases: from cutting-edge re
 Scientists from Oak Ridge National Lab have used TensorFlow to train an extreme weather forecasting model on the 27,000 GPUs within the IBM Summit supercomputer.
 Google, on the other hand, has used TensorFlow to develop deep learning applications such as the chess-playing and Go-playing agent AlphaZero.
 
+---
+## What's Keras?
+
+Keras is a high-level deep learning API built on top of TensorFlow.
+It provides a convenient and flexible API for building and training deep learning models.
+
+<font style="color:red">TODO: Insert image of Keras, TF, hardware hierarchical diagram</font>
+
+Keras is known for providing a clean, simple, and efficient API that prioritizes the developer experience.
+It's an API for human beings, not machines, and follows best practices for reducing cognitive load.
+The API provides consistent and simple workflows, minimizes the number of actions required for common use cases, and outputs clear and actionable feedback upon user error.
+
+Much like Python, Keras' large and diverse user base enables a well-documented and wide range of workflows for utilizing the API.
+Keras does not force one to follow a single "true" way of building and training models.
+Rather, it allows the user to build and train models corresponding to their own preference, and to explore the possibilities of each approach.
+
+### Keras and TensorFlow
