@@ -105,6 +105,15 @@ for i, prediction in enumerate(predictions_first_10):
     # ax.plot(x, y, c="red")
 plt.show()
 
+# %% Scatter plot for the model's first prediction where the dots are green if the prediction is accurate, red if the prediction is incorrect
+plt.figure(1)
+plt.scatter(
+    inputs[:, 0],
+    inputs[:, 1],
+    c=["green" if labels[idx] == pred else "red" for idx, pred in enumerate(predictions_first_10[0] > 0.5)],
+)
+plt.show()
+
 # %% Train the model for another 50 epochs
 for step in range(num_epochs):
     step_loss = training_step(inputs, labels)
