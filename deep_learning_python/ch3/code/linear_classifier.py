@@ -27,11 +27,11 @@ labels = np.vstack(
 )
 
 # %% Plot the two classes
-# Class A is represented by green dots, and class B is represented by brown dots
+# Class A is represented by green dots, and class B is represented by blue dots
 plt.scatter(
     inputs[:, 0],
     inputs[:, 1],
-    c=["green" if label == 0 else "brown" for label in labels],
+    c=["green" if label == 0 else "blue" for label in labels],
 )
 plt.savefig("../images/linear_classifier_data.png", transparent=True)
 plt.show()
@@ -67,15 +67,22 @@ def training_step(inputs, targets, learning_rate: float = 0.1) -> float:
 
 # %% Create the batch training loop
 num_epochs = 50
+predictions_all = []
+predictions_first_10 = []
+
 for step in range(num_epochs):
     step_loss = training_step(inputs, labels)
+    if step < 10:
+        predictions_first_10.append(model(inputs))
     if step % 5 == 0:
         print(f"Step {step}: Loss = {step_loss}")
+        # Save every 5th prediction
+        predictions_all.append(model(inputs))
 
-# Retrieve the model's predictions
+# Retrieve the model's final predictions
 predictions = model(inputs)
 
-# %% Plot the line separating the two classes
+# %% Plot the line separating the two classes based on the model's final predictions
 # The line is represented by the equation y = -W[0]/W[1] * x - (b/W[1])
 x = np.linspace(-2, 6, 100)
 y = -W[0] / W[1] * x - (0.5 - b) / W[1]
@@ -83,8 +90,20 @@ plt.plot(x, y, c="red")
 plt.scatter(
     inputs[:, 0],
     inputs[:, 1],
-    c=["green" if pred else "brown" for pred in predictions[:, 0] < 0.5],
+    c=["green" if pred else "blue" for pred in predictions[:, 0] < 0.5],
 )
+
+# %% Plot the line for predictions in predictions_all, each prediction is a subplot
+plt.figure(0)
+for i, prediction in enumerate(predictions_first_10):
+    ax = plt.subplot(2, 5, i + 1)
+    ax.scatter(
+        inputs[:, 0],
+        inputs[:, 1],
+        c=["green" if pred else "blue" for pred in prediction[:, 0] < 0.5],
+    )
+    # ax.plot(x, y, c="red")
+plt.show()
 
 # %% Train the model for another 50 epochs
 for step in range(num_epochs):
@@ -101,5 +120,5 @@ plt.plot(x, y, c="red")
 plt.scatter(
     inputs[:, 0],
     inputs[:, 1],
-    c=["green" if pred else "brown" for pred in predictions[:, 0] < 0.5],
+    c=["green" if pred else "blue" for pred in predictions[:, 0] < 0.5],
 )
