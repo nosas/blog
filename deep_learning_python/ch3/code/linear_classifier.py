@@ -1,4 +1,5 @@
 # %% Import libraries
+from re import A
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
@@ -27,13 +28,30 @@ labels = np.vstack(
 )
 
 # %% Plot the two classes
-# Class A is represented by green dots, and class B is represented by blue dots
+# Class A is represented by green dots, and class B is represented by blue dots,
+plt.clf()
+class_a = inputs[:num_samples_per_class]
+class_b = inputs[num_samples_per_class:]
 plt.scatter(
-    inputs[:, 0],
-    inputs[:, 1],
-    c=["green" if label == 0 else "blue" for label in labels],
+    class_a[:, 0],
+    class_a[:, 1],
+    c="green",
+    alpha=0.25,
+    s=100,
+    label="Class A",
+    edgecolors="none",
+)
+plt.scatter(
+    class_b[:, 0],
+    class_b[:, 1],
+    c="blue",
+    alpha=0.25,
+    s=100,
+    label="Class B",
+    edgecolors="none",
 )
 plt.savefig("../images/linear_classifier_data.png", transparent=True)
+plt.legend()
 plt.show()
 
 # %% Initialize the weights and biases
@@ -97,12 +115,31 @@ plt.scatter(
 plt.figure(0)
 for i, prediction in enumerate(predictions_first_10):
     ax = plt.subplot(2, 5, i + 1)
-    ax.scatter(
-        inputs[:, 0],
-        inputs[:, 1],
-        c=["green" if pred else "blue" for pred in prediction[:, 0] < 0.5],
+    plt.scatter(
+        class_a[:, 0],
+        class_a[:, 1],
+        c=["green" if pred else "blue" for pred in prediction[:num_samples_per_class, 0] < 0.5],
+        alpha=0.25,
+        s=100,
+        label="Class A",
+        edgecolors="none",
     )
+    plt.scatter(
+        class_b[:, 0],
+        class_b[:, 1],
+        c=["green" if pred else "blue" for pred in prediction[num_samples_per_class:, 0] < 0.5],
+        alpha=0.25,
+        s=100,
+        label="Class B",
+        edgecolors="none",
+    )
+    # ax.scatter(
+    #     inputs[:, 0],
+    #     inputs[:, 1],
+    #     c=["green" if pred else "blue" for pred in prediction[:, 0] < 0.5],
+    # )
     # ax.plot(x, y, c="red")
+plt.legend()
 plt.show()
 
 # %% Scatter plot for the model's first prediction where the dots are green if the prediction is accurate, red if the prediction is incorrect
@@ -131,3 +168,24 @@ plt.scatter(
     inputs[:, 1],
     c=["green" if pred else "blue" for pred in predictions[:, 0] < 0.5],
 )
+
+# %% Scatter plot for the model's last prediction where the dots are green if the prediction is accurate, red if the prediction is incorrect
+plt.figure(1)
+
+pred_correct = [labels[idx] == pred for idx, pred in enumerate(predictions[:, 0] > 0.5)]
+pred_incorrect = [labels[idx] != pred for idx, pred in enumerate(predictions[:, 0] > 0.5)]
+
+plt.scatter(
+    pred_correct[:, 0],
+    pred_correct[:, 1],
+    c="green",
+)
+
+plt.scatter(
+    pred_incorrect[:, 0],
+    pred_incorrect[:, 1],
+    c="red"
+)
+plt.show()
+
+# %%
