@@ -85,11 +85,13 @@ def training_step(inputs, targets, learning_rate: float = 0.1) -> float:
 
 # %% Create the batch training loop
 num_epochs = 50
+loss_all = []
 predictions_all = []
 predictions_first_10 = []
 
 for step in range(num_epochs):
     step_loss = training_step(inputs, labels)
+    loss_all.append(step_loss)
     if step < 10:
         predictions_first_10.append(model(inputs))
     if step % 5 == 0:
@@ -99,6 +101,13 @@ for step in range(num_epochs):
 
 # Retrieve the model's final predictions
 predictions = model(inputs)
+
+# %% Plot the loss over time
+plt.clf()
+plt.plot(loss_all[1:])  # Skip the first value, since it's just the initialization
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+
 
 # %% Plot the line separating the two classes based on the model's final predictions
 # The line is represented by the equation y = -W[0]/W[1] * x - (b/W[1])
@@ -152,10 +161,19 @@ plt.scatter(
 plt.show()
 
 # %% Train the model for another 50 epochs
+# loss_all = []
 for step in range(num_epochs):
     step_loss = training_step(inputs, labels)
+    loss_all.append(step_loss)
     if step % 5 == 0:
         print(f"Step {step}: Loss = {step_loss}")
+
+# %% Plot the loss over time
+plt.clf()
+plt.plot(loss_all[num_epochs:])  # Skip the first value, since it's just the initialization
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.show()
 
 # %% Retrieve the model's predictions
 predictions = model(inputs)
@@ -172,19 +190,10 @@ plt.scatter(
 # %% Scatter plot for the model's last prediction where the dots are green if the prediction is accurate, red if the prediction is incorrect
 plt.figure(1)
 
-pred_correct = [labels[idx] == pred for idx, pred in enumerate(predictions[:, 0] > 0.5)]
-pred_incorrect = [labels[idx] != pred for idx, pred in enumerate(predictions[:, 0] > 0.5)]
-
 plt.scatter(
-    pred_correct[:, 0],
-    pred_correct[:, 1],
-    c="green",
-)
-
-plt.scatter(
-    pred_incorrect[:, 0],
-    pred_incorrect[:, 1],
-    c="red"
+    inputs[:, 0],
+    inputs[:, 1],
+    c=["green" if labels[idx] == pred else "red" for idx, pred in enumerate(predictions > 0.5)],
 )
 plt.show()
 
