@@ -126,7 +126,10 @@ for i, prediction in enumerate(predictions_first_10):
     plt.scatter(
         class_a[:, 0],
         class_a[:, 1],
-        c=["green" if pred else "blue" for pred in prediction[:num_samples_per_class, 0] < 0.5],
+        c=[
+            "green" if pred else "blue"
+            for pred in prediction[:num_samples_per_class, 0] < 0.5
+        ],
         alpha=0.25,
         s=100,
         label="Class A",
@@ -135,7 +138,10 @@ for i, prediction in enumerate(predictions_first_10):
     plt.scatter(
         class_b[:, 0],
         class_b[:, 1],
-        c=["green" if pred else "blue" for pred in prediction[num_samples_per_class:, 0] < 0.5],
+        c=[
+            "green" if pred else "blue"
+            for pred in prediction[num_samples_per_class:, 0] < 0.5
+        ],
         alpha=0.25,
         s=100,
         label="Class B",
@@ -155,7 +161,10 @@ plt.figure(1)
 plt.scatter(
     inputs[:, 0],
     inputs[:, 1],
-    c=["green" if labels[idx] == pred else "red" for idx, pred in enumerate(predictions_first_10[0] > 0.5)],
+    c=[
+        "green" if labels[idx] == pred else "red"
+        for idx, pred in enumerate(predictions_first_10[0] > 0.5)
+    ],
 )
 plt.show()
 
@@ -169,7 +178,9 @@ for step in range(num_epochs):
 
 # %% Plot the loss over time
 plt.clf()
-plt.plot(loss_all[num_epochs:])  # Skip the first value, since it's just the initialization
+plt.plot(
+    loss_all[num_epochs:]
+)  # Skip the first value, since it's just the initialization
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
 plt.show()
@@ -192,7 +203,10 @@ plt.figure(1)
 plt.scatter(
     inputs[:, 0],
     inputs[:, 1],
-    c=["green" if labels[idx] == pred else "red" for idx, pred in enumerate(predictions > 0.5)],
+    c=[
+        "green" if labels[idx] == pred else "red"
+        for idx, pred in enumerate(predictions > 0.5)
+    ],
 )
 plt.show()
 
