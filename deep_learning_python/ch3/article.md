@@ -344,7 +344,8 @@ Now let's generate some data and train a linear classifier.
 
 We need some nicely linear data to train our linear classifier.
 To keep it simple, we'll create two classes of points in a 2D plane and call them class A and class B.
-To keep it more simple, we won't explain all the math behind this, but we'll just use the following formula to generate the data:
+To keep it more simple, we won't explain all the math behind the data generation - just understand that both classes should be shaped like a cloud and clearly separated.
+We'll just use the following formula to generate the data:
 
 ```python
 num_samples_per_class = 500
@@ -357,3 +358,10 @@ class_b_samples = np.random.multivariate_normal(
     cov=[[1, 0], [0, 1]],
     size=num_samples_per_class)
 ```
+
+The figure below shows the linear data distribution of both classes A and B.
+
+<figure class="center">
+    <img src="img/linear_classifier_data.png" style="width:100%;background:white;"/>
+    <figcaption>Two classes of synthetic and random points in the 2D plane</figcaption>
+</figure>

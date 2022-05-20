@@ -35,7 +35,7 @@ plt.scatter(
     class_a[:, 0],
     class_a[:, 1],
     c="green",
-    alpha=0.25,
+    alpha=0.50,
     s=100,
     label="Class A",
     edgecolors="none",
@@ -44,13 +44,13 @@ plt.scatter(
     class_b[:, 0],
     class_b[:, 1],
     c="blue",
-    alpha=0.25,
+    alpha=0.50,
     s=100,
     label="Class B",
     edgecolors="none",
 )
-plt.savefig("../images/linear_classifier_data.png", transparent=True)
 plt.legend()
+plt.savefig("../img/linear_classifier_data.png", transparent=False)
 plt.show()
 
 # %% Initialize the weights and biases

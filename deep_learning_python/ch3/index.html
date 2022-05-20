@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 15, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 19, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 3 - Introduction to Keras and TensorFlow</title></p>
 
@@ -376,7 +376,8 @@ Now let's generate some data and train a linear classifier.</p>
 
 <p>We need some nicely linear data to train our linear classifier.
 To keep it simple, we'll create two classes of points in a 2D plane and call them class A and class B.
-To keep it more simple, we won't explain all the math behind this, but we'll just use the following formula to generate the data:</p>
+To keep it more simple, we won't explain all the math behind the data generation - just understand that both classes should be shaped like a cloud and clearly separated.
+We'll just use the following formula to generate the data:</p>
 
 <div class="codehilite"><pre><span></span><code><span class="n">num_samples_per_class</span> <span class="o">=</span> <span class="mi">500</span>
 <span class="n">class_a_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
@@ -388,6 +389,13 @@ To keep it more simple, we won't explain all the math behind this, but we'll jus
     <span class="n">cov</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>
     <span class="n">size</span><span class="o">=</span><span class="n">num_samples_per_class</span><span class="p">)</span>
 </code></pre></div>
+
+<p>The figure below shows the linear data distribution of both classes A and B.</p>
+
+<figure class="center">
+    <img src="img/linear_classifier_data.png" style="width:100%;background:white;"/>
+    <figcaption>Two classes of synthetic and random points in the 2D plane</figcaption>
+</figure>
 
 </body>
 </html>
