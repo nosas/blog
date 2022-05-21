@@ -10,6 +10,7 @@ Articles in this series will sequentially review key concepts, examples, and int
 
 <details>
     <summary>Table of Contents</summary>
+
 - [Chapter 3: Introduction to Keras and TensorFlow](#chapter-3-introduction-to-keras-and-tensorflow)
     - [What's TensorFlow?](#whats-tensorflow)
         - [TensorFlow vs. NumPy](#tensorflow-vs-numpy)
@@ -339,12 +340,14 @@ The line is best fit to separate the data into two classes.
 
 This is the basic idea behind linear classification.
 Now let's generate some data and train a linear classifier.
+All of the code related to this linear classifier can be found on my [GitHub](https://github.com/nosas/blog/blob/main/deep_learning_python/ch3/code/linear_classifier.py) as an interactive python file.
+I recommend using VSCode to utilize the interactive python code blocks - similar to Jupyter Notebooks.
 
 ### Generating synthetic data
 
 We need some nicely linear data to train our linear classifier.
 To keep it simple, we'll create two classes of points in a 2D plane and call them class A and class B.
-To keep it more simple, we won't explain all the math behind the data generation - just understand that both classes should be shaped like a cloud and clearly separated.
+To keep it more simple, we won't explain all the math behind the data generation - just understand that both classes should be clearly separated and roughly distributed like a cloud.
 We'll just use the following formula to generate the data:
 
 ```python
@@ -359,9 +362,55 @@ class_b_samples = np.random.multivariate_normal(
     size=num_samples_per_class)
 ```
 
-The figure below shows the linear data distribution of both classes A and B.
+The figure below shows the linearly-separable data from classes A and B.
+See the following code block to see how we plot the data.
 
 <figure class="center">
     <img src="img/linear_classifier_data.png" style="width:100%;background:white;"/>
     <figcaption>Two classes of synthetic and random points in the 2D plane</figcaption>
 </figure>
+
+Both samples are arrays of shape `(500, 2)` - meaning there are 500 rows of 2-dimensional data (x and y coordinate points).
+Let's stack both class samples into a single array with shape `(1000, 2)`.
+Stacking the samples into single array will allow for easier processing later on, such as plotting the data.
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# The first 500 samples are from class A, the next 500 samples are from class B
+inputs = np.vstack((class_a_samples, class_b_samples)).astype(np.float32)
+# The first 500 labels are 0 (class A), and the next 500 are 1 (class B)
+labels = np.vstack(
+    (
+        np.zeros((num_samples_per_class, 1), dtype=np.float32),
+        np.ones((num_samples_per_class, 1), dtype=np.float32),
+    )
+)
+class_a = inputs[:num_samples_per_class]
+class_b = inputs[num_samples_per_class:]
+
+# %% Plot the two classes
+# Class A is represented by green dots, and class B is represented by blue dots,
+plt.scatter(
+    class_a[:, 0],
+    class_a[:, 1],
+    c="green",
+    alpha=0.50,
+    s=100,
+    label="Class A",
+    edgecolors="none",
+)
+plt.scatter(
+    class_b[:, 0],
+    class_b[:, 1],
+    c="blue",
+    alpha=0.50,
+    s=100,
+    label="Class B",
+    edgecolors="none",
+)
+plt.legend()
+plt.savefig("../img/linear_classifier_data.png", transparent=False)
+plt.show()
+```

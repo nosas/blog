@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 19, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 20, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 3 - Introduction to Keras and TensorFlow</title></p>
 
@@ -31,25 +31,40 @@
 Articles in this series will sequentially review key concepts, examples, and interesting facts from each chapter of the book.</p>
 
 <p><details>
-    <summary>Table of Contents</summary>
-- <a href="#chapter-3-introduction-to-keras-and-tensorflow">Chapter 3: Introduction to Keras and TensorFlow</a>
-    - <a href="#whats-tensorflow">What's TensorFlow?</a>
-        - <a href="#tensorflow-vs-numpy">TensorFlow vs. NumPy</a>
-        - <a href="#tensorflow-ecosystem">TensorFlow ecosystem</a>
-    - <a href="#whats-keras">What's Keras?</a>
-        - <a href="#keras-and-tensorflow-a-brief-history">Keras and TensorFlow: A brief history</a>
-    - <a href="#setting-up-a-deep-learning-workspace">Setting up a deep learning workspace</a>
-        - <a href="#physical-machine-with-nvidia-gpu">Physical machine with NVIDIA GPU</a>
-        - <a href="#cloud-gpu-instances">Cloud GPU instances</a>
-        - <a href="#google-colab">Google Colab</a>
-    - <a href="#first-steps-with-tensorflow">First steps with TensorFlow</a>
-        - <a href="#constant-tensors-and-variables">Constant tensors and variables</a>
-        - <a href="#a-second-look-at-the-gradient-tape-api">A second look at the Gradient Tape API</a>
-        - <a href="#computing-second-order-gradients">Computing second-order gradients</a>
-    - <a href="#linear-classifier-example-in-pure-tensorflow">Linear classifier example in pure TensorFlow</a>
-        - <a href="#what-is-linear-classification">What is linear classification?</a>
-        - <a href="#generating-synthetic-data">Generating synthetic data</a>
-</details></p>
+    <summary>Table of Contents</summary></p>
+
+<ul>
+<li><a href="#chapter-3-introduction-to-keras-and-tensorflow">Chapter 3: Introduction to Keras and TensorFlow</a>
+<ul>
+<li><a href="#whats-tensorflow">What's TensorFlow?</a>
+<ul>
+<li><a href="#tensorflow-vs-numpy">TensorFlow vs. NumPy</a></li>
+<li><a href="#tensorflow-ecosystem">TensorFlow ecosystem</a></li>
+</ul></li>
+<li><a href="#whats-keras">What's Keras?</a>
+<ul>
+<li><a href="#keras-and-tensorflow-a-brief-history">Keras and TensorFlow: A brief history</a></li>
+</ul></li>
+<li><a href="#setting-up-a-deep-learning-workspace">Setting up a deep learning workspace</a>
+<ul>
+<li><a href="#physical-machine-with-nvidia-gpu">Physical machine with NVIDIA GPU</a></li>
+<li><a href="#cloud-gpu-instances">Cloud GPU instances</a></li>
+<li><a href="#google-colab">Google Colab</a></li>
+</ul></li>
+<li><a href="#first-steps-with-tensorflow">First steps with TensorFlow</a>
+<ul>
+<li><a href="#constant-tensors-and-variables">Constant tensors and variables</a></li>
+<li><a href="#a-second-look-at-the-gradient-tape-api">A second look at the Gradient Tape API</a></li>
+<li><a href="#computing-second-order-gradients">Computing second-order gradients</a></li>
+</ul></li>
+<li><a href="#linear-classifier-example-in-pure-tensorflow">Linear classifier example in pure TensorFlow</a>
+<ul>
+<li><a href="#what-is-linear-classification">What is linear classification?</a></li>
+<li><a href="#generating-synthetic-data">Generating synthetic data</a>
+</details></li>
+</ul></li>
+</ul></li>
+</ul>
 
 <hr />
 
@@ -370,13 +385,15 @@ The line is best fit to separate the data into two classes.</p>
 <p><font style="color:red">TODO: Insert image of a linear classification plot with a line separating the classes</font></p>
 
 <p>This is the basic idea behind linear classification.
-Now let's generate some data and train a linear classifier.</p>
+Now let's generate some data and train a linear classifier.
+All of the code related to this linear classifier can be found on my <a href="https://github.com/nosas/blog/blob/main/deep_learning_python/ch3/code/linear_classifier.py">GitHub</a> as an interactive python file.
+I recommend using VSCode to utilize the interactive python code blocks - similar to Jupyter Notebooks.</p>
 
 <h3 id="generating-synthetic-data">Generating synthetic data</h3>
 
 <p>We need some nicely linear data to train our linear classifier.
 To keep it simple, we'll create two classes of points in a 2D plane and call them class A and class B.
-To keep it more simple, we won't explain all the math behind the data generation - just understand that both classes should be shaped like a cloud and clearly separated.
+To keep it more simple, we won't explain all the math behind the data generation - just understand that both classes should be clearly separated and roughly distributed like a cloud.
 We'll just use the following formula to generate the data:</p>
 
 <div class="codehilite"><pre><span></span><code><span class="n">num_samples_per_class</span> <span class="o">=</span> <span class="mi">500</span>
@@ -390,12 +407,57 @@ We'll just use the following formula to generate the data:</p>
     <span class="n">size</span><span class="o">=</span><span class="n">num_samples_per_class</span><span class="p">)</span>
 </code></pre></div>
 
-<p>The figure below shows the linear data distribution of both classes A and B.</p>
+<p>The figure below shows the linearly-separable data from classes A and B.
+See the following code block to see how we plot the data.</p>
 
 <figure class="center">
     <img src="img/linear_classifier_data.png" style="width:100%;background:white;"/>
     <figcaption>Two classes of synthetic and random points in the 2D plane</figcaption>
 </figure>
+
+<p>Both samples are arrays of shape <code>(500, 2)</code> - meaning there are 500 rows of 2-dimensional data (x and y coordinate points).
+Let's stack both class samples into a single array with shape <code>(1000, 2)</code>.
+Stacking the samples into single array will allow for easier processing later on, such as plotting the data.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># The first 500 samples are from class A, the next 500 samples are from class B</span>
+<span class="n">inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">class_a_samples</span><span class="p">,</span> <span class="n">class_b_samples</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="c1"># The first 500 labels are 0 (class A), and the next 500 are 1 (class B)</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+    <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_samples_per_class</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">num_samples_per_class</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">class_a</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[:</span><span class="n">num_samples_per_class</span><span class="p">]</span>
+<span class="n">class_b</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="n">num_samples_per_class</span><span class="p">:]</span>
+
+<span class="c1"># %% Plot the two classes</span>
+<span class="c1"># Class A is represented by green dots, and class B is represented by blue dots,</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+    <span class="n">class_a</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="n">class_a</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="n">c</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.50</span><span class="p">,</span>
+    <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Class A&quot;</span><span class="p">,</span>
+    <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+    <span class="n">class_b</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="n">class_b</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="n">c</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.50</span><span class="p">,</span>
+    <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Class B&quot;</span><span class="p">,</span>
+    <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;../img/linear_classifier_data.png&quot;</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
 
 </body>
 </html>
