@@ -28,6 +28,7 @@ Articles in this series will sequentially review key concepts, examples, and int
     - [Linear classifier example in pure TensorFlow](#linear-classifier-example-in-pure-tensorflow)
         - [What is linear classification?](#what-is-linear-classification)
         - [Generating synthetic data](#generating-synthetic-data)
+        - [Creating the linear classifier](#creating-the-linear-classifier)
 </details>
 
 ---
@@ -392,6 +393,7 @@ class_b = inputs[num_samples_per_class:]
 
 # %% Plot the two classes
 # Class A is represented by green dots, and class B is represented by blue dots,
+# plt.scatter(inputs[:, 0], inputs[:, 1], c=labels[:, 0], s=100)
 plt.scatter(
     class_a[:, 0],
     class_a[:, 1],
@@ -414,3 +416,32 @@ plt.legend()
 plt.savefig("../img/linear_classifier_data.png", transparent=False)
 plt.show()
 ```
+
+### Creating the linear classifier
+
+A linear classifier is an *affine transformation* of the input data (`prediction = dot(W, x) + b`), trained to minimize the square of the difference (mean squared error, or MSE) between the prediction and the target label.
+I have not explained affine transformations - or any geometric interpretations of tensor operations - in my articles, but Francois Chollet greatly details geometric transformations in Chapter 2 of his book.
+In short, an affine transformation is the combination of a linear transform (dot product) and a translation (vector addition).
+
+Now that we understand the basic math behind linear classification, let's create the model's variables.
+
+```python
+input_dim = 2   # input is a 2D vector
+output_dim = 1  # output is a scalar, class A < 0.5 < class B
+W = tf.Variable(initial_value=tf.random.uniform(shape=(input_dim, output_dim)))
+b = tf.Variable(initial_value=tf.zeros(shape=(output_dim,)))
+```
+
+Our forward pass function is the affine transformation discussed above.
+Our loss function is the mean squared error (MSE) between the prediction and the target label.
+
+
+```python
+def model(inputs) -> tf.Tensor:
+    return tf.matmul(inputs, W) + b
+
+def loss(predictions, targets) -> tf.Tensor:
+    per_sample_loss = tf.square(targets - predictions)
+    return tf.reduce_mean(per_sample_loss)
+```
+
