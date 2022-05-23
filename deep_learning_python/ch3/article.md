@@ -30,7 +30,7 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Generating synthetic data](#generating-synthetic-data)
         - [Creating the linear classifier](#creating-the-linear-classifier)
         - [Training the linear classifier](#training-the-linear-classifier)
-        - [Plotting the loss and predictions](#plotting-the-loss-and-predictions)
+        - [Plotting the loss](#plotting-the-loss)
 </details>
 
 ---
@@ -488,6 +488,107 @@ for step in range(num_epochs):
     predictions_all.append(model(inputs))
 ```
 
-### Plotting the loss and predictions
+<details>
+    <summary>Full output of loss scores</summary>
 
+    Step 0: Loss = 1.6673
+    Step 1: Loss = 0.3011
+    Step 2: Loss = 0.1401
+    Step 3: Loss = 0.1145
+    Step 4: Loss = 0.1048
+    Step 5: Loss = 0.0975
+    Step 6: Loss = 0.0910
+    Step 7: Loss = 0.0851
+    Step 8: Loss = 0.0797
+    Step 9: Loss = 0.0747
+    Step 10: Loss = 0.0702
+    Step 11: Loss = 0.0661
+    Step 12: Loss = 0.0624
+    Step 13: Loss = 0.0590
+    Step 14: Loss = 0.0559
+    Step 15: Loss = 0.0530
+    Step 16: Loss = 0.0505
+    Step 17: Loss = 0.0481
+    Step 18: Loss = 0.0459
+    Step 19: Loss = 0.0440
+    Step 20: Loss = 0.0422
+    Step 21: Loss = 0.0405
+    Step 22: Loss = 0.0391
+    Step 23: Loss = 0.0377
+    Step 24: Loss = 0.0365
+    Step 25: Loss = 0.0353
+    Step 26: Loss = 0.0343
+    Step 27: Loss = 0.0333
+    Step 28: Loss = 0.0325
+    Step 29: Loss = 0.0317
+    Step 30: Loss = 0.0310
+    Step 31: Loss = 0.0303
+    Step 32: Loss = 0.0297
+    Step 33: Loss = 0.0292
+    Step 34: Loss = 0.0287
+    Step 35: Loss = 0.0283
+    Step 36: Loss = 0.0278
+    Step 37: Loss = 0.0275
+    Step 38: Loss = 0.0271
+    Step 39: Loss = 0.0268
+    Step 40: Loss = 0.0265
+    Step 41: Loss = 0.0263
+    Step 42: Loss = 0.0260
+    Step 43: Loss = 0.0258
+    Step 44: Loss = 0.0256
+    Step 45: Loss = 0.0254
+    Step 46: Loss = 0.0253
+    Step 47: Loss = 0.0251
+    Step 48: Loss = 0.0250
+    Step 49: Loss = 0.0249
+</details>
+
+After 50 epochs, the loss score stabilizes around 0.025.
+Let's plot the loss scores to see how the loss score changes after each training step.
+
+### Plotting the loss
+
+```python
+plt.plot(loss_all[:])
+plot.xlabel("Epoch")
+plot.ylabel("Loss")
+```
+
+It's difficult to see the rate of decrease in the loss score due to the rapid convergence of the loss score.
+The initial loss score was initially at 1.6673 on step 0 and dropped to 0.3011 on step 1.
+We can improve the plot by excluding the initial loss score.
+Refer to the table below where we first plot twice: with all loss scores and all but the initial loss score.
+
+```python
+plt.plot(loss_all[1:])
+plot.xlabel("Epoch")
+plot.ylabel("Loss")
+```
+
+<table style="width:100%;">
+    <tr>
+        <td style="width:50%;">
+            <img src="img/loss_all.png" style="background:white; width:100%;">
+        </td>
+        <td style="width:50%;">
+            <img src="img/loss_exclude_initial.png" style="background:white; width:100%;">
+        </td>
+    </tr>
+    <tr >
+        <td>
+            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                <small>
+                    <i>Loss scores of all training steps<i>
+                </small>
+            </span>
+        </td>
+        <td>
+            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                <small>
+                    <i>All loss scores, excluding the initial loss score<i>
+                </small>
+            </span>
+        </td>
+    </tr>
+</table>
 

@@ -92,8 +92,8 @@ predictions_all = []
 for step in range(num_epochs):
     step_loss = training_step(inputs, labels)
     loss_all.append(step_loss)
-    if step % 5 == 0:
-        print(f"Step {step}: Loss = {step_loss}")
+    if step % 1 == 0:
+        print(f"Step {step}: Loss = {step_loss:.4f}")
     # Save every prediction
     predictions_all.append(model(inputs))
 
@@ -105,6 +105,7 @@ plt.clf()
 plt.plot(loss_all[1:])  # Skip the first value, since it's just the initialization
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
+plt.savefig("../img/loss_exclude_initial.png", transparent=False)
 
 
 # %% Plot the line separating the two classes based on the model's final predictions
