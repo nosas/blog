@@ -29,6 +29,8 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [What is linear classification?](#what-is-linear-classification)
         - [Generating synthetic data](#generating-synthetic-data)
         - [Creating the linear classifier](#creating-the-linear-classifier)
+        - [Training the linear classifier](#training-the-linear-classifier)
+        - [Plotting the loss and predictions](#plotting-the-loss-and-predictions)
 </details>
 
 ---
@@ -435,13 +437,57 @@ b = tf.Variable(initial_value=tf.zeros(shape=(output_dim,)))
 Our forward pass function is the affine transformation discussed above.
 Our loss function is the mean squared error (MSE) between the prediction and the target label.
 
-
 ```python
 def model(inputs) -> tf.Tensor:
     return tf.matmul(inputs, W) + b
 
-def loss(predictions, targets) -> tf.Tensor:
+def square_loss(predictions, targets) -> tf.Tensor:
+    # Calculate the loss per sample, results in tensor of shape (len(targets), 1)
     per_sample_loss = tf.square(targets - predictions)
+    # Average the per-sample loss and return a single scalar loss value
     return tf.reduce_mean(per_sample_loss)
 ```
+
+Next, we have to train the model.
+
+### Training the linear classifier
+
+Let's create the training step, where the model's weights and biases are updated based on the loss.
+
+```python
+def training_step(inputs, targets, learning_rate: float = 0.001) -> tf.Tensor:
+    with tf.GradientTape() as tape:
+        predictions = model(inputs)
+        loss = square_loss(predictions, targets)
+    # Calculate the gradients of the loss with respect to the variables
+    grad_loss_wrt_W, grad_loss_wrt_b = tape.gradient(loss, [W, b])
+    # Update the variables using the gradients and the learning rate
+    W.assign_sub(learning_rate * grad_loss_wrt_W)
+    b.assign_sub(learning_rate * grad_loss_wrt_b)
+    return loss
+```
+
+Finally, let's create the training loop.
+For simplicity, we'll do *batch training* instead of *mini-batch training*.
+Batch training means the model trains on all the data at once instead of iteratively over small batches of the data.
+
+Batch training has its pros and cons: each training step will take much longer to run, since we'll compute the forward pass and gradient calculation for the entire dataset (1000 samples in our example).
+On the other hand, because the model is training on the entire dataset, each gradient update will be much more effective at reducing the loss since it learns information from all training samples.
+
+```python
+num_epochs = 50
+# Save the loss scores so we can plot them later
+loss_all = []
+# Save all predictions so we can calculate and plot the accuracy later
+predictions_all = []
+
+for step in range(num_epochs):
+    step_loss = training_step(inputs=inputs, targets=labels)
+    print(f"Step {step} loss: {step_loss}")
+    loss_all.append(step_loss)
+    predictions_all.append(model(inputs))
+```
+
+### Plotting the loss and predictions
+
 

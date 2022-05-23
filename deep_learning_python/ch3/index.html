@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 21, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 22, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 3 - Introduction to Keras and TensorFlow</title></p>
 
@@ -61,7 +61,8 @@ Articles in this series will sequentially review key concepts, examples, and int
 <ul>
 <li><a href="#what-is-linear-classification">What is linear classification?</a></li>
 <li><a href="#generating-synthetic-data">Generating synthetic data</a></li>
-<li><a href="#creating-the-linear-classifier">Creating the linear classifier</a>
+<li><a href="#creating-the-linear-classifier">Creating the linear classifier</a></li>
+<li><a href="#training-the-linear-classifier">Training the linear classifier</a>
 </details></li>
 </ul></li>
 </ul></li>
@@ -481,9 +482,49 @@ Our loss function is the mean squared error (MSE) between the prediction and the
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
 
-<span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">square_loss</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="c1"># Calculate the loss per sample, results in tensor of shape (len(targets), 1)</span>
     <span class="n">per_sample_loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">targets</span> <span class="o">-</span> <span class="n">predictions</span><span class="p">)</span>
+    <span class="c1"># Average the per-sample loss and return a single scalar loss value</span>
     <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">per_sample_loss</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Next, we have to train the model.</p>
+
+<h3 id="training-the-linear-classifier">Training the linear classifier</h3>
+
+<p>Let's create the training step, where the model's weights and biases are updated based on the loss.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">training_step</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">tape</span><span class="p">:</span>
+        <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">square_loss</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+    <span class="c1"># Calculate the gradients of the loss with respect to the variables</span>
+    <span class="n">grad_loss_wrt_W</span><span class="p">,</span> <span class="n">grad_loss_wrt_b</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="p">[</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
+    <span class="c1"># Update the variables using the gradients and the learning rate</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">assign_sub</span><span class="p">(</span><span class="n">learning_rate</span> <span class="o">*</span> <span class="n">grad_loss_wrt_W</span><span class="p">)</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">assign_sub</span><span class="p">(</span><span class="n">learning_rate</span> <span class="o">*</span> <span class="n">grad_loss_wrt_b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">loss</span>
+</code></pre></div>
+
+<p>Finally, let's create the training loop.
+For simplicity, we'll do <em>batch training</em> instead of <em>mini-batch training</em>.
+Batch training means the model trains on all the data at once instead of iteratively over small batches of the data.</p>
+
+<p>Batch training has its pros and cons: each training step will take much longer to run, since we'll compute the forward pass and gradient calculation for the entire dataset (1000 samples in our example).
+On the other hand, because the model is training on the entire dataset, each gradient update will be much more effective at reducing the loss since it learns information from all training samples.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="c1"># Save the loss scores so we can plot them later</span>
+<span class="n">loss_all</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1"># Save all predictions so we can calculate and plot the accuracy later</span>
+<span class="n">predictions_all</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+    <span class="n">step_loss</span> <span class="o">=</span> <span class="n">training_step</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2"> loss: </span><span class="si">{</span><span class="n">step_loss</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">loss_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_loss</span><span class="p">)</span>
+    <span class="n">predictions_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">))</span>
 </code></pre></div>
 
 </body>

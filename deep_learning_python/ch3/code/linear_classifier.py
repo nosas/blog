@@ -66,16 +66,18 @@ def model(inputs: np.ndarray) -> np.ndarray:
 
 
 # %% Create the mean squared error loss function: loss = mean(square(prediction - labels))
-def square_loss(targets, predictions) -> float:
-    per_sample_losses = tf.square(targets - predictions)
-    return tf.reduce_mean(per_sample_losses)
+def square_loss(predictions, targets) -> float:
+    # Calculate the loss per sample, results in tensor of shape (len(targets), 1)
+    per_sample_loss = tf.square(targets - predictions)
+    # Average the per-sample loss and return a single scalar loss value
+    return tf.reduce_mean(per_sample_loss)
 
 
 # %% Create the training step function
 def training_step(inputs, targets, learning_rate: float = 0.1) -> float:
     with tf.GradientTape() as tape:
         predictions = model(inputs)
-        loss = square_loss(targets, predictions)
+        loss = square_loss(predictions, targets)
     grad_loss_wrt_W, grad_loss_wrt_b = tape.gradient(loss, [W, b])
     W.assign_sub(learning_rate * grad_loss_wrt_W)
     b.assign_sub(learning_rate * grad_loss_wrt_b)
@@ -86,20 +88,17 @@ def training_step(inputs, targets, learning_rate: float = 0.1) -> float:
 num_epochs = 50
 loss_all = []
 predictions_all = []
-predictions_first_10 = []
 
 for step in range(num_epochs):
     step_loss = training_step(inputs, labels)
     loss_all.append(step_loss)
-    if step < 10:
-        predictions_first_10.append(model(inputs))
     if step % 5 == 0:
         print(f"Step {step}: Loss = {step_loss}")
-        # Save every 5th prediction
-        predictions_all.append(model(inputs))
+    # Save every prediction
+    predictions_all.append(model(inputs))
 
 # Retrieve the model's final predictions
-predictions = model(inputs)
+predictions = predictions_all[-1]
 
 # %% Plot the loss over time
 plt.clf()
@@ -121,7 +120,8 @@ plt.scatter(
 
 # %% Plot the line for predictions in predictions_all, each prediction is a subplot
 plt.figure(0)
-for i, prediction in enumerate(predictions_first_10):
+for i, prediction in enumerate(predictions_all[:10]):
+
     ax = plt.subplot(2, 5, i + 1)
     plt.scatter(
         class_a[:, 0],
@@ -163,7 +163,7 @@ plt.scatter(
     inputs[:, 1],
     c=[
         "green" if labels[idx] == pred else "red"
-        for idx, pred in enumerate(predictions_first_10[0] > 0.5)
+        for idx, pred in enumerate(predictions_all[0] > 0.5)
     ],
 )
 plt.show()
