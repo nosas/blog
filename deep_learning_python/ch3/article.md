@@ -31,6 +31,7 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Creating the linear classifier](#creating-the-linear-classifier)
         - [Training the linear classifier](#training-the-linear-classifier)
         - [Plotting the loss](#plotting-the-loss)
+        - [Plotting the predictions](#plotting-the-predictions)
 </details>
 
 ---
@@ -592,3 +593,10 @@ plot.ylabel("Loss")
     </tr>
 </table>
 
+
+### Plotting the predictions
+
+<figure class="center">
+    <img src="img/prediction_accuracy.gif" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
