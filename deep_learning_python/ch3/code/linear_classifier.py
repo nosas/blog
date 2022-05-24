@@ -207,6 +207,7 @@ def plot_prediction_acc(
         alpha=0.20,
         s=100,
     )
+    # Draw the red line separating the two classes
     if parameters:
         W, b = parameters
         x = np.linspace(-1, 5, 100)
@@ -214,10 +215,13 @@ def plot_prediction_acc(
         plt.plot(x, y, c="red")
         plt.xlim(-3, 6)
         plt.ylim(-3, 6)
+    # Add a title to the plot
     if title:
         plt.title(title)
+    # Save the plot to a file
     if savename:
         plt.savefig(f"../img/{savename}.png", transparent=False)
+    # Save the plot to a buffer
     if buffer:
         plt.savefig(buffer, format="png", transparent=False)
     else:
@@ -230,15 +234,14 @@ def make_gif(predictions: np.ndarray, inputs: np.ndarray, savename: str):
     fig, ax = plt.subplots()
 
     with imageio.get_writer(f"../img/{savename}.gif", mode="I") as writer:
-        # for prediction_idx in [0, 1, 2, -1]:
         for prediction_idx, prediction in enumerate(predictions):
-            params = parameters_all[prediction_idx]
+            parameters = parameters_all[prediction_idx]
             buffer = BytesIO()
             plot_prediction_acc(
                 prediction=prediction,
                 inputs=inputs,
                 buffer=buffer,
-                parameters=params,
+                parameters=parameters,
                 title=f"Prediction {prediction_idx}",
             )
             buffer.seek(0)
