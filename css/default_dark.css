@@ -196,7 +196,8 @@
 
     details>summary {
       font-style: italic;
-      background-color: rgb(40, 40, 40);
+      background-color: rgb(173, 255, 47);
+      color: black;
       padding: 2px 6px;
       border: 1px outset;
       border-color: black;
@@ -206,7 +207,7 @@
 
     details>p {
       /* border-radius: 0 0 10px 10px; */
-      background-color: black;
+      background-color: rgba(173, 255, 47, 0.17);
       padding: 2px 6px;
       margin: 0;
     }
