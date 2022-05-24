@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 23, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 24, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 3 - Introduction to Keras and TensorFlow</title></p>
 
@@ -473,7 +473,7 @@ In short, an affine transformation is the combination of a linear transform (dot
 <p>Now that we understand the basic math behind linear classification, let's create the model's variables.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="n">input_dim</span> <span class="o">=</span> <span class="mi">2</span>   <span class="c1"># input is a 2D vector</span>
-<span class="n">output_dim</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># output is a scalar, class A &lt; 0.5 &lt; class B</span>
+<span class="n">output_dim</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># output is a scalar, class B &lt; 0.5 &lt; class A</span>
 <span class="n">W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">initial_value</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">)))</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">initial_value</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">output_dim</span><span class="p">,)))</span>
 </code></pre></div>
@@ -586,20 +586,14 @@ Step 49: Loss = 0.0249
 
 <p></details></p>
 
-<p>After 50 epochs, the loss score stabilizes around 0.025.
+<p>After 50 epochs, or 50 training steps, the loss score stabilizes to around 0.025.
 Let's plot the loss scores to see how the loss score changes after each training step.</p>
 
 <h3 id="plotting-the-loss">Plotting the loss</h3>
 
-<div class="codehilite"><pre><span></span><code><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">loss_all</span><span class="p">[:])</span>
-<span class="n">plot</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Epoch&quot;</span><span class="p">)</span>
-<span class="n">plot</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Loss&quot;</span><span class="p">)</span>
-</code></pre></div>
-
 <p>It's difficult to see the rate of decrease in the loss score due to the rapid convergence of the loss score.
 The initial loss score was initially at 1.6673 on step 0 and dropped to 0.3011 on step 1.
-We can improve the plot by excluding the initial loss score.
-Refer to the table below where we first plot twice: with all loss scores and all but the initial loss score.</p>
+We can improve the plot by excluding the initial loss score.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">loss_all</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
 <span class="n">plot</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Epoch&quot;</span><span class="p">)</span>
@@ -619,7 +613,7 @@ Refer to the table below where we first plot twice: with all loss scores and all
         <td>
             <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
                 <small>
-                    <i>Loss scores of all training steps<i>
+                    <i>Loss scores of all training steps, converges to ~0.025 after roughly 30 epochs<i>
                 </small>
             </span>
         </td>
@@ -633,12 +627,176 @@ Refer to the table below where we first plot twice: with all loss scores and all
     </tr>
 </table>
 
+<p><em>Can we train the model for more epochs and make it more accurate?</em></p>
+
+<p>No.
+Take a look at the plots above: the loss score stabilizes after roughly 30 epochs.</p>
+
+<p>The stabilization shows that the model learned its optimal weights given the current model architecture and training data.
+If we were to train it for more epochs, the model would <em>overfit</em> to the data.
+Sure, the loss score may decrease by 0.001 - a small amount - but that's because it's memorizing the dataset.</p>
+
+<p><em>Overfitting</em> is a huge concept in machine learning, which we'll cover later on.
+For now, understand that more training does not guarantee better results!</p>
+
 <h3 id="plotting-the-predictions">Plotting the predictions</h3>
 
-<figure class="center">
-    <img src="img/prediction_accuracy.gif" style="width:100%;"/>
-    <figcaption></figcaption>
-</figure>
+<p>After each training step, the model updates its weights and biases (parameters) and makes predictions on the inputs.
+We append those predictions to a list called <code>predictions_all</code>.
+Using the predictions, we can plot how accurate the model is after each training step: green dot if correctly predicted, otherwise red.</p>
+
+<p>Predictions are classified as <em>correct</em> or <em>incorrect</em> based on the following criteria:</p>
+
+<ul>
+<li>If the prediction is greater than 0.5, the predicted label is Class A</li>
+<li>If the prediction is less than 0.5, the predicted label is Class B</li>
+</ul>
+
+<p>An easier way to understand this is: if the dot is <em>above</em> the red line, it belongs to Class A, otherwise it's below the line and belongs to Class B.</p>
+
+<p>We need two helper functions to create the accuracy plots and GIFs below: <code>plot_prediction_acc(prediction, input)</code> and <code>make_gif(predictions, inputs)</code>.
+The <code>plot_prediction_acc()</code> function will plot the accuracy of the model and save it to an IO buffer.
+The <code>make_gif()</code> function will create a GIF from the IO buffer and save it to a file.
+Easy peasy.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># %% Scatter plot for the model&#39;s predictions where the dots are green if the prediction is accurate, red if the prediction is incorrect</span>
+<span class="k">def</span> <span class="nf">plot_prediction_acc</span><span class="p">(</span>
+    <span class="n">prediction</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">buffer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">savename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+        <span class="n">inputs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="n">inputs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="n">c</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;green&quot;</span> <span class="k">if</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">pred</span> <span class="k">else</span> <span class="s2">&quot;red&quot;</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">pred</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">prediction</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="p">],</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.20</span><span class="p">,</span>
+        <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># Draw the red line separating the two classes</span>
+    <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
+        <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">parameters</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="o">-</span><span class="n">W</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">/</span> <span class="n">W</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+    <span class="c1"># Add a title to the plot</span>
+    <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="c1"># Save the plot to a file</span>
+    <span class="k">if</span> <span class="n">savename</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;../img/</span><span class="si">{</span><span class="n">savename</span><span class="si">}</span><span class="s2">.png&quot;</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># Save the plot to a buffer</span>
+    <span class="k">if</span> <span class="n">buffer</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="c1"># %% Make gif</span>
+<span class="n">make_gif</span><span class="p">(</span><span class="n">predictions_all</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="s2">&quot;prediction_accuracy&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p><details>
+    <summary>How to make a GIF of matplotlib plots</summary></p>
+
+<p>There are many ways to make a GIF of matplotlib plots.
+Matplotlib even has an <code>animation</code> module (<a href="https://matplotlib.org/stable/api/animation_api.html">here</a>) that can be used to make GIFs.
+However, it's not intuitive enough for me to use at the moment, so I hacked together something I knew would work using <code>imageio</code> and <code>io.BytesIO</code>.</p>
+
+<p>Please refer to the code block below to view my implementations of <code>make_gif</code>.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">import</span> <span class="nn">imageio</span>
+
+
+<span class="k">def</span> <span class="nf">make_gif</span><span class="p">(</span><span class="n">predictions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">savename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="n">imageio</span><span class="o">.</span><span class="n">get_writer</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;../img/</span><span class="si">{</span><span class="n">savename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;I&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">writer</span><span class="p">:</span>
+        <span class="c1"># for prediction_idx in [0, 1, 2, -1]:</span>
+        <span class="k">for</span> <span class="n">prediction_idx</span><span class="p">,</span> <span class="n">prediction</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">predictions</span><span class="p">):</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">parameters_all</span><span class="p">[</span><span class="n">prediction_idx</span><span class="p">]</span>
+            <span class="n">buffer</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+            <span class="n">plot_prediction_acc</span><span class="p">(</span>
+                <span class="n">prediction</span><span class="o">=</span><span class="n">prediction</span><span class="p">,</span>
+                <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+                <span class="n">buffer</span><span class="o">=</span><span class="n">buffer</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Prediction </span><span class="si">{</span><span class="n">prediction_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">)</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Slow down the GIF by increasing the `duration` argument to 0.5 or 1 (seconds)</span>
+<span class="k">def</span> <span class="nf">make_gif_with_duration</span><span class="p">(</span>
+    <span class="n">predictions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">savename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">):</span>
+    <span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">prediction_idx</span><span class="p">,</span> <span class="n">prediction</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">predictions</span><span class="p">):</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">parameters_all</span><span class="p">[</span><span class="n">prediction_idx</span><span class="p">]</span>
+        <span class="n">buffer</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+        <span class="n">plot_prediction_acc</span><span class="p">(</span>
+            <span class="n">prediction</span><span class="o">=</span><span class="n">prediction</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+            <span class="n">buffer</span><span class="o">=</span><span class="n">buffer</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Prediction </span><span class="si">{</span><span class="n">prediction_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">))</span>
+    <span class="n">imageio</span><span class="o">.</span><span class="n">mimsave</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;../img/</span><span class="si">{</span><span class="n">savename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span> <span class="n">images</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span>
+</code></pre></div>
+
+<p></details></p>
+
+<p>In the following plots, we see green dots representing correct predictions and red dots representing incorrect predictions.
+After each training step, the model adjusts its parameters causing the red class-separation line to gradually adjust in the direction of the correct prediction.
+As training continues, the number of incorrect predictions decreases and the line properly separates the two classes.
+Pretty cool, right?</p>
+
+<table style="width:100%;">
+    <tr>
+        <td style="width:50%;">
+            <img src="img/prediction_accuracy_slowed.gif" style="background:white; width:100%;">
+        </td>
+        <td style="width:50%;">
+            <img src="img/prediction_accuracy.gif" style="background:white; width:100%;">
+        </td>
+    </tr>
+    <tr >
+        <td>
+            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                <small>
+                    <i>Accuracy of the first 20 prediction, slowed down<i>
+                </small>
+            </span>
+        </td>
+        <td>
+            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                <small>
+                    <i>Accuracy of all prediction<i>
+                </small>
+            </span>
+        </td>
+    </tr>
+</table>
+
+<p>This is what linear classification is all about: finding the parameters of a line that neatly separates two classes of data.
+In higher-dimensional spaces, we're finding the parameters of a hyperplane that neatly separates the two classes.</p>
 
 </body>
 </html>

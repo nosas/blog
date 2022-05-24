@@ -430,7 +430,7 @@ Now that we understand the basic math behind linear classification, let's create
 
 ```python
 input_dim = 2   # input is a 2D vector
-output_dim = 1  # output is a scalar, class A < 0.5 < class B
+output_dim = 1  # output is a scalar, class B < 0.5 < class A
 W = tf.Variable(initial_value=tf.random.uniform(shape=(input_dim, output_dim)))
 b = tf.Variable(initial_value=tf.zeros(shape=(output_dim,)))
 ```
@@ -448,7 +448,6 @@ def square_loss(predictions, targets) -> tf.Tensor:
     # Average the per-sample loss and return a single scalar loss value
     return tf.reduce_mean(per_sample_loss)
 ```
-
 Next, we have to train the model.
 
 ### Training the linear classifier
@@ -544,21 +543,14 @@ for step in range(num_epochs):
     Step 49: Loss = 0.0249
 </details>
 
-After 50 epochs, the loss score stabilizes around 0.025.
+After 50 epochs, or 50 training steps, the loss score stabilizes to around 0.025.
 Let's plot the loss scores to see how the loss score changes after each training step.
 
 ### Plotting the loss
 
-```python
-plt.plot(loss_all[:])
-plot.xlabel("Epoch")
-plot.ylabel("Loss")
-```
-
 It's difficult to see the rate of decrease in the loss score due to the rapid convergence of the loss score.
 The initial loss score was initially at 1.6673 on step 0 and dropped to 0.3011 on step 1.
 We can improve the plot by excluding the initial loss score.
-Refer to the table below where we first plot twice: with all loss scores and all but the initial loss score.
 
 ```python
 plt.plot(loss_all[1:])
@@ -579,7 +571,7 @@ plot.ylabel("Loss")
         <td>
             <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
                 <small>
-                    <i>Loss scores of all training steps<i>
+                    <i>Loss scores of all training steps, converges to ~0.025 after roughly 30 epochs<i>
                 </small>
             </span>
         </td>
@@ -593,10 +585,175 @@ plot.ylabel("Loss")
     </tr>
 </table>
 
+*Can we train the model for more epochs and make it more accurate?*
+
+No.
+Take a look at the plots above: the loss score stabilizes after roughly 30 epochs.
+
+The stabilization shows that the model learned its optimal weights given the current model architecture and training data.
+If we were to train it for more epochs, the model would *overfit* to the data.
+Sure, the loss score may decrease by 0.001 - a small amount - but that's because it's memorizing the dataset.
+
+*Overfitting* is a huge concept in machine learning, which we'll cover later on.
+For now, understand that more training does not guarantee better results!
 
 ### Plotting the predictions
 
-<figure class="center">
-    <img src="img/prediction_accuracy.gif" style="width:100%;"/>
-    <figcaption></figcaption>
-</figure>
+After each training step, the model updates its weights and biases (parameters) and makes predictions on the inputs.
+We append those predictions to a list called `predictions_all`.
+Using the predictions, we can plot how accurate the model is after each training step: green dot if correctly predicted, otherwise red.
+
+Predictions are classified as *correct* or *incorrect* based on the following criteria:
+
+- If the prediction is greater than 0.5, the predicted label is Class A
+- If the prediction is less than 0.5, the predicted label is Class B
+
+An easier way to understand this is: if the dot is *above* the red line, it belongs to Class A, otherwise it's below the line and belongs to Class B.
+
+We need two helper functions to create the accuracy plots and GIFs below: `plot_prediction_acc(prediction, input)` and `make_gif(predictions, inputs)`.
+The `plot_prediction_acc()` function will plot the accuracy of the model and save it to an IO buffer.
+The `make_gif()` function will create a GIF from the IO buffer and save it to a file.
+Easy peasy.
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# %% Scatter plot for the model's predictions where the dots are green if the prediction is accurate, red if the prediction is incorrect
+def plot_prediction_acc(
+    prediction: np.ndarray,
+    inputs: np.ndarray,
+    buffer=None,
+    parameters: tuple[np.ndarray, float] = None,
+    savename: str = "",
+    title: str = "",
+):
+    plt.scatter(
+        inputs[:, 0],
+        inputs[:, 1],
+        c=[
+            "green" if labels[idx] == pred else "red"
+            for idx, pred in enumerate(prediction > 0.5)
+        ],
+        alpha=0.20,
+        s=100,
+    )
+    # Draw the red line separating the two classes
+    if parameters:
+        W, b = parameters
+        x = np.linspace(-1, 5, 100)
+        y = -W[0] / W[1] * x + (0.5 - b) / W[1]
+        plt.plot(x, y, c="red")
+        plt.xlim(-3, 6)
+        plt.ylim(-3, 6)
+    # Add a title to the plot
+    if title:
+        plt.title(title)
+    # Save the plot to a file
+    if savename:
+        plt.savefig(f"../img/{savename}.png", transparent=False)
+    # Save the plot to a buffer
+    if buffer:
+        plt.savefig(buffer, format="png", transparent=False)
+    else:
+        plt.show()
+    plt.close()
+
+
+# %% Make gif
+make_gif(predictions_all, inputs, "prediction_accuracy")
+
+```
+
+<details>
+    <summary>How to make a GIF of matplotlib plots</summary>
+
+There are many ways to make a GIF of matplotlib plots.
+Matplotlib even has an `animation` module ([here](https://matplotlib.org/stable/api/animation_api.html)) that can be used to make GIFs.
+However, it's not intuitive enough for me to use at the moment, so I hacked together something I knew would work using `imageio` and `io.BytesIO`.
+
+Please refer to the code block below to view my implementations of `make_gif`.
+
+```python
+from io import BytesIO
+import imageio
+
+
+def make_gif(predictions: np.ndarray, inputs: np.ndarray, savename: str):
+    fig, ax = plt.subplots()
+
+    with imageio.get_writer(f"../img/{savename}.gif", mode="I") as writer:
+        # for prediction_idx in [0, 1, 2, -1]:
+        for prediction_idx, prediction in enumerate(predictions):
+            params = parameters_all[prediction_idx]
+            buffer = BytesIO()
+            plot_prediction_acc(
+                prediction=prediction,
+                inputs=inputs,
+                buffer=buffer,
+                parameters=params,
+                title=f"Prediction {prediction_idx}",
+            )
+            buffer.seek(0)
+            img = plt.imread(buffer, format="png")
+            writer.append_data(img)
+
+    plt.show()
+
+# Slow down the GIF by increasing the `duration` argument to 0.5 or 1 (seconds)
+def make_gif_with_duration(
+    predictions: np.ndarray, inputs: np.ndarray, savename: str, duration: float
+):
+    images = []
+    for prediction_idx, prediction in enumerate(predictions):
+        params = parameters_all[prediction_idx]
+        buffer = BytesIO()
+        plot_prediction_acc(
+            prediction=prediction,
+            inputs=inputs,
+            buffer=buffer,
+            parameters=params,
+            title=f"Prediction {prediction_idx}",
+        )
+        buffer.seek(0)
+        images.append(plt.imread(buffer, format="png"))
+    imageio.mimsave(f"../img/{savename}.gif", images, duration=duration)
+```
+
+</details>
+
+In the following plots, we see green dots representing correct predictions and red dots representing incorrect predictions.
+After each training step, the model adjusts its parameters causing the red class-separation line to gradually adjust in the direction of the correct prediction.
+As training continues, the number of incorrect predictions decreases and the line properly separates the two classes.
+Pretty cool, right?
+
+<table style="width:100%;">
+    <tr>
+        <td style="width:50%;">
+            <img src="img/prediction_accuracy_slowed.gif" style="background:white; width:100%;">
+        </td>
+        <td style="width:50%;">
+            <img src="img/prediction_accuracy.gif" style="background:white; width:100%;">
+        </td>
+    </tr>
+    <tr >
+        <td>
+            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                <small>
+                    <i>Accuracy of the first 20 prediction, slowed down<i>
+                </small>
+            </span>
+        </td>
+        <td>
+            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                <small>
+                    <i>Accuracy of all prediction<i>
+                </small>
+            </span>
+        </td>
+    </tr>
+</table>
+
+This is what linear classification is all about: finding the parameters of a line that neatly separates two classes of data.
+In higher-dimensional spaces, we're finding the parameters of a hyperplane that neatly separates the two classes.
+
