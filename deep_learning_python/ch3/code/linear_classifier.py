@@ -108,10 +108,10 @@ predictions = predictions_all[-1]
 
 # %% Plot the loss over time
 plt.clf()
-plt.plot(loss_all[1:])  # Skip the first value, since it's just the initialization
+plt.plot(loss_all[1:41])  # Skip the first value, since it's just the initialization
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
-plt.savefig("../img/loss_exclude_initial.png", transparent=False)
+plt.savefig("../img/loss_exclude_initial_and_tail.png", transparent=False)
 
 
 # %% Function to plot the two classes
