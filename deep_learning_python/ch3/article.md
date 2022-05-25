@@ -491,56 +491,56 @@ for step in range(num_epochs):
 <details>
     <summary>Full output of loss scores</summary>
 
-    Step 0: Loss = 1.6673
-    Step 1: Loss = 0.3011
-    Step 2: Loss = 0.1401
-    Step 3: Loss = 0.1145
-    Step 4: Loss = 0.1048
-    Step 5: Loss = 0.0975
-    Step 6: Loss = 0.0910
-    Step 7: Loss = 0.0851
-    Step 8: Loss = 0.0797
-    Step 9: Loss = 0.0747
-    Step 10: Loss = 0.0702
-    Step 11: Loss = 0.0661
-    Step 12: Loss = 0.0624
-    Step 13: Loss = 0.0590
-    Step 14: Loss = 0.0559
-    Step 15: Loss = 0.0530
-    Step 16: Loss = 0.0505
-    Step 17: Loss = 0.0481
-    Step 18: Loss = 0.0459
-    Step 19: Loss = 0.0440
-    Step 20: Loss = 0.0422
-    Step 21: Loss = 0.0405
-    Step 22: Loss = 0.0391
-    Step 23: Loss = 0.0377
-    Step 24: Loss = 0.0365
-    Step 25: Loss = 0.0353
-    Step 26: Loss = 0.0343
-    Step 27: Loss = 0.0333
-    Step 28: Loss = 0.0325
-    Step 29: Loss = 0.0317
-    Step 30: Loss = 0.0310
-    Step 31: Loss = 0.0303
-    Step 32: Loss = 0.0297
-    Step 33: Loss = 0.0292
-    Step 34: Loss = 0.0287
-    Step 35: Loss = 0.0283
-    Step 36: Loss = 0.0278
-    Step 37: Loss = 0.0275
-    Step 38: Loss = 0.0271
-    Step 39: Loss = 0.0268
-    Step 40: Loss = 0.0265
-    Step 41: Loss = 0.0263
-    Step 42: Loss = 0.0260
-    Step 43: Loss = 0.0258
-    Step 44: Loss = 0.0256
-    Step 45: Loss = 0.0254
-    Step 46: Loss = 0.0253
-    Step 47: Loss = 0.0251
-    Step 48: Loss = 0.0250
-    Step 49: Loss = 0.0249
+    Step 0: Loss = 2.9617
+    Step 1: Loss = 0.4816
+    Step 2: Loss = 0.1756
+    Step 3: Loss = 0.1239
+    Step 4: Loss = 0.1098
+    Step 5: Loss = 0.1017
+    Step 6: Loss = 0.0950
+    Step 7: Loss = 0.0890
+    Step 8: Loss = 0.0836
+    Step 9: Loss = 0.0785
+    Step 10: Loss = 0.0740
+    Step 11: Loss = 0.0698
+    Step 12: Loss = 0.0660
+    Step 13: Loss = 0.0625
+    Step 14: Loss = 0.0593
+    Step 15: Loss = 0.0563
+    Step 16: Loss = 0.0536
+    Step 17: Loss = 0.0512
+    Step 18: Loss = 0.0490
+    Step 19: Loss = 0.0469
+    Step 20: Loss = 0.0450
+    Step 21: Loss = 0.0433
+    Step 22: Loss = 0.0418
+    Step 23: Loss = 0.0403
+    Step 24: Loss = 0.0390
+    Step 25: Loss = 0.0378
+    Step 26: Loss = 0.0367
+    Step 27: Loss = 0.0357
+    Step 28: Loss = 0.0348
+    Step 29: Loss = 0.0340
+    Step 30: Loss = 0.0332
+    Step 31: Loss = 0.0325
+    Step 32: Loss = 0.0319
+    Step 33: Loss = 0.0313
+    Step 34: Loss = 0.0307
+    Step 35: Loss = 0.0302
+    Step 36: Loss = 0.0298
+    Step 37: Loss = 0.0294
+    Step 38: Loss = 0.0290
+    Step 39: Loss = 0.0287
+    Step 40: Loss = 0.0284
+    Step 41: Loss = 0.0281
+    Step 42: Loss = 0.0278
+    Step 43: Loss = 0.0272
+    Step 44: Loss = 0.0268
+    Step 45: Loss = 0.0261
+    Step 46: Loss = 0.0259
+    Step 47: Loss = 0.0255
+    Step 48: Loss = 0.0254
+    Step 49: Loss = 0.0254
 </details>
 
 After 50 epochs, or 50 training steps, the loss score stabilizes to around 0.025.
@@ -548,12 +548,13 @@ Let's plot the loss scores to see how the loss score changes after each training
 
 ### Plotting the loss
 
-It's difficult to see the rate of decrease in the loss score due to the rapid convergence of the loss score.
-The initial loss score was initially at 1.6673 on step 0 and dropped to 0.3011 on step 1.
-We can improve the plot by excluding the initial loss score.
+It's difficult to see the rate of decrease in the loss score following the rapid convergence after step 0 and long tail.
+The initial loss score was initially at 2.9617 on step 0 and dropped to 0.4816 on step 1.
+We can improve the plot by excluding the initial loss score and "trimming" the long tail at the point where see the score stabilizes (~40 epochs).
+Let's clean up the data and plot the loss scores so we can better visualize the rate of decrease.
 
 ```python
-plt.plot(loss_all[1:])
+plt.plot(loss_all[1:41])
 plot.xlabel("Epoch")
 plot.ylabel("Loss")
 ```
@@ -564,21 +565,21 @@ plot.ylabel("Loss")
             <img src="img/loss_all.png" style="background:white; width:100%;">
         </td>
         <td style="width:50%;">
-            <img src="img/loss_exclude_initial.png" style="background:white; width:100%;">
+            <img src="img/loss_exclude_initial_and_tail.png" style="background:white; width:100%;">
         </td>
     </tr>
     <tr >
         <td>
             <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
                 <small>
-                    <i>Loss scores of all training steps, converges to ~0.025 after roughly 30 epochs<i>
+                    <i>Loss scores of all training steps, converges to ~0.025 after roughly 40 epochs<i>
                 </small>
             </span>
         </td>
         <td>
             <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
                 <small>
-                    <i>All loss scores, excluding the initial loss score<i>
+                    <i>All loss scores, excluding the initial loss score and trimming the plot's long tail<i>
                 </small>
             </span>
         </td>
@@ -588,7 +589,7 @@ plot.ylabel("Loss")
 *Can we train the model for more epochs and make it more accurate?*
 
 No.
-Take a look at the plots above: the loss score stabilizes after roughly 30 epochs.
+Take a look at the plots above: the loss score stabilizes after roughly 40 epochs.
 
 The stabilization shows that the model learned its optimal weights given the current model architecture and training data.
 If we were to train it for more epochs, the model would *overfit* to the data.
@@ -673,6 +674,13 @@ Matplotlib even has an `animation` module ([here](https://matplotlib.org/stable/
 However, it's not intuitive enough for me to use at the moment, so I hacked together something I knew would work using `imageio` and `io.BytesIO`.
 
 Please refer to the code block below to view my implementations of `make_gif`.
+There are two different implementations:
+
+- `make_gif` appends each image to the writer object (`imageio.get_writer()`)
+- `make_gif_with_duration` appends each image to a list and passes the list to `imagio.mimsave()`
+
+A third implementation to better generalize and enhance this function: save all the prediction images outside of the function and pass the list of images to `make_gif` instead of the list of predictions.
+Therefore, we'd only have to make each image one time and save computational resources.
 
 ```python
 from io import BytesIO
