@@ -64,7 +64,11 @@ Articles in this series will sequentially review key concepts, examples, and int
 <li><a href="#creating-the-linear-classifier">Creating the linear classifier</a></li>
 <li><a href="#training-the-linear-classifier">Training the linear classifier</a></li>
 <li><a href="#plotting-the-loss">Plotting the loss</a></li>
-<li><a href="#plotting-the-predictions">Plotting the predictions</a>
+<li><a href="#plotting-the-predictions">Plotting the predictions</a></li>
+</ul></li>
+<li><a href="#understanding-core-keras-apis">Understanding core Keras APIs</a>
+<ul>
+<li><a href="#layers-the-building-blocks-of-deep-learning">Layers: the building blocks of deep learning</a>
 </details></li>
 </ul></li>
 </ul></li>
@@ -807,6 +811,102 @@ Pretty cool, right?</p>
 
 <p>This is what linear classification is all about: finding the parameters of a line that neatly separates two classes of data.
 In higher-dimensional spaces, we're finding the parameters of a hyperplane that neatly separates the two classes.</p>
+
+<h2 id="understanding-core-keras-apis">Understanding core Keras APIs</h2>
+
+<p>We've learned how to create a linear classifier using pure TensorFlow.
+Now, let's look closer at Keras- specifically, the anatomy of a neural network through Keras layers and models.</p>
+
+<h3 id="layers-the-building-blocks-of-deep-learning">Layers: the building blocks of deep learning</h3>
+
+<p>A layer is the fundamental data structure in neural networks.
+As discussed in chapter 2, a layer is a data processing module that takes as input one or more tensors and outputs one or more tensors.
+We previously referred to layers as a "data filter" where data goes in and comes out more useful.
+Everything in Keras is either a layer or something that closely interacts with a layer.</p>
+
+<p>Some layers can be stateless, but layers are more commonly stateful.
+The layer's state may contain <em>weights</em> which represent the network's <em>knowledge</em>.</p>
+
+<p>Furthermore, different types of layers are appropriate for different tensor formats and data processing tasks:</p>
+
+<ul>
+<li><code>Dense</code>, or fully-connected, layers often process vector data stored in 2D tensors of shape <code>(samples, features)</code></li>
+<li>Recurrent layers, such as <code>LSTM</code> (long short-term memory) or <code>Conv1D</code> (1D convolution layer), often process time-series data stored in 3D tensors of shape <code>(samples, timesteps, features)</code></li>
+<li><code>Conv2D</code> (2D convolution layer) and <code>Conv3D</code> (3D convolution layer) often process images stored in 4D tensors of shape <code>(samples, height, width, channels)</code></li>
+</ul>
+
+<p>Tensor formats were discussed in more detail in the previous <a href="https://fars.io/deep_learning_python/ch2/#real-world-examples-of-data-tensors">article</a>.</p>
+
+<p>In Keras, a <code>Layer</code> is an object that encapsulates some state (weights) and some computation (a forward pass).
+The weights are typically defined in a <code>build()</code> method - although they could be created in the constructor.
+The computation, or forward pass, is defined in the <code>call()</code> method.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+
+<span class="k">class</span> <span class="nc">SimpleDense</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">activations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">activation</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="n">input_dim</span> <span class="o">=</span> <span class="n">input_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># self.kernel = tf.Variable(tf.random.normal(shape=(input_dim, self.units)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">),</span>
+            <span class="n">initializer</span><span class="o">=</span><span class="s2">&quot;random_normal&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;weights&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,),</span>
+            <span class="n">initializer</span><span class="o">=</span><span class="s2">&quot;zeros&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bias&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+        <span class="c1"># return self.activation(keras.backend.dot(inputs, self.kernel) + self.bias)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">y</span>
+
+<span class="n">my_dense</span> <span class="o">=</span> <span class="n">SimpleDense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">)</span>
+<span class="n">input_tensor</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span>
+<span class="n">output_tensor</span> <span class="o">=</span> <span class="n">my_dense</span><span class="p">(</span><span class="n">input_tensor</span><span class="p">)</span>
+<span class="n">output_tensor</span><span class="o">.</span><span class="n">shape</span>
+</code></pre></div>
+
+<p>Once instantiated, a layer can be called on a tensor to produce a new tensor.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">my_dense</span> <span class="o">=</span> <span class="n">SimpleDense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">input_tensor</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">784</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">output_tensor</span> <span class="o">=</span> <span class="n">my_dense</span><span class="p">(</span><span class="n">input_tensor</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">output_tensor</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">TensorShape</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">32</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">output_tensor</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<span class="n">array</span><span class="p">([[</span><span class="mf">0.</span>        <span class="p">,</span> <span class="mf">0.16681111</span><span class="p">,</span> <span class="mf">0.37626198</span><span class="p">,</span> <span class="mf">0.32816353</span><span class="p">,</span> <span class="mf">0.</span>        <span class="p">,</span>
+        <span class="o">...</span>
+        <span class="mf">0.</span>        <span class="p">,</span> <span class="mf">0.16670324</span><span class="p">],</span>
+       <span class="p">[</span><span class="mf">0.</span>        <span class="p">,</span> <span class="mf">0.16681111</span><span class="p">,</span> <span class="mf">0.37626198</span><span class="p">,</span> <span class="mf">0.32816353</span><span class="p">,</span> <span class="mf">0.</span>        <span class="p">,</span>
+        <span class="o">...</span>
+        <span class="mf">0.</span>        <span class="p">,</span> <span class="mf">0.16670324</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
+</code></pre></div>
+
+<p><em>When do we call the <code>build()</code> method? How are the weights created?</em></p>
+
+<p>We don't have to explicitly call the <code>build()</code> method because it's handled by the superclass.
+The weights are built - and <code>build()</code> called automatically - the first time the layer is called.
+The superclass's <code>__call__()</code> method calls the <code>build()</code> method if the layer has not been built yet.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">built</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">built</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+</code></pre></div>
+
+<p>That's the gist of Keras layers.
+Let's talk about models.</p>
 
 </body>
 </html>

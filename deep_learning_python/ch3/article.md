@@ -32,6 +32,8 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Training the linear classifier](#training-the-linear-classifier)
         - [Plotting the loss](#plotting-the-loss)
         - [Plotting the predictions](#plotting-the-predictions)
+    - [Understanding core Keras APIs](#understanding-core-keras-apis)
+        - [Layers: the building blocks of deep learning](#layers-the-building-blocks-of-deep-learning)
 </details>
 
 ---
@@ -663,7 +665,6 @@ def plot_prediction_acc(
 
 # %% Make gif
 make_gif(predictions_all, inputs, "prediction_accuracy")
-
 ```
 
 <details>
@@ -764,4 +765,101 @@ Pretty cool, right?
 
 This is what linear classification is all about: finding the parameters of a line that neatly separates two classes of data.
 In higher-dimensional spaces, we're finding the parameters of a hyperplane that neatly separates the two classes.
+
+## Understanding core Keras APIs
+
+We've learned how to create a linear classifier using pure TensorFlow.
+Now, let's look closer at Keras- specifically, the anatomy of a neural network through Keras layers and models.
+
+### Layers: the building blocks of deep learning
+
+A layer is the fundamental data structure in neural networks.
+As discussed in chapter 2, a layer is a data processing module that takes as input one or more tensors and outputs one or more tensors.
+We previously referred to layers as a "data filter" where data goes in and comes out more useful.
+Everything in Keras is either a layer or something that closely interacts with a layer.
+
+Some layers can be stateless, but layers are more commonly stateful.
+The layer's state may contain *weights* which represent the network's *knowledge*.
+
+Furthermore, different types of layers are appropriate for different tensor formats and data processing tasks:
+
+- `Dense`, or fully-connected, layers often process vector data stored in 2D tensors of shape `(samples, features)`
+- Recurrent layers, such as `LSTM` (long short-term memory) or `Conv1D` (1D convolution layer), often process time-series data stored in 3D tensors of shape `(samples, timesteps, features)`
+- `Conv2D` (2D convolution layer) and `Conv3D` (3D convolution layer) often process images stored in 4D tensors of shape `(samples, height, width, channels)`
+
+Tensor formats were discussed in more detail in the previous [article](https://fars.io/deep_learning_python/ch2/#real-world-examples-of-data-tensors).
+
+In Keras, a `Layer` is an object that encapsulates some state (weights) and some computation (a forward pass).
+The weights are typically defined in a `build()` method - although they could be created in the constructor.
+The computation, or forward pass, is defined in the `call()` method.
+
+```python
+from tensorflow import keras
+
+class SimpleDense(keras.layers.Layer):
+    def __init__(self, units, activation=None, **kwargs):
+        super().__init__(**kwargs)
+        self.units = units
+        self.activation = keras.activations.get(activation)
+
+    def build(self, input_shape):
+        input_dim = input_shape[-1]
+        # self.kernel = tf.Variable(tf.random.normal(shape=(input_dim, self.units)))
+        self.kernel = self.add_weight(
+            shape=(input_dim, self.units),
+            initializer="random_normal",
+            name="weights"
+        )
+        self.bias = self.add_weight(
+            shape=(self.units,),
+            initializer="zeros",
+            name="bias"
+        )
+
+    def call(self, inputs):
+        # return self.activation(keras.backend.dot(inputs, self.kernel) + self.bias)
+        y = tf.matmul(inputs, self.kernel) + self.bias
+        if self.activation is not None:
+            y = self.activation(y)
+        return y
+
+my_dense = SimpleDense(units=32, activation="relu")
+input_tensor = tf.ones(shape=(2, 32))
+output_tensor = my_dense(input_tensor)
+output_tensor.shape
+```
+
+Once instantiated, a layer can be called on a tensor to produce a new tensor.
+
+```python
+>>> my_dense = SimpleDense(units=32, activation="relu")
+>>> input_tensor = tf.ones(shape=(2, 784))
+>>> output_tensor = my_dense(input_tensor)
+>>> output_tensor.shape
+TensorShape([2, 32])
+>>> output_tensor.numpy()
+array([[0.        , 0.16681111, 0.37626198, 0.32816353, 0.        ,
+        ...
+        0.        , 0.16670324],
+       [0.        , 0.16681111, 0.37626198, 0.32816353, 0.        ,
+        ...
+        0.        , 0.16670324]], dtype=float32)
+```
+
+*When do we call the `build()` method? How are the weights created?*
+
+We don't have to explicitly call the `build()` method because it's handled by the superclass.
+The weights are built - and `build()` called automatically - the first time the layer is called.
+The superclass's `__call__()` method calls the `build()` method if the layer has not been built yet.
+
+```python
+def __call__(self, inputs):
+    if not self.built:
+        self.build(inputs.shape)
+        self.built = True
+    return self.call(inputs)
+```
+
+That's the gist of Keras layers.
+Let's talk about models.
 
