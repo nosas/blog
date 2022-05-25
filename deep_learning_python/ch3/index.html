@@ -594,7 +594,7 @@ Let's plot the loss scores to see how the loss score changes after each training
 <p>It's difficult to see the rate of decrease in the loss score following the rapid convergence after step 0 and long tail.
 The initial loss score was initially at 2.9617 on step 0 and dropped to 0.4816 on step 1.
 We can improve the plot by excluding the initial loss score and "trimming" the long tail at the point where see the score stabilizes (~40 epochs).
-Let's clean up the data and plot the loss scores so we can better see the rate of decrease.</p>
+Let's clean up the data and plot the loss scores so we can better visualize the rate of decrease.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">loss_all</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">41</span><span class="p">])</span>
 <span class="n">plot</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Epoch&quot;</span><span class="p">)</span>
@@ -720,7 +720,7 @@ There are two different implementations:</p>
 
 <ul>
 <li><code>make_gif</code> appends each image to the writer object (<code>imageio.get_writer()</code>)</li>
-<li><code>make_gif_with_duration</code> appends each image to a list and passes the list to <code>imagio.mimsave()</code></li>
+<li><code>make_gif_with_duration</code> appends each image to a list and passes the list to <code>imageio.mimsave()</code></li>
 </ul>
 
 <p>A third implementation to better generalize and enhance this function: save all the prediction images outside of the function and pass the list of images to <code>make_gif</code> instead of the list of predictions.

@@ -677,7 +677,7 @@ Please refer to the code block below to view my implementations of `make_gif`.
 There are two different implementations:
 
 - `make_gif` appends each image to the writer object (`imageio.get_writer()`)
-- `make_gif_with_duration` appends each image to a list and passes the list to `imagio.mimsave()`
+- `make_gif_with_duration` appends each image to a list and passes the list to `imageio.mimsave()`
 
 A third implementation to better generalize and enhance this function: save all the prediction images outside of the function and pass the list of images to `make_gif` instead of the list of predictions.
 Therefore, we'd only have to make each image one time and save computational resources.
