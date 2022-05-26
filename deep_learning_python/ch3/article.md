@@ -34,6 +34,8 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Plotting the predictions](#plotting-the-predictions)
     - [Understanding core Keras APIs](#understanding-core-keras-apis)
         - [Layers: the building blocks of deep learning](#layers-the-building-blocks-of-deep-learning)
+    - [From layers to models](#from-layers-to-models)
+        - [Importance of model architecture](#importance-of-model-architecture)
 </details>
 
 ---
@@ -863,3 +865,26 @@ def __call__(self, inputs):
 That's the gist of Keras layers.
 Let's talk about models.
 
+## From layers to models
+
+Simply put, a deep learning model, such as the `Model` class in Keras, is a graph of layers.
+Until now, we've only discussed `Sequential` models - a linear stack of layers that map a single input to a single output.
+As we move forward, we'll be exposed to a variety of neural network architectures:
+
+- Two-branch networks
+- Multihead networks
+- Residual networks
+
+Similar to layers, each network topology has its pros, cons, and common use cases.
+Picking the right network topology is more an art than a science, where only practice can help you become a proper neural-network architect.
+
+### Importance of model architecture
+
+*Why is it important to pick a proper network architecture for my use case?*
+
+To learn from data, we have to make assumptions about it - also referred to as a *hypothesis space* or *space of possibilities* in chapter 1.
+These assumptions (hypothesis space) define what can be learned.
+As such, the structure of the model's hypothesis space - the architecture of the model - is extremely important.
+
+The hypothesis space encodes the assumptions we make about our problems, aka the prior knowledge that the model starts with.
+For instance, if we're working on a two-class classification problem with a model made of a single `Dense` layer with no activation function, then we are assuming that our two classes are linearly separable.

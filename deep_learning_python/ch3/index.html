@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 24, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 25, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 3 - Introduction to Keras and TensorFlow</title></p>
 
@@ -68,7 +68,11 @@ Articles in this series will sequentially review key concepts, examples, and int
 </ul></li>
 <li><a href="#understanding-core-keras-apis">Understanding core Keras APIs</a>
 <ul>
-<li><a href="#layers-the-building-blocks-of-deep-learning">Layers: the building blocks of deep learning</a>
+<li><a href="#layers-the-building-blocks-of-deep-learning">Layers: the building blocks of deep learning</a></li>
+</ul></li>
+<li><a href="#from-layers-to-models">From layers to models</a>
+<ul>
+<li><a href="#importance-of-model-architecture">Importance of model architecture</a>
 </details></li>
 </ul></li>
 </ul></li>
@@ -907,6 +911,32 @@ The superclass's <code>__call__()</code> method calls the <code>build()</code> m
 
 <p>That's the gist of Keras layers.
 Let's talk about models.</p>
+
+<h2 id="from-layers-to-models">From layers to models</h2>
+
+<p>Simply put, a deep learning model, such as the <code>Model</code> class in Keras, is a graph of layers.
+Until now, we've only discussed <code>Sequential</code> models - a linear stack of layers that map a single input to a single output.
+As we move forward, we'll be exposed to a variety of neural network architectures:</p>
+
+<ul>
+<li>Two-branch networks</li>
+<li>Multihead networks</li>
+<li>Residual networks</li>
+</ul>
+
+<p>Similar to layers, each network topology has its pros, cons, and common use cases.
+Picking the right network topology is more an art than a science, where only practice can help you become a proper neural-network architect.</p>
+
+<h3 id="importance-of-model-architecture">Importance of model architecture</h3>
+
+<p><em>Why is it important to pick a proper network architecture for my use case?</em></p>
+
+<p>To learn from data, we have to make assumptions about it - also referred to as a <em>hypothesis space</em> or <em>space of possibilities</em> in chapter 1.
+These assumptions (hypothesis space) define what can be learned.
+As such, the structure of the model's hypothesis space - the architecture of the model - is extremely important.</p>
+
+<p>The hypothesis space encodes the assumptions we make about our problems, aka the prior knowledge that the model starts with.
+For instance, if we're working on a two-class classification problem with a model made of a single <code>Dense</code> layer with no activation function, then we are assuming that our two classes are linearly separable.</p>
 
 </body>
 </html>
