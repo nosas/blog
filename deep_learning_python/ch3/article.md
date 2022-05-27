@@ -36,6 +36,7 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Layers: the building blocks of deep learning](#layers-the-building-blocks-of-deep-learning)
     - [From layers to models](#from-layers-to-models)
         - [Importance of model architecture](#importance-of-model-architecture)
+    - [The "compile" step: Configuring the learning process](#the-compile-step-configuring-the-learning-process)
 </details>
 
 ---
@@ -863,7 +864,7 @@ def __call__(self, inputs):
 ```
 
 That's the gist of Keras layers.
-Let's talk about models.
+Let's talk about model architectures.
 
 ## From layers to models
 
@@ -875,6 +876,7 @@ As we move forward, we'll be exposed to a variety of neural network architecture
 - Multihead networks
 - Residual networks
 
+The difference between each of these topologies is the type of layers and how they are connected.
 Similar to layers, each network topology has its pros, cons, and common use cases.
 Picking the right network topology is more an art than a science, where only practice can help you become a proper neural-network architect.
 
@@ -884,7 +886,23 @@ Picking the right network topology is more an art than a science, where only pra
 
 To learn from data, we have to make assumptions about it - also referred to as a *hypothesis space* or *space of possibilities* in chapter 1.
 These assumptions (hypothesis space) define what can be learned.
+By choosing a network topology, we constrain our hypothesis space to a specific series of tensor operations.
 As such, the structure of the model's hypothesis space - the architecture of the model - is extremely important.
 
 The hypothesis space encodes the assumptions we make about our problems, aka the prior knowledge that the model starts with.
 For instance, if we're working on a two-class classification problem with a model made of a single `Dense` layer with no activation function, then we are assuming that our two classes are linearly separable.
+Finding the right balance between the number of layers, types of layers, and the number of parameters in the model is a key part of choosing a network architecture.
+
+In short, the network's architecture constrains the data that can be learned.
+We must find the right architecture for our problem and data.
+With time, this process will become second nature.
+
+Enough of model architecture, let's talk about model compilation and how we configure the learning process.
+
+## The "compile" step: Configuring the learning process
+
+Once the model architecture is defined, there are three more key parts to be defined:
+
+1. *Loss function* - The quantity that will be minimized during training. It represents a measure of the model's success for the task at hand.
+2. *Optimizer* - Determines how the network will be updated based on the loss function.
+3. *Metrics* - The various measures of success we can monitor during training and validation, such as classification accuracy.
