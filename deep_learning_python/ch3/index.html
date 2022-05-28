@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 26, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 27, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 3 - Introduction to Keras and TensorFlow</title></p>
 
@@ -957,6 +957,31 @@ With time, this process will become second nature.</p>
 <li><em>Optimizer</em> - Determines how the network will be updated based on the loss function.</li>
 <li><em>Metrics</em> - The various measures of success we can monitor during training and validation, such as classification accuracy.</li>
 </ol>
+
+<p>Once we've defined the loss function, optimizer, and metrics, we can begin training the model using the <code>model.compile()</code> and <code>model.fit()</code> methods.
+Alternatively, we could write our own custom training loops instead of using the <code>model.fit()</code> method, but that's covered in chapter 7.
+For now, let's take a look at the <code>compile()</code> method.</p>
+
+<p>The <code>compile()</code> method configures the training process using the arguments <code>optimizer</code>, <code>loss</code>, and <code>metrics</code> (a list):</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">)])</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s2">&quot;rmsprop&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;mean_squared_error&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">])</span>
+</code></pre></div>
+
+<p>One important thing to note is the how we pass in the arguments to the <code>compile()</code> method.
+In the example above, we passed them in as strings and the method is flexible enough to understand what we want.
+However, rather than passing in string, we can also pass in objects.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">RMSprop</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">),</span>
+    <span class="n">loss</span><span class="o">=</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">MeanSquaredError</span><span class="p">(),</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()]</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Passing in objects is useful when we want to use a custom object, such as a custom loss function or optimizer.
+As stated above, customizing the training process will be discussed in chapter 7.
+In the meantime, please refer to the Keras documentation regarding built-in options for <a href="https://www.tensorflow.org/api_docs/python/tf/keras/optimizers">optimizers</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/losses">loss functions</a>, and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics">metrics</a>.</p>
 
 </body>
 </html>

@@ -906,3 +906,30 @@ Once the model architecture is defined, there are three more key parts to be def
 1. *Loss function* - The quantity that will be minimized during training. It represents a measure of the model's success for the task at hand.
 2. *Optimizer* - Determines how the network will be updated based on the loss function.
 3. *Metrics* - The various measures of success we can monitor during training and validation, such as classification accuracy.
+
+Once we've defined the loss function, optimizer, and metrics, we can begin training the model using the `model.compile()` and `model.fit()` methods.
+Alternatively, we could write our own custom training loops instead of using the `model.fit()` method, but that's covered in chapter 7.
+For now, let's take a look at the `compile()` method.
+
+The `compile()` method configures the training process using the arguments `optimizer`, `loss`, and `metrics` (a list):
+
+```python
+model = keras.Sequential([keras.layers.Dense(1)])
+model.compile(optimizer="rmsprop", loss="mean_squared_error", metrics=["accuracy"])
+```
+
+One important thing to note is the how we pass in the arguments to the `compile()` method.
+In the example above, we passed them in as strings and the method is flexible enough to understand what we want.
+However, rather than passing in string, we can also pass in objects.
+
+```python
+model.compile(
+    optimizer=keras.optimizers.RMSprop(learning_rate=0.001),
+    loss=keras.losses.MeanSquaredError(),
+    metrics=[keras.metrics.BinaryAccuracy()]
+)
+```
+
+Passing in objects is useful when we want to use a custom object, such as a custom loss function or optimizer.
+As stated above, customizing the training process will be discussed in chapter 7.
+In the meantime, please refer to the Keras documentation regarding built-in options for [optimizers](https://www.tensorflow.org/api_docs/python/tf/keras/optimizers), [loss functions](https://www.tensorflow.org/api_docs/python/tf/keras/losses), and [metrics](https://www.tensorflow.org/api_docs/python/tf/keras/metrics).
