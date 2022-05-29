@@ -1,0 +1,138 @@
+
+<html>
+
+<head>
+  <link rel="stylesheet" type="text/css" href="../../css/default_dark.css">
+  <link rel="stylesheet" type="text/css" href="../../css/syntax_dark.css">
+</head>
+
+<body>
+  <center>
+    <div style="display: inline-block; vertical-align:middle;">
+      <a href="/" style="text-decoration: none;">SASON REZA<br>
+      </a>
+      <hr>
+      <div style="text-align: center;display: inline-block; width: 100%;">
+        <a class="title" href="../../about">ABOUT</a> &nbsp;<a class="title" href="../../contact">CONTACT</a>
+      </div>
+    </div>
+  </center>
+
+  <br>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 28, 2022</p>
+
+<h1 id="toonvision-classification">ToonVision - Classification</h1>
+
+<p>This article is first in a series on <strong>ToonVision</strong>.</p>
+
+<p>ToonVision is my personal computer vision project to teach a machine how to see in (ToonTown)[https://en.wikipedia.org/wiki/Toontown_Online] - an MMORPG created by Disney in 2002.
+The ultimate goal is to teach a machine how to play ToonTown (nicknamed <strong>OmniToon</strong>) and create a self-sustaining ecosystem within the game where the bots progress through the game together.</p>
+
+<p>In later articles, we'll dive into segmentation and object detection.
+For now, let's focus on real-time classification.</p>
+
+<p>This article covers ...</p>
+
+<ul>
+<li>Binary classification: Toon vs Cog</li>
+<li>Multiclass classification: Cog suits (4 unique suits) and Cog names (32 unique names)</li>
+</ul>
+
+<p><details>
+    <summary>Table of Contents</summary></p>
+
+<ul>
+<li><a href="#toonvision---classification">ToonVision - Classification</a>
+<ul>
+<li><a href="#classification">Classification</a>
+<ul>
+<li><a href="#binary-classification">Binary Classification</a></li>
+<li><a href="#multiclass-classification">Multiclass Classification</a></li>
+</ul></li>
+<li><a href="#toontown">ToonTown</a>
+<ul>
+<li><a href="#toon">Toon</a></li>
+<li><a href="#cog">Cog</a></li>
+<li><a href="#why-is-it-important-for-toons-to-classify-cogs">Why is it important for Toons to classify Cogs?</a></li>
+</ul></li>
+<li><a href="#creating-the-dataset">Creating the dataset</a>
+<ul>
+<li><a href="#dataset-considerations">Dataset considerations</a></li>
+<li><a href="#filename-and-data-folder-structure">Filename and data folder structure</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+<p></details></p>
+
+<hr />
+
+<h2 id="classification">Classification</h2>
+
+<h3 id="binary-classification">Binary Classification</h3>
+
+<h3 id="multiclass-classification">Multiclass Classification</h3>
+
+<p>We could beef up the multiclass classification to a multilabel multiclass classification, but it add unneeded complexity to a simple classification problem.</p>
+
+<hr />
+
+<h2 id="toontown">ToonTown</h2>
+
+<h3 id="toon">Toon</h3>
+
+<p>There are X number of animals.</p>
+
+<h3 id="cog">Cog</h3>
+
+<p>There are 4 Cog suits: Lawbot, Cashbot, Sellbot, and Bossbot.
+Each suit has 8 Cogs, totaling 32 unique Cogs.</p>
+
+<h3 id="why-is-it-important-for-toons-to-classify-cogs">Why is it important for Toons to classify Cogs?</h3>
+
+<hr />
+
+<h2 id="creating-the-dataset">Creating the dataset</h2>
+
+<h3 id="dataset-considerations">Dataset considerations</h3>
+
+<ul>
+<li>Images are split into training, validation, and test sets: 40% training, 20% validation, and 40% test.</li>
+<li>Images of Toons and Cogs must be...
+<ul>
+<li>Taken from the street, not playground</li>
+<li>Taken of the entity's front, back, and side</li>
+</ul></li>
+<li>In the Cog dataset, there must be an equal part of each Cog suit
+<ul>
+<li>There must must be an equal part of each unique Cog (32 unique Cogs)
+<ul>
+<li>There is a minimum requirement of 20 images per unique Cog (32*20 = 640 images total)</li>
+</ul></li>
+<li>Must not include the Cog's nametag in the image</li>
+</ul></li>
+<li>There must be an equal part of Toons and Cogs in each set
+<ul>
+<li>There must be an equal part Cog suit in each set</li>
+</ul></li>
+<li>In the Toon dataset, balance of animal types is welcome but not necessary</li>
+</ul>
+
+<h3 id="filename-and-data-folder-structure">Filename and data folder structure</h3>
+
+<p>Cog filename structure: <code>cog_&lt;suit&gt;_&lt;name&gt;_&lt;index&gt;.png</code>.</p>
+
+<p>Toon filename structure: <code>toon_&lt;animal&gt;_&lt;index&gt;.png</code>.</p>
+
+<p>Data folder structure:</p>
+
+<pre><code>data/
+    - [train/val/test]/
+        - cog/
+        - toon/
+</code></pre>
+
+<p>There's no need for a unique folder for each Cog suit because we can filter on the filename.</p>
+
+</body>
+</html>
