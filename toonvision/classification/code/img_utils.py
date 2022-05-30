@@ -56,9 +56,7 @@ def extract_objects_from_img(img_path, objs_from_xml) -> tuple[str, list]:
 
 
 def get_save_directory(obj_name):
-    """Get the save directory for the object
-
-    Given an object name, return the save directory for the object.
+    """Given an object name, return the save directory for the object.
 
     Args:
         obj_name (str): Name of the object
@@ -114,8 +112,8 @@ def verify_folder_structure():
     """Verify that the folder structure exists and is correct
 
     :: Expected folder structure
+        img
         ├───data
-        │   ├───cog
         │   ├───test
         │   │   ├───cog
         │   │   └───toon
@@ -126,7 +124,8 @@ def verify_folder_structure():
         │       ├───cog
         │       └───toon
         ├───raw
-        │   └───data
+        │   ├───data
+        │   └───processed
         └───unsorted
             ├───cog
             └───toon
@@ -148,7 +147,7 @@ for img_path in glob(f"{RAW_DIR}/*.png"):
     # Extract objects from images
     objs_from_img = extract_objects_from_img(img_path, objs_from_xml)
     # Save extracted objects to images
-    # save_objects_to_img(objs_from_img, UNSORTED_DIR)
+    save_objects_to_img(objs_from_img, UNSORTED_DIR)
     # Move raw image to processed directory
     for f in [img_path, xml_path]:
         new_path = f.replace(RAW_DIR, PROCESSED_DIR)
