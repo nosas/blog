@@ -379,7 +379,7 @@ See the following code block to see how we plot the data.
     <figcaption>Two classes of synthetic and random points in the 2D plane</figcaption>
 </figure>
 
-Both samples are arrays of shape `(500, 2)` - meaning there are 500 rows of 2-dimensional data (x and y coordinate points).
+Both samples are arrays of shape `(500, 2)` - meaning there are 500 rows of 2-dimensional data (aka 500 tuples, each containing an x,y).
 Let's stack both class samples into a single array with shape `(1000, 2)`.
 Stacking the samples into single array will allow for easier processing later on, such as plotting the data.
 
