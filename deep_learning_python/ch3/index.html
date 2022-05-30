@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 27, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 28, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 3 - Introduction to Keras and TensorFlow</title></p>
 
@@ -69,13 +69,13 @@ Articles in this series will sequentially review key concepts, examples, and int
 <li><a href="#understanding-core-keras-apis">Understanding core Keras APIs</a>
 <ul>
 <li><a href="#layers-the-building-blocks-of-deep-learning">Layers: the building blocks of deep learning</a></li>
-</ul></li>
 <li><a href="#from-layers-to-models">From layers to models</a>
 <ul>
 <li><a href="#importance-of-model-architecture">Importance of model architecture</a></li>
 </ul></li>
 <li><a href="#the-compile-step-configuring-the-learning-process">The "compile" step: Configuring the learning process</a>
 </details></li>
+</ul></li>
 </ul></li>
 </ul>
 
@@ -817,6 +817,8 @@ Pretty cool, right?</p>
 <p>This is what linear classification is all about: finding the parameters of a line that neatly separates two classes of data.
 In higher-dimensional spaces, we're finding the parameters of a hyperplane that neatly separates the two classes.</p>
 
+<hr />
+
 <h2 id="understanding-core-keras-apis">Understanding core Keras APIs</h2>
 
 <p>We've learned how to create a linear classifier using pure TensorFlow.
@@ -913,7 +915,7 @@ The superclass's <code>__call__()</code> method calls the <code>build()</code> m
 <p>That's the gist of Keras layers.
 Let's talk about model architectures.</p>
 
-<h2 id="from-layers-to-models">From layers to models</h2>
+<h3 id="from-layers-to-models">From layers to models</h3>
 
 <p>Simply put, a deep learning model, such as the <code>Model</code> class in Keras, is a graph of layers.
 Until now, we've only discussed <code>Sequential</code> models - a linear stack of layers that map a single input to a single output.
@@ -929,7 +931,7 @@ As we move forward, we'll be exposed to a variety of neural network architecture
 Similar to layers, each network topology has its pros, cons, and common use cases.
 Picking the right network topology is more an art than a science, where only practice can help you become a proper neural-network architect.</p>
 
-<h3 id="importance-of-model-architecture">Importance of model architecture</h3>
+<h4 id="importance-of-model-architecture">Importance of model architecture</h4>
 
 <p><em>Why is it important to pick a proper network architecture for my use case?</em></p>
 
@@ -948,7 +950,7 @@ With time, this process will become second nature.</p>
 
 <p>Enough of model architecture, let's talk about model compilation and how we configure the learning process.</p>
 
-<h2 id="the-compile-step-configuring-the-learning-process">The "compile" step: Configuring the learning process</h2>
+<h3 id="the-compile-step-configuring-the-learning-process">The "compile" step: Configuring the learning process</h3>
 
 <p>Once the model architecture is defined, there are three more key parts to be defined:</p>
 
@@ -975,7 +977,7 @@ However, rather than passing in string, we can also pass in objects.</p>
 <div class="codehilite"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
     <span class="n">optimizer</span><span class="o">=</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">RMSprop</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">),</span>
     <span class="n">loss</span><span class="o">=</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">MeanSquaredError</span><span class="p">(),</span>
-    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()]</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">BinaryAccuracy</span><span class="p">()]</span>
 <span class="p">)</span>
 </code></pre></div>
 

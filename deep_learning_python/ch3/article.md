@@ -34,9 +34,9 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Plotting the predictions](#plotting-the-predictions)
     - [Understanding core Keras APIs](#understanding-core-keras-apis)
         - [Layers: the building blocks of deep learning](#layers-the-building-blocks-of-deep-learning)
-    - [From layers to models](#from-layers-to-models)
-        - [Importance of model architecture](#importance-of-model-architecture)
-    - [The "compile" step: Configuring the learning process](#the-compile-step-configuring-the-learning-process)
+        - [From layers to models](#from-layers-to-models)
+            - [Importance of model architecture](#importance-of-model-architecture)
+        - [The "compile" step: Configuring the learning process](#the-compile-step-configuring-the-learning-process)
 </details>
 
 ---
@@ -769,6 +769,7 @@ Pretty cool, right?
 This is what linear classification is all about: finding the parameters of a line that neatly separates two classes of data.
 In higher-dimensional spaces, we're finding the parameters of a hyperplane that neatly separates the two classes.
 
+---
 ## Understanding core Keras APIs
 
 We've learned how to create a linear classifier using pure TensorFlow.
@@ -866,7 +867,7 @@ def __call__(self, inputs):
 That's the gist of Keras layers.
 Let's talk about model architectures.
 
-## From layers to models
+### From layers to models
 
 Simply put, a deep learning model, such as the `Model` class in Keras, is a graph of layers.
 Until now, we've only discussed `Sequential` models - a linear stack of layers that map a single input to a single output.
@@ -880,7 +881,7 @@ The difference between each of these topologies is the type of layers and how th
 Similar to layers, each network topology has its pros, cons, and common use cases.
 Picking the right network topology is more an art than a science, where only practice can help you become a proper neural-network architect.
 
-### Importance of model architecture
+#### Importance of model architecture
 
 *Why is it important to pick a proper network architecture for my use case?*
 
@@ -899,7 +900,7 @@ With time, this process will become second nature.
 
 Enough of model architecture, let's talk about model compilation and how we configure the learning process.
 
-## The "compile" step: Configuring the learning process
+### The "compile" step: Configuring the learning process
 
 Once the model architecture is defined, there are three more key parts to be defined:
 

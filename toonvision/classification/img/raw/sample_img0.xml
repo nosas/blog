@@ -1,7 +1,7 @@
 <annotation>
-	<folder>img</folder>
-	<filename>image3.jpg</filename>
-	<path>C:\Users\Sason\Documents\Projects\blog\toonvision\classification\img\image3.jpg</path>
+	<folder>raw</folder>
+	<filename>sample_img0.jpg</filename>
+	<path>C:\Users\Sason\Documents\Projects\blog\toonvision\classification\img\raw\sample_img0.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -12,27 +12,27 @@
 	</size>
 	<segmented>0</segmented>
 	<object>
-		<name>Sellbot-ColdCaller</name>
+		<name>cog_sb_coldcaller</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>150</xmin>
-			<ymin>276</ymin>
+			<xmin>152</xmin>
+			<ymin>279</ymin>
 			<xmax>266</xmax>
-			<ymax>428</ymax>
+			<ymax>423</ymax>
 		</bndbox>
 	</object>
 	<object>
-		<name>Lawbot-Bloodsucker</name>
+		<name>cog_lb_bloodsucker</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>628</xmin>
-			<ymin>177</ymin>
-			<xmax>732</xmax>
-			<ymax>512</ymax>
+			<xmin>631</xmin>
+			<ymin>174</ymin>
+			<xmax>720</xmax>
+			<ymax>510</ymax>
 		</bndbox>
 	</object>
 </annotation>
