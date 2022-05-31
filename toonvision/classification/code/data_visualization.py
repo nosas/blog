@@ -1,71 +1,17 @@
 # %% Imports
-import matplotlib.pyplot as plt
-from data_processing import RAW_DIR, UNSORTED_DIR
-from img_utils import extract_objects_from_xml
 from collections import Counter
 from glob import glob
 from statistics import mean
 
+import matplotlib.pyplot as plt
+
+from data_processing import RAW_DIR, UNSORTED_DIR
+from img_utils import extract_objects_from_xml
 
 # %% Global variables
-ALL_LABELS = [
-    "cog_bb_flunky",
-    "cog_bb_pencilpusher",
-    "cog_bb_yesman",
-    "cog_bb_micromanager",
-    "cog_bb_downsizer",
-    "cog_bb_headhunter",
-    "cog_bb_corporateraider",
-    "cog_bb_thebigcheese",
-    "cog_lb_bottomfeeder",
-    "cog_lb_bloodsucker",
-    "cog_lb_doubletalker",
-    "cog_lb_ambulancechaser",
-    "cog_lb_backstabber",
-    "cog_lb_spindoctor",
-    "cog_lb_legaleagle",
-    "cog_lb_bigwig",
-    "cog_cb_shortchange",
-    "cog_cb_pennypincher",
-    "cog_cb_tightwad",
-    "cog_cb_beancounter",
-    "cog_cb_numbercruncher",
-    "cog_cb_moneybags",
-    "cog_cb_loanshark",
-    "cog_cb_robberbaron",
-    "cog_sb_coldcaller",
-    "cog_sb_telemarketer",
-    "cog_sb_namedropper",
-    "cog_sb_gladhander",
-    "cog_sb_movershaker",
-    "cog_sb_twoface",
-    "cog_sb_themingler",
-    "cog_sb_mrhollywood",
-    "toon_bear",
-    "toon_cat",
-    "toon_crocodile",
-    "toon_deer",
-    "toon_dog",
-    "toon_duck",
-    "toon_horse",
-    "toon_monkey",
-    "toon_mouse",
-    "toon_pig",
-    "toon_rabbit"
-]
-ANIMALS = [
-    "bear",
-    "cat",
-    "crocodile",
-    "deer",
-    "dog",
-    "duck",
-    "horse",
-    "monkey",
-    "mouse",
-    "pig",
-    "rabbit",
-]
+with open(f"{RAW_DIR}/data/predefined_classes.txt", 'r') as f:
+    ALL_LABELS = [line for line in f.read().splitlines() if not line.startswith('=')]
+ANIMALS = [label.split("_")[1] for label in ALL_LABELS if label.startswith("toon_")]
 BINARY = ["cog", "toon"]
 SUITS_LONG = ["bossbot", "lawbot", "cashbot", "sellbot"]
 SUITS_SHORT = ["bb", "lb", "cb", "sb"]
@@ -114,16 +60,9 @@ def plot_xml_data() -> None:
         return "unknown"
 
     def get_suit_label(obj_name: str) -> str:
-        if "cog_bb" in obj_name:
-            return "bossbot"
-        elif "cog_lb" in obj_name:
-            return "lawbot"
-        elif "cog_cb" in obj_name:
-            return "cashbot"
-        elif "cog_sb" in obj_name:
-            return "sellbot"
-        else:
-            return "unknown"
+        map = {short: long for short, long in zip(SUITS_SHORT, SUITS_LONG)}
+        # Ex: Retrieve the value of the key "bb" from obj_name="cog_bb_flunky"
+        return map.get(obj_name.split("_")[1], "unknown")
 
     def get_animal_label(obj_name: str) -> str:
         return obj_name.split("_")[1]
@@ -136,21 +75,22 @@ def plot_xml_data() -> None:
         if obj_name.startswith("toon"):
             count_animal.update([get_animal_label(obj_name)])
 
-    def set_counters_to_zero() -> None:
+    def create_counters() -> tuple[Counter, Counter, Counter, Counter]:
+        # Create counters
+        count_all = Counter()     # All object names (32 + 11 = 43 classes)
+        count_binary = Counter()  # Cog or Toon (2 classes)
+        count_suit = Counter()    # Bossbot, Lawbot, Cashbot, Sellbot (4 classes)
+        count_animal = Counter()  # Toon animals (11 classes)
+        # Initialize all counters to 0
         count_all.update({key: 0 for key in ALL_LABELS})
         count_binary.update({key: 0 for key in BINARY})
         count_suit.update({key: 0 for key in SUITS_LONG})
         count_animal.update({key: 0 for key in ANIMALS})
+        return (count_all, count_binary, count_suit, count_animal)
+
+    count_all, count_binary, count_suit, count_animal = create_counters()
 
     all_xml = glob(f"{RAW_DIR}/screenshots/*/*.xml")
-
-    # Create counters
-    count_all = Counter()     # All object names (32 + 11 = 43 classes)
-    count_binary = Counter()  # Cog or Toon (2 classes)
-    count_suit = Counter()    # Bossbot, Lawbot, Cashbot, Sellbot (4 classes)
-    count_animal = Counter()  # Toon animals (11 classes)
-    set_counters_to_zero()
-
     for xml in all_xml:
         objs = extract_objects_from_xml(xml)
         for obj_name, _, _, _, _ in objs:
@@ -168,7 +108,9 @@ def plot_xml_data() -> None:
         (count_suit, "Number of objects per suit label", 160),
         (count_animal, "Number of objects per animal label", 58),
     ]
-    fig, ax = plt.subplots(4, 1, figsize=(5, 15), gridspec_kw={"height_ratios": [4, 1, 1, 1]})
+    fig, ax = plt.subplots(
+        4, 1, figsize=(5, 15), gridspec_kw={"height_ratios": [5, 0.75, 0.75, 1.25]}
+    )
     fig.suptitle("Number of labels in unprocessed screenshots")
     for idx, (count_dict, title, desired_count) in enumerate(counts_and_titles):
         hbars = ax[idx].barh(y=list(count_dict.keys()), width=count_dict.values())
@@ -177,7 +119,6 @@ def plot_xml_data() -> None:
         ax[idx].axvline(x=desired_count, color="green")
         ax[idx].set_title(title)
         ax[idx].bar_label(hbars, count_dict.values())
-    # ax[0].set_height(20)
     plt.show()
 
 
@@ -185,3 +126,5 @@ def plot_xml_data() -> None:
 plot_suits_as_histogram()
 plot_toons_as_histogram()
 plot_xml_data()
+
+# %%
