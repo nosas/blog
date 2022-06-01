@@ -19,14 +19,14 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 30, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 31, 2022</p>
 
 <h1 id="toonvision-classification">ToonVision - Classification</h1>
 
 <p>This article is first in a series on <strong>ToonVision</strong>.</p>
 
 <p>ToonVision is my personal computer vision project to teach a machine how to see in <a href="https://en.wikipedia.org/wiki/Toontown_Online">ToonTown Online</a> - an MMORPG created by Disney in 2002.
-The ultimate goal is to teach a machine how to play ToonTown (nicknamed <strong>OmniToon</strong>) and create a self-sustaining ecosystem within the game where the bots progress through the game together.</p>
+The ultimate goal is to teach a machine (nicknamed <strong>OmniToon</strong>) how to play ToonTown and create a self-sustaining ecosystem within the game where the bots progress through the game together.</p>
 
 <p>In later articles, we'll dive into segmentation and object detection.
 For now, let's focus on real-time classification.</p>
@@ -46,8 +46,11 @@ For now, let's focus on real-time classification.</p>
 <ul>
 <li><a href="#classification">Classification</a>
 <ul>
-<li><a href="#binary-classification">Binary Classification</a></li>
-<li><a href="#multiclass-classification">Multiclass Classification</a></li>
+<li><a href="#binary-classification">Binary classification</a></li>
+<li><a href="#multiclass-classification">Multiclass classification</a>
+<ul>
+<li><a href="#multiclass-multilabel-classification">Multiclass multilabel classification</a></li>
+</ul></li>
 </ul></li>
 <li><a href="#toontown">ToonTown</a>
 <ul>
@@ -55,16 +58,17 @@ For now, let's focus on real-time classification.</p>
 <li><a href="#cog">Cog</a></li>
 <li><a href="#why-is-it-important-for-toons-to-classify-cogs">Why is it important for Toons to classify Cogs?</a></li>
 </ul></li>
-<li><a href="#creating-the-dataset">Creating the dataset</a>
+<li><a href="#the-toonvision-dataset">The ToonVision dataset</a>
 <ul>
 <li><a href="#dataset-considerations">Dataset considerations</a></li>
 <li><a href="#filename-and-data-folder-structure">Filename and data folder structure</a></li>
-<li><a href="#data-acquisition">Data Acquisition</a>
+<li><a href="#data-acquisition">Data acquisition</a>
 <ul>
 <li><a href="#can-we-use-gans-to-synthesize-additional-data">Can we use GANs to synthesize additional data?</a></li>
 </ul></li>
-<li><a href="#data-labeling">Data Labeling</a></li>
-<li><a href="#data-processing">Data Processing</a></li>
+<li><a href="#data-labeling">Data labeling</a></li>
+<li><a href="#data-extraction">Data extraction</a></li>
+<li><a href="#data-processing">Data processing</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -75,9 +79,11 @@ For now, let's focus on real-time classification.</p>
 
 <h2 id="classification">Classification</h2>
 
-<h3 id="binary-classification">Binary Classification</h3>
+<h3 id="binary-classification">Binary classification</h3>
 
-<h3 id="multiclass-classification">Multiclass Classification</h3>
+<h3 id="multiclass-classification">Multiclass classification</h3>
+
+<h4 id="multiclass-multilabel-classification">Multiclass multilabel classification</h4>
 
 <p>We could beef up the multiclass classification to a multilabel multiclass classification: Cog state/level/hp/name/suit.
 But this adds unneeded complexity.
@@ -90,7 +96,7 @@ In the future, I will surely add the classification of the Cog's state: battle, 
 
 <h3 id="toon">Toon</h3>
 
-<p>There are 11 number of animals:</p>
+<p>There are 11 unique animals:</p>
 
 <ul>
 <li>bear</li>
@@ -106,6 +112,11 @@ In the future, I will surely add the classification of the Cog's state: battle, 
 <li>rabbit</li>
 </ul>
 
+<p>Each animal can have a unique head shape, body length, and height.
+Furthermore, each animal can have mismatching colors for its head, arms, and legs.</p>
+
+<p><font style="color:red">TODO: Image grid of animal with various sizes and colors</font></p>
+
 <h3 id="cog">Cog</h3>
 
 <p>There are 4 Cog suits: Bossbot, Lawbot, Cashbot, and Sellbot.
@@ -117,7 +128,10 @@ Each suit has 8 Cogs, totaling 32 unique Cogs.</p>
 
 <hr />
 
-<h2 id="creating-the-dataset">Creating the dataset</h2>
+<h2 id="the-toonvision-dataset">The ToonVision dataset</h2>
+
+<p>There doesn't exist a dataset for ToonVision, so I'll be creating one from scratch.
+The following sections will explain my process and results.</p>
 
 <h3 id="dataset-considerations">Dataset considerations</h3>
 
@@ -162,7 +176,8 @@ Each suit has 8 Cogs, totaling 32 unique Cogs.</p>
 │       ├───cog
 │       └───toon
 ├───raw
-│   └───processed
+│   ├───processed
+│   └───screenshots
 └───unsorted
     ├───cog
     └───toon
@@ -170,9 +185,26 @@ Each suit has 8 Cogs, totaling 32 unique Cogs.</p>
 
 <p>There's no need for a unique folder for each Cog suit because we can filter on the filename.</p>
 
-<h3 id="data-acquisition">Data Acquisition</h3>
+<h3 id="data-acquisition">Data acquisition</h3>
 
-<p>Walk around TT, take screenshots, and save them to the raw folder.</p>
+<p>Acquiring data is simple: Walk around TT streets, take screenshots, and save them to the raw folder.
+It's important to take screenshots from various distance and of different angles of each entity: front, back, and side.
+Taking screenshots from up close is preferred.
+When taken from far away, the entity's nametag covers the entity's head, thus causing us to crop the entity's head or include the nametag - neither are good options.</p>
+
+<p><font style="color:red">TODO: Insert example screenshot</font></p>
+
+<p>There were a few difficulties with acquiring data:</p>
+
+<ol>
+<li>Entities are always moving unless in battle</li>
+<li>Entities often obstruct other entities, which makes for less than ideal training data</li>
+<li>Finding the desired entity is purely a matter of walking around the street and looking for the entity, there's no precision radar</li>
+</ol>
+
+<p>These difficulties result in an imbalanced dataset that will be improved over time.</p>
+
+<p><font style="color:red">TODO: Insert dataset barchart</font></p>
 
 <h4 id="can-we-use-gans-to-synthesize-additional-data">Can we use GANs to synthesize additional data?</h4>
 
@@ -180,18 +212,19 @@ Each suit has 8 Cogs, totaling 32 unique Cogs.</p>
 I'm not if it exists.
 Also, the data is easy enough to gather manually by walking around TT.</p>
 
-<h3 id="data-labeling">Data Labeling</h3>
+<h3 id="data-labeling">Data labeling</h3>
 
-<p>Use <a href="https://github.com/tzutalin/labelImg">labelimg</a> to create labeled bounding boxes around Toons and Cogs.
-Labels follow the format:</p>
+<p>I'm using <a href="https://github.com/tzutalin/labelImg">labelimg</a> to draw labeled bounding
+boxes around Toons and Cogs.
+Labels - also referred to as <code>obj_name</code> - follow the format:</p>
 
 <ul>
 <li><code>cog_&lt;bb|lb|cb|sb&gt;_&lt;name&gt;</code></li>
 <li><code>toon_&lt;animal&gt;</code></li>
 </ul>
 
-<p>The cog labels contain shorthand notation (<code>&lt;bb|lb|cb|sb&gt;</code>) for each suit: BossBot, Lawbot, Cashbot, and Sellbot, respectively.
-This shorthand notation will allow us to filter cog data by filename and create a classifier that can distinguish between the 4 suits.</p>
+<p>The cog labels contain shorthand notation (<code>&lt;bb|lb|cb|sb&gt;</code>) for each suit: Bossbot, Lawbot, Cashbot, and Sellbot, respectively.
+This shorthand notation allows us to filter cog data by filename and create a classifier that can distinguish between the 4 suits.</p>
 
 <p>Bounding boxes are saved in XML format - specifically <a href="https://mlhive.com/2022/02/read-and-write-pascal-voc-xml-annotations-in-python">Pascal VOC XML</a> - alongside the image in the <code>raw</code> folder.</p>
 
@@ -207,44 +240,65 @@ This shorthand notation will allow us to filter cog data by filename and create 
 │       ├───cog
 │       └───toon
 ├───raw
-│   │   labelImg.exe
-│   │   sample_img0.png
-│   │   sample_img0.xml
-│   │   sample_img1.png
-│   │   sample_img1.xml
-│   │
-│   └───processed
+│   ├───processed
+│   └───screenshots
+│       │   sample_img0.png
+│       │   sample_img0.xml
+│       │   sample_img1.png
+│       │   sample_img1.xml
 </code></pre>
 
-<h3 id="data-processing">Data Processing</h3>
+<p><font style="color:red">TODO: Insert image of labelimg and bounding boxes</font></p>
 
-<p>The raw data is passed into the <code>data_processing.py</code> script.
+<p>How the objects are labeled - how the bounding boxes are drawn - determines how the object will be extracted from the image.
+It's important to draw bounding boxes such that the entity is snugly contained within the bounding box
+Furthermore, we must exclude entity nametags in the bounding box because the classifier will learn to "cheat" by identifying objects from their nametag rather than features of the entity itself.</p>
+
+<h3 id="data-extraction">Data extraction</h3>
+
+<p>The raw data (screenshot) is passed into the <code>data_processing.py</code> script.
 The script utilizes functions in <code>img_utils.py</code> to extract objects from the images using the bounding boxes and labels found in their corresponding XML files.
 Specifically, the workflow is as follows:</p>
 
 <ul>
 <li>Acquire bounding box dimensions and labels from the XML files</li>
-<li>Extract object (Toon or Cog) from the image using the dimensions</li>
+<li>Extract object (Toon or Cog) from the image using the dimensions and labels found in the XML files</li>
 <li>Save the cropped image of the object to the <code>unsorted</code> folder</li>
 <li>Move the raw image and its corresponding XML file to the <code>processed</code> folder</li>
 </ul>
 
 <div class="codehilite"><pre><span></span><code><span class="c1"># %% Convert raw images to data images</span>
-<span class="k">for</span> <span class="n">img_path</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">RAW_DIR</span><span class="si">}</span><span class="s2">/*.png&quot;</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing </span><span class="si">{</span><span class="n">img_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">xml_path</span> <span class="o">=</span> <span class="n">img_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.png&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">)</span>
-    <span class="c1"># Extract objects&#39; bounding box dimensions from XML</span>
-    <span class="n">objs_from_xml</span> <span class="o">=</span> <span class="n">extract_objects_from_xml</span><span class="p">(</span><span class="n">xml_path</span><span class="p">)</span>
-    <span class="c1"># Extract objects from images</span>
-    <span class="n">objs_from_img</span> <span class="o">=</span> <span class="n">extract_objects_from_img</span><span class="p">(</span><span class="n">img_path</span><span class="p">,</span> <span class="n">objs_from_xml</span><span class="p">)</span>
-    <span class="c1"># Save extracted objects to images</span>
-    <span class="c1"># save_objects_to_img(objs_from_img, UNSORTED_DIR)</span>
-    <span class="c1"># Move raw image to processed directory</span>
-    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="n">img_path</span><span class="p">,</span> <span class="n">xml_path</span><span class="p">]:</span>
-        <span class="n">new_path</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">RAW_DIR</span><span class="p">,</span> <span class="n">PROCESSED_DIR</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Moving </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">rename</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">process_images</span><span class="p">(</span>
+    <span class="n">raw_images_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">SCREENSHOTS_DIR</span><span class="p">,</span>
+    <span class="n">image_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span>
+    <span class="n">move_images</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">img_path</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">raw_images_dir</span><span class="si">}</span><span class="s2">/*.</span><span class="si">{</span><span class="n">image_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing </span><span class="si">{</span><span class="n">img_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">xml_path</span> <span class="o">=</span> <span class="n">img_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">image_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">)</span>
+        <span class="c1"># Extract objects&#39; labels and bounding box dimensions from XML</span>
+        <span class="n">objs_from_xml</span> <span class="o">=</span> <span class="n">extract_objects_from_xml</span><span class="p">(</span><span class="n">xml_path</span><span class="p">)</span>
+        <span class="c1"># Extract objects from images using XML data</span>
+        <span class="n">objs_from_img</span> <span class="o">=</span> <span class="n">extract_objects_from_img</span><span class="p">(</span><span class="n">img_path</span><span class="p">,</span> <span class="n">objs_from_xml</span><span class="p">)</span>
+        <span class="c1"># Save extracted objects to images</span>
+        <span class="n">save_objects_to_img</span><span class="p">(</span><span class="n">objs_from_img</span><span class="p">,</span> <span class="n">UNSORTED_DIR</span><span class="p">)</span>
+        <span class="c1"># Move raw image to processed directory</span>
+        <span class="k">if</span> <span class="n">move_images</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="n">img_path</span><span class="p">,</span> <span class="n">xml_path</span><span class="p">]:</span>
+                <span class="n">new_path</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">raw_images_dir</span><span class="p">,</span> <span class="n">PROCESSED_DIR</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Moving </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">rename</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
 </code></pre></div>
+
+<h3 id="data-processing">Data processing</h3>
+
+<p>The extracted objects are of various sizes because the screenshots were taken from various angles and distances.
+Large objects are a results of the screenshot being close up, while small objects are a result of the screenshot being far away.</p>
+
+<p>Overall, it would be ideal for the dataset to consist mostly of large, close-up objects because they contain more information about the object.
+Small, far-away objects lose information about the object and are not as useful for training - we could simulate this loss of information through image augmentation.</p>
+
+<p><font style="color:red">TODO: Insert image comparing a small and large object</font></p>
 
 </body>
 </html>

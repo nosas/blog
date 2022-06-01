@@ -3,7 +3,7 @@
 This article is first in a series on **ToonVision**.
 
 ToonVision is my personal computer vision project to teach a machine how to see in [ToonTown Online](https://en.wikipedia.org/wiki/Toontown_Online) - an MMORPG created by Disney in 2002.
-The ultimate goal is to teach a machine how to play ToonTown (nicknamed **OmniToon**) and create a self-sustaining ecosystem within the game where the bots progress through the game together.
+The ultimate goal is to teach a machine (nicknamed **OmniToon**) how to play ToonTown and create a self-sustaining ecosystem within the game where the bots progress through the game together.
 
 In later articles, we'll dive into segmentation and object detection.
 For now, let's focus on real-time classification.
@@ -19,28 +19,32 @@ This article covers ...
 
 - [ToonVision - Classification](#toonvision---classification)
     - [Classification](#classification)
-        - [Binary Classification](#binary-classification)
-        - [Multiclass Classification](#multiclass-classification)
+        - [Binary classification](#binary-classification)
+        - [Multiclass classification](#multiclass-classification)
+            - [Multiclass multilabel classification](#multiclass-multilabel-classification)
     - [ToonTown](#toontown)
         - [Toon](#toon)
         - [Cog](#cog)
         - [Why is it important for Toons to classify Cogs?](#why-is-it-important-for-toons-to-classify-cogs)
-    - [Creating the dataset](#creating-the-dataset)
+    - [The ToonVision dataset](#the-toonvision-dataset)
         - [Dataset considerations](#dataset-considerations)
         - [Filename and data folder structure](#filename-and-data-folder-structure)
-        - [Data Acquisition](#data-acquisition)
+        - [Data acquisition](#data-acquisition)
             - [Can we use GANs to synthesize additional data?](#can-we-use-gans-to-synthesize-additional-data)
-        - [Data Labeling](#data-labeling)
-        - [Data Processing](#data-processing)
+        - [Data labeling](#data-labeling)
+        - [Data extraction](#data-extraction)
+        - [Data processing](#data-processing)
 
 </details>
 
 ---
 ## Classification
 
-### Binary Classification
+### Binary classification
 
-### Multiclass Classification
+### Multiclass classification
+
+#### Multiclass multilabel classification
 
 We could beef up the multiclass classification to a multilabel multiclass classification: Cog state/level/hp/name/suit.
 But this adds unneeded complexity.
@@ -52,7 +56,7 @@ In the future, I will surely add the classification of the Cog's state: battle, 
 
 ### Toon
 
-There are 11 number of animals:
+There are 11 unique animals:
 
 - bear
 - cat
@@ -66,6 +70,11 @@ There are 11 number of animals:
 - pig
 - rabbit
 
+Each animal can have a unique head shape, body length, and height.
+Furthermore, each animal can have mismatching colors for its head, arms, and legs.
+
+<font style="color:red">TODO: Image grid of animal with various sizes and colors</font>
+
 ### Cog
 
 There are 4 Cog suits: Bossbot, Lawbot, Cashbot, and Sellbot.
@@ -76,7 +85,10 @@ Each suit has 8 Cogs, totaling 32 unique Cogs.
 ToonTasks, object avoidance
 
 ---
-## Creating the dataset
+## The ToonVision dataset
+
+There doesn't exist a dataset for ToonVision, so I'll be creating one from scratch.
+The following sections will explain my process and results.
 
 ### Dataset considerations
 
@@ -111,7 +123,8 @@ Data folder structure:
 │       ├───cog
 │       └───toon
 ├───raw
-│   └───processed
+│   ├───processed
+│   └───screenshots
 └───unsorted
     ├───cog
     └───toon
@@ -119,9 +132,24 @@ Data folder structure:
 
 There's no need for a unique folder for each Cog suit because we can filter on the filename.
 
-### Data Acquisition
+### Data acquisition
 
-Walk around TT, take screenshots, and save them to the raw folder.
+Acquiring data is simple: Walk around TT streets, take screenshots, and save them to the raw folder.
+It's important to take screenshots from various distance and of different angles of each entity: front, back, and side.
+Taking screenshots from up close is preferred.
+When taken from far away, the entity's nametag covers the entity's head, thus causing us to crop the entity's head or include the nametag - neither are good options.
+
+<font style="color:red">TODO: Insert example screenshot</font>
+
+There were a few difficulties with acquiring data:
+
+1. Entities are always moving unless in battle
+1. Entities often obstruct other entities, which makes for less than ideal training data
+1. Finding the desired entity is purely a matter of walking around the street and looking for the entity, there's no precision radar
+
+These difficulties result in an imbalanced dataset that will be improved over time.
+
+<font style="color:red">TODO: Insert dataset barchart</font>
 
 #### Can we use GANs to synthesize additional data?
 
@@ -129,16 +157,17 @@ Yes, iff there was a GAN that could generate Toons and Cogs.
 I'm not if it exists.
 Also, the data is easy enough to gather manually by walking around TT.
 
-### Data Labeling
+### Data labeling
 
-Use [labelimg](https://github.com/tzutalin/labelImg) to create labeled bounding boxes around Toons and Cogs.
-Labels follow the format:
+I'm using [labelimg](https://github.com/tzutalin/labelImg) to draw labeled bounding
+boxes around Toons and Cogs.
+Labels - also referred to as `obj_name` - follow the format:
 
 - `cog_<bb|lb|cb|sb>_<name>`
 - `toon_<animal>`
 
-The cog labels contain shorthand notation (`<bb|lb|cb|sb>`) for each suit: BossBot, Lawbot, Cashbot, and Sellbot, respectively.
-This shorthand notation will allow us to filter cog data by filename and create a classifier that can distinguish between the 4 suits.
+The cog labels contain shorthand notation (`<bb|lb|cb|sb>`) for each suit: Bossbot, Lawbot, Cashbot, and Sellbot, respectively.
+This shorthand notation allows us to filter cog data by filename and create a classifier that can distinguish between the 4 suits.
 
 Bounding boxes are saved in XML format - specifically [Pascal VOC XML](https://mlhive.com/2022/02/read-and-write-pascal-voc-xml-annotations-in-python) - alongside the image in the `raw` folder.
 
@@ -155,40 +184,61 @@ img
 │       ├───cog
 │       └───toon
 ├───raw
-│   │   labelImg.exe
-│   │   sample_img0.png
-│   │   sample_img0.xml
-│   │   sample_img1.png
-│   │   sample_img1.xml
-│   │
-│   └───processed
+│   ├───processed
+│   └───screenshots
+│       │   sample_img0.png
+│       │   sample_img0.xml
+│       │   sample_img1.png
+│       │   sample_img1.xml
 ```
 
-### Data Processing
+<font style="color:red">TODO: Insert image of labelimg and bounding boxes</font>
 
-The raw data is passed into the `data_processing.py` script.
+How the objects are labeled - how the bounding boxes are drawn - determines how the object will be extracted from the image.
+It's important to draw bounding boxes such that the entity is snugly contained within the bounding box
+Furthermore, we must exclude entity nametags in the bounding box because the classifier will learn to "cheat" by identifying objects from their nametag rather than features of the entity itself.
+
+### Data extraction
+
+The raw data (screenshot) is passed into the `data_processing.py` script.
 The script utilizes functions in `img_utils.py` to extract objects from the images using the bounding boxes and labels found in their corresponding XML files.
 Specifically, the workflow is as follows:
 
 - Acquire bounding box dimensions and labels from the XML files
-- Extract object (Toon or Cog) from the image using the dimensions
+- Extract object (Toon or Cog) from the image using the dimensions and labels found in the XML files
 - Save the cropped image of the object to the `unsorted` folder
 - Move the raw image and its corresponding XML file to the `processed` folder
 
 ```python
 # %% Convert raw images to data images
-for img_path in glob(f"{RAW_DIR}/*.png"):
-    print(f"Processing {img_path}")
-    xml_path = img_path.replace(".png", ".xml")
-    # Extract objects' bounding box dimensions from XML
-    objs_from_xml = extract_objects_from_xml(xml_path)
-    # Extract objects from images
-    objs_from_img = extract_objects_from_img(img_path, objs_from_xml)
-    # Save extracted objects to images
-    save_objects_to_img(objs_from_img, UNSORTED_DIR)
-    # Move raw image to processed directory
-    for f in [img_path, xml_path]:
-        new_path = f.replace(RAW_DIR, PROCESSED_DIR)
-        print(f"    Moving {f} to {new_path}")
-        rename(f, new_path)
+def process_images(
+    raw_images_dir: str = SCREENSHOTS_DIR,
+    image_type: str = "png",
+    move_images: bool = False,
+) -> None:
+    for img_path in glob(f"{raw_images_dir}/*.{image_type}"):
+        print(f"Processing {img_path}")
+        xml_path = img_path.replace(f".{image_type}", ".xml")
+        # Extract objects' labels and bounding box dimensions from XML
+        objs_from_xml = extract_objects_from_xml(xml_path)
+        # Extract objects from images using XML data
+        objs_from_img = extract_objects_from_img(img_path, objs_from_xml)
+        # Save extracted objects to images
+        save_objects_to_img(objs_from_img, UNSORTED_DIR)
+        # Move raw image to processed directory
+        if move_images:
+            for f in [img_path, xml_path]:
+                new_path = f.replace(raw_images_dir, PROCESSED_DIR)
+                print(f"    Moving {f} to {new_path}")
+                rename(f, new_path)
 ```
+
+### Data processing
+
+The extracted objects are of various sizes because the screenshots were taken from various angles and distances.
+Large objects are a results of the screenshot being close up, while small objects are a result of the screenshot being far away.
+
+Overall, it would be ideal for the dataset to consist mostly of large, close-up objects because they contain more information about the object.
+Small, far-away objects lose information about the object and are not as useful for training - we could simulate this loss of information through image augmentation.
+
+<font style="color:red">TODO: Insert image comparing a small and large object</font>
