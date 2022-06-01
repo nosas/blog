@@ -18,7 +18,7 @@ SUITS_SHORT = ["bb", "lb", "cb", "sb"]
 
 
 # %% Define functions
-def plot_suits_as_histogram() -> None:
+def plot_suits_as_bar() -> None:
     # all_cogs = glob(f"{UNSORTED_DIR}/cog/*.png")
     # num_cogs = len(all_cogs)
 
@@ -27,7 +27,7 @@ def plot_suits_as_histogram() -> None:
     # all_suits_dict = dict(zip(SUITS, num_suits))
     # print(num_cogs, all_suits_dict)
 
-    # Histogram of all_suits_dict
+    # Bar chart of all_suits_dict
     bars = plt.bar(SUITS_SHORT, num_suits)
     plt.title("Number of labels per suit")
     plt.xlabel("Suit")
@@ -37,7 +37,7 @@ def plot_suits_as_histogram() -> None:
     plt.show()
 
 
-def plot_toons_as_histogram() -> None:
+def plot_toons_as_bar() -> None:
     # all_toons = glob(f"{UNSORTED_DIR}/toon/toon_*.png")
     # num_toons = len(all_toons)
 
@@ -48,7 +48,7 @@ def plot_toons_as_histogram() -> None:
     # all_animals_dict = dict(zip(ANIMALS, num_animals))
     # print(num_toons, all_animals_dict)
 
-    # Histogram of all_animals_dict
+    # Bar chart of all_animals_dict
     bars = plt.bar(ANIMALS, num_animals)
     plt.title("Number of labels per animal")
     plt.xlabel("Animal")
@@ -130,8 +130,8 @@ def plot_xml_data() -> None:
 
 
 # %% Plot data
-# plot_suits_as_histogram()
-# plot_toons_as_histogram()
+# plot_suits_as_bar()
+# plot_toons_as_bar()
 # plot_xml_data()
 
 # %%
