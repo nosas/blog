@@ -5,7 +5,7 @@ from os import path
 
 
 # %% Define utility functions
-def extract_objects_from_xml(xml_path) -> list[tuple[str, int, int, int, int]]:
+def extract_objects_from_xml(xml_path: str) -> list[tuple[str, int, int, int, int]]:
     """Extract objects from XML file.
 
 
@@ -16,9 +16,8 @@ def extract_objects_from_xml(xml_path) -> list[tuple[str, int, int, int, int]]:
         xml_path (str): Absolute path to the XML file
     """
     # Load XML file
-    xml_file = open(xml_path)
-    xml_str = xml_file.read()
-    xml_file.close()
+    with open(xml_path, "r") as xml_file:
+        xml_str = xml_file.read()
     # Parse XML file
     tree = ET.fromstring(xml_str)
     objects = []
@@ -33,7 +32,7 @@ def extract_objects_from_xml(xml_path) -> list[tuple[str, int, int, int, int]]:
     return objects
 
 
-def extract_objects_from_img(img_path, objs_from_xml) -> tuple[str, list]:
+def extract_objects_from_img(img_path: str, objs_from_xml: tuple[str, int, int, int, int]) -> tuple[str, list]:
     """Extract objects from an image given a tuple of objects `from extract_object_from_xml()`
 
     Given a path to an image and objects' bounding box dimensions, extract the objects from the
@@ -54,22 +53,22 @@ def extract_objects_from_img(img_path, objs_from_xml) -> tuple[str, list]:
     return objects
 
 
-def get_save_directory(obj_name):
+def get_save_directory(obj_name: str) -> str:
     """Given an object name, return the save directory for the object.
 
     Args:
         obj_name (str): Name of the object
     """
-    if "cog" in obj_name:
+    if obj_name.startswith("cog_"):
         dir = "cog/"
-    elif "toon" in obj_name:
+    elif obj_name.startswith("toon_"):
         dir = "toon/"
     else:
         dir = "unknown/"
     return dir
 
 
-def save_objects_to_img(objs_from_img, save_path):
+def save_objects_to_img(objs_from_img: tuple[str, list], save_path: str):
     """Save objects to an image given a tuple of objects `from extract_object_from_img()`
 
     Given a tuple of objects and a path to save the objects to, save the objects to the

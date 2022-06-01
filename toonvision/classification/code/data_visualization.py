@@ -49,6 +49,7 @@ def plot_toons_as_histogram() -> None:
     plt.bar(ANIMALS, num_animals)
     plt.title("Number of labels per animal")
     plt.xlabel("Animal")
+    plt.xticks(rotation=-45)
     plt.show()
 
 
