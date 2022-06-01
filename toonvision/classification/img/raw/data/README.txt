@@ -1,0 +1,1 @@
+This directory and file is needed for labelimg.

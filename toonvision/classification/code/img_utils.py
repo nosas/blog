@@ -32,7 +32,9 @@ def extract_objects_from_xml(xml_path: str) -> list[tuple[str, int, int, int, in
     return objects
 
 
-def extract_objects_from_img(img_path: str, objs_from_xml: tuple[str, int, int, int, int]) -> tuple[str, list]:
+def extract_objects_from_img(
+    img_path: str, objs_from_xml: tuple[str, int, int, int, int]
+) -> tuple[str, list]:
     """Extract objects from an image given a tuple of objects `from extract_object_from_xml()`
 
     Given a path to an image and objects' bounding box dimensions, extract the objects from the

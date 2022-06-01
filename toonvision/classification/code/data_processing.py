@@ -72,5 +72,3 @@ def process_images(
                     rename(f, new_path)
         else:
             print(f"    No XML file found for {img_path}")
-
-# %%
