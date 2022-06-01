@@ -9,8 +9,8 @@ from data_processing import RAW_DIR, UNSORTED_DIR
 from img_utils import extract_objects_from_xml
 
 # %% Global variables
-with open(f"{RAW_DIR}/data/predefined_classes.txt", 'r') as f:
-    ALL_LABELS = [line for line in f.read().splitlines() if not line.startswith('=')]
+with open(f"{RAW_DIR}/data/predefined_classes.txt", "r") as f:
+    ALL_LABELS = [line for line in f.read().splitlines() if not line.startswith("=")]
 ANIMALS = [label.split("_")[1] for label in ALL_LABELS if label.startswith("toon_")]
 BINARY = ["cog", "toon"]
 SUITS_LONG = ["bossbot", "lawbot", "cashbot", "sellbot"]
@@ -28,9 +28,12 @@ def plot_suits_as_histogram() -> None:
     # print(num_cogs, all_suits_dict)
 
     # Histogram of all_suits_dict
-    plt.bar(SUITS_SHORT, num_suits)
+    bars = plt.bar(SUITS_SHORT, num_suits)
     plt.title("Number of labels per suit")
     plt.xlabel("Suit")
+    plt.bar_label(bars, num_suits)
+    plt.axhline(y=160, color="green")
+    plt.axhline(y=mean(num_suits), color="red", alpha=0.5, ls="dotted")
     plt.show()
 
 
@@ -46,10 +49,13 @@ def plot_toons_as_histogram() -> None:
     # print(num_toons, all_animals_dict)
 
     # Histogram of all_animals_dict
-    plt.bar(ANIMALS, num_animals)
+    bars = plt.bar(ANIMALS, num_animals)
     plt.title("Number of labels per animal")
     plt.xlabel("Animal")
     plt.xticks(rotation=-45)
+    plt.bar_label(bars, num_animals)
+    plt.axhline(y=58, color="green")
+    plt.axhline(y=mean(num_animals), color="red", alpha=0.5)
     plt.show()
 
 
@@ -78,9 +84,9 @@ def plot_xml_data() -> None:
 
     def create_counters() -> tuple[Counter, Counter, Counter, Counter]:
         # Create counters
-        count_all = Counter()     # All object names (32 + 11 = 43 classes)
+        count_all = Counter()  # All object names (32 + 11 = 43 classes)
         count_binary = Counter()  # Cog or Toon (2 classes)
-        count_suit = Counter()    # Bossbot, Lawbot, Cashbot, Sellbot (4 classes)
+        count_suit = Counter()  # Bossbot, Lawbot, Cashbot, Sellbot (4 classes)
         count_animal = Counter()  # Toon animals (11 classes)
         # Initialize all counters to 0
         count_all.update({key: 0 for key in ALL_LABELS})
@@ -124,8 +130,8 @@ def plot_xml_data() -> None:
 
 
 # %% Plot data
-plot_suits_as_histogram()
-plot_toons_as_histogram()
-plot_xml_data()
+# plot_suits_as_histogram()
+# plot_toons_as_histogram()
+# plot_xml_data()
 
 # %%
