@@ -60,7 +60,7 @@ model.compile(loss="binary_crossentropy", optimizer="rmsprop", metrics=["accurac
 # %% Define the training callbacks
 callbacks = [
     keras.callbacks.ModelCheckpoint(
-        filepath="toonvision1.keras",
+        filepath="toonvision.keras",
         save_best_only=True,
         monitor="val_loss"
     )
