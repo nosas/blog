@@ -129,6 +129,57 @@ def plot_xml_data() -> None:
     plt.show()
 
 
+def plot_image_sizes(img_dir: str) -> None:
+    """Plot all image sizes in a directory"""
+    # ! This poorly represents image sizes, but it's a start
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    # Get image sizes
+    sizes_height = []
+    sizes_width = []
+    for img_path in glob(f"{img_dir}/*/*.png"):
+        img = plt.imread(img_path)
+        sizes_height.append(img.shape[0])
+        sizes_width.append(img.shape[1])
+    # Plot histogram
+    plt.hist(sizes_height, bins=100,)
+    plt.title(f"Image sizes (height) in {img_dir}")
+    plt.show()
+    plt.hist(sizes_width, bins=100)
+    plt.title(f"Image sizes (width) in {img_dir}")
+    plt.show()
+    print(np.mean(sizes_height), np.mean(sizes_width))
+
+
+def plot_history(history: dict) -> None:
+    """Plot the history of a model"""
+    import matplotlib.pyplot as plt
+    num_epochs = range(1, len(history["loss"]) + 1)
+    # Plot training & validation accuracy values
+    plt.plot(num_epochs, history["accuracy"])
+    plt.plot(num_epochs, history["val_accuracy"])
+    plt.title("Model accuracy")
+    plt.ylabel("Accuracy")
+    plt.xlabel("Epoch")
+    plt.legend(["Train", "Validation"], loc="upper left")
+    plt.show()
+
+    # Plot training & validation loss values
+    plt.plot(num_epochs, history["loss"])
+    plt.plot(num_epochs, history["val_loss"])
+    plt.title("Model loss")
+    plt.ylabel("Loss")
+    plt.xlabel("Epoch")
+    plt.legend(["Train", "Validation"], loc="upper left")
+    plt.show()
+
+
+# TODO Plot training/validation/test datasets
+def plot_all_datasets():
+    pass
+
+
 # %% Plot data
 # plot_suits_as_bar()
 # plot_toons_as_bar()

@@ -6,14 +6,24 @@ from img_utils import (
 )
 from os import rename, path
 from glob import glob
+from random import shuffle
 
 # %% Test functions with
 IMG_DIR = "../img"
+
 RAW_DIR = IMG_DIR + "/raw"
 DATA_DIR = IMG_DIR + "/data"
-UNSORTED_DIR = IMG_DIR + "/unsorted"
+
+TRAIN_DIR = DATA_DIR + "/train"
+VALIDATE_DIR = DATA_DIR + "/validate"
+TEST_DIR = DATA_DIR + "/test"
+
 PROCESSED_DIR = RAW_DIR + "/processed"
 SCREENSHOTS_DIR = RAW_DIR + "/screenshots"
+
+UNSORTED_DIR = IMG_DIR + "/unsorted"
+UNSORTED_COG_DIR = UNSORTED_DIR + "/cog"
+UNSORTED_TOON_DIR = UNSORTED_DIR + "/toon"
 
 
 def verify_folder_structure():
@@ -72,3 +82,53 @@ def process_images(
                     rename(f, new_path)
         else:
             print(f"    No XML file found for {img_path}")
+
+
+def split_data(dry_run: bool = False):
+    """Split the data into train(40%)/validate(20%)/test(40%) data sets"""
+    for unsorted_dir in [UNSORTED_COG_DIR, UNSORTED_TOON_DIR]:
+        cog_or_toon = unsorted_dir.split("/")[-1]
+        # Get all images from unsorted_dir
+        unsorted_images = glob(f"{unsorted_dir}/*.png")
+        num_images = len(unsorted_images)
+
+        # Split images into train/validate/test sets
+        num_train = int(num_images * 0.4)
+        num_validate = int(num_images * 0.2)
+        num_test = num_images - num_train - num_validate
+        print(num_train, num_validate, num_test)
+
+        # # Shuffle filenames to randomize the order of the images
+        shuffle(unsorted_images)
+        train = unsorted_images[:num_train]
+        validate = unsorted_images[num_train:-num_test]
+        test = unsorted_images[-num_test:]
+
+        # Move images to train/validate/test directories
+        for images, dir_name in zip([train, validate, test], [TRAIN_DIR, VALIDATE_DIR, TEST_DIR]):
+            for img_path in images:
+                new_path = img_path.replace(unsorted_dir, f"{dir_name}/{cog_or_toon}")
+                if dry_run:
+                    print(f"Moving {img_path} to {new_path}")
+                else:
+                    rename(img_path, new_path)
+
+
+def unsort_data(dry_run: bool = False):
+    for dir_name in [TRAIN_DIR, VALIDATE_DIR, TEST_DIR]:
+        all_imgs = glob(f"{dir_name}/*/*.png")
+        for img in all_imgs:
+            new_path = img.replace("\\", '/').replace(dir_name, UNSORTED_DIR)
+            if dry_run:
+                print(f"Moving {img} to {new_path}")
+            else:
+                rename(img, new_path)
+
+
+# # %% Split data
+# split_data(dry_run=True)
+
+# # %% Unsort data
+# unsort_data(dry_run=True)
+
+# %%
