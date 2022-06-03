@@ -47,44 +47,7 @@ test_dataset = image_dataset_from_directory(
     # batch_size=16
 )
 
-
-# %% Create model
-model = make_model()
-
-# %% View model summary
-model.summary()
-
-# %% Compile model
-model.compile(loss="binary_crossentropy", optimizer="rmsprop", metrics=["accuracy"])
-
-# %% Define the training callbacks
-callbacks = [
-    keras.callbacks.ModelCheckpoint(
-        filepath="toonvision.keras",
-        save_best_only=True,
-        monitor="val_loss"
-    )
-]
-
-# %% Train model
-history = model.fit(
-    train_dataset,
-    epochs=20,
-    validation_data=validation_dataset,
-    callbacks=callbacks
-)
-
-# %% Plot training and validation loss
-plot_history(history.history)
-
-
-# %% Test model
-model = keras.models.load_model("toonvision.keras")
-test_loss, test_accuracy = model.evaluate(test_dataset)
-print(f"Test Loss: {test_loss:.2f}")
-print(f"Test Accuracy: {test_accuracy:.2f}")
-
-# %% Incorporate data augmentation into the model
+# %% Define data augmentations
 data_augmentation = keras.Sequential(
     [
         # Apply horizontal flipping to 50% of the images
@@ -96,62 +59,56 @@ data_augmentation = keras.Sequential(
     ]
 )
 
-model = make_model(augmentation=data_augmentation)
-model.summary()
-model.compile(loss="binary_crossentropy", optimizer="rmsprop", metrics=["accuracy"])
-callbacks = [
-    keras.callbacks.ModelCheckpoint(
-        filepath="toonvision_augmentation.keras",
-        save_best_only=True,
-        monitor="val_loss"
-    )
-]
+# %% Create models
+model = make_model(
+    name="toonvision"
+)
+model_augmentation = make_model(
+    name="toonvision_augmentation",
+    augmentation=data_augmentation
+)
+model_augmentation_dropout = make_model(
+    name="toonvision_augmentation_dropout",
+    augmentation=data_augmentation,
+    dropout=0.5
+)
+all_models = [model, model_augmentation, model_augmentation_dropout]
+
+# %% View model summary
+all_models[0].summary()
+
+# %% Compile all models
+for model in all_models:
+    model.compile(loss="binary_crossentropy", optimizer="rmsprop", metrics=["accuracy"])
 
 # %% Train model
-history = model.fit(
-    train_dataset,
-    epochs=20,
-    validation_data=validation_dataset,
-    callbacks=callbacks
-)
+all_histories = []
+for model in all_models:
+    # Define the training callbacks
+    callbacks = [
+        keras.callbacks.ModelCheckpoint(
+            filepath=f"{model.name}.keras",
+            save_best_only=True,
+            monitor="val_loss"
+        )
+    ]
+    history = model.fit(
+        train_dataset,
+        epochs=20,
+        validation_data=validation_dataset,
+        callbacks=callbacks
+    )
+    all_histories.append((model.name, history))
 
 # %% Plot training and validation loss
 plot_history(history.history)
 
 # %% Test model
-model = keras.models.load_model("toonvision_augmentation.keras")
-test_loss, test_accuracy = model.evaluate(test_dataset)
-print(f"Test Loss: {test_loss:.2f}")
-print(f"Test Accuracy: {test_accuracy:.2f}")
-
-# %% Make model with data augmentation and dropout
-model = make_model(augmentation=data_augmentation, dropout=0.5)
-model.summary()
-model.compile(loss="binary_crossentropy", optimizer="rmsprop", metrics=["accuracy"])
-callbacks = [
-    keras.callbacks.ModelCheckpoint(
-        filepath="toonvision_augmentation_dropout.keras",
-        save_best_only=True,
-        monitor="val_loss"
-    )
-]
-
-# %% Train model
-history = model.fit(
-    train_dataset,
-    epochs=20,
-    validation_data=validation_dataset,
-    callbacks=callbacks
-)
-
-# %% Plot training and validation loss
-plot_history(history.history)
-
-# %% Test model
-model = keras.models.load_model("toonvision_augmentation_dropout.keras")
-test_loss, test_accuracy = model.evaluate(test_dataset)
-print(f"Test Loss: {test_loss:.2f}")
-print(f"Test Accuracy: {test_accuracy:.2f}")
+for model_name, model in all_models:
+    model = keras.models.load_model(f"{model_name}.keras")
+    test_loss, test_accuracy = model.evaluate(test_dataset)
+    print(f"{model_name} Test Loss: {test_loss:.2f}")
+    print(f"{model_name} Test Accuracy: {test_accuracy:.2f}")
 
 # %% Predict on unseen images
 # TODO: Add code to predict on unseen images
