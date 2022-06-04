@@ -143,7 +143,10 @@ def plot_image_sizes(img_dir: str) -> None:
         sizes_height.append(img.shape[0])
         sizes_width.append(img.shape[1])
     # Plot histogram
-    plt.hist(sizes_height, bins=100,)
+    plt.hist(
+        sizes_height,
+        bins=100,
+    )
     plt.title(f"Image sizes (height) in {img_dir}")
     plt.show()
     plt.hist(sizes_width, bins=100)
@@ -152,27 +155,77 @@ def plot_image_sizes(img_dir: str) -> None:
     print(np.mean(sizes_height), np.mean(sizes_width))
 
 
-def plot_history(history: dict) -> None:
-    """Plot the history of a model"""
+def plot_history(history: dict, name: str = "Model") -> None:
+    """Plot the history (accuracy and loss) of a model"""
     import matplotlib.pyplot as plt
+    import numpy as np
+
+    max_accuracy = np.argmax(history["accuracy"]) + 1
+    max_val_accuracy = np.argmax(history["val_accuracy"]) + 1
+    min_loss = np.argmin(history["loss"]) + 1
+    min_val_loss = np.argmin(history["val_loss"]) + 1
     num_epochs = range(1, len(history["loss"]) + 1)
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    fig.tight_layout()
     # Plot training & validation accuracy values
-    plt.plot(num_epochs, history["accuracy"])
-    plt.plot(num_epochs, history["val_accuracy"])
-    plt.title("Model accuracy")
-    plt.ylabel("Accuracy")
-    plt.xlabel("Epoch")
-    plt.legend(["Train", "Validation"], loc="upper left")
-    plt.show()
+    axes[0].plot(num_epochs, history["accuracy"])
+    axes[0].plot(num_epochs, history["val_accuracy"])
+    axes[0].set_title(f"{name} accuracy")
+    axes[0].axvline(
+        x=max_accuracy,
+        color="blue",
+        alpha=0.5,
+        ls="--",
+    )
+    axes[0].axvline(x=max_val_accuracy, color="orange", alpha=0.8, ls="--")
+    axes[0].axhline(
+        y=history["val_accuracy"][max_val_accuracy - 1], color="orange", alpha=0.8, ls="--"
+    )
+    axes[0].set_ylabel("Accuracy")
+    axes[0].set_xlabel("Epoch")
+    axes[0].set_xticks(num_epochs[1::2])
+    axes[0].legend(["Train", "Validation"], loc="upper left")
+    axes[0].grid(axis="y")
 
     # Plot training & validation loss values
-    plt.plot(num_epochs, history["loss"])
-    plt.plot(num_epochs, history["val_loss"])
-    plt.title("Model loss")
-    plt.ylabel("Loss")
-    plt.xlabel("Epoch")
-    plt.legend(["Train", "Validation"], loc="upper left")
-    plt.show()
+    axes[1].plot(num_epochs, history["loss"])
+    axes[1].plot(num_epochs, history["val_loss"])
+    axes[1].set_title(f"{name} loss")
+    axes[1].axvline(x=min_loss, color="blue", alpha=0.5, ls="--")
+    axes[1].axvline(x=min_val_loss, color="orange", alpha=0.8, ls="--")
+    axes[1].axhline(
+        y=history["val_loss"][min_val_loss - 1], color="orange", alpha=0.8, ls="--"
+    )
+    axes[1].set_ylabel("Loss")
+    axes[1].set_xlabel("Epoch")
+    axes[1].legend(["Train", "Validation"], loc="upper left")
+    axes[1].set_xticks(num_epochs[1::2])
+    axes[1].grid(axis="y")
+
+
+def compare_histories(histories: list) -> None:
+    """Plot and compare the histories (acc, val_acc, loss, val_loss) of multiple models
+
+    The resulting plot is 4 subplots:
+    1. Accuracy
+    2. Validation accuracy
+    3. Loss
+    4. Validation loss
+
+    Args:
+        histories: List of tuples of (model: keras.Model, history: keras.callbacks.History)
+    """
+    _, axes = plt.subplots(nrows=4, ncols=1, figsize=(10, 10))
+    for model, history in histories:
+        for idx, key in enumerate(["accuracy", "val_accuracy", "loss", "val_loss"]):
+            name = model.name.strip("toonvision_")
+            axes[idx].plot(history.history[key], label=f"{name}")
+            axes[idx].grid(axis="y")
+            axes[idx].legend(loc="upper left")
+            axes[idx].set_title(key)
+    plt.tight_layout()
+    plt.grid(axis="y")
 
 
 # TODO Plot training/validation/test datasets
@@ -184,5 +237,3 @@ def plot_all_datasets():
 # plot_suits_as_bar()
 # plot_toons_as_bar()
 # plot_xml_data()
-
-# %%

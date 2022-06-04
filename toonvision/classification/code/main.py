@@ -3,12 +3,23 @@ import matplotlib.pyplot as plt
 import keras
 from keras import layers
 from tensorflow.keras.utils import image_dataset_from_directory
+import tensorflow as tf
 
-from data_processing import (TEST_DIR, TRAIN_DIR, VALIDATE_DIR, process_images,
-                             split_data)
-from data_visualization import (plot_history, plot_image_sizes,
-                                plot_suits_as_bar, plot_toons_as_bar,
-                                plot_xml_data)
+from data_processing import (
+    TEST_DIR,
+    TRAIN_DIR,
+    VALIDATE_DIR,
+    process_images,
+    split_data,
+)
+from data_visualization import (
+    plot_history,
+    plot_image_sizes,
+    plot_suits_as_bar,
+    plot_toons_as_bar,
+    plot_xml_data,
+    compare_histories,
+)
 from model_utils import make_model
 
 # %% Convert all images in screenshots directory to data images
@@ -48,38 +59,50 @@ test_dataset = image_dataset_from_directory(
 )
 
 # %% Define data augmentations
-data_augmentation = keras.Sequential(
-    [
-        # Apply horizontal flipping to 50% of the images
-        layers.RandomFlip("horizontal"),
-        # Rotate the input image by some factor in range [-10%, 10%] or [-36, 36] in degrees
-        layers.RandomRotation(0.1),
-        # Zoom in or out by a random factor in range [-20%, 20%]
-        layers.RandomZoom(0.2)
-    ]
-)
+# data_augmentation = keras.Sequential(
+#     [
+#         # Apply horizontal flipping to 50% of the images
+#         layers.RandomFlip("horizontal"),
+#         # Rotate the input image by some factor in range [-10%, 10%] or [-36, 36] in degrees
+#         layers.RandomRotation(0.1),
+#         # Zoom in or out by a random factor in range [-20%, 20%]
+#         layers.RandomZoom(0.2),
+#     ]
+# )
 
 # %% Create models
-model = make_model(
-    name="toonvision"
-)
-model_augmentation = make_model(
-    name="toonvision_augmentation",
-    augmentation=data_augmentation
-)
-model_augmentation_dropout = make_model(
-    name="toonvision_augmentation_dropout",
-    augmentation=data_augmentation,
-    dropout=0.5
-)
-all_models = [model, model_augmentation, model_augmentation_dropout]
+# model = make_model(name="toonvision")
+# model_augmentation = make_model(
+#     name="toonvision_augmentation", augmentation=data_augmentation
+# )
+# model_augmentation_dropout = make_model(
+#     name="toonvision_augmentation_dropout", augmentation=data_augmentation, dropout=0.5
+# )
+# all_models = [model, model_augmentation, model_augmentation_dropout]
 
 # %% View model summary
-all_models[0].summary()
+# all_models[0].summary()
 
 # %% Compile all models
-for model in all_models:
-    model.compile(loss="binary_crossentropy", optimizer="rmsprop", metrics=["accuracy"])
+learning_rate = 0.0001
+optimizers = [
+    tf.keras.optimizers.SGD(learning_rate=learning_rate),
+    tf.keras.optimizers.Adam(learning_rate=learning_rate),
+    tf.keras.optimizers.RMSprop(learning_rate=learning_rate),
+    tf.keras.optimizers.Adadelta(learning_rate=learning_rate),
+    tf.keras.optimizers.Adagrad(learning_rate=learning_rate),
+    tf.keras.optimizers.Adamax(learning_rate=learning_rate),
+    tf.keras.optimizers.Nadam(learning_rate=learning_rate),
+    tf.keras.optimizers.Ftrl(learning_rate=learning_rate),
+]
+all_models = []
+for opt in optimizers:
+    model = make_model(name="toonvision_" + opt._name)
+    model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
+    all_models.append(model)
+# optimizer = keras.optimizers.adam_v2.Adam(learning_rate=0.0001)
+# for model in all_models:
+#     model.compile(loss="binary_crossentropy", optimizer=optimizer, metrics=["accuracy"])
 
 # %% Train model
 all_histories = []
@@ -87,28 +110,34 @@ for model in all_models:
     # Define the training callbacks
     callbacks = [
         keras.callbacks.ModelCheckpoint(
-            filepath=f"{model.name}.keras",
-            save_best_only=True,
-            monitor="val_loss"
+            filepath=f"{model.name}.keras", save_best_only=True, monitor="val_loss"
         )
     ]
     history = model.fit(
         train_dataset,
-        epochs=20,
+        epochs=50,
         validation_data=validation_dataset,
-        callbacks=callbacks
+        callbacks=callbacks,
     )
-    all_histories.append((model.name, history))
+    all_histories.append((model, history))
 
 # %% Plot training and validation loss
-plot_history(history.history)
+for model, history in all_histories:
+    plot_history(history=history.history, name=model.name)
 
 # %% Test model
-for model_name, model in all_models:
-    model = keras.models.load_model(f"{model_name}.keras")
+for model in all_models:
+    model = keras.models.load_model(f"{model.name}.keras")
     test_loss, test_accuracy = model.evaluate(test_dataset)
-    print(f"{model_name} Test Loss: {test_loss:.2f}")
-    print(f"{model_name} Test Accuracy: {test_accuracy:.2f}")
+    print(f"{model.name} Test Loss: {test_loss:.2f}")
+    print(f"{model.name} Test Accuracy: {test_accuracy:.2f}")
 
 # %% Predict on unseen images
 # TODO: Add code to predict on unseen images
+
+
+# %% Compare training histories for all optimizer
+
+compare_histories(all_histories)
+
+# %%
