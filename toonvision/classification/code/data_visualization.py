@@ -5,7 +5,7 @@ from statistics import mean
 
 import matplotlib.pyplot as plt
 
-from data_processing import RAW_DIR, UNSORTED_DIR
+from data_processing import RAW_DIR, UNSORTED_COG_DIR, UNSORTED_TOON_DIR
 from img_utils import extract_objects_from_xml
 
 # %% Global variables
@@ -22,7 +22,7 @@ def plot_suits_as_bar() -> None:
     # all_cogs = glob(f"{UNSORTED_DIR}/cog/*.png")
     # num_cogs = len(all_cogs)
 
-    all_suits = [glob(f"{UNSORTED_DIR}/cog/cog_{suit}*.png") for suit in SUITS_SHORT]
+    all_suits = [glob(f"{UNSORTED_COG_DIR}/cog_{suit}*.png") for suit in SUITS_SHORT]
     num_suits = [len(suit) for suit in all_suits]
     # all_suits_dict = dict(zip(SUITS, num_suits))
     # print(num_cogs, all_suits_dict)
@@ -42,7 +42,7 @@ def plot_toons_as_bar() -> None:
     # num_toons = len(all_toons)
 
     all_animals = [
-        glob(f"{UNSORTED_DIR}/toon/toon_{animal}*.png") for animal in ANIMALS
+        glob(f"{UNSORTED_TOON_DIR}/toon_{animal}*.png") for animal in ANIMALS
     ]
     num_animals = [len(animal) for animal in all_animals]
     # all_animals_dict = dict(zip(ANIMALS, num_animals))
