@@ -34,6 +34,8 @@ This article covers ...
         - [Data labeling](#data-labeling)
         - [Data extraction](#data-extraction)
         - [Data processing](#data-processing)
+        - [Creating the datasets](#creating-the-datasets)
+            - [Spitting the images into train, validate, and test](#spitting-the-images-into-train-validate-and-test)
 
 </details>
 
@@ -242,3 +244,74 @@ Overall, it would be ideal for the dataset to consist mostly of large, close-up 
 Small, far-away objects lose information about the object and are not as useful for training - we could simulate this loss of information through image augmentation.
 
 <font style="color:red">TODO: Insert image comparing a small and large object</font>
+
+
+### Creating the datasets
+
+After the objects are extracted and placed in the `unsorted` folder, we can create the datasets.
+First, we need to create a balanced datasets within the `data/[train|validate|test]` folders.
+Remember that we're aiming for a 40/20/40 split of the dataset for training, validation, and testing, respectively.
+
+#### Spitting the images into train, validate, and test
+
+Before creating the datasets, we need to move images from `unsorted/[cog|toon]` to `data/[train|validate|test]/[cog|toon]`.
+
+```python
+def split_data(dry_run: bool = False):
+    """Split the data into train(40%)/validate(20%)/test(40%) data sets"""
+    for unsorted_dir in [UNSORTED_COG_DIR, UNSORTED_TOON_DIR]:
+        cog_or_toon = unsorted_dir.split("/")[-1]
+        # Get all images from unsorted_dir
+        unsorted_images = glob(f"{unsorted_dir}/*.png")
+        num_images = len(unsorted_images)
+
+        # Split images into train/validate/test sets
+        num_train = int(num_images * 0.4)
+        num_validate = int(num_images * 0.2)
+        num_test = num_images - num_train - num_validate
+        print(num_train, num_validate, num_test)
+
+        # # Shuffle filenames to randomize the order of the images
+        shuffle(unsorted_images)
+        train = unsorted_images[:num_train]
+        validate = unsorted_images[num_train:-num_test]
+        test = unsorted_images[-num_test:]
+
+        # Move images to train/validate/test directories
+        for images, dir_name in zip([train, validate, test], [TRAIN_DIR, VALIDATE_DIR, TEST_DIR]):
+            for img_path in images:
+                new_path = img_path.replace(unsorted_dir, f"{dir_name}/{cog_or_toon}")
+                if dry_run:
+                    print(f"Moving {img_path} to {new_path}")
+                else:
+                    rename(img_path, new_path)
+```
+
+We can also visualize the datasets - specifically the balance of the datasets - using the `plot_all_datasets` function in `data_visualization.py`.
+
+<font style="color:red">TODO: Insert image of dataset balance</font>
+
+The creation of datasets is straight-forward using keras:
+
+```python
+# %% Create datasets
+from tensorflow.keras.image_dataset_from_directory
+
+train_dataset = image_dataset_from_directory(
+    TRAIN_DIR,
+    image_size=(600, 200),
+    # batch_size=16
+)
+validation_dataset = image_dataset_from_directory(
+    VALIDATE_DIR,
+    image_size=(600, 200),
+    # batch_size=16
+)
+test_dataset = image_dataset_from_directory(
+    TEST_DIR,
+    image_size=(600, 200),
+    # batch_size=16
+)
+```
+
+<font style="color:red">TODO: Insert sample images from train dataset</font>

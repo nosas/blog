@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 31, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 04, 2022</p>
 
 <h1 id="toonvision-classification">ToonVision - Classification</h1>
 
@@ -69,6 +69,10 @@ For now, let's focus on real-time classification.</p>
 <li><a href="#data-labeling">Data labeling</a></li>
 <li><a href="#data-extraction">Data extraction</a></li>
 <li><a href="#data-processing">Data processing</a></li>
+<li><a href="#creating-the-datasets">Creating the datasets</a>
+<ul>
+<li><a href="#spitting-the-images-into-train-validate-and-test">Spitting the images into train, validate, and test</a></li>
+</ul></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -299,6 +303,74 @@ Large objects are a results of the screenshot being close up, while small object
 Small, far-away objects lose information about the object and are not as useful for training - we could simulate this loss of information through image augmentation.</p>
 
 <p><font style="color:red">TODO: Insert image comparing a small and large object</font></p>
+
+<h3 id="creating-the-datasets">Creating the datasets</h3>
+
+<p>After the objects are extracted and placed in the <code>unsorted</code> folder, we can create the datasets.
+First, we need to create a balanced datasets within the <code>data/[train|validate|test]</code> folders.
+Remember that we're aiming for a 40/20/40 split of the dataset for training, validation, and testing, respectively.</p>
+
+<h4 id="spitting-the-images-into-train-validate-and-test">Spitting the images into train, validate, and test</h4>
+
+<p>Before creating the datasets, we need to move images from <code>unsorted/[cog|toon]</code> to <code>data/[train|validate|test]/[cog|toon]</code>.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">split_data</span><span class="p">(</span><span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Split the data into train(40%)/validate(20%)/test(40%) data sets&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">unsorted_dir</span> <span class="ow">in</span> <span class="p">[</span><span class="n">UNSORTED_COG_DIR</span><span class="p">,</span> <span class="n">UNSORTED_TOON_DIR</span><span class="p">]:</span>
+        <span class="n">cog_or_toon</span> <span class="o">=</span> <span class="n">unsorted_dir</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># Get all images from unsorted_dir</span>
+        <span class="n">unsorted_images</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">unsorted_dir</span><span class="si">}</span><span class="s2">/*.png&quot;</span><span class="p">)</span>
+        <span class="n">num_images</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">unsorted_images</span><span class="p">)</span>
+
+        <span class="c1"># Split images into train/validate/test sets</span>
+        <span class="n">num_train</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_images</span> <span class="o">*</span> <span class="mf">0.4</span><span class="p">)</span>
+        <span class="n">num_validate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_images</span> <span class="o">*</span> <span class="mf">0.2</span><span class="p">)</span>
+        <span class="n">num_test</span> <span class="o">=</span> <span class="n">num_images</span> <span class="o">-</span> <span class="n">num_train</span> <span class="o">-</span> <span class="n">num_validate</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">num_train</span><span class="p">,</span> <span class="n">num_validate</span><span class="p">,</span> <span class="n">num_test</span><span class="p">)</span>
+
+        <span class="c1"># # Shuffle filenames to randomize the order of the images</span>
+        <span class="n">shuffle</span><span class="p">(</span><span class="n">unsorted_images</span><span class="p">)</span>
+        <span class="n">train</span> <span class="o">=</span> <span class="n">unsorted_images</span><span class="p">[:</span><span class="n">num_train</span><span class="p">]</span>
+        <span class="n">validate</span> <span class="o">=</span> <span class="n">unsorted_images</span><span class="p">[</span><span class="n">num_train</span><span class="p">:</span><span class="o">-</span><span class="n">num_test</span><span class="p">]</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="n">unsorted_images</span><span class="p">[</span><span class="o">-</span><span class="n">num_test</span><span class="p">:]</span>
+
+        <span class="c1"># Move images to train/validate/test directories</span>
+        <span class="k">for</span> <span class="n">images</span><span class="p">,</span> <span class="n">dir_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="n">train</span><span class="p">,</span> <span class="n">validate</span><span class="p">,</span> <span class="n">test</span><span class="p">],</span> <span class="p">[</span><span class="n">TRAIN_DIR</span><span class="p">,</span> <span class="n">VALIDATE_DIR</span><span class="p">,</span> <span class="n">TEST_DIR</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">img_path</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
+                <span class="n">new_path</span> <span class="o">=</span> <span class="n">img_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">unsorted_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dir_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">cog_or_toon</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Moving </span><span class="si">{</span><span class="n">img_path</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">rename</span><span class="p">(</span><span class="n">img_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
+</code></pre></div>
+
+<p>We can also visualize the datasets - specifically the balance of the datasets - using the <code>plot_all_datasets</code> function in <code>data_visualization.py</code>.</p>
+
+<p><font style="color:red">TODO: Insert image of dataset balance</font></p>
+
+<p>The creation of datasets is straight-forward using keras:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="c1"># %% Create datasets</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.image_dataset_from_directory</span>
+
+<span class="n">train_dataset</span> <span class="o">=</span> <span class="n">image_dataset_from_directory</span><span class="p">(</span>
+    <span class="n">TRAIN_DIR</span><span class="p">,</span>
+    <span class="n">image_size</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">),</span>
+    <span class="c1"># batch_size=16</span>
+<span class="p">)</span>
+<span class="n">validation_dataset</span> <span class="o">=</span> <span class="n">image_dataset_from_directory</span><span class="p">(</span>
+    <span class="n">VALIDATE_DIR</span><span class="p">,</span>
+    <span class="n">image_size</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">),</span>
+    <span class="c1"># batch_size=16</span>
+<span class="p">)</span>
+<span class="n">test_dataset</span> <span class="o">=</span> <span class="n">image_dataset_from_directory</span><span class="p">(</span>
+    <span class="n">TEST_DIR</span><span class="p">,</span>
+    <span class="n">image_size</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">),</span>
+    <span class="c1"># batch_size=16</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p><font style="color:red">TODO: Insert sample images from train dataset</font></p>
 
 </body>
 </html>
