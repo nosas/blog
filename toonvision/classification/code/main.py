@@ -1,7 +1,5 @@
 # %% Imports
-import matplotlib.pyplot as plt
 import keras
-from keras import layers
 from tensorflow.keras.utils import image_dataset_from_directory
 import tensorflow as tf
 
@@ -95,18 +93,18 @@ optimizers = [
     tf.keras.optimizers.Nadam(learning_rate=learning_rate),
     tf.keras.optimizers.Ftrl(learning_rate=learning_rate),
 ]
-all_models = []
+models_all = []
 for opt in optimizers:
     model = make_model(name="toonvision_" + opt._name)
     model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
-    all_models.append(model)
+    models_all.append(model)
 # optimizer = keras.optimizers.adam_v2.Adam(learning_rate=0.0001)
 # for model in all_models:
 #     model.compile(loss="binary_crossentropy", optimizer=optimizer, metrics=["accuracy"])
 
 # %% Train model
-all_histories = []
-for model in all_models:
+histories_all = []  # List of tuples: tuple[model, history]
+for model in models_all:
     # Define the training callbacks
     callbacks = [
         keras.callbacks.ModelCheckpoint(
@@ -119,14 +117,14 @@ for model in all_models:
         validation_data=validation_dataset,
         callbacks=callbacks,
     )
-    all_histories.append((model, history))
+    histories_all.append((model, history))
 
 # %% Plot training and validation loss
-for model, history in all_histories:
-    plot_history(history=history.history, name=model.name)
+# for model, history in all_histories:
+#     plot_history(history=history.history, name=model.name)
 
 # %% Test model
-for model in all_models:
+for model in models_all:
     model = keras.models.load_model(f"{model.name}.keras")
     test_loss, test_accuracy = model.evaluate(test_dataset)
     print(f"{model.name} Test Loss: {test_loss:.2f}")
@@ -136,8 +134,24 @@ for model in all_models:
 # TODO: Add code to predict on unseen images
 
 
-# %% Compare training histories for all optimizer
+# %% Compare training histories for all optimizers
+compare_histories(histories_all)
 
-compare_histories(all_histories)
+# %% Remove optimizers with vanishing gradients
+vanishing_gradients = ["Adadelta", "Adagrad", "Ftrl", "SGD"]
+histories_vanishing = []
+histories_not_vanishing = []
+for model, history in histories_all:
+    if model.name.strip("toonvision_") not in vanishing_gradients:
+        histories_not_vanishing.append((model, history))
+    else:
+        histories_vanishing.append((model, history))
+
+
+# %% Compare training histories for optimizers without vanishing gradients
+compare_histories(histories_not_vanishing)
+
+# %% Compare training histories for optimizers with vanishing gradients
+compare_histories(histories_vanishing)
 
 # %%
