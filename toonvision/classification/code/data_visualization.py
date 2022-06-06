@@ -5,8 +5,9 @@ from statistics import mean
 
 import matplotlib.pyplot as plt
 import re
+import numpy as np
 
-from data_processing import RAW_DIR, UNSORTED_COG_DIR, UNSORTED_TOON_DIR
+from data_processing import RAW_DIR, UNSORTED_COG_DIR, UNSORTED_TOON_DIR, TEST_DIR, TRAIN_DIR, VALIDATE_DIR
 from img_utils import extract_objects_from_xml
 
 # %% Global variables
@@ -331,14 +332,37 @@ def plot_counters(counters: tuple[dict, dict, dict, dict], suptitle: str) -> Non
     plt.show()
 
 
-# get_obj_details_from_filepath(
-#     filepath="toonvision/classification/img/data/validate/toon/toon_cat_91.png"
-# )
+def plot_datasets_suits():
+    c_train = list(count_objects(data_dir=f"{TRAIN_DIR}/*/*.png"))
+    train = c_train[2]
+    labels = list(train.keys())
+    bars_train = plt.barh(labels, train.values(), label="Train")
+    plt.bar_label(bars_train, train.values(), label_type='center')
 
+    c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
+    validate = c_validate[2]
+    bars_validate = plt.barh(labels, validate.values(), label="Validate", left=list(train.values()))
+    plt.bar_label(bars_validate, validate.values(), label_type='center')
+
+    c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
+    test = c_test[2]
+    bars_test = plt.barh(labels, test.values(), label="Test", left=np.add(list(train.values()), list(validate.values())))
+    plt.bar_label(bars_test, test.values(), label_type='center')
+
+    plt.gca().invert_yaxis()
+    plt.xlabel("Suits")
+    plt.title("Suit labels per dataset")
+    plt.grid(axis='x', linestyle="--")
+    plt.legend(["Train", "Validate", "Test"])
+    plt.show()
+
+
+plot_datasets_suits()
 # %% Plot data
 # plot_suits_as_bar()
 # plot_toons_as_bar()
 # plot_xml_data()
 
 
+# %%
 # %%
