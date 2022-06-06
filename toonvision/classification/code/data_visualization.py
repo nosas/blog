@@ -4,6 +4,7 @@ from glob import glob
 from statistics import mean
 
 import matplotlib.pyplot as plt
+import re
 
 from data_processing import RAW_DIR, UNSORTED_COG_DIR, UNSORTED_TOON_DIR
 from img_utils import extract_objects_from_xml
@@ -15,10 +16,12 @@ ANIMALS = [label.split("_")[1] for label in ALL_LABELS if label.startswith("toon
 BINARY = ["cog", "toon"]
 SUITS_LONG = ["bossbot", "lawbot", "cashbot", "sellbot"]
 SUITS_SHORT = ["bb", "lb", "cb", "sb"]
+SUITS_MAP = {short: long for short, long in zip(SUITS_SHORT, SUITS_LONG)}
 
 
 # %% Define functions
 def plot_suits_as_bar() -> None:
+    """Plot the number of cogs per suit in the unsorted directory"""
     # all_cogs = glob(f"{UNSORTED_DIR}/cog/*.png")
     # num_cogs = len(all_cogs)
 
@@ -38,6 +41,7 @@ def plot_suits_as_bar() -> None:
 
 
 def plot_toons_as_bar() -> None:
+    """Plot the number of toons per animal in the unsorted directory"""
     # all_toons = glob(f"{UNSORTED_DIR}/toon/toon_*.png")
     # num_toons = len(all_toons)
 
@@ -60,73 +64,21 @@ def plot_toons_as_bar() -> None:
 
 
 def plot_xml_data() -> None:
-    def get_binary_label(obj_name: str) -> str:
-        obj_type = obj_name.split("_")[0]
-        if obj_type in BINARY:
-            return obj_type
-        return "unknown"
-
-    def get_suit_label(obj_name: str) -> str:
-        map = {short: long for short, long in zip(SUITS_SHORT, SUITS_LONG)}
-        # Ex: Retrieve the value of the key "bb" from obj_name="cog_bb_flunky"
-        return map.get(obj_name.split("_")[1], "unknown")
-
-    def get_animal_label(obj_name: str) -> str:
-        return obj_name.split("_")[1]
-
-    def update_counters(obj_name: str) -> None:
-        count_all.update([obj_name])
-        count_binary.update([get_binary_label(obj_name)])
-        if obj_name.startswith("cog"):
-            count_suit.update([get_suit_label(obj_name)])
-        if obj_name.startswith("toon"):
-            count_animal.update([get_animal_label(obj_name)])
-
-    def create_counters() -> tuple[Counter, Counter, Counter, Counter]:
-        # Create counters
-        count_all = Counter()  # All object names (32 + 11 = 43 classes)
-        count_binary = Counter()  # Cog or Toon (2 classes)
-        count_suit = Counter()  # Bossbot, Lawbot, Cashbot, Sellbot (4 classes)
-        count_animal = Counter()  # Toon animals (11 classes)
-        # Initialize all counters to 0
-        count_all.update({key: 0 for key in ALL_LABELS})
-        count_binary.update({key: 0 for key in BINARY})
-        count_suit.update({key: 0 for key in SUITS_LONG})
-        count_animal.update({key: 0 for key in ANIMALS})
-        return (count_all, count_binary, count_suit, count_animal)
-
-    count_all, count_binary, count_suit, count_animal = create_counters()
-
-    all_xml = glob(f"{RAW_DIR}/screenshots/*/*.xml")
-    for xml in all_xml:
-        objs = extract_objects_from_xml(xml)
-        for obj_name, _, _, _, _ in objs:
-            update_counters(obj_name)
+    """Plot object details retrieved from the screenshots' XML files"""
+    obj_names = []
+    for xml_path in glob(f"{RAW_DIR}/screenshots/*/*.xml"):
+        for obj in extract_objects_from_xml(xml_path):
+            obj_name, _, _, _, _ = obj
+            obj_names.append(obj_name)
 
     # * Sort by highest value
     # sorted_all_labels = dict(count_all.most_common())
     # * Sort by key values
     # count_all_sorted = {key: count_all[key] for key in sorted(count_all.keys())}
-
-    # Counter obj, title, desired_counter, axis,
-    counts_and_titles = [
-        (count_all, "Number of objects per label", 20),
-        (count_binary, "Number of objects per binary label", 640),
-        (count_suit, "Number of objects per suit label", 160),
-        (count_animal, "Number of objects per animal label", 58),
-    ]
-    fig, ax = plt.subplots(
-        4, 1, figsize=(5, 15), gridspec_kw={"height_ratios": [5, 0.75, 0.75, 1.25]}
+    plot_counters(
+        counters=count_objects(obj_names=obj_names),
+        suptitle="Labels from screenshots' XML files",
     )
-    fig.suptitle("Number of labels in unprocessed screenshots")
-    for idx, (count_dict, title, desired_count) in enumerate(counts_and_titles):
-        hbars = ax[idx].barh(y=list(count_dict.keys()), width=count_dict.values())
-        ax[idx].invert_yaxis()
-        ax[idx].axvline(x=mean(count_dict.values()), color="red", alpha=0.5)
-        ax[idx].axvline(x=desired_count, color="green")
-        ax[idx].set_title(title)
-        ax[idx].bar_label(hbars, count_dict.values())
-    plt.show()
 
 
 def plot_image_sizes(img_dir: str) -> None:
@@ -180,7 +132,10 @@ def plot_history(history: dict, name: str = "Model") -> None:
     )
     axes[0].axvline(x=max_val_accuracy, color="orange", alpha=0.8, ls="--")
     axes[0].axhline(
-        y=history["val_accuracy"][max_val_accuracy - 1], color="orange", alpha=0.8, ls="--"
+        y=history["val_accuracy"][max_val_accuracy - 1],
+        color="orange",
+        alpha=0.8,
+        ls="--",
     )
     axes[0].set_ylabel("Accuracy")
     axes[0].set_xlabel("Epoch")
@@ -216,6 +171,9 @@ def compare_histories(histories: list) -> None:
     Args:
         histories: List of tuples of (model: keras.Model, history: keras.callbacks.History)
     """
+    # TODO - Can we add a plot for max acc and lowest loss?
+    # TODO - Or should we just draw vertical lines for each max/min?
+    # TODO - Is it possible to utilize `plot_history` here?
     _, axes = plt.subplots(nrows=4, ncols=1, figsize=(10, 10))
     for model, history in histories:
         for idx, key in enumerate(["accuracy", "val_accuracy", "loss", "val_loss"]):
@@ -228,12 +186,159 @@ def compare_histories(histories: list) -> None:
     plt.grid(axis="y")
 
 
-# TODO Plot training/validation/test datasets
-def plot_all_datasets():
-    pass
+def get_obj_name_from_filepath(filepath: str, file_ext: str = "png") -> str:
+    """Given a filepath, return the full object name
 
+    Args:
+        filepath: Path to a file
+        file_ext: File extension
+
+    Returns:
+        str: Full object name (ex: "cog_bb_flunky_1", "toon_cat_32")
+    """
+    regex_obj_name = re.compile(rf"((cog|toon)_.*)\.{file_ext}")
+    try:
+        return regex_obj_name.search(filepath).group(0)
+    except AttributeError as e:
+        print("Could not find object name in filepath:", filepath)
+        raise e
+
+
+def get_obj_details_from_name(obj_name: str) -> dict:
+    """Given an object name, return the object's binary label and class-specific details
+
+    Args:
+        obj_name: Full object name (ex: "cog_bb_flunky_1", "toon_cat_32")
+
+    Returns:
+        dict: Object details
+
+    Example:
+        >>> get_obj_details_from_name("cog_bb_flunky_1")
+        {'binary': 'cog', 'suit': 'bb', 'name': 'flunky', 'animal': None, 'index': '1'}
+        >>> get_obj_details_from_name("toon_cat_32")
+        {'binary': 'toon', 'suit': None, 'name': None, 'animal': 'cat', 'index': '32'}
+        >>> get_obj_details_from_name("cog_lb_backstabber")
+        {'binary': 'cog', 'suit': 'lb', 'name': 'backstabber', 'animal': None, 'index': None}
+    """
+    # https://regex101.com/r/0UbU06/1
+    regex_details = re.compile(
+        r"""
+    (?P<binary>cog|toon)_
+    (
+        ((?P<suit>bb|cb|lb|sb)_(?P<name>[a-zA-Z]+)) |
+        (?P<animal>[a-zA-Z]+)
+    )
+    (
+        _
+        (?P<index>\d+)
+        (?P<file_ext>\.png)?
+    )?
+    """,
+        re.VERBOSE,
+    )
+    res = regex_details.search(obj_name)
+    if res is None:
+        raise ValueError(f"Could not parse object name: {obj_name}")
+    details = res.groupdict()
+    return details
+
+
+def get_obj_details_from_filepath(filepath) -> dict:
+    obj_name = get_obj_name_from_filepath(filepath)
+    details = get_obj_details_from_name(obj_name)
+    return details
+
+
+def count_objects(
+    data_dir: str = None, obj_names: list[str] = None
+) -> tuple[dict, dict, dict, dict]:
+    """Count the objects in a data directory or list of object names
+
+    Args:
+        data_dir: Path to a data directory containing processed images
+        obj_names: List of object names
+
+    Returns:
+        tuple: (count_all, count_binary, count_suit, count_animal)
+    """
+    assert any(
+        [data_dir is not None, obj_names is not None]
+    ), "Must specify either data_dir or obj_names"
+
+    def create_counters() -> tuple[Counter, Counter, Counter, Counter]:
+        # Create counters
+        count_all = Counter()  # All object names (32 cogs + 11 toons = 43 classes)
+        count_binary = Counter()  # Cog or Toon (2 classes)
+        count_suit = Counter()  # Bossbot, Lawbot, Cashbot, Sellbot (4 classes)
+        count_animal = Counter()  # Toon animals (11 classes)
+        # Initialize all counters to 0
+        count_all.update({key: 0 for key in ALL_LABELS})
+        count_binary.update({key: 0 for key in BINARY})
+        count_suit.update({key: 0 for key in SUITS_LONG})
+        count_animal.update({key: 0 for key in ANIMALS})
+        return (count_all, count_binary, count_suit, count_animal)
+
+    def update_counters(obj_details: dict) -> None:
+        binary = obj_details["binary"]
+        count_binary.update([binary])
+
+        if binary == "cog":
+            suit, name = obj_details["suit"], obj_details["name"]
+            obj_formatted = f"{binary}_{suit}_{name}"
+            count_suit.update([SUITS_MAP.get(suit)])
+        else:
+            animal = obj_details["animal"]
+            obj_formatted = f"{binary}_{animal}"
+            count_animal.update([animal])
+        count_all.update([obj_formatted])
+
+    count_all, count_binary, count_suit, count_animal = create_counters()
+
+    if data_dir:
+        print("Counting objects from data directory... ", data_dir)
+        for filepath in glob(data_dir):
+            obj_details = get_obj_details_from_filepath(filepath)
+            update_counters(obj_details)
+    else:
+        print("Counting objects from object names... ", obj_names)
+        for obj_name in obj_names:
+            obj_details = get_obj_details_from_name(obj_name)
+            update_counters(obj_details)
+
+    return (count_all, count_binary, count_suit, count_animal)
+
+
+def plot_counters(counters: tuple[dict, dict, dict, dict], suptitle: str) -> None:
+    count_all, count_binary, count_suit, count_animal = counters
+    counts_and_titles = [
+        (count_all, "Number of objects per label", 20),
+        (count_binary, "Number of objects per binary label", 640),
+        (count_suit, "Number of objects per suit label", 160),
+        (count_animal, "Number of objects per animal label", 58),
+    ]
+    fig, ax = plt.subplots(
+        4, 1, figsize=(5, 15), gridspec_kw={"height_ratios": [5, 0.75, 0.75, 1.25]}
+    )
+    fig.suptitle(suptitle, fontsize=20)
+    for idx, (count_dict, title, desired_count) in enumerate(counts_and_titles):
+        hbars = ax[idx].barh(y=list(count_dict.keys()), width=count_dict.values())
+        ax[idx].invert_yaxis()
+        ax[idx].axvline(x=mean(count_dict.values()), color="red", alpha=0.5)
+        ax[idx].axvline(x=desired_count, color="green")
+        ax[idx].set_title(title)
+        ax[idx].bar_label(hbars, count_dict.values())
+    plt.show()
+
+
+# get_obj_details_from_filepath(
+#     filepath="toonvision/classification/img/data/validate/toon/toon_cat_91.png"
+# )
 
 # %% Plot data
 # plot_suits_as_bar()
 # plot_toons_as_bar()
 # plot_xml_data()
+
+
+# %%

@@ -8,7 +8,7 @@ from os import rename, path
 from glob import glob
 from random import shuffle
 
-# %% Test functions with
+# %% Global variables: directories
 IMG_DIR = "../img"
 
 RAW_DIR = IMG_DIR + "/raw"
