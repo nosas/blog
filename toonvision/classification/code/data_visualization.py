@@ -297,12 +297,10 @@ def count_objects(
     count_all, count_binary, count_suit, count_animal = create_counters()
 
     if data_dir:
-        print("Counting objects from data directory... ", data_dir)
         for filepath in glob(data_dir):
             obj_details = get_obj_details_from_filepath(filepath)
             update_counters(obj_details)
     else:
-        print("Counting objects from object names... ", obj_names)
         for obj_name in obj_names:
             obj_details = get_obj_details_from_name(obj_name)
             update_counters(obj_details)
@@ -332,6 +330,57 @@ def plot_counters(counters: tuple[dict, dict, dict, dict], suptitle: str) -> Non
     plt.show()
 
 
+def plot_datasets_all() -> None:
+    plt.figure(figsize=(5, 10))
+
+    c_train = list(count_objects(data_dir=f"{TRAIN_DIR}/*/*.png"))
+    train = c_train[0]
+    labels = list(train.keys())
+    bars_train = plt.barh(labels, train.values(), label="Train")
+    plt.bar_label(bars_train, train.values(), label_type='center')
+
+    c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
+    validate = c_validate[0]
+    bars_validate = plt.barh(labels, validate.values(), label="Validate", left=list(train.values()))
+    plt.bar_label(bars_validate, validate.values(), label_type='center')
+
+    c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
+    test = c_test[0]
+    bars_test = plt.barh(labels, test.values(), label="Test", left=np.add(list(train.values()), list(validate.values())))
+    plt.bar_label(bars_test, test.values(), label_type='center')
+
+    plt.gca().invert_yaxis()
+    plt.xlabel("Labels")
+    plt.title("All labels per dataset")
+    plt.grid(axis='x', linestyle="--")
+    plt.legend(["Train", "Validate", "Test"])
+    plt.show()
+
+
+def plot_datasets_binary() -> None:
+    c_train = list(count_objects(data_dir=f"{TRAIN_DIR}/*/*.png"))
+    train = c_train[1]
+    labels = list(train.keys())
+    bars_train = plt.barh(labels, train.values(), label="Train")
+    plt.bar_label(bars_train, train.values(), label_type='center')
+
+    c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
+    validate = c_validate[1]
+    bars_validate = plt.barh(labels, validate.values(), label="Validate", left=list(train.values()))
+    plt.bar_label(bars_validate, validate.values(), label_type='center')
+
+    c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
+    test = c_test[1]
+    bars_test = plt.barh(labels, test.values(), label="Test", left=np.add(list(train.values()), list(validate.values())))
+    plt.bar_label(bars_test, test.values(), label_type='center')
+
+    plt.gca().invert_yaxis()
+    plt.title("Binary labels per dataset")
+    plt.grid(axis='x', linestyle="--")
+    plt.legend(["Train", "Validate", "Test"])
+    plt.show()
+
+
 def plot_datasets_suits():
     c_train = list(count_objects(data_dir=f"{TRAIN_DIR}/*/*.png"))
     train = c_train[2]
@@ -357,12 +406,38 @@ def plot_datasets_suits():
     plt.show()
 
 
-plot_datasets_suits()
+def plot_datasets_animals():
+    c_train = list(count_objects(data_dir=f"{TRAIN_DIR}/*/*.png"))
+    train = c_train[3]
+    labels = list(train.keys())
+    bars_train = plt.barh(labels, train.values(), label="Train")
+    plt.bar_label(bars_train, train.values(), label_type='center')
+
+    c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
+    validate = c_validate[3]
+    bars_validate = plt.barh(labels, validate.values(), label="Validate", left=list(train.values()))
+    plt.bar_label(bars_validate, validate.values(), label_type='center')
+
+    c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
+    test = c_test[3]
+    bars_test = plt.barh(labels, test.values(), label="Test", left=np.add(list(train.values()), list(validate.values())))
+    plt.bar_label(bars_test, test.values(), label_type='center')
+
+    plt.gca().invert_yaxis()
+    plt.title("Animal labels per dataset")
+    plt.grid(axis='x', linestyle="--")
+    plt.legend(["Train", "Validate", "Test"])
+    plt.show()
+
+
 # %% Plot data
 # plot_suits_as_bar()
 # plot_toons_as_bar()
 # plot_xml_data()
-
+plot_datasets_all()
+plot_datasets_binary()
+plot_datasets_suits()
+plot_datasets_animals()
 
 # %%
 # %%
