@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 30, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 06, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 3 - Introduction to Keras and TensorFlow</title></p>
 
@@ -73,7 +73,8 @@ Articles in this series will sequentially review key concepts, examples, and int
 <ul>
 <li><a href="#importance-of-model-architecture">Importance of model architecture</a></li>
 </ul></li>
-<li><a href="#the-compile-step-configuring-the-learning-process">The "compile" step: Configuring the learning process</a>
+<li><a href="#the-compile-step-configuring-the-learning-process">The "compile" step: Configuring the learning process</a></li>
+<li><a href="#picking-a-loss-function">Picking a loss function</a>
 </details></li>
 </ul></li>
 </ul></li>
@@ -984,6 +985,17 @@ However, rather than passing in string, we can also pass in objects.</p>
 <p>Passing in objects is useful when we want to use a custom object, such as a custom loss function or optimizer.
 As stated above, customizing the training process will be discussed in chapter 7.
 In the meantime, please refer to the Keras documentation regarding built-in options for <a href="https://www.tensorflow.org/api_docs/python/tf/keras/optimizers">optimizers</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/losses">loss functions</a>, and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics">metrics</a>.</p>
+
+<h3 id="picking-a-loss-function">Picking a loss function</h3>
+
+<p>Choosing the proper loss function for the right problem is a critical step in training a model.
+Neural networks will take any shortcut it can to minimize the loss score, even if it means learning the wrong thing and performing incorrectly.
+The network will end up doing things we did not intend it to do.</p>
+
+<p>Common problems - such as classification, regression and timeseries prediction (forecasting) - all have general guidelines for choosing a loss function.
+For instance, the <a href="https://en.wikipedia.org/wiki/Mean_squared_error">mean squared error</a> is a good choice for regression problems.
+The <a href="https://en.wikipedia.org/wiki/Cross_entropy">binary cross-entropy</a> is a good choice for two-class classification problems, whereas the <a href="https://en.wikipedia.org/wiki/Cross_entropy#Cross-entropy_with_softmax">categorical cross-entropy</a> is a good choice for multi-class classification problems.
+Only when we have a problem that is not one of these common problems will we need to develop a custom loss function.</p>
 
 </body>
 </html>

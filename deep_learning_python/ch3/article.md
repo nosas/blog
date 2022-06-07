@@ -37,6 +37,7 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [From layers to models](#from-layers-to-models)
             - [Importance of model architecture](#importance-of-model-architecture)
         - [The "compile" step: Configuring the learning process](#the-compile-step-configuring-the-learning-process)
+        - [Picking a loss function](#picking-a-loss-function)
 </details>
 
 ---
@@ -934,3 +935,15 @@ model.compile(
 Passing in objects is useful when we want to use a custom object, such as a custom loss function or optimizer.
 As stated above, customizing the training process will be discussed in chapter 7.
 In the meantime, please refer to the Keras documentation regarding built-in options for [optimizers](https://www.tensorflow.org/api_docs/python/tf/keras/optimizers), [loss functions](https://www.tensorflow.org/api_docs/python/tf/keras/losses), and [metrics](https://www.tensorflow.org/api_docs/python/tf/keras/metrics).
+
+### Picking a loss function
+
+Choosing the proper loss function for the right problem is a critical step in training a model.
+Neural networks will take any shortcut it can to minimize the loss score, even if it means learning the wrong thing and performing incorrectly.
+The network will end up doing things we did not intend it to do.
+
+Common problems - such as classification, regression and timeseries prediction (forecasting) - all have general guidelines for choosing a loss function.
+For instance, the [mean squared error](https://en.wikipedia.org/wiki/Mean_squared_error) is a good choice for regression problems.
+The [binary cross-entropy](https://en.wikipedia.org/wiki/Cross_entropy) is a good choice for two-class classification problems, whereas the [categorical cross-entropy](https://www.tensorflow.org/api_docs/python/tf/keras/losses/CategoricalCrossentropy) is a good choice for multi-class classification problems.
+Only when we have a problem that is not one of these common problems will we need to develop a custom loss function.
+
