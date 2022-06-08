@@ -38,6 +38,7 @@ Articles in this series will sequentially review key concepts, examples, and int
             - [Importance of model architecture](#importance-of-model-architecture)
         - [The "compile" step: Configuring the learning process](#the-compile-step-configuring-the-learning-process)
         - [Picking a loss function](#picking-a-loss-function)
+        - [Understanding the fit() method](#understanding-the-fit-method)
 </details>
 
 ---
@@ -948,3 +949,56 @@ The [binary cross-entropy](https://en.wikipedia.org/wiki/Cross_entropy) is a goo
 Only when we have a problem that is not one of these common problems will we need to develop a custom loss function.
 
 In the next few chapters, we'll detail explicitly which loss functions to choose for a wide-range of common problems.
+
+### Understanding the fit() method
+
+After compiling the model, we can fit it to data by calling the `fit()` method.
+The `fit()` method implements the training loop using a few key arguments:
+
+- The `data` (inputs and targets) to train on. Data is typically passed in as a Numpy array or Tensorflow `Dataset` object.
+- The number of `epochs` to train for: how many times the training loop should iterate over the entire dataset.
+- The batch size (optional): the number of samples to train on before updating the model's parameters.
+
+
+```python
+history = model.fit(
+    inputs, targets, epochs=10, batch_size=32
+)
+
+train_dataset = image_dataset_from_directory(
+    TRAIN_DIR,
+    image_size=(600, 200),
+    # batch_size=16
+)
+validation_dataset = image_dataset_from_directory(
+    VALIDATE_DIR,
+    image_size=(600, 200),
+    # batch_size=16
+)
+history = model.fit(
+    train_dataset,
+    epochs=50,
+    validation_data=validation_dataset,
+)
+```
+
+> **NOTE: Tensorflow Dataset object**
+>
+> The Dataset object will be covered in depth in later chapters.
+> However, it's important to understand that the Dataset object is a wrapper around a Python generator.
+> The Dataset is powerful and simple at the same time.
+> Read more about the Dataset object in the [Tensorflow guide](https://www.tensorflow.org/guide/datasets) or [Tensorflow API documentation](https://www.tensorflow.org/api_docs/python/tf/data/Dataset).
+
+The `fit()` method returns a `History` object, which contains information about the training process.
+This object contains a dictionary (`History.history`) which maps training metrics, such as the loss and accuracy, to their per-epoch values.
+
+```python
+>>> history.history
+{'loss': [0.988, 0.878, 0.632, 0.498, ...],
+ 'accuracy': [0.001, 0.283, 0.401, 0.651, ...]}
+```
+
+This dictionary is used to plot the training loss and accuracy during training.
+
+<font style="color:red">TODO: Insert plots of training loss and accuracy</font>
+

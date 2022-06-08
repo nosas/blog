@@ -74,7 +74,8 @@ Articles in this series will sequentially review key concepts, examples, and int
 <li><a href="#importance-of-model-architecture">Importance of model architecture</a></li>
 </ul></li>
 <li><a href="#the-compile-step-configuring-the-learning-process">The "compile" step: Configuring the learning process</a></li>
-<li><a href="#picking-a-loss-function">Picking a loss function</a>
+<li><a href="#picking-a-loss-function">Picking a loss function</a></li>
+<li><a href="#understanding-the-fit-method">Understanding the fit() method</a>
 </details></li>
 </ul></li>
 </ul></li>
@@ -998,6 +999,59 @@ The <a href="https://en.wikipedia.org/wiki/Cross_entropy">binary cross-entropy</
 Only when we have a problem that is not one of these common problems will we need to develop a custom loss function.</p>
 
 <p>In the next few chapters, we'll detail explicitly which loss functions to choose for a wide-range of common problems.</p>
+
+<h3 id="understanding-the-fit-method">Understanding the fit() method</h3>
+
+<p>After compiling the model, we can fit it to data by calling the <code>fit()</code> method.
+The <code>fit()</code> method implements the training loop using a few key arguments:</p>
+
+<ul>
+<li>The <code>data</code> (inputs and targets) to train on. Data is typically passed in as a Numpy array or Tensorflow <code>Dataset</code> object.</li>
+<li>The number of <code>epochs</code> to train for: how many times the training loop should iterate over the entire dataset.</li>
+<li>The batch size (optional): the number of samples to train on before updating the model's parameters.</li>
+</ul>
+
+<div class="codehilite"><pre><span></span><code><span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span>
+<span class="p">)</span>
+
+<span class="n">train_dataset</span> <span class="o">=</span> <span class="n">image_dataset_from_directory</span><span class="p">(</span>
+    <span class="n">TRAIN_DIR</span><span class="p">,</span>
+    <span class="n">image_size</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">),</span>
+    <span class="c1"># batch_size=16</span>
+<span class="p">)</span>
+<span class="n">validation_dataset</span> <span class="o">=</span> <span class="n">image_dataset_from_directory</span><span class="p">(</span>
+    <span class="n">VALIDATE_DIR</span><span class="p">,</span>
+    <span class="n">image_size</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">),</span>
+    <span class="c1"># batch_size=16</span>
+<span class="p">)</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">train_dataset</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="n">validation_dataset</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<blockquote>
+  <p><strong>NOTE: Tensorflow Dataset object</strong></p>
+  
+  <p>The Dataset object will be covered in depth in later chapters.
+  However, it's important to understand that the Dataset object is a wrapper around a Python generator.
+  The Dataset is powerful and simple at the same time.
+  Read more about the Dataset object in the <a href="https://www.tensorflow.org/guide/datasets">Tensorflow guide</a> or <a href="https://www.tensorflow.org/api_docs/python/tf/data/Dataset">Tensorflow API documentation</a>.</p>
+</blockquote>
+
+<p>The <code>fit()</code> method returns a <code>History</code> object, which contains information about the training process.
+This object contains a dictionary (<code>History.history</code>) which maps training metrics, such as the loss and accuracy, to their per-epoch values.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">history</span><span class="o">.</span><span class="n">history</span>
+<span class="p">{</span><span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.988</span><span class="p">,</span> <span class="mf">0.878</span><span class="p">,</span> <span class="mf">0.632</span><span class="p">,</span> <span class="mf">0.498</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+ <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.283</span><span class="p">,</span> <span class="mf">0.401</span><span class="p">,</span> <span class="mf">0.651</span><span class="p">,</span> <span class="o">...</span><span class="p">]}</span>
+</code></pre></div>
+
+<p>This dictionary is used to plot the training loss and accuracy during training.</p>
+
+<p><font style="color:red">TODO: Insert plots of training loss and accuracy</font></p>
 
 </body>
 </html>
