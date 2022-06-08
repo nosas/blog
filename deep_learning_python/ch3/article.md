@@ -39,6 +39,7 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [The "compile" step: Configuring the learning process](#the-compile-step-configuring-the-learning-process)
         - [Picking a loss function](#picking-a-loss-function)
         - [Understanding the fit() method](#understanding-the-fit-method)
+        - [Monitoring loss and metrics on validation data](#monitoring-loss-and-metrics-on-validation-data)
 </details>
 
 ---
@@ -1002,3 +1003,53 @@ This dictionary is used to plot the training loss and accuracy during training.
 
 <font style="color:red">TODO: Insert plots of training loss and accuracy</font>
 
+### Monitoring loss and metrics on validation data
+
+The goal of machine learning is to obtain models that perform well on training data and on unseen data.
+Just because the model performs well on the training data, it does not mean it can perform well on new, unseen data.
+
+To understand how the model performs on unseen data, it's standard practice to reserve a subset of the training data as *validation data*.
+The validation data is used for computing the loss value and metrics, whereas the training data is used for  updating the model's weights (training the model).
+
+We can utilize the `fit()` method's `validation_data` argument to monitor the model's performance on our validation data.
+Like the training data, the validation data can be passed in as a Numpy array or a Tensorflow Dataset object.
+
+```python
+# Reserve 25% of training data for validation
+num_validation_samples = len(0.25 * len(inputs))
+
+# Create training and validation datasets
+training_targets = targets[:num_validation_samples]
+training_inputs = inputs[:num_validation_samples]
+validation_inputs = inputs[num_validation_samples:]
+validation_targets = targets[num_validation_samples:]
+validation_data = (validation_inputs, validation_targets)
+
+# Train the model
+history = model.fit(
+    training_inputs, training_targets,
+    epochs=10,
+    batch_size=32,
+    validation_data=validation_data  # Can be a tuple (inputs, targets) or a Dataset object
+)
+```
+
+During training, the model will be trained on the training data and then evaluated on the validation data.
+As a result, the `history.history` object will contain the loss and accuracy values for both the training and validation data.
+
+> **NOTE: Keep training and validation data strictly separated**
+>
+> The purpose of validation is to monitor whether what the model is learning is actually useful on new data.
+> If any of the validation data has already been seen by the model during training, the model's validation loss and accuracy will be flawed.
+
+If, instead, we wanted to compute the model's validation loss and metrics *after* the training loop has finished, we can use the `evaluate()` method.
+`evaluate()` iterates over the data passed in batches and returns a list of scalars, where the first scalar is the loss and the second is the accuracy.
+
+```python
+# Evaluate the model on validation data
+loss_and_metrics = model.evaluate(validation_inputs, validation_targets, batch_size=32)
+loss = loss_and_metrics[0]
+metric = loss_and_metrics[1]
+```
+
+Now that the model is trained, it can be used to make predictions on new data.

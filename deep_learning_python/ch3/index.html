@@ -75,7 +75,8 @@ Articles in this series will sequentially review key concepts, examples, and int
 </ul></li>
 <li><a href="#the-compile-step-configuring-the-learning-process">The "compile" step: Configuring the learning process</a></li>
 <li><a href="#picking-a-loss-function">Picking a loss function</a></li>
-<li><a href="#understanding-the-fit-method">Understanding the fit() method</a>
+<li><a href="#understanding-the-fit-method">Understanding the fit() method</a></li>
+<li><a href="#monitoring-loss-and-metrics-on-validation-data">Monitoring loss and metrics on validation data</a>
 </details></li>
 </ul></li>
 </ul></li>
@@ -1052,6 +1053,57 @@ This object contains a dictionary (<code>History.history</code>) which maps trai
 <p>This dictionary is used to plot the training loss and accuracy during training.</p>
 
 <p><font style="color:red">TODO: Insert plots of training loss and accuracy</font></p>
+
+<h3 id="monitoring-loss-and-metrics-on-validation-data">Monitoring loss and metrics on validation data</h3>
+
+<p>The goal of machine learning is to obtain models that perform well on training data and on unseen data.
+Just because the model performs well on the training data, it does not mean it can perform well on new, unseen data.</p>
+
+<p>To understand how the model performs on unseen data, it's standard practice to reserve a subset of the training data as <em>validation data</em>.
+The validation data is used for computing the loss value and metrics, whereas the training data is used for  updating the model's weights (training the model).</p>
+
+<p>We can utilize the <code>fit()</code> method's <code>validation_data</code> argument to monitor the model's performance on our validation data.
+Like the training data, the validation data can be passed in as a Numpy array or a Tensorflow Dataset object.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="c1"># Reserve 25% of training data for validation</span>
+<span class="n">num_validation_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="mf">0.25</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">))</span>
+
+<span class="c1"># Create training and validation datasets</span>
+<span class="n">training_targets</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[:</span><span class="n">num_validation_samples</span><span class="p">]</span>
+<span class="n">training_inputs</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[:</span><span class="n">num_validation_samples</span><span class="p">]</span>
+<span class="n">validation_inputs</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="n">num_validation_samples</span><span class="p">:]</span>
+<span class="n">validation_targets</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="n">num_validation_samples</span><span class="p">:]</span>
+<span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">validation_inputs</span><span class="p">,</span> <span class="n">validation_targets</span><span class="p">)</span>
+
+<span class="c1"># Train the model</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">training_inputs</span><span class="p">,</span> <span class="n">training_targets</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="n">validation_data</span>  <span class="c1"># Can be a tuple (inputs, targets) or a Dataset object</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>During training, the model will be trained on the training data and then evaluated on the validation data.
+As a result, the <code>history.history</code> object will contain the loss and accuracy values for both the training and validation data.</p>
+
+<blockquote>
+  <p><strong>NOTE: Keep training and validation data strictly separated</strong></p>
+  
+  <p>The purpose of validation is to monitor whether what the model is learning is actually useful on new data.
+  If any of the validation data has already been seen by the model during training, the model's validation loss and accuracy will be flawed.</p>
+</blockquote>
+
+<p>If, instead, we wanted to compute the model's validation loss and metrics <em>after</em> the training loop has finished, we can use the <code>evaluate()</code> method.
+<code>evaluate()</code> iterates over the data passed in batches and returns a list of scalars, where the first scalar is the loss and the second is the accuracy.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="c1"># Evaluate the model on validation data</span>
+<span class="n">loss_and_metrics</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">validation_inputs</span><span class="p">,</span> <span class="n">validation_targets</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">loss_and_metrics</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">metric</span> <span class="o">=</span> <span class="n">loss_and_metrics</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</code></pre></div>
+
+<p>Now that the model is trained, it can be used to make predictions on new data.</p>
 
 </body>
 </html>
