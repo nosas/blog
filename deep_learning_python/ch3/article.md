@@ -947,3 +947,4 @@ For instance, the [mean squared error](https://en.wikipedia.org/wiki/Mean_square
 The [binary cross-entropy](https://en.wikipedia.org/wiki/Cross_entropy) is a good choice for two-class classification problems, whereas the [categorical cross-entropy](https://www.tensorflow.org/api_docs/python/tf/keras/losses/CategoricalCrossentropy) is a good choice for multi-class classification problems.
 Only when we have a problem that is not one of these common problems will we need to develop a custom loss function.
 
+In the next few chapters, we'll detail explicitly which loss functions to choose for a wide-range of common problems.
