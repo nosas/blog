@@ -76,9 +76,11 @@ Articles in this series will sequentially review key concepts, examples, and int
 <li><a href="#the-compile-step-configuring-the-learning-process">The "compile" step: Configuring the learning process</a></li>
 <li><a href="#picking-a-loss-function">Picking a loss function</a></li>
 <li><a href="#understanding-the-fit-method">Understanding the fit() method</a></li>
-<li><a href="#monitoring-loss-and-metrics-on-validation-data">Monitoring loss and metrics on validation data</a>
-</details></li>
+<li><a href="#monitoring-loss-and-metrics-on-validation-data">Monitoring loss and metrics on validation data</a></li>
+<li><a href="#making-predictions-with-the-model">Making predictions with the model</a></li>
 </ul></li>
+<li><a href="#summary">Summary</a>
+</details></li>
 </ul></li>
 </ul>
 
@@ -1104,6 +1106,34 @@ As a result, the <code>history.history</code> object will contain the loss and a
 </code></pre></div>
 
 <p>Now that the model is trained, it can be used to make predictions on new data.</p>
+
+<h3 id="making-predictions-with-the-model">Making predictions with the model</h3>
+
+<p>The model can now be used to make predictions on new data in two ways:</p>
+
+<ul>
+<li>Pass in a Numpy array or Tensorflow tensor directly to the model's <code>__call__()</code> method: <code>model(inputs)</code>
+<ul>
+<li>This will process all inputs at once, which may be unfeasible for large datasets because of memory requirements</li>
+</ul></li>
+<li>Use the model's <code>predict(inputs, batch_size)</code> method, which returns a Numpy array of predictions: <code>model.predict(inputs, batch_size)</code></li>
+</ul>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">predictions</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>  <span class="c1"># Print first 3 predictions</span>
+<span class="p">[[</span><span class="mf">0.124155</span><span class="p">,</span>
+  <span class="mf">0.298401</span>
+  <span class="mf">0.695342</span><span class="p">,]]</span>
+</code></pre></div>
+
+<p>Training a model isn't as difficult as it sounds.
+This is all we need to know about the Keras API for now.
+We're now ready to start building models for real-world problems.</p>
+
+<p>The following chapter will discuss how to build neural networks for classification and regression problems.</p>
+
+<h2 id="summary">Summary</h2>
 
 </body>
 </html>

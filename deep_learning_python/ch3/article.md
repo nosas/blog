@@ -40,6 +40,8 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Picking a loss function](#picking-a-loss-function)
         - [Understanding the fit() method](#understanding-the-fit-method)
         - [Monitoring loss and metrics on validation data](#monitoring-loss-and-metrics-on-validation-data)
+        - [Making predictions with the model](#making-predictions-with-the-model)
+    - [Summary](#summary)
 </details>
 
 ---
@@ -1053,3 +1055,28 @@ metric = loss_and_metrics[1]
 ```
 
 Now that the model is trained, it can be used to make predictions on new data.
+
+### Making predictions with the model
+
+The model can now be used to make predictions on new data in two ways:
+
+- Pass in a Numpy array or Tensorflow tensor directly to the model's `__call__()` method: `model(inputs)`
+    - This will process all inputs at once, which may be unfeasible for large datasets because of memory requirements
+- Use the model's `predict(inputs, batch_size)` method, which returns a Numpy array of predictions: `model.predict(inputs, batch_size)`
+
+```python
+>>> predictions = model(inputs)
+>>> predictions = model.predict(inputs, batch_size=64)
+>>> print(predictions[:3])  # Print first 3 predictions
+[[0.124155,
+  0.298401
+  0.695342,]]
+```
+
+Training a model isn't as difficult as it sounds.
+This is all we need to know about the Keras API for now.
+We're now ready to start building models for real-world problems.
+
+The following chapter will discuss how to build neural networks for classification and regression problems.
+
+## Summary
