@@ -92,7 +92,7 @@ Google, on the other hand, has used TensorFlow to develop deep learning applicat
 ---
 ## What's Keras?
 
-<figure class="right">
+<figure class="right"`>
     <img src="img/keras_hierarchy.png" style="width:50%;"/>
     <figcaption>Keras is built on top of Tensorflow, which uses CPU/GPU/TPU to perform calculations</figcaption>
 </figure>
@@ -353,7 +353,11 @@ In linear classification problems, the model is trying to find a linear combinat
 Simply put, the model is trying to classify input data into 2+ categories (classes) by drawing a line through the the data.
 The line is best fit to separate the data into two classes.
 
-<font style="color:red">TODO: Insert image of a linear classification plot with a line separating the classes</font>
+
+<figure class="center">
+    <img src="img/linear_classifier_data_line.png" style="width:100%;background:white;"/>
+    <figcaption>Two classes of data separated by a line</figcaption>
+</figure>
 
 This is the basic idea behind linear classification.
 Now let's generate some data and train a linear classifier.
@@ -760,14 +764,14 @@ Pretty cool, right?
         <td>
             <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
                 <small>
-                    <i>Accuracy of the first 20 prediction, slowed down<i>
+                    <i>Accuracy of the first 20 predictions, slowed down<i>
                 </small>
             </span>
         </td>
         <td>
             <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
                 <small>
-                    <i>Accuracy of all prediction<i>
+                    <i>Accuracy of all predictions<i>
                 </small>
             </span>
         </td>
