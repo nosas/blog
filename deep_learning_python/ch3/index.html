@@ -143,7 +143,7 @@ Google, on the other hand, has used TensorFlow to develop deep learning applicat
 
 <figure class="right"`>
     <img src="img/keras_hierarchy.png" style="width:50%;"/>
-    <figcaption>Keras is built on top of Tensorflow, which uses CPU/GPU/TPU to perform calculations</figcaption>
+    <figcaption>Keras is built on top of TensorFlow, which uses CPU/GPU/TPU to perform calculations</figcaption>
 </figure>
 
 <p>Keras is a high-level deep learning API built on top of TensorFlow.
@@ -162,7 +162,7 @@ Rather, it allows the user to build and train models corresponding to their pref
 <p>Keras was designed originally in March 2015 to be used with Theano, a tensor-manipulation library developed by Montreal Institute for Learning Algorithms (MILA).
 Theano pioneered the idea of using static computation graphs for automatic differentiation and compiling code to both CPU and GPU support.</p>
 
-<p>Following the release of TensorFlow 1.0 in November 2015, Keras was refactored to support multiple backend architectures: starting with Theano and Tensorflow in late 2015, and adding support for CNTK and MXNet in 2017.</p>
+<p>Following the release of TensorFlow 1.0 in November 2015, Keras was refactored to support multiple backend architectures: starting with Theano and TensorFlow in late 2015, and adding support for CNTK and MXNet in 2017.</p>
 
 <p>Keras became well known as the user-friendly way to develop TensorFlow applications.
 By late 2017, a majority of TensorFlow users were using Keras.
@@ -1015,7 +1015,7 @@ Only when we have a problem that is not one of these common problems will we nee
 The <code>fit()</code> method implements the training loop using a few key arguments:</p>
 
 <ul>
-<li>The <code>data</code> (inputs and targets) to train on. Data is typically passed in as a Numpy array or Tensorflow <code>Dataset</code> object.</li>
+<li>The <code>data</code> (inputs and targets) to train on. Data is typically passed in as a Numpy array or TensorFlow <code>Dataset</code> object.</li>
 <li>The number of <code>epochs</code> to train for: how many times the training loop should iterate over the entire dataset.</li>
 <li>The batch size (optional): the number of samples to train on before updating the model's parameters.</li>
 </ul>
@@ -1042,12 +1042,12 @@ The <code>fit()</code> method implements the training loop using a few key argum
 </code></pre></div>
 
 <blockquote>
-  <p><strong>NOTE: Tensorflow Dataset object</strong></p>
+  <p><strong>NOTE: TensorFlow Dataset object</strong></p>
   
   <p>The Dataset object will be covered in depth in later chapters.
   However, it's important to understand that the Dataset object is a wrapper around a Python generator.
   The Dataset is powerful and simple at the same time.
-  Read more about the Dataset object in the <a href="https://www.tensorflow.org/guide/datasets">Tensorflow guide</a> or <a href="https://www.tensorflow.org/api_docs/python/tf/data/Dataset">Tensorflow API documentation</a>.</p>
+  Read more about the Dataset object in the <a href="https://www.tensorflow.org/guide/datasets">TensorFlow guide</a> or <a href="https://www.tensorflow.org/api_docs/python/tf/data/Dataset">TensorFlow API documentation</a>.</p>
 </blockquote>
 
 <p>The <code>fit()</code> method returns a <code>History</code> object, which contains information about the training process.
@@ -1069,7 +1069,7 @@ Just because the model performs well on the training data, it does not mean it c
 The validation data is used for computing the loss value and metrics, whereas the training data is used for updating the model's weights (training the model).</p>
 
 <p>We can utilize the <code>fit()</code> method's <code>validation_data</code> argument to monitor the model's performance on our validation data.
-Similar to the training data, the validation data can be passed in as a Numpy array or a Tensorflow Dataset object.</p>
+Similar to the training data, the validation data can be passed in as a Numpy array or a TensorFlow Dataset object.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="c1"># Reserve 25% of training data for validation</span>
 <span class="n">num_validation_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="mf">0.25</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">))</span>
@@ -1116,7 +1116,7 @@ As a result, the <code>history.history</code> object will contain the loss and a
 <p>The model can now be used to make predictions on new data in two ways:</p>
 
 <ul>
-<li>Pass in a Numpy array or Tensorflow tensor directly to the model's <code>__call__()</code> method: <code>model(inputs)</code>
+<li>Pass in a Numpy array or TensorFlow tensor directly to the model's <code>__call__()</code> method: <code>model(inputs)</code>
 <ul>
 <li>This will process all inputs at once, which may be unfeasible for large datasets because of memory requirements</li>
 </ul></li>
@@ -1140,7 +1140,7 @@ We're now ready to start building models for real-world problems.</p>
 <h2 id="summary">Summary</h2>
 
 <ul>
-<li>The fundamental objects of Tensorflow include tensors, variables, tensor operations, and the gradient tape.</li>
+<li>The fundamental objects of TensorFlow include tensors, variables, tensor operations, and the gradient tape.</li>
 <li>The central class of the Keras API is the <code>Layer</code> class.
 A layer encapsulates some weights and some computation.
 Models are composed of layers.</li>

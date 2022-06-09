@@ -94,7 +94,7 @@ Google, on the other hand, has used TensorFlow to develop deep learning applicat
 
 <figure class="right"`>
     <img src="img/keras_hierarchy.png" style="width:50%;"/>
-    <figcaption>Keras is built on top of Tensorflow, which uses CPU/GPU/TPU to perform calculations</figcaption>
+    <figcaption>Keras is built on top of TensorFlow, which uses CPU/GPU/TPU to perform calculations</figcaption>
 </figure>
 
 Keras is a high-level deep learning API built on top of TensorFlow.
@@ -113,7 +113,7 @@ Rather, it allows the user to build and train models corresponding to their pref
 Keras was designed originally in March 2015 to be used with Theano, a tensor-manipulation library developed by Montreal Institute for Learning Algorithms (MILA).
 Theano pioneered the idea of using static computation graphs for automatic differentiation and compiling code to both CPU and GPU support.
 
-Following the release of TensorFlow 1.0 in November 2015, Keras was refactored to support multiple backend architectures: starting with Theano and Tensorflow in late 2015, and adding support for CNTK and MXNet in 2017.
+Following the release of TensorFlow 1.0 in November 2015, Keras was refactored to support multiple backend architectures: starting with Theano and TensorFlow in late 2015, and adding support for CNTK and MXNet in 2017.
 
 Keras became well known as the user-friendly way to develop TensorFlow applications.
 By late 2017, a majority of TensorFlow users were using Keras.
@@ -965,7 +965,7 @@ In the next few chapters, we'll detail explicitly which loss functions to choose
 After compiling the model, we can fit it to data by calling the `fit()` method.
 The `fit()` method implements the training loop using a few key arguments:
 
-- The `data` (inputs and targets) to train on. Data is typically passed in as a Numpy array or Tensorflow `Dataset` object.
+- The `data` (inputs and targets) to train on. Data is typically passed in as a Numpy array or TensorFlow `Dataset` object.
 - The number of `epochs` to train for: how many times the training loop should iterate over the entire dataset.
 - The batch size (optional): the number of samples to train on before updating the model's parameters.
 
@@ -992,12 +992,12 @@ history = model.fit(
 )
 ```
 
-> **NOTE: Tensorflow Dataset object**
+> **NOTE: TensorFlow Dataset object**
 >
 > The Dataset object will be covered in depth in later chapters.
 > However, it's important to understand that the Dataset object is a wrapper around a Python generator.
 > The Dataset is powerful and simple at the same time.
-> Read more about the Dataset object in the [Tensorflow guide](https://www.tensorflow.org/guide/datasets) or [Tensorflow API documentation](https://www.tensorflow.org/api_docs/python/tf/data/Dataset).
+> Read more about the Dataset object in the [TensorFlow guide](https://www.tensorflow.org/guide/datasets) or [TensorFlow API documentation](https://www.tensorflow.org/api_docs/python/tf/data/Dataset).
 
 The `fit()` method returns a `History` object, which contains information about the training process.
 This object contains a dictionary (`History.history`) which maps training metrics, such as the loss and accuracy, to their per-epoch values.
@@ -1019,7 +1019,7 @@ To understand how the model performs on unseen data, it's standard practice to r
 The validation data is used for computing the loss value and metrics, whereas the training data is used for updating the model's weights (training the model).
 
 We can utilize the `fit()` method's `validation_data` argument to monitor the model's performance on our validation data.
-Similar to the training data, the validation data can be passed in as a Numpy array or a Tensorflow Dataset object.
+Similar to the training data, the validation data can be passed in as a Numpy array or a TensorFlow Dataset object.
 
 ```python
 # Reserve 25% of training data for validation
@@ -1065,7 +1065,7 @@ Now that the model is trained, it can be used to make predictions on new data.
 
 The model can now be used to make predictions on new data in two ways:
 
-- Pass in a Numpy array or Tensorflow tensor directly to the model's `__call__()` method: `model(inputs)`
+- Pass in a Numpy array or TensorFlow tensor directly to the model's `__call__()` method: `model(inputs)`
     - This will process all inputs at once, which may be unfeasible for large datasets because of memory requirements
 - Use the model's `predict(inputs, batch_size)` method, which returns a Numpy array of predictions: `model.predict(inputs, batch_size)`
 
@@ -1086,7 +1086,7 @@ The following chapter will discuss how to build neural networks for classificati
 
 ## Summary
 
-- The fundamental objects of Tensorflow include tensors, variables, tensor operations, and the gradient tape.
+- The fundamental objects of TensorFlow include tensors, variables, tensor operations, and the gradient tape.
 - The central class of the Keras API is the `Layer` class.
 A layer encapsulates some weights and some computation.
 Models are composed of layers.
