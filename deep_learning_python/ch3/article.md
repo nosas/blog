@@ -82,9 +82,9 @@ Components of the ecosystem include:
 - TF-Agents for reinforcement learning
 - TF-Hub (repository) for pre-trained deep neural networks
 - TensorFlow Serving for production deployment
-- TFX for distributed training and ML workflow managements
+- TFX for distributed training and ML workflow management
 
-Together, these components cover a wide-range of use cases: from cutting-edge research to large-scale production, or just a simple image classification application to see if a dog or a cat is in a picture.
+Together, these components cover a wide range of use cases: from cutting-edge research to large-scale production, or just a simple image classification application to see if a dog or a cat is in a picture.
 
 Scientists from Oak Ridge National Lab have used TensorFlow to train an extreme weather forecasting model on the 27,000 GPUs within the IBM Summit supercomputer.
 Google, on the other hand, has used TensorFlow to develop deep learning applications such as the chess-playing and Go-playing agent AlphaZero.
@@ -106,7 +106,7 @@ The API provides consistent and simple workflows, minimizes the number of action
 
 Much like Python, Keras' large and diverse user base enables a well-documented and wide range of workflows for utilizing the API.
 Keras does not force one to follow a single "true" way of building and training models.
-Rather, it allows the user to build and train models corresponding to their own preference, and to explore the possibilities of each approach.
+Rather, it allows the user to build and train models corresponding to their preference, and to explore the possibilities of each approach.
 
 ### Keras and TensorFlow: A brief history
 
@@ -131,7 +131,7 @@ There are a handful of ways to set up a deep learning workspace:
 - Use GPU instances on AWS, Google Cloud, or cheaper alternatives such as Jarvis Labs
 - Use the free GPU runtime from Google Colab, a hosted Jupyter notebook service that executes code on GPUs and even TPUs
 
-Each approach has its own advantages and disadvantages in terms of flexibility, cost, and ease of use.
+Each approach has its advantages and disadvantages in terms of flexibility, cost, and ease of use.
 I'll briefly discuss the advantages and disadvantages of each approach below, but I will not discuss setup at all.
 
 ### Physical machine with NVIDIA GPU
@@ -140,19 +140,19 @@ Buying a machine with a GPU is not the easiest way to get started with DL, as it
 The upfront cost is amplified by the current (as of May 2022) chip shortage and GPU scalpers.
 This method involves installing proper drivers, sorting out version conflicts, and then configuring the libraries to use the GPU instead of the CPU.
 
-Most users already have NVIDIA GPUs installed in their computers.
+Most users already have NVIDIA GPUs installed on their computers.
 Given the large user base of TensorFlow, there are many tutorials for setting up NVIDIA GPUs for deep learning, so this is not a bad option for tech-savvy people.
 
 The alternative to buying a GPU is the use of embedded devices built specifically for efficient and highly-parallelized math operations, such as [NVIDIA's Jetson](https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/) or [Google's Coral](https://coral.ai/products/).
 
 ### Cloud GPU instances
 
-Using GPU instances is cheaper in the short-term because you pay as you go (per hour basis), but it's not sustainable in the long run if you're a heavy user of deep learning.
+Using GPU instances is cheaper in the short term because you pay as you go (per hour basis), but it's not sustainable in the long run if you're a heavy user of deep learning.
 The benefit of using GPU instances is that it requires minimal setup as most instances have Python, TensorFlow, and Keras pre-installed - it's mostly plug-and-play and easy to use.
 Moreover, the GPU instance can easily be upgraded, torn down, cloned, and re-installed.
 Lastly, students and enterprise employees often get discounts - or free usage - for AWS and Google Cloud.
 
-I personally use Jarvis Labs and AWS for my deep learning needs because I have discounts for both services.
+I use Jarvis Labs and AWS for my deep learning needs because I have discounts for both services.
 There aren't many differences between cloud instance providers other than the availability of high-powered GPUs.
 
 ### Google Colab
@@ -246,7 +246,7 @@ TypeError: 'Tensor' object does not support item assignment
 ```
 
 To train a model, however, it's important to be able to change the values of the tensors - update the weights of the model.
-This is where the TensorFlow's *variable* (`tf.Variable`) comes in to play:
+This is where the TensorFlow's *variable* (`tf.Variable`) comes into play:
 
 ```python
 >>> v = tf.Variable(initial_value=tf.random.normal(shape=(3, 1)))
@@ -302,7 +302,7 @@ The gradient tape is most commonly used to retrieve the gradients of the model's
 We discussed and demonstrated this functionality in the [previous article](https://fars.io/deep_learning_python/ch2/#tensorflows-gradient-tape).
 
 So far, we've only looked at the simplest case of `GradientTapes` - where the input tensors in `tape.gradient()` were TensorFlow variables.
-It's actually possible for the input tensors to be any arbitrary tensor, not just variables, by calling `tape.watch(arbitrary_tensor)` within the `GradientTape` context.
+It's possible for the input tensors to be any arbitrary tensor, not just variables, by calling `tape.watch(arbitrary_tensor)` within the `GradientTape` context.
 
 ```python
 arbitrary_tensor = tf.constant(value=2.)
@@ -316,14 +316,14 @@ gradient = tape.gradient(output, arbitrary_tensor)
 
 By default, only *trainable variables* are tracked because computing the gradient of a loss with regard to a trainable variable is the most common use case.
 Furthermore, it would be too expensive to preemptively store the information required to compute the gradient of anything with respect to anything.
-In an effort avoid wasting resources, only the trainable variables are tracked unless otherwise explicitly specified.
+To avoid wasting resources, only the trainable variables are tracked unless otherwise explicitly specified.
 
 ### Computing second-order gradients
 
 The gradient tape is a powerful utility capable of computing *second-order gradients* - or, the gradient of a gradient.
 
 For instance, the gradient of the position of an object with respect to time is the speed of the object.
-The second-order gradient of the object speed is its acceleration.
+The second-order gradient of the object's speed is its acceleration.
 
 
 ```python
@@ -350,8 +350,8 @@ But first, we need to understand what linear classification is.
 ### What is linear classification?
 
 In linear classification problems, the model is trying to find a linear combination of the input features that best predicts the target variable.
-Simply put, the model is trying to classify input data into 2+ categories (classes) by drawing a line through the the data.
-The line is best fit to separate the data into two classes.
+Simply put, the model is trying to classify input data into 2+ categories (classes) by drawing a line through the data.
+The line best fits to separate the data into two classes.
 
 
 <figure class="center">
@@ -392,8 +392,8 @@ See the following code block to see how we plot the data.
 </figure>
 
 Both samples are arrays of shape `(500, 2)` - meaning there are 500 rows of 2-dimensional data (aka 500 tuples, each containing an x,y).
-Let's stack both class samples into a single array with shape `(1000, 2)`.
-Stacking the samples into single array will allow for easier processing later on, such as plotting the data.
+Let's stack both class samples into a single array with the shape `(1000, 2)`.
+Stacking the samples into a single array will allow for easier processing later on, such as plotting the data.
 
 ```python
 import matplotlib.pyplot as plt
@@ -488,7 +488,7 @@ Finally, let's create the training loop.
 For simplicity, we'll do *batch training* instead of *mini-batch training*.
 Batch training means the model trains on all the data at once instead of iteratively over small batches of the data.
 
-Batch training has its pros and cons: each training step will take much longer to run, since we'll compute the forward pass and gradient calculation for the entire dataset (1000 samples in our example).
+Batch training has its pros and cons: each training step will take much longer to run since we'll compute the forward pass and gradient calculation for the entire dataset (1000 samples in our example).
 On the other hand, because the model is training on the entire dataset, each gradient update will be much more effective at reducing the loss since it learns information from all training samples.
 
 ```python
@@ -748,7 +748,7 @@ def make_gif_with_duration(
 
 In the following plots, we see green dots representing correct predictions and red dots representing incorrect predictions.
 After each training step, the model adjusts its parameters causing the red class-separation line to gradually adjust in the direction of the correct prediction.
-As training continues, the number of incorrect predictions decreases and the line properly separates the two classes.
+As training continues, the number of incorrect predictions decreases, and the line properly separates the two classes.
 Pretty cool, right?
 
 <table style="width:100%;">
@@ -891,7 +891,7 @@ As we move forward, we'll be exposed to a variety of neural network architecture
 
 The difference between each of these topologies is the type of layers and how they are connected.
 Similar to layers, each network topology has its pros, cons, and common use cases.
-Picking the right network topology is more an art than a science, where only practice can help you become a proper neural-network architect.
+Picking the right network topology is more an art than a science, where only practice can help you become a proper neural network architect.
 
 #### Importance of model architecture
 
@@ -921,7 +921,7 @@ Once the model architecture is defined, there are three more key parts to be def
 3. *Metrics* - The various measures of success we can monitor during training and validation, such as classification accuracy.
 
 Once we've defined the loss function, optimizer, and metrics, we can begin training the model using the `model.compile()` and `model.fit()` methods.
-Alternatively, we could write our own custom training loops instead of using the `model.fit()` method, but that's covered in chapter 7.
+Alternatively, we could write our custom training loops instead of using the `model.fit()` method, but that's covered in chapter 7.
 For now, let's take a look at the `compile()` method.
 
 The `compile()` method configures the training process using the arguments `optimizer`, `loss`, and `metrics` (a list):
@@ -931,9 +931,9 @@ model = keras.Sequential([keras.layers.Dense(1)])
 model.compile(optimizer="rmsprop", loss="mean_squared_error", metrics=["accuracy"])
 ```
 
-One important thing to note is the how we pass in the arguments to the `compile()` method.
+One important thing to note is how we pass in the arguments to the `compile()` method.
 In the example above, we passed them in as strings and the method is flexible enough to understand what we want.
-However, rather than passing in string, we can also pass in objects.
+However, rather than passing in a string, we can also pass in objects.
 
 ```python
 model.compile(
@@ -950,15 +950,15 @@ In the meantime, please refer to the Keras documentation regarding built-in opti
 ### Picking a loss function
 
 Choosing the proper loss function for the right problem is a critical step in training a model.
-Neural networks will take any shortcut it can to minimize the loss score, even if it means learning the wrong thing and performing incorrectly.
+Neural networks will take any shortcut they can to minimize the loss score, even if it means learning the wrong thing and performing incorrectly.
 The network will end up doing things we did not intend it to do.
 
-Common problems - such as classification, regression and timeseries prediction (forecasting) - all have general guidelines for choosing a loss function.
+Common problems - such as classification, regression, and timeseries prediction (forecasting) - all have general guidelines for choosing a loss function.
 For instance, the [mean squared error](https://en.wikipedia.org/wiki/Mean_squared_error) is a good choice for regression problems.
 The [binary cross-entropy](https://en.wikipedia.org/wiki/Cross_entropy) is a good choice for two-class classification problems, whereas the [categorical cross-entropy](https://www.tensorflow.org/api_docs/python/tf/keras/losses/CategoricalCrossentropy) is a good choice for multi-class classification problems.
 Only when we have a problem that is not one of these common problems will we need to develop a custom loss function.
 
-In the next few chapters, we'll detail explicitly which loss functions to choose for a wide-range of common problems.
+In the next few chapters, we'll detail explicitly which loss functions to choose for a wide range of common problems.
 
 ### Understanding the fit() method
 
@@ -1010,18 +1010,16 @@ This object contains a dictionary (`History.history`) which maps training metric
 
 This dictionary is used to plot the training loss and accuracy during training.
 
-<font style="color:red">TODO: Insert plots of training loss and accuracy</font>
-
 ### Monitoring loss and metrics on validation data
 
-The goal of machine learning is to obtain models that perform well on training data and on unseen data.
+The goal of machine learning is to obtain models that perform well on both training data and unseen data.
 Just because the model performs well on the training data, it does not mean it can perform well on new, unseen data.
 
 To understand how the model performs on unseen data, it's standard practice to reserve a subset of the training data as *validation data*.
-The validation data is used for computing the loss value and metrics, whereas the training data is used for  updating the model's weights (training the model).
+The validation data is used for computing the loss value and metrics, whereas the training data is used for updating the model's weights (training the model).
 
 We can utilize the `fit()` method's `validation_data` argument to monitor the model's performance on our validation data.
-Like the training data, the validation data can be passed in as a Numpy array or a Tensorflow Dataset object.
+Similar to the training data, the validation data can be passed in as a Numpy array or a Tensorflow Dataset object.
 
 ```python
 # Reserve 25% of training data for validation
@@ -1048,10 +1046,10 @@ As a result, the `history.history` object will contain the loss and accuracy val
 
 > **NOTE: Keep training and validation data strictly separated**
 >
-> The purpose of validation is to monitor whether what the model is learning is actually useful on new data.
+> The purpose of validation is to monitor whether what the model is learning is useful for new data.
 > If any of the validation data has already been seen by the model during training, the model's validation loss and accuracy will be flawed.
 
-If, instead, we wanted to compute the model's validation loss and metrics *after* the training loop has finished, we can use the `evaluate()` method.
+If instead, we wanted to compute the model's validation loss and metrics *after* the training loop has finished, we can use the `evaluate()` method.
 `evaluate()` iterates over the data passed in batches and returns a list of scalars, where the first scalar is the loss and the second is the accuracy.
 
 ```python
@@ -1090,9 +1088,9 @@ The following chapter will discuss how to build neural networks for classificati
 
 - The fundamental objects of Tensorflow include tensors, variables, tensor operations, and the gradient tape.
 - The central class of the Keras API is the `Layer` class.
-A layer encapsulate some weights and some computation.
+A layer encapsulates some weights and some computation.
 Models are composed of layers.
 - Before training the model, we must define the model's architecture - optimizer, loss function, and metrics - with the `model.compile()` method
 - Training the model is done using the `model.fit()` method.
-It's common practice train the model on the training data and to monitor the model's performance on the validation data - a set of inputs that has not been seen by the model.
+It's common practice to train the model on the training data and to monitor the model's performance on the validation data - a set of inputs that have not been seen by the model.
 - Use `model.predict(inputs, batch_size)` to make predictions on new data.
