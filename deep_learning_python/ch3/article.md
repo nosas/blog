@@ -59,7 +59,7 @@ By the end of this chapter, we'll be ready to move on to practical, real-world a
 ---
 ## What's TensorFlow?
 
-TensorFlow is a free and open-source machine learning framework for Python.
+TensorFlow is a free and [open-source](https://github.com/tensorflow/tensorflow) machine learning framework for Python.
 It was primarily developed by Google.
 Similar to NumPy, it is a general-purpose and efficient numerical library used by engineers to manipulate mathematical expressions using numerical tensors.
 
@@ -67,24 +67,22 @@ Similar to NumPy, it is a general-purpose and efficient numerical library used b
 
 TensorFlow far surpasses NumPy in the following ways:
 
-- Automatically computes the gradient of any differentiable expressions (as seen in Ch2 with `GradientTape`)
-- Runs not only on CPUs, but also on GPUs and TPUs (highly-parallel hardware accelerators)
-- Computations defined in TensorFlow can be easily distributed across multiple devices (CPUs, GPUs, and TPUs) and machines
-- TensorFlow programs can be exported and easily deployed to other runtimes, such as C++, JavaScript (for browsers), or TensorFlow lite (for mobile devices or embedded systems)
+- Automatically computes the gradient of any differentiable expressions (as seen in [chapter 2](../ch2/#tensorflows-gradient-tape) with `GradientTape`)
+- Runs not only on CPUs but also on GPUs and TPUs (highly-parallel hardware accelerators)
+- Easily distributes computations across multiple devices (CPUs, GPUs, and TPUs) and machines
+- TensorFlow programs can be exported and easily    deployed to other runtimes, such as C++, JavaScript (for browsers), or TensorFlow lite (for mobile devices or embedded systems)
 
 ### TensorFlow ecosystem
 
 TensorFlow is much more than a single Python library.
-Rather, it's a platform home to a vast ecosystem of components.
-
-Components of the ecosystem include:
+Rather, it's a platform home to a vast ecosystem of components, including:
 
 - TF-Agents for reinforcement learning
 - TF-Hub (repository) for pre-trained deep neural networks
 - TensorFlow Serving for production deployment
 - TFX for distributed training and ML workflow management
 
-Together, these components cover a wide range of use cases: from cutting-edge research to large-scale production, or just a simple image classification application to see if a dog or a cat is in a picture.
+Together, these components cover a wide range of use cases: from cutting-edge research to large-scale production, or just a simple image classification application to distinguish between a dog or a cat.
 
 Scientists from Oak Ridge National Lab have used TensorFlow to train an extreme weather forecasting model on the 27,000 GPUs within the IBM Summit supercomputer.
 Google, on the other hand, has used TensorFlow to develop deep learning applications such as the chess-playing and Go-playing agent AlphaZero.
@@ -117,8 +115,8 @@ Following the release of TensorFlow 1.0 in November 2015, Keras was refactored t
 
 Keras became well known as the user-friendly way to develop TensorFlow applications.
 By late 2017, a majority of TensorFlow users were using Keras.
-In 2018, the TensorFlow leadership picked Keras and TensorFlow's official high-level API.
-As a result, as of September 2019, the Keras API is the official API for TensorFlow 2.0.
+In 2018, the TensorFlow leadership picked Keras as TensorFlow's official high-level API.
+As of September 2019, the Keras API is the official API for TensorFlow 2.0.
 
 Enough of the history, let's learn how to set up a deep learning workspace.
 
@@ -133,15 +131,17 @@ There are a handful of ways to set up a deep learning workspace:
 
 Each approach has its advantages and disadvantages in terms of flexibility, cost, and ease of use.
 I'll briefly discuss the advantages and disadvantages of each approach below, but I will not discuss setup at all.
+In short, the easiest way to get started is Google Colab or some cloud GPU instance.
 
 ### Physical machine with NVIDIA GPU
 
-Buying a machine with a GPU is not the easiest way to get started with DL, as it requires manual setup and it's also the most expensive upfront.
-The upfront cost is amplified by the current (as of May 2022) chip shortage and GPU scalpers.
+Buying a machine with a GPU is not the easiest way to get started with DL, as it's the most expensive upfront and requires manual setup.
+The upfront cost is amplified by the current (as of June 2022) chip shortage and GPU scalpers.
 This method involves installing proper drivers, sorting out version conflicts, and then configuring the libraries to use the GPU instead of the CPU.
 
 Most users already have NVIDIA GPUs installed on their computers.
 Given the large user base of TensorFlow, there are many tutorials for setting up NVIDIA GPUs for deep learning, so this is not a bad option for tech-savvy people.
+I run most of my deep learning code on my GPU as it's the most convenient option and does not require an internet connection.
 
 The alternative to buying a GPU is the use of embedded devices built specifically for efficient and highly-parallelized math operations, such as [NVIDIA's Jetson](https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/) or [Google's Coral](https://coral.ai/products/).
 
@@ -170,9 +170,9 @@ TensorFlow takes care of the tensor manipulation through the use of:
 
 - *Tensors*, including special tensors that store the network's state (*variables*)
 - *Tensor operations* such as addition, `relu`, `matmul`, etc.
-    - The previous article details [tensor operations](https://fars.io/deep_learning_python/ch2/#tensor-operations)
+    - The previous article details [tensor operations](../ch2/#tensor-operations)
 - *Backpropagation*, a way to compute gradients of mathematical operations (using TensorFlow's `GradientTape`)
-    - The previous article discusses [backpropagation](https://fars.io/deep_learning_python/ch2/#backpropagation) and [TensorFlow's GradientTape](https://fars.io/deep_learning_python/ch2/#tensorflows-gradient-tape)
+    - The previous article discusses [backpropagation](../ch2/#backpropagation) and [TensorFlow's GradientTape](../ch2/#tensorflows-gradient-tape)
 
 Let's take a deeper dive into how all of the concepts above translate to TensorFlow.
 
@@ -290,16 +290,18 @@ All we have to do is open a `GradientTape` context, manipulate the input tensors
 ```python
 import tensorflow as tf
 
-input = tf.Variable(initial_value=3.)
+input_var = tf.Variable(initial_value=3.)
+# Open a GradientTape context
 with tf.GradientTape() as tape:
-    output = input * input
+    # Manipulate the input tensor
+    output = input_var * input_var
 
-# <tf.Tensor: shape=(), dtype=float32, numpy=6.0>
-gradient = tape.gradient(output, input)
+# gradient = <tf.Tensor: shape=(), dtype=float32, numpy=6.0>
+gradient = tape.gradient(output, input_var)
 ```
 
 The gradient tape is most commonly used to retrieve the gradients of the model's loss with respect to its weights: `gradient = tape.gradient(loss, weights)`.
-We discussed and demonstrated this functionality in the [previous article](https://fars.io/deep_learning_python/ch2/#tensorflows-gradient-tape).
+We discussed and demonstrated this functionality in the [previous article](../ch2/#tensorflows-gradient-tape).
 
 So far, we've only looked at the simplest case of `GradientTapes` - where the input tensors in `tape.gradient()` were TensorFlow variables.
 It's possible for the input tensors to be any arbitrary tensor, not just variables, by calling `tape.watch(arbitrary_tensor)` within the `GradientTape` context.
@@ -314,17 +316,15 @@ with tf.GradientTape() as tape:
 gradient = tape.gradient(output, arbitrary_tensor)
 ```
 
-By default, only *trainable variables* are tracked because computing the gradient of a loss with regard to a trainable variable is the most common use case.
-Furthermore, it would be too expensive to preemptively store the information required to compute the gradient of anything with respect to anything.
+By default, only *trainable variables* are tracked because it would be too expensive to preemptively store the information required to compute the gradient of anything with respect to anything.
 To avoid wasting resources, only the trainable variables are tracked unless otherwise explicitly specified.
 
 ### Computing second-order gradients
 
 The gradient tape is a powerful utility capable of computing *second-order gradients* - or, the gradient of a gradient.
 
-For instance, the gradient of the position of an object with respect to time is the speed of the object.
-The second-order gradient of the object's speed is its acceleration.
-
+For instance, the gradient of an object's position with respect to time is the object's *speed*.
+The second-order gradient of the object's speed is its *acceleration*.
 
 ```python
 time = tf.Variable(initial_value=0.)
@@ -349,15 +349,18 @@ But first, we need to understand what linear classification is.
 
 ### What is linear classification?
 
+<figure class="right">
+    <img src="img/linear_classifier_data_line.png" style="width:100%;background:white;"/>
+    <figcaption>Two classes of data separated by a line</figcaption>
+</figure>
+
 In linear classification problems, the model is trying to find a linear combination of the input features that best predicts the target variable.
 Simply put, the model is trying to classify input data into 2+ categories (classes) by drawing a line through the data.
 The line best fits to separate the data into two classes.
 
-
-<figure class="center">
-    <img src="img/linear_classifier_data_line.png" style="width:100%;background:white;"/>
-    <figcaption>Two classes of data separated by a line</figcaption>
-</figure>
+We see in the figure to the right how the model classifies the two classes with a red line.
+Inputs above the red line belong to class A and inputs below the line belong to class B.
+There are a few class B outliers above the line, but remember that the classification line is best fit, not perfect fit.
 
 This is the basic idea behind linear classification.
 Now let's generate some data and train a linear classifier.
@@ -369,7 +372,7 @@ I recommend using VSCode to utilize the interactive python code blocks - similar
 We need some nicely linear data to train our linear classifier.
 To keep it simple, we'll create two classes of points in a 2D plane and call them class A and class B.
 To keep it more simple, we won't explain all the math behind the data generation - just understand that both classes should be clearly separated and roughly distributed like a cloud.
-We'll just use the following formula to generate the data:
+We'll use the following formula to generate the data:
 
 ```python
 num_samples_per_class = 500
@@ -383,7 +386,7 @@ class_b_samples = np.random.multivariate_normal(
     size=num_samples_per_class)
 ```
 
-The figure below shows the linearly-separable data from classes A and B.
+The figure below shows the linearly-separable data of classes A and B.
 See the following code block to see how we plot the data.
 
 <figure class="center">
@@ -391,7 +394,7 @@ See the following code block to see how we plot the data.
     <figcaption>Two classes of synthetic and random points in the 2D plane</figcaption>
 </figure>
 
-Both samples are arrays of shape `(500, 2)` - meaning there are 500 rows of 2-dimensional data (aka 500 tuples, each containing an x,y).
+Both samples are matrices of shape `(500, 2)` - meaning there are 500 rows of 2-dimensional data (aka 500 vectors/tuples, each containing an x,y).
 Let's stack both class samples into a single array with the shape `(1000, 2)`.
 Stacking the samples into a single array will allow for easier processing later on, such as plotting the data.
 
@@ -440,10 +443,11 @@ plt.show()
 ### Creating the linear classifier
 
 A linear classifier is an *affine transformation* of the input data (`prediction = dot(W, x) + b`), trained to minimize the square of the difference (mean squared error, or MSE) between the prediction and the target label.
-I have not explained affine transformations - or any geometric interpretations of tensor operations - in my articles, but Francois Chollet greatly details geometric transformations in Chapter 2 of his book.
+
+I have not explained affine transformations - or any geometric interpretations of tensor operations - in my articles, but François Chollet greatly details geometric transformations in Chapter 2 of his book.
 In short, an affine transformation is the combination of a linear transform (dot product) and a translation (vector addition).
 
-Now that we understand the basic math behind linear classification, let's create the model's variables.
+Now that we understand the basic math behind linear classification, let's create the model's variables, forward pass, and loss function.
 
 ```python
 input_dim = 2   # input is a 2D vector
@@ -609,24 +613,24 @@ No.
 Take a look at the plots above: the loss score stabilizes after roughly 40 epochs.
 
 The stabilization shows that the model learned its optimal weights given the current model architecture and training data.
-If we were to train it for more epochs, the model would *overfit* to the data.
-Sure, the loss score may decrease by 0.001 - a small amount - but that's because it's memorizing the dataset.
+If we were to train it for more epochs, the model would *overfit* (memorize) to the data.
 
 *Overfitting* is a huge concept in machine learning, which we'll cover later on.
 For now, understand that more training does not guarantee better results!
+Training with a quality dataset and decently-configured model architecture is more impactful than excessive training.
 
 ### Plotting the predictions
 
-After each training step, the model updates its weights and biases (parameters) and makes predictions on the inputs.
+After each training step - each iteration over the entire dataset - the model updates its weights and biases (parameters) and makes predictions on the inputs.
 We append those predictions to a list called `predictions_all`.
-Using the predictions, we can plot how accurate the model is after each training step: green dot if correctly predicted, otherwise red.
+Using the predictions, we can plot model's accuracy after each training step: green dot if correctly predicted, red otherwise.
 
 Predictions are classified as *correct* or *incorrect* based on the following criteria:
 
-- If the prediction is greater than 0.5, the predicted label is Class A
-- If the prediction is less than 0.5, the predicted label is Class B
+- If the prediction is greater than 0.5, the predicted label is class A
+- If the prediction is less than 0.5, the predicted label is class B
 
-An easier way to understand this is: if the dot is *above* the red line, it belongs to Class A, otherwise it's below the line and belongs to Class B.
+An easier way to understand this is: if the dot is *above* the red line, it belongs to class A, otherwise it's below the line and belongs to class B.
 
 We need two helper functions to create the accuracy plots and GIFs below: `plot_prediction_acc(prediction, input)` and `make_gif(predictions, inputs)`.
 The `plot_prediction_acc()` function will plot the accuracy of the model and save it to an IO buffer.
@@ -785,7 +789,7 @@ In higher-dimensional spaces, we're finding the parameters of a hyperplane that 
 ## Understanding core Keras APIs
 
 We've learned how to create a linear classifier using pure TensorFlow.
-Now, let's look closer at Keras- specifically, the anatomy of a neural network through Keras layers and models.
+Now, let's look closer at Keras - specifically, the anatomy of a neural network through Keras layers and models.
 
 ### Layers: the building blocks of deep learning
 
@@ -803,7 +807,7 @@ Furthermore, different types of layers are appropriate for different tensor form
 - Recurrent layers, such as `LSTM` (long short-term memory) or `Conv1D` (1D convolution layer), often process time-series data stored in 3D tensors of shape `(samples, timesteps, features)`
 - `Conv2D` (2D convolution layer) and `Conv3D` (3D convolution layer) often process images stored in 4D tensors of shape `(samples, height, width, channels)`
 
-Tensor formats were discussed in more detail in the previous [article](https://fars.io/deep_learning_python/ch2/#real-world-examples-of-data-tensors).
+Tensor formats were discussed in more detail in the previous [article](../ch2/#real-world-examples-of-data-tensors).
 
 In Keras, a `Layer` is an object that encapsulates some state (weights) and some computation (a forward pass).
 The weights are typically defined in a `build()` method - although they could be created in the constructor.
@@ -811,6 +815,7 @@ The computation, or forward pass, is defined in the `call()` method.
 
 ```python
 from tensorflow import keras
+
 
 class SimpleDense(keras.layers.Layer):
     def __init__(self, units, activation=None, **kwargs):
@@ -890,7 +895,7 @@ As we move forward, we'll be exposed to a variety of neural network architecture
 - Residual networks
 
 The difference between each of these topologies is the type of layers and how they are connected.
-Similar to layers, each network topology has its pros, cons, and common use cases.
+Each network topology has its pros, cons, and common use cases.
 Picking the right network topology is more an art than a science, where only practice can help you become a proper neural network architect.
 
 #### Importance of model architecture
@@ -899,8 +904,8 @@ Picking the right network topology is more an art than a science, where only pra
 
 To learn from data, we have to make assumptions about it - also referred to as a *hypothesis space* or *space of possibilities* in chapter 1.
 These assumptions (hypothesis space) define what can be learned.
-By choosing a network topology, we constrain our hypothesis space to a specific series of tensor operations.
-As such, the structure of the model's hypothesis space - the architecture of the model - is extremely important.
+By choosing a network topology, we *constrain* our hypothesis space to a specific series of tensor operations.
+As such, the architecture of the model is extremely important for constraining what our model can learn - how it can make proper assumptions.
 
 The hypothesis space encodes the assumptions we make about our problems, aka the prior knowledge that the model starts with.
 For instance, if we're working on a two-class classification problem with a model made of a single `Dense` layer with no activation function, then we are assuming that our two classes are linearly separable.
@@ -952,6 +957,7 @@ In the meantime, please refer to the Keras documentation regarding built-in opti
 Choosing the proper loss function for the right problem is a critical step in training a model.
 Neural networks will take any shortcut they can to minimize the loss score, even if it means learning the wrong thing and performing incorrectly.
 The network will end up doing things we did not intend it to do.
+Read more about how "smart" neural networks can be in OpenAI's article about [specification gaming](https://www.deepmind.com/blog/specification-gaming-the-flip-side-of-ai-ingenuity).
 
 Common problems - such as classification, regression, and timeseries prediction (forecasting) - all have general guidelines for choosing a loss function.
 For instance, the [mean squared error](https://en.wikipedia.org/wiki/Mean_squared_error) is a good choice for regression problems.
@@ -968,7 +974,6 @@ The `fit()` method implements the training loop using a few key arguments:
 - The `data` (inputs and targets) to train on. Data is typically passed in as a Numpy array or TensorFlow `Dataset` object.
 - The number of `epochs` to train for: how many times the training loop should iterate over the entire dataset.
 - The batch size (optional): the number of samples to train on before updating the model's parameters.
-
 
 ```python
 history = model.fit(
