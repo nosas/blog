@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 07, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 08, 2022</p>
 
 <p><title>Deep Learning with Python: Chapter 3 - Introduction to Keras and TensorFlow</title></p>
 
@@ -57,7 +57,7 @@ Articles in this series will sequentially review key concepts, examples, and int
 <li><a href="#a-second-look-at-the-gradient-tape-api">A second look at the Gradient Tape API</a></li>
 <li><a href="#computing-second-order-gradients">Computing second-order gradients</a></li>
 </ul></li>
-<li><a href="#linear-classifier-example-in-pure-tensorflow">Linear classifier example in pure TensorFlow</a>
+<li><a href="#example-linear-classifier-in-pure-tensorflow">Example: Linear classifier in pure TensorFlow</a>
 <ul>
 <li><a href="#what-is-linear-classification">What is linear classification?</a></li>
 <li><a href="#generating-synthetic-data">Generating synthetic data</a></li>
@@ -141,10 +141,13 @@ Google, on the other hand, has used TensorFlow to develop deep learning applicat
 
 <h2 id="whats-keras">What's Keras?</h2>
 
+<figure class="right">
+    <img src="img/keras_hierarchy.png" style="width:50%;"/>
+    <figcaption>Keras is built on top of Tensorflow, which uses CPU/GPU/TPU to perform calculations</figcaption>
+</figure>
+
 <p>Keras is a high-level deep learning API built on top of TensorFlow.
 It provides a convenient and flexible API for building and training deep learning models.</p>
-
-<p><font style="color:red">TODO: Insert image of Keras, TF, hardware hierarchical diagram</font></p>
 
 <p>Keras is known for providing a clean, simple, and efficient API that prioritizes the developer experience.
 It's an API for human beings, not machines, and follows best practices for reducing cognitive load.
@@ -385,7 +388,7 @@ The second-order gradient of the object speed is its acceleration.</p>
 
 <hr />
 
-<h2 id="linear-classifier-example-in-pure-tensorflow">Linear classifier example in pure TensorFlow</h2>
+<h2 id="example-linear-classifier-in-pure-tensorflow">Example: Linear classifier in pure TensorFlow</h2>
 
 <p>We now know about tensors, variables, tensor operations, and gradient computation.
 That's enough to build any machine learning model based on gradient descent.
@@ -1134,6 +1137,17 @@ We're now ready to start building models for real-world problems.</p>
 <p>The following chapter will discuss how to build neural networks for classification and regression problems.</p>
 
 <h2 id="summary">Summary</h2>
+
+<ul>
+<li>The fundamental objects of Tensorflow include tensors, variables, tensor operations, and the gradient tape.</li>
+<li>The central class of the Keras API is the <code>Layer</code> class.
+A layer encapsulate some weights and some computation.
+Models are composed of layers.</li>
+<li>Before training the model, we must define the model's architecture - optimizer, loss function, and metrics - with the <code>model.compile()</code> method</li>
+<li>Training the model is done using the <code>model.fit()</code> method.
+It's common practice train the model on the training data and to monitor the model's performance on the validation data - a set of inputs that has not been seen by the model.</li>
+<li>Use <code>model.predict(inputs, batch_size)</code> to make predictions on new data.</li>
+</ul>
 
 </body>
 </html>

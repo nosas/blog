@@ -25,7 +25,7 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Constant tensors and variables](#constant-tensors-and-variables)
         - [A second look at the Gradient Tape API](#a-second-look-at-the-gradient-tape-api)
         - [Computing second-order gradients](#computing-second-order-gradients)
-    - [Linear classifier example in pure TensorFlow](#linear-classifier-example-in-pure-tensorflow)
+    - [Example: Linear classifier in pure TensorFlow](#example-linear-classifier-in-pure-tensorflow)
         - [What is linear classification?](#what-is-linear-classification)
         - [Generating synthetic data](#generating-synthetic-data)
         - [Creating the linear classifier](#creating-the-linear-classifier)
@@ -92,10 +92,13 @@ Google, on the other hand, has used TensorFlow to develop deep learning applicat
 ---
 ## What's Keras?
 
+<figure class="right">
+    <img src="img/keras_hierarchy.png" style="width:50%;"/>
+    <figcaption>Keras is built on top of Tensorflow, which uses CPU/GPU/TPU to perform calculations</figcaption>
+</figure>
+
 Keras is a high-level deep learning API built on top of TensorFlow.
 It provides a convenient and flexible API for building and training deep learning models.
-
-<font style="color:red">TODO: Insert image of Keras, TF, hardware hierarchical diagram</font>
 
 Keras is known for providing a clean, simple, and efficient API that prioritizes the developer experience.
 It's an API for human beings, not machines, and follows best practices for reducing cognitive load.
@@ -335,7 +338,7 @@ acceleration = outer_tape.gradient(speed, time)
 ```
 
 ---
-## Linear classifier example in pure TensorFlow
+## Example: Linear classifier in pure TensorFlow
 
 We now know about tensors, variables, tensor operations, and gradient computation.
 That's enough to build any machine learning model based on gradient descent.
@@ -1080,3 +1083,12 @@ We're now ready to start building models for real-world problems.
 The following chapter will discuss how to build neural networks for classification and regression problems.
 
 ## Summary
+
+- The fundamental objects of Tensorflow include tensors, variables, tensor operations, and the gradient tape.
+- The central class of the Keras API is the `Layer` class.
+A layer encapsulate some weights and some computation.
+Models are composed of layers.
+- Before training the model, we must define the model's architecture - optimizer, loss function, and metrics - with the `model.compile()` method
+- Training the model is done using the `model.fit()` method.
+It's common practice train the model on the training data and to monitor the model's performance on the validation data - a set of inputs that has not been seen by the model.
+- Use `model.predict(inputs, batch_size)` to make predictions on new data.

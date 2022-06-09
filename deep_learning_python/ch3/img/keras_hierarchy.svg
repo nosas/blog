@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   id="svg5"
+   version="1.1"
+   viewBox="0 0 210 297"
+   height="297mm"
+   width="210mm"
+   inkscape:version="1.2 (dc2aedaf03, 2022-05-15)"
+   sodipodi:docname="keras_hierarchy.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="3.3638608"
+     inkscape:cx="306.04714"
+     inkscape:cy="105.23622"
+     inkscape:window-width="3378"
+     inkscape:window-height="1417"
+     inkscape:window-x="54"
+     inkscape:window-y="224"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3082" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="opacity:1;fill:#66ff00;stroke:#999999;stroke-width:0.264999;stroke-dasharray:none"
+       id="rect275"
+       width="50.477371"
+       height="14.735"
+       x="51.851913"
+       y="6.2966547" />
+    <rect
+       style="fill:#447821;stroke:#999999;stroke-width:0.264999;stroke-dasharray:none"
+       id="rect275-7"
+       width="50.477371"
+       height="14.735"
+       x="51.851913"
+       y="22.171654" />
+    <rect
+       style="fill:#4d4d4d;stroke:#999999;stroke-width:0.265;stroke-dasharray:none"
+       id="rect275-9"
+       width="16.497217"
+       height="11.695011"
+       x="51.851913"
+       y="38.046654" />
+    <rect
+       style="fill:#4d4d4d;stroke:#999999;stroke-width:0.265;stroke-dasharray:none"
+       id="rect275-9-7"
+       width="16.497217"
+       height="11.695011"
+       x="68.897484"
+       y="38.046654" />
+    <rect
+       style="fill:#4d4d4d;stroke:#999999;stroke-width:0.265;stroke-dasharray:none"
+       id="rect275-9-7-5"
+       width="16.497217"
+       height="11.695011"
+       x="85.943062"
+       y="38.046654" />
+    <text
+       xml:space="preserve"
+       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="69.06353"
+       y="15.673333"
+       id="text13023"><tspan
+         sodipodi:role="line"
+         id="tspan13021"
+         style="stroke-width:0.264583"
+         x="69.06353"
+         y="15.673333">Keras</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="62.12925"
+       y="31.65444"
+       id="text13027"><tspan
+         sodipodi:role="line"
+         id="tspan13025"
+         style="stroke-width:0.264583"
+         x="62.12925"
+         y="31.65444">Tensorflow</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583;fill:#ffffff"
+       x="54.449192"
+       y="45.940544"
+       id="text13031"><tspan
+         sodipodi:role="line"
+         id="tspan13029"
+         style="stroke-width:0.264583;fill:#ffffff"
+         x="54.449192"
+         y="45.940544">CPU</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583;fill:#ffffff"
+       x="71.277031"
+       y="45.940544"
+       id="text13037"><tspan
+         sodipodi:role="line"
+         id="tspan13035"
+         style="stroke-width:0.264583;fill:#ffffff"
+         x="71.277031"
+         y="45.940544">GPU</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583;fill:#ffffff"
+       x="88.930321"
+       y="45.903339"
+       id="text13091"
+       inkscape:export-filename="keras_hierarchy.png"
+       inkscape:export-xdpi="154.847"
+       inkscape:export-ydpi="154.847"><tspan
+         sodipodi:role="line"
+         id="tspan13089"
+         style="stroke-width:0.264583;fill:#ffffff"
+         x="88.930321"
+         y="45.903339">TPU</tspan></text>
+  </g>
+</svg>
