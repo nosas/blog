@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 04, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 09, 2022</p>
 
 <h1 id="toonvision-classification">ToonVision - Classification</h1>
 
@@ -73,6 +73,10 @@ For now, let's focus on real-time classification.</p>
 <ul>
 <li><a href="#spitting-the-images-into-train-validate-and-test">Spitting the images into train, validate, and test</a></li>
 </ul></li>
+</ul></li>
+<li><a href="#training-the-model">Training the model</a>
+<ul>
+<li><a href="#accuracy-converges-quickly-after-6-epochs-why">Accuracy converges quickly after 6 epochs, why?</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -213,24 +217,22 @@ When taken from far away, the entity's nametag covers the entity's head, thus ca
 <h4 id="can-we-use-gans-to-synthesize-additional-data">Can we use GANs to synthesize additional data?</h4>
 
 <p>Yes, iff there was a GAN that could generate Toons and Cogs.
-I'm not if it exists.
-Also, the data is easy enough to gather manually by walking around TT.</p>
+As far as I know, no GAN exists for generating ToonTown entities; perhaps I can take a swing at it later.</p>
 
 <h3 id="data-labeling">Data labeling</h3>
 
-<p>I'm using <a href="https://github.com/tzutalin/labelImg">labelimg</a> to draw labeled bounding
-boxes around Toons and Cogs.
+<p>I'm using <a href="https://github.com/tzutalin/labelImg">labelimg</a> to draw labeled bounding boxes around Toons and Cogs.
 Labels - also referred to as <code>obj_name</code> - follow the format:</p>
 
 <ul>
-<li><code>cog_&lt;bb|lb|cb|sb&gt;_&lt;name&gt;</code></li>
-<li><code>toon_&lt;animal&gt;</code></li>
+<li><code>cog_&lt;bb|lb|cb|sb&gt;_&lt;name&gt;_&lt;index&gt;</code></li>
+<li><code>toon_&lt;animal&gt;_&lt;index&gt;</code></li>
 </ul>
 
 <p>The cog labels contain shorthand notation (<code>&lt;bb|lb|cb|sb&gt;</code>) for each suit: Bossbot, Lawbot, Cashbot, and Sellbot, respectively.
 This shorthand notation allows us to filter cog data by filename and create a classifier that can distinguish between the 4 suits.</p>
 
-<p>Bounding boxes are saved in XML format - specifically <a href="https://mlhive.com/2022/02/read-and-write-pascal-voc-xml-annotations-in-python">Pascal VOC XML</a> - alongside the image in the <code>raw</code> folder.</p>
+<p>Bounding boxes are saved in XML format - specifically <a href="https://mlhive.com/2022/02/read-and-write-pascal-voc-xml-annotations-in-python">Pascal VOC XML</a> - alongside the image in the <code>raw/screenshots</code> directory.</p>
 
 <pre><code>img
 ├───data
@@ -246,10 +248,13 @@ This shorthand notation allows us to filter cog data by filename and create a cl
 ├───raw
 │   ├───processed
 │   └───screenshots
-│       │   sample_img0.png
-│       │   sample_img0.xml
-│       │   sample_img1.png
-│       │   sample_img1.xml
+│       ├   sample_img0.png
+│       ├   sample_img0.xml
+│       ├   sample_img1.png
+│       └   sample_img1.xml
+└───unsorted
+    ├───cog
+    └───toon
 </code></pre>
 
 <p><font style="color:red">TODO: Insert image of labelimg and bounding boxes</font></p>
@@ -261,15 +266,24 @@ Furthermore, we must exclude entity nametags in the bounding box because the cla
 <h3 id="data-extraction">Data extraction</h3>
 
 <p>The raw data (screenshot) is passed into the <code>data_processing.py</code> script.
-The script utilizes functions in <code>img_utils.py</code> to extract objects from the images using the bounding boxes and labels found in their corresponding XML files.
-Specifically, the workflow is as follows:</p>
+The script utilizes functions in <code>img_utils.py</code> to extract objects from the images using the labeled bounding boxes found in the image's corresponding XML files.
+Specifically, the data extraction workflow is as follows:</p>
 
 <ul>
 <li>Acquire bounding box dimensions and labels from the XML files</li>
 <li>Extract object (Toon or Cog) from the image using the dimensions and labels found in the XML files</li>
-<li>Save the cropped image of the object to the <code>unsorted</code> folder</li>
-<li>Move the raw image and its corresponding XML file to the <code>processed</code> folder</li>
+<li>Save the cropped image of the object to the <code>img/unsorted</code> folder</li>
+<li>Move the raw image and its corresponding XML file to the <code>raw/processed</code> folder</li>
 </ul>
+
+<p><em>Why move the cropped image to unsorted and then processed?</em></p>
+
+<p>The unsorted images directory is used to maintain a counter (referred to as an index) for each label.
+It gives me a glimpse of how many images are in each category by looking at the filenames in the <code>unsorted</code> directory.
+If I want to add more images to the dataset, I would have place images from all datasets back into the <code>unsorted</code> directory in order to maintain the counter and avoid overwriting existing images.</p>
+
+<p>Given that my dataset is so small, I can unsort and re-sort the images with ease.
+But this is not at all scalable in the future and I will surely redesign this portion of the data pipeline.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="c1"># %% Convert raw images to data images</span>
 <span class="k">def</span> <span class="nf">process_images</span><span class="p">(</span>
@@ -277,21 +291,27 @@ Specifically, the workflow is as follows:</p>
     <span class="n">image_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span>
     <span class="n">move_images</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">img_path</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">raw_images_dir</span><span class="si">}</span><span class="s2">/*.</span><span class="si">{</span><span class="n">image_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extract objects from raw images and save them to the unsorted img directory&quot;&quot;&quot;</span>
+    <span class="n">screenshots</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">raw_images_dir</span><span class="si">}</span><span class="s2">/*.</span><span class="si">{</span><span class="n">image_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">screenshots</span><span class="p">)</span><span class="si">}</span><span class="s2"> screenshots&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">img_path</span> <span class="ow">in</span> <span class="n">screenshots</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing </span><span class="si">{</span><span class="n">img_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">xml_path</span> <span class="o">=</span> <span class="n">img_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">image_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">)</span>
-        <span class="c1"># Extract objects&#39; labels and bounding box dimensions from XML</span>
-        <span class="n">objs_from_xml</span> <span class="o">=</span> <span class="n">extract_objects_from_xml</span><span class="p">(</span><span class="n">xml_path</span><span class="p">)</span>
-        <span class="c1"># Extract objects from images using XML data</span>
-        <span class="n">objs_from_img</span> <span class="o">=</span> <span class="n">extract_objects_from_img</span><span class="p">(</span><span class="n">img_path</span><span class="p">,</span> <span class="n">objs_from_xml</span><span class="p">)</span>
-        <span class="c1"># Save extracted objects to images</span>
-        <span class="n">save_objects_to_img</span><span class="p">(</span><span class="n">objs_from_img</span><span class="p">,</span> <span class="n">UNSORTED_DIR</span><span class="p">)</span>
-        <span class="c1"># Move raw image to processed directory</span>
-        <span class="k">if</span> <span class="n">move_images</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="n">img_path</span><span class="p">,</span> <span class="n">xml_path</span><span class="p">]:</span>
-                <span class="n">new_path</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">raw_images_dir</span><span class="p">,</span> <span class="n">PROCESSED_DIR</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Moving </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">rename</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">xml_path</span><span class="p">):</span>
+            <span class="c1"># Extract objects&#39; labels and bounding box dimensions from XML</span>
+            <span class="n">objs_from_xml</span> <span class="o">=</span> <span class="n">extract_objects_from_xml</span><span class="p">(</span><span class="n">xml_path</span><span class="p">)</span>
+            <span class="c1"># Extract objects from images using XML data</span>
+            <span class="n">objs_from_img</span> <span class="o">=</span> <span class="n">extract_objects_from_img</span><span class="p">(</span><span class="n">img_path</span><span class="p">,</span> <span class="n">objs_from_xml</span><span class="p">)</span>
+            <span class="c1"># Save extracted objects to images, modify image name to include object index</span>
+            <span class="n">save_objects_to_img</span><span class="p">(</span><span class="n">objs_from_img</span><span class="p">,</span> <span class="n">UNSORTED_DIR</span><span class="p">)</span>
+            <span class="c1"># Move raw image to processed directory</span>
+            <span class="k">if</span> <span class="n">move_images</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="n">img_path</span><span class="p">,</span> <span class="n">xml_path</span><span class="p">]:</span>
+                    <span class="n">new_path</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">raw_images_dir</span><span class="p">,</span> <span class="n">PROCESSED_DIR</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Moving </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">rename</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    No XML file found for </span><span class="si">{</span><span class="n">img_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
 
 <h3 id="data-processing">Data processing</h3>
@@ -371,6 +391,10 @@ Remember that we're aiming for a 40/20/40 split of the dataset for training, val
 </code></pre></div>
 
 <p><font style="color:red">TODO: Insert sample images from train dataset</font></p>
+
+<h2 id="training-the-model">Training the model</h2>
+
+<h3 id="accuracy-converges-quickly-after-6-epochs-why">Accuracy converges quickly after 6 epochs, why?</h3>
 
 </body>
 </html>

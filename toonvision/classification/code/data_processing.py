@@ -62,7 +62,8 @@ def process_images(
     image_type: str = "png",
     move_images: bool = False,
 ) -> None:
-    screenshots = glob(f"{raw_images_dir}/*/*.{image_type}")
+    """Extract objects from raw images and save them to the unsorted img directory"""
+    screenshots = glob(f"{raw_images_dir}/*.{image_type}", recursive=True)
     print(f"Found {len(screenshots)} screenshots")
     for img_path in screenshots:
         print(f"Processing {img_path}")
@@ -72,7 +73,7 @@ def process_images(
             objs_from_xml = extract_objects_from_xml(xml_path)
             # Extract objects from images using XML data
             objs_from_img = extract_objects_from_img(img_path, objs_from_xml)
-            # Save extracted objects to images
+            # Save extracted objects to images, modify image name to include object index
             save_objects_to_img(objs_from_img, UNSORTED_DIR)
             # Move raw image to processed directory
             if move_images:

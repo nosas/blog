@@ -9,6 +9,7 @@ from data_processing import (
     VALIDATE_DIR,
     process_images,
     split_data,
+    SCREENSHOTS_DIR
 )
 from data_visualization import (
     plot_history,
@@ -21,7 +22,7 @@ from data_visualization import (
 from model_utils import make_model
 
 # %% Convert all images in screenshots directory to data images
-# process_images(move_images=False)
+process_images(raw_images_dir=SCREENSHOTS_DIR + "/br", move_images=False)
 
 # %% Plot bar of suits
 # plot_suits_as_bar()

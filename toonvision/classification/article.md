@@ -36,6 +36,8 @@ This article covers ...
         - [Data processing](#data-processing)
         - [Creating the datasets](#creating-the-datasets)
             - [Spitting the images into train, validate, and test](#spitting-the-images-into-train-validate-and-test)
+    - [Training the model](#training-the-model)
+        - [Accuracy converges quickly after 6 epochs, why?](#accuracy-converges-quickly-after-6-epochs-why)
 
 </details>
 
@@ -156,22 +158,20 @@ These difficulties result in an imbalanced dataset that will be improved over ti
 #### Can we use GANs to synthesize additional data?
 
 Yes, iff there was a GAN that could generate Toons and Cogs.
-I'm not if it exists.
-Also, the data is easy enough to gather manually by walking around TT.
+As far as I know, no GAN exists for generating ToonTown entities; perhaps I can take a swing at it later.
 
 ### Data labeling
 
-I'm using [labelimg](https://github.com/tzutalin/labelImg) to draw labeled bounding
-boxes around Toons and Cogs.
+I'm using [labelimg](https://github.com/tzutalin/labelImg) to draw labeled bounding boxes around Toons and Cogs.
 Labels - also referred to as `obj_name` - follow the format:
 
-- `cog_<bb|lb|cb|sb>_<name>`
-- `toon_<animal>`
+- `cog_<bb|lb|cb|sb>_<name>_<index>`
+- `toon_<animal>_<index>`
 
 The cog labels contain shorthand notation (`<bb|lb|cb|sb>`) for each suit: Bossbot, Lawbot, Cashbot, and Sellbot, respectively.
 This shorthand notation allows us to filter cog data by filename and create a classifier that can distinguish between the 4 suits.
 
-Bounding boxes are saved in XML format - specifically [Pascal VOC XML](https://mlhive.com/2022/02/read-and-write-pascal-voc-xml-annotations-in-python) - alongside the image in the `raw` folder.
+Bounding boxes are saved in XML format - specifically [Pascal VOC XML](https://mlhive.com/2022/02/read-and-write-pascal-voc-xml-annotations-in-python) - alongside the image in the `raw/screenshots` directory.
 
 ```
 img
@@ -188,10 +188,13 @@ img
 ├───raw
 │   ├───processed
 │   └───screenshots
-│       │   sample_img0.png
-│       │   sample_img0.xml
-│       │   sample_img1.png
-│       │   sample_img1.xml
+│       ├   sample_img0.png
+│       ├   sample_img0.xml
+│       ├   sample_img1.png
+│       └   sample_img1.xml
+└───unsorted
+    ├───cog
+    └───toon
 ```
 
 <font style="color:red">TODO: Insert image of labelimg and bounding boxes</font>
@@ -203,13 +206,22 @@ Furthermore, we must exclude entity nametags in the bounding box because the cla
 ### Data extraction
 
 The raw data (screenshot) is passed into the `data_processing.py` script.
-The script utilizes functions in `img_utils.py` to extract objects from the images using the bounding boxes and labels found in their corresponding XML files.
-Specifically, the workflow is as follows:
+The script utilizes functions in `img_utils.py` to extract objects from the images using the labeled bounding boxes found in the image's corresponding XML files.
+Specifically, the data extraction workflow is as follows:
 
 - Acquire bounding box dimensions and labels from the XML files
 - Extract object (Toon or Cog) from the image using the dimensions and labels found in the XML files
-- Save the cropped image of the object to the `unsorted` folder
-- Move the raw image and its corresponding XML file to the `processed` folder
+- Save the cropped image of the object to the `img/unsorted` folder
+- Move the raw image and its corresponding XML file to the `raw/processed` folder
+
+*Why move the cropped image to unsorted and then processed?*
+
+The unsorted images directory is used to maintain a counter (referred to as an index) for each label.
+It gives me a glimpse of how many images are in each category by looking at the filenames in the `unsorted` directory.
+If I want to add more images to the dataset, I would have place images from all datasets back into the `unsorted` directory in order to maintain the counter and avoid overwriting existing images.
+
+Given that my dataset is so small, I can unsort and re-sort the images with ease.
+But this is not at all scalable in the future and I will surely redesign this portion of the data pipeline.
 
 ```python
 # %% Convert raw images to data images
@@ -218,21 +230,27 @@ def process_images(
     image_type: str = "png",
     move_images: bool = False,
 ) -> None:
-    for img_path in glob(f"{raw_images_dir}/*.{image_type}"):
+    """Extract objects from raw images and save them to the unsorted img directory"""
+    screenshots = glob(f"{raw_images_dir}/*.{image_type}", recursive=True)
+    print(f"Found {len(screenshots)} screenshots")
+    for img_path in screenshots:
         print(f"Processing {img_path}")
         xml_path = img_path.replace(f".{image_type}", ".xml")
-        # Extract objects' labels and bounding box dimensions from XML
-        objs_from_xml = extract_objects_from_xml(xml_path)
-        # Extract objects from images using XML data
-        objs_from_img = extract_objects_from_img(img_path, objs_from_xml)
-        # Save extracted objects to images
-        save_objects_to_img(objs_from_img, UNSORTED_DIR)
-        # Move raw image to processed directory
-        if move_images:
-            for f in [img_path, xml_path]:
-                new_path = f.replace(raw_images_dir, PROCESSED_DIR)
-                print(f"    Moving {f} to {new_path}")
-                rename(f, new_path)
+        if path.exists(xml_path):
+            # Extract objects' labels and bounding box dimensions from XML
+            objs_from_xml = extract_objects_from_xml(xml_path)
+            # Extract objects from images using XML data
+            objs_from_img = extract_objects_from_img(img_path, objs_from_xml)
+            # Save extracted objects to images, modify image name to include object index
+            save_objects_to_img(objs_from_img, UNSORTED_DIR)
+            # Move raw image to processed directory
+            if move_images:
+                for f in [img_path, xml_path]:
+                    new_path = f.replace(raw_images_dir, PROCESSED_DIR)
+                    print(f"    Moving {f} to {new_path}")
+                    rename(f, new_path)
+        else:
+            print(f"    No XML file found for {img_path}")
 ```
 
 ### Data processing
@@ -315,3 +333,8 @@ test_dataset = image_dataset_from_directory(
 ```
 
 <font style="color:red">TODO: Insert sample images from train dataset</font>
+
+
+## Training the model
+
+### Accuracy converges quickly after 6 epochs, why?

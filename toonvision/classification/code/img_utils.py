@@ -14,6 +14,9 @@ def extract_objects_from_xml(xml_path: str) -> list[tuple[str, int, int, int, in
 
     Args:
         xml_path (str): Absolute path to the XML file
+
+    Returns:
+        list[tuple[str, int, int, int, int]]: List of tuples containing obj name, xmin, ymin, xmax, ymax
     """
     # Load XML file
     with open(xml_path, "r") as xml_file:
@@ -34,7 +37,7 @@ def extract_objects_from_xml(xml_path: str) -> list[tuple[str, int, int, int, in
 
 def extract_objects_from_img(
     img_path: str, objs_from_xml: tuple[str, int, int, int, int]
-) -> tuple[str, list]:
+) -> list[tuple[str, list]]:
     """Extract objects from an image given a tuple of objects `from extract_object_from_xml()`
 
     Given a path to an image and objects' bounding box dimensions, extract the objects from the
@@ -43,6 +46,9 @@ def extract_objects_from_img(
     Args:
         img_path (str): Absolute path to the image
         objs_from_xml (tuple): Tuple containing obj name, xmin, ymin, xmax, ymax
+
+    Returns:
+        list[tuple[str, list]]: List of tuples containing obj name and obj img
     """
     # Load image
     img = cv2.imread(img_path)
@@ -60,6 +66,9 @@ def get_save_directory(obj_name: str) -> str:
 
     Args:
         obj_name (str): Name of the object
+
+    Returns:
+        str: Save directory for the object
     """
     if obj_name.startswith("cog_"):
         dir = "cog/"
