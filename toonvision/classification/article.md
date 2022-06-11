@@ -1,11 +1,14 @@
+<title>ToonVision: Binary and Multiclass Classification</title>
+
 # ToonVision - Classification
+
 
 This article is first in a series on **ToonVision**.
 
-ToonVision is my personal computer vision project to teach a machine how to see in [ToonTown Online](https://en.wikipedia.org/wiki/Toontown_Online) - an MMORPG created by Disney in 2002.
+ToonVision is my personal computer vision project for teaching a machine how to see in [ToonTown Online](https://en.wikipedia.org/wiki/Toontown_Online) - an MMORPG created by Disney in 2002.
 The ultimate goal is to teach a machine (nicknamed **OmniToon**) how to play ToonTown and create a self-sustaining ecosystem within the game where the bots progress through the game together.
 
-In later articles, we'll dive into segmentation and object detection.
+In later articles, we'll dive into image segmentation and object detection.
 For now, let's focus on real-time classification.
 
 This article covers ...
@@ -36,8 +39,18 @@ This article covers ...
         - [Data processing](#data-processing)
         - [Creating the datasets](#creating-the-datasets)
             - [Spitting the images into train, validate, and test](#spitting-the-images-into-train-validate-and-test)
+    - [Compiling the model](#compiling-the-model)
+        - [Loss function](#loss-function)
+        - [Optimizer](#optimizer)
+        - [Metrics](#metrics)
+        - [Defining the model](#defining-the-model)
+    - [Training the simple, baseline model](#training-the-simple-baseline-model)
     - [Training the model](#training-the-model)
-        - [Accuracy converges quickly after 6 epochs, why?](#accuracy-converges-quickly-after-6-epochs-why)
+        - [Preventing overfitting](#preventing-overfitting)
+        - [Callbacks](#callbacks)
+        - [Loss and accuracy plots](#loss-and-accuracy-plots)
+        - [Model evaluation](#model-evaluation)
+        - [Accuracy on never-before-seen images](#accuracy-on-never-before-seen-images)
 
 </details>
 
@@ -256,10 +269,11 @@ def process_images(
 ### Data processing
 
 The extracted objects are of various sizes because the screenshots were taken from various angles and distances.
-Large objects are a results of the screenshot being close up, while small objects are a result of the screenshot being far away.
+Large objects are a result of the screenshot taken from up close, while small objects are a result of the screenshot taken from far away.
 
 Overall, it would be ideal for the dataset to consist mostly of large, close-up objects because they contain more information about the object.
-Small, far-away objects lose information about the object and are not as useful for training - we could simulate this loss of information through image augmentation.
+Small, far-away objects lose information about the object and are not as useful for training - we could simulate this loss of information through image augmentation by blurring the image.
+Occlusion - an object is is a common problem with moving objects
 
 <font style="color:red">TODO: Insert image comparing a small and large object</font>
 
@@ -305,7 +319,7 @@ def split_data(dry_run: bool = False):
                     rename(img_path, new_path)
 ```
 
-We can also visualize the datasets - specifically the balance of the datasets - using the `plot_all_datasets` function in `data_visualization.py`.
+We can visualize the balances of the datasets using the `plot_all_datasets` function in `data_visualization.py`.
 
 <font style="color:red">TODO: Insert image of dataset balance</font>
 
@@ -334,7 +348,64 @@ test_dataset = image_dataset_from_directory(
 
 <font style="color:red">TODO: Insert sample images from train dataset</font>
 
+## Compiling the model
+
+Now that we've created the datasets, we can compile the model.
+Compiling the model requires choosing a loss function, optimizer, and metrics to monitor the model's performance during training.
+
+### Loss function
+
+Our first model is classifying between two classes, therefore we'll use the `binary_crossentropy` loss function.
+The later models will be more complex - classifying 4 or 32 classes - so we'll use the `categorical_crossentropy` loss function.
+
+### Optimizer
+
+There are a few guidelines to choosing an optimizer for classification problems.
+I visualized the process by plotting optimizers' performances using the same model, dataset, hyperparameters, and number of epochs.
+
+<font style="color:red">TODO: Insert plot</font>
+
+A handful of the optimizers' losses flattened over the course of training as a result of a low learning rate or *vanishing gradients*.
+SGD commonly encounters this problem, and it's often due to a low learning rate.
+
+I increased the learning rate for all flattened optimizers and plotted the loss scores and accuracies again.
+
+<font style="color:red">TODO: Insert plot with non-equal learning rates</font>
+
+I could use additional callbacks, such as the learning rate scheduler, to gradually decrease the learning rate and improve the model's performance
+Even more, adding *momentum* to the SGD optimizer could help the model reach global loss minimums and learn more effectively.
+Alternatively, I could read an article which discusses the points above and use their suggestions to save time, but where's the fun in that?
+
+### Metrics
+
+It's a classification model, so we'll use the `binary_accuracy` metric.
+For the later models, we'll use the `categorical_accuracy` metric.
+That's about it.
+
+### Defining the model
+
+## Training the simple, baseline model
+
+Before training the actual model, we need to define a simple baseline to beat.
 
 ## Training the model
 
-### Accuracy converges quickly after 6 epochs, why?
+### Preventing overfitting
+
+Given that we have a small dataset, we can utilize a few techniques during training to prevent overfitting:
+
+    * **Data augmentation** - we can augment the images by randomly rotating, flipping, and cropping them.
+    * **Data balancing** - we can balance the datasets by balancing the number of objects in each dataset.
+    * **Dropout** - we can dropout some of the nodes in the model to prevent overfitting.
+    * **Regularization** - we can regularize the model by adding a penalty to the loss function.
+    * **Small learning rate** - we can use a small learning rate to prevent overfitting.
+    * **Reducing number of parameters** - too many parameters can cause overfitting.
+    * **Early stopping** - we can stop training the model if the model doesn't improve after a certain number of epochs.
+
+### Callbacks
+
+### Loss and accuracy plots
+
+### Model evaluation
+
+### Accuracy on never-before-seen images
