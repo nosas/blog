@@ -63,7 +63,7 @@ def process_images(
     move_images: bool = False,
 ) -> None:
     """Extract objects from raw images and save them to the unsorted img directory"""
-    screenshots = glob(f"{raw_images_dir}/**/.{image_type}", recursive=True)
+    screenshots = glob(f"{raw_images_dir}/**/*.{image_type}", recursive=True)
     print(f"Found {len(screenshots)} screenshots in {raw_images_dir}")
     for img_path in screenshots:
         if "ttr-screenshot-Fri-Jun-10" in img_path:

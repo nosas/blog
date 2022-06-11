@@ -4,12 +4,14 @@ from tensorflow.keras.utils import image_dataset_from_directory
 import tensorflow as tf
 
 from data_processing import (
+    DATA_DIR,
     TEST_DIR,
     TRAIN_DIR,
     VALIDATE_DIR,
     process_images,
     split_data,
-    SCREENSHOTS_DIR
+    SCREENSHOTS_DIR,
+    UNSORTED_DIR,
 )
 from data_visualization import (
     plot_history,
@@ -85,14 +87,14 @@ test_dataset = image_dataset_from_directory(
 # %% Compile all models
 learning_rate = 0.0001
 optimizers = [
-    tf.keras.optimizers.SGD(learning_rate=learning_rate),
+    tf.keras.optimizers.SGD(learning_rate=learning_rate * 100),
     tf.keras.optimizers.Adam(learning_rate=learning_rate),
     tf.keras.optimizers.RMSprop(learning_rate=learning_rate),
-    tf.keras.optimizers.Adadelta(learning_rate=learning_rate),
-    tf.keras.optimizers.Adagrad(learning_rate=learning_rate),
-    tf.keras.optimizers.Adamax(learning_rate=learning_rate),
+    # tf.keras.optimizers.Adadelta(learning_rate=learning_rate),
+    # tf.keras.optimizers.Adagrad(learning_rate=learning_rate),
+    # tf.keras.optimizers.Adamax(learning_rate=learning_rate),
     tf.keras.optimizers.Nadam(learning_rate=learning_rate),
-    tf.keras.optimizers.Ftrl(learning_rate=learning_rate),
+    # tf.keras.optimizers.Ftrl(learning_rate=learning_rate),
 ]
 models_all = []
 for opt in optimizers:
@@ -133,6 +135,36 @@ for model in models_all:
 
 # %% Predict on unseen images
 # TODO: Add code to predict on unseen images
+import matplotlib.pyplot as plt
+import numpy as np
+from glob import glob
+
+c = "../img/unsorted/cog/cog_sb_namedropper_0.png"
+t = "../img/unsorted/toon/toon_bear_0.png"
+model = keras.models.load_model("toonvision_Nadam.keras")
+
+
+def predict_image(filename: str, model: tf.keras.Model) -> str:
+    img = keras.preprocessing.image.load_img(filename, target_size=(600, 200))
+    ia = keras.preprocessing.image.img_to_array(img)
+    # plt.imshow(ia/255.)
+    ia = np.expand_dims(ia, axis=0)
+    classes = model.predict(ia)
+    label = "Toon" if classes[0] > 0.5 else "Cog"
+    # print(f"{label} : {filename}")
+    return (label, classes)
+
+
+for fn in glob(f"{DATA_DIR}/**/cog/*.png", recursive=True):
+    label, pred = predict_image(fn, models_all[3])
+    if label == "Toon":
+        print(f"{fn}, {label} {pred}")
+
+
+for fn in glob(f"{DATA_DIR}/**/toon/*.png", recursive=True):
+    label, pred = predict_image(fn, models_all[3])
+    if label == "Cog":
+        print(f"{fn}, {label} {pred}")
 
 
 # %% Compare training histories for all optimizers
@@ -154,5 +186,3 @@ compare_histories(histories_not_vanishing)
 
 # %% Compare training histories for optimizers with vanishing gradients
 compare_histories(histories_vanishing)
-
-# %%

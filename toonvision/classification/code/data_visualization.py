@@ -434,10 +434,10 @@ def plot_datasets_animals():
 # plot_suits_as_bar()
 # plot_toons_as_bar()
 # plot_xml_data()
-plot_datasets_all()
-plot_datasets_binary()
-plot_datasets_suits()
-plot_datasets_animals()
+# plot_datasets_all()
+# plot_datasets_binary()
+# plot_datasets_suits()
+# plot_datasets_animals()
 
 # %%
 # %%

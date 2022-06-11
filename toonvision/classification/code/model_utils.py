@@ -29,9 +29,3 @@ def make_model(
     outputs = layers.Dense(units=1, activation="sigmoid")(x)
     model = keras.Model(name=name, inputs=inputs, outputs=outputs)
     return model
-
-
-# %% Make model
-model = make_model()
-
-# %%
