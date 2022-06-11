@@ -394,13 +394,13 @@ Before training the actual model, we need to define a simple baseline to beat.
 
 Given that we have a small dataset, we can utilize a few techniques during training to prevent overfitting:
 
-    * **Data augmentation** - we can augment the images by randomly rotating, flipping, and cropping them.
-    * **Data balancing** - we can balance the datasets by balancing the number of objects in each dataset.
-    * **Dropout** - we can dropout some of the nodes in the model to prevent overfitting.
-    * **Regularization** - we can regularize the model by adding a penalty to the loss function.
-    * **Small learning rate** - we can use a small learning rate to prevent overfitting.
-    * **Reducing number of parameters** - too many parameters can cause overfitting.
-    * **Early stopping** - we can stop training the model if the model doesn't improve after a certain number of epochs.
+* **Data augmentation** - we can augment the images by randomly rotating, flipping, and cropping them.
+* **Data balancing** - we can balance the datasets by balancing the number of objects in each dataset.
+* **Dropout** - we can dropout some of the nodes in the model to prevent overfitting.
+* **Regularization** - we can regularize the model by adding a penalty to the loss function.
+* **Small learning rate** - we can use a small learning rate to prevent overfitting.
+* **Reducing number of parameters** - too many parameters can cause overfitting.
+* **Early stopping** - we can stop training the model if the model doesn't improve after a certain number of epochs.
 
 ### Callbacks
 
