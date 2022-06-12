@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 10, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 11, 2022</p>
 
 <p><title>ToonVision: Binary and Multiclass Classification</title></p>
 
@@ -79,7 +79,10 @@ For now, let's focus on real-time classification.</p>
 <li><a href="#compiling-the-model">Compiling the model</a>
 <ul>
 <li><a href="#loss-function">Loss function</a></li>
-<li><a href="#optimizer">Optimizer</a></li>
+<li><a href="#optimizer">Optimizer</a>
+<ul>
+<li><a href="#adam-optimizer">Adam optimizer</a></li>
+</ul></li>
 <li><a href="#metrics">Metrics</a></li>
 <li><a href="#defining-the-model">Defining the model</a></li>
 </ul></li>
@@ -434,6 +437,14 @@ SGD commonly encounters this problem, and it's often due to a low learning rate.
 <p>I could use additional callbacks, such as the learning rate scheduler, to gradually decrease the learning rate and improve the model's performance
 Even more, adding <em>momentum</em> to the SGD optimizer could help the model reach global loss minimums and learn more effectively.
 Alternatively, I could read an article which discusses the points above and use their suggestions to save time, but where's the fun in that?</p>
+
+<p>Given the loss scores and accuracies plotted above, I've chosen to go with the <code>Adam</code> optimizer.</p>
+
+<h4 id="adam-optimizer">Adam optimizer</h4>
+
+<p>The Adam optimizer is a variant of the stochastic gradient descent (SGD) algorithm.
+Adam combines the advantages of two other SGD variants - "AdaGrad" and "RMSProp" - to create a more effective optimization algorithm.
+Jason Brownlee wrote an <a href="https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/">excellent introduction</a> to the Adam algorithm, and I encourage you to read it if you're interested in the more technical details.</p>
 
 <h3 id="metrics">Metrics</h3>
 

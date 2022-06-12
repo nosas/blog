@@ -42,6 +42,7 @@ This article covers ...
     - [Compiling the model](#compiling-the-model)
         - [Loss function](#loss-function)
         - [Optimizer](#optimizer)
+            - [Adam optimizer](#adam-optimizer)
         - [Metrics](#metrics)
         - [Defining the model](#defining-the-model)
     - [Training the simple, baseline model](#training-the-simple-baseline-model)
@@ -375,6 +376,14 @@ I increased the learning rate for all flattened optimizers and plotted the loss 
 I could use additional callbacks, such as the learning rate scheduler, to gradually decrease the learning rate and improve the model's performance
 Even more, adding *momentum* to the SGD optimizer could help the model reach global loss minimums and learn more effectively.
 Alternatively, I could read an article which discusses the points above and use their suggestions to save time, but where's the fun in that?
+
+Given the loss scores and accuracies plotted above, I've chosen to go with the `Adam` optimizer.
+
+#### Adam optimizer
+
+The Adam optimizer is a variant of the stochastic gradient descent (SGD) algorithm.
+Adam combines the advantages of two other SGD variants - "AdaGrad" and "RMSProp" - to create a more effective optimization algorithm.
+Jason Brownlee wrote an [excellent introduction](https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/) to the Adam algorithm, and I encourage you to read it if you're interested in the more technical details.
 
 ### Metrics
 
