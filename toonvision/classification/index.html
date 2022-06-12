@@ -86,14 +86,19 @@ For now, let's focus on real-time classification.</p>
 <li><a href="#metrics">Metrics</a></li>
 <li><a href="#defining-the-model">Defining the model</a></li>
 </ul></li>
-<li><a href="#training-the-simple-baseline-model">Training the simple, baseline model</a></li>
-<li><a href="#training-the-model">Training the model</a>
+<li><a href="#training-the-baseline-model">Training the baseline model</a>
+<ul>
+<li><a href="#baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</a></li>
+<li><a href="#baseline-evaluation">Baseline evaluation</a></li>
+<li><a href="#baseline-confusion-matrix">Baseline confusion matrix</a></li>
+</ul></li>
+<li><a href="#training-the-optimized-model">Training the optimized model</a>
 <ul>
 <li><a href="#preventing-overfitting">Preventing overfitting</a></li>
 <li><a href="#callbacks">Callbacks</a></li>
 <li><a href="#loss-and-accuracy-plots">Loss and accuracy plots</a></li>
 <li><a href="#model-evaluation">Model evaluation</a></li>
-<li><a href="#accuracy-on-never-before-seen-images">Accuracy on never-before-seen images</a></li>
+<li><a href="#confusion-matrix">Confusion matrix</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -443,22 +448,34 @@ Alternatively, I could read an article which discusses the points above and use 
 <h4 id="adam-optimizer">Adam optimizer</h4>
 
 <p>The Adam optimizer is a variant of the stochastic gradient descent (SGD) algorithm.
-Adam combines the advantages of two other SGD variants - "AdaGrad" and "RMSProp" - to create a more effective optimization algorithm.
-Jason Brownlee wrote an <a href="https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/">excellent introduction</a> to the Adam algorithm, and I encourage you to read it if you're interested in the more technical details.</p>
+Adam combines the advantages of two other SGD variants - "AdaGrad" and "RMSProp" - to create a more effective optimization algorithm for computer vision tasks.
+Jason Brownlee wrote an <a href="https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/">excellent introduction</a> to the Adam algorithm, and I encourage you to read it if you're interested in the technical details.</p>
 
 <h3 id="metrics">Metrics</h3>
 
-<p>It's a classification model, so we'll use the <code>binary_accuracy</code> metric.
-For the later models, we'll use the <code>categorical_accuracy</code> metric.
+<p>It's a classification model with only two classes, so we'll use the <code>binary_accuracy</code> metric.
+We'll use the <code>categorical_accuracy</code> metric later for our model with 4 and 32 classes.
 That's about it.</p>
 
 <h3 id="defining-the-model">Defining the model</h3>
 
-<h2 id="training-the-simple-baseline-model">Training the simple, baseline model</h2>
+<h2 id="training-the-baseline-model">Training the baseline model</h2>
 
-<p>Before training the actual model, we need to define a simple baseline to beat.</p>
+<p>Before training the actual model, we need to define a simple baseline to compare against.
+The baseline model will use the same model architecture, datasets, and hyperparameters as the optimized model we're training.
+The only difference is that we will not perform any optimizations - no data augmentation, dropout, batch normalization or learning rate decay.</p>
 
-<h2 id="training-the-model">Training the model</h2>
+<div class="codehilite"><pre><span></span><code><span class="n">model_baseline</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">()</span>
+<span class="c1"># ! TODO`</span>
+</code></pre></div>
+
+<h3 id="baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</h3>
+
+<h3 id="baseline-evaluation">Baseline evaluation</h3>
+
+<h3 id="baseline-confusion-matrix">Baseline confusion matrix</h3>
+
+<h2 id="training-the-optimized-model">Training the optimized model</h2>
 
 <h3 id="preventing-overfitting">Preventing overfitting</h3>
 
@@ -480,7 +497,7 @@ That's about it.</p>
 
 <h3 id="model-evaluation">Model evaluation</h3>
 
-<h3 id="accuracy-on-never-before-seen-images">Accuracy on never-before-seen images</h3>
+<h3 id="confusion-matrix">Confusion matrix</h3>
 
 </body>
 </html>

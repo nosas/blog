@@ -45,13 +45,16 @@ This article covers ...
             - [Adam optimizer](#adam-optimizer)
         - [Metrics](#metrics)
         - [Defining the model](#defining-the-model)
-    - [Training the simple, baseline model](#training-the-simple-baseline-model)
-    - [Training the model](#training-the-model)
+    - [Training the baseline model](#training-the-baseline-model)
+        - [Baseline loss and accuracy plots](#baseline-loss-and-accuracy-plots)
+        - [Baseline evaluation](#baseline-evaluation)
+        - [Baseline confusion matrix](#baseline-confusion-matrix)
+    - [Training the optimized model](#training-the-optimized-model)
         - [Preventing overfitting](#preventing-overfitting)
         - [Callbacks](#callbacks)
         - [Loss and accuracy plots](#loss-and-accuracy-plots)
         - [Model evaluation](#model-evaluation)
-        - [Accuracy on never-before-seen images](#accuracy-on-never-before-seen-images)
+        - [Confusion matrix](#confusion-matrix)
 
 </details>
 
@@ -382,22 +385,35 @@ Given the loss scores and accuracies plotted above, I've chosen to go with the `
 #### Adam optimizer
 
 The Adam optimizer is a variant of the stochastic gradient descent (SGD) algorithm.
-Adam combines the advantages of two other SGD variants - "AdaGrad" and "RMSProp" - to create a more effective optimization algorithm.
-Jason Brownlee wrote an [excellent introduction](https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/) to the Adam algorithm, and I encourage you to read it if you're interested in the more technical details.
+Adam combines the advantages of two other SGD variants - "AdaGrad" and "RMSProp" - to create a more effective optimization algorithm for computer vision tasks.
+Jason Brownlee wrote an [excellent introduction](https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/) to the Adam algorithm, and I encourage you to read it if you're interested in the technical details.
 
 ### Metrics
 
-It's a classification model, so we'll use the `binary_accuracy` metric.
-For the later models, we'll use the `categorical_accuracy` metric.
+It's a classification model with only two classes, so we'll use the `binary_accuracy` metric.
+We'll use the `categorical_accuracy` metric later for our model with 4 and 32 classes.
 That's about it.
 
 ### Defining the model
 
-## Training the simple, baseline model
+## Training the baseline model
 
-Before training the actual model, we need to define a simple baseline to beat.
+Before training the actual model, we need to define a simple baseline to compare against.
+The baseline model will use the same model architecture, datasets, and hyperparameters as the optimized model we're training.
+The only difference is that we will not perform any optimizations - no data augmentation, dropout, batch normalization or learning rate decay.
 
-## Training the model
+```python
+model_baseline = create_model()
+# ! TODO`
+```
+
+### Baseline loss and accuracy plots
+
+### Baseline evaluation
+
+### Baseline confusion matrix
+
+## Training the optimized model
 
 ### Preventing overfitting
 
@@ -417,4 +433,4 @@ Given that we have a small dataset, we can utilize a few techniques during train
 
 ### Model evaluation
 
-### Accuracy on never-before-seen images
+### Confusion matrix
