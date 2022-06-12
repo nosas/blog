@@ -21,12 +21,12 @@ SUITS_MAP = {short: long for short, long in zip(SUITS_SHORT, SUITS_LONG)}
 
 
 # %% Define functions
-def plot_suits_as_bar() -> None:
+def plot_suits_as_bar(img_dir: str = UNSORTED_COG_DIR) -> None:
     """Plot the number of cogs per suit in the unsorted directory"""
     # all_cogs = glob(f"{UNSORTED_DIR}/cog/*.png")
     # num_cogs = len(all_cogs)
 
-    all_suits = [glob(f"{UNSORTED_COG_DIR}/cog_{suit}*.png") for suit in SUITS_SHORT]
+    all_suits = [glob(f"{img_dir}/**/cog_{suit}*.png", recursive=True) for suit in SUITS_SHORT]
     num_suits = [len(suit) for suit in all_suits]
     # all_suits_dict = dict(zip(SUITS, num_suits))
     # print(num_cogs, all_suits_dict)
@@ -41,13 +41,13 @@ def plot_suits_as_bar() -> None:
     plt.show()
 
 
-def plot_toons_as_bar() -> None:
+def plot_toons_as_bar(img_dir: str = UNSORTED_TOON_DIR) -> None:
     """Plot the number of toons per animal in the unsorted directory"""
     # all_toons = glob(f"{UNSORTED_DIR}/toon/toon_*.png")
     # num_toons = len(all_toons)
 
     all_animals = [
-        glob(f"{UNSORTED_TOON_DIR}/toon_{animal}*.png") for animal in ANIMALS
+        glob(f"{img_dir}/**/toon_{animal}*.png", recursive=True) for animal in ANIMALS
     ]
     num_animals = [len(animal) for animal in all_animals]
     # all_animals_dict = dict(zip(ANIMALS, num_animals))
@@ -175,16 +175,16 @@ def compare_histories(histories: list) -> None:
     # TODO - Can we add a plot for max acc and lowest loss?
     # TODO - Or should we just draw vertical lines for each max/min?
     # TODO - Is it possible to utilize `plot_history` here?
-    _, axes = plt.subplots(nrows=4, ncols=1, figsize=(10, 10))
+    _, axes = plt.subplots(nrows=4, ncols=1, figsize=(10, 15))
     for model, history in histories:
+        num_epochs = range(0, len(history.history["loss"]))
         for idx, key in enumerate(["accuracy", "val_accuracy", "loss", "val_loss"]):
             name = model.name.strip("toonvision_")
             axes[idx].plot(history.history[key], label=f"{name}")
-            axes[idx].grid(axis="y")
-            axes[idx].legend(loc="upper left")
+            axes[idx].legend()
+            axes[idx].set_xticks(num_epochs[::2])
             axes[idx].set_title(key)
     plt.tight_layout()
-    plt.grid(axis="y")
 
 
 def get_obj_name_from_filepath(filepath: str, file_ext: str = "png") -> str:
