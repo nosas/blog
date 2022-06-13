@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 11, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 12, 2022</p>
 
 <p><title>ToonVision: Binary and Multiclass Classification</title></p>
 
@@ -94,7 +94,10 @@ For now, let's focus on real-time classification.</p>
 </ul></li>
 <li><a href="#training-the-optimized-model">Training the optimized model</a>
 <ul>
-<li><a href="#preventing-overfitting">Preventing overfitting</a></li>
+<li><a href="#preventing-overfitting">Preventing overfitting</a>
+<ul>
+<li><a href="#data-augmentation">Data augmentation</a></li>
+</ul></li>
 <li><a href="#callbacks">Callbacks</a></li>
 <li><a href="#loss-and-accuracy-plots">Loss and accuracy plots</a></li>
 <li><a href="#model-evaluation">Model evaluation</a></li>
@@ -479,7 +482,7 @@ The only difference is that we will not perform any optimizations - no data augm
 
 <h3 id="preventing-overfitting">Preventing overfitting</h3>
 
-<p>Given that we have a small dataset, we can utilize a few techniques during training to prevent overfitting:</p>
+<p>Given that we have a small dataset, we can utilize a few of the following techniques during training to prevent overfitting:</p>
 
 <ul>
 <li><strong>Data augmentation</strong> - we can augment the images by randomly rotating, flipping, and cropping them.</li>
@@ -490,6 +493,31 @@ The only difference is that we will not perform any optimizations - no data augm
 <li><strong>Reducing number of parameters</strong> - too many parameters can cause overfitting.</li>
 <li><strong>Early stopping</strong> - we can stop training the model if the model doesn't improve after a certain number of epochs.</li>
 </ul>
+
+<p>For the ToonVision model, we'll utilize data augmentation, dropout, regularization, and small learning rate.</p>
+
+<h4 id="data-augmentation">Data augmentation</h4>
+
+<p>During training, we'll perform the following data augmentation techniques:</p>
+
+<ul>
+<li>Horizontal flip (50% chance)</li>
+<li>Rotate +- 20%</li>
+<li>Zoom +-30%</li>
+</ul>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">layers</span>
+
+<span class="n">data_augmentation</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="c1"># Apply horizontal flipping to 50% of the images</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">RandomFlip</span><span class="p">(</span><span class="s2">&quot;horizontal&quot;</span><span class="p">),</span>
+        <span class="c1"># Rotate the input image by some factor in range [-20%, 20%] or [-72, 72] in degrees</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">RandomRotation</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span>
+        <span class="c1"># Zoom in or out by a random factor in range [-30%, 30%]</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">RandomZoom</span><span class="p">(</span><span class="mf">0.3</span><span class="p">),</span>
+    <span class="p">])</span>
+</code></pre></div>
 
 <h3 id="callbacks">Callbacks</h3>
 

@@ -51,6 +51,7 @@ This article covers ...
         - [Baseline confusion matrix](#baseline-confusion-matrix)
     - [Training the optimized model](#training-the-optimized-model)
         - [Preventing overfitting](#preventing-overfitting)
+            - [Data augmentation](#data-augmentation)
         - [Callbacks](#callbacks)
         - [Loss and accuracy plots](#loss-and-accuracy-plots)
         - [Model evaluation](#model-evaluation)
@@ -417,7 +418,7 @@ model_baseline = create_model()
 
 ### Preventing overfitting
 
-Given that we have a small dataset, we can utilize a few techniques during training to prevent overfitting:
+Given that we have a small dataset, we can utilize a few of the following techniques during training to prevent overfitting:
 
 * **Data augmentation** - we can augment the images by randomly rotating, flipping, and cropping them.
 * **Data balancing** - we can balance the datasets by balancing the number of objects in each dataset.
@@ -426,6 +427,30 @@ Given that we have a small dataset, we can utilize a few techniques during train
 * **Small learning rate** - we can use a small learning rate to prevent overfitting.
 * **Reducing number of parameters** - too many parameters can cause overfitting.
 * **Early stopping** - we can stop training the model if the model doesn't improve after a certain number of epochs.
+
+For the ToonVision model, we'll utilize data augmentation, dropout, regularization, and small learning rate.
+
+#### Data augmentation
+
+During training, we'll perform the following data augmentation techniques:
+
+* Horizontal flip (50% chance)
+* Rotate +- 20%
+* Zoom +-30%
+
+```python
+from keras import layers
+
+data_augmentation = keras.Sequential(
+    [
+        # Apply horizontal flipping to 50% of the images
+        layers.RandomFlip("horizontal"),
+        # Rotate the input image by some factor in range [-20%, 20%] or [-72, 72] in degrees
+        layers.RandomRotation(0.2),
+        # Zoom in or out by a random factor in range [-30%, 30%]
+        layers.RandomZoom(0.3),
+    ])
+```
 
 ### Callbacks
 
