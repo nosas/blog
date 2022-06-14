@@ -206,7 +206,8 @@ The following sections will explain my process and results.</p>
 
 <p>Data folder structure:</p>
 
-<pre><code>├───data
+<pre><code>img
+├───data
 │   ├───test
 │   │   ├───cog
 │   │   └───toon
@@ -219,6 +220,10 @@ The following sections will explain my process and results.</p>
 ├───raw
 │   ├───processed
 │   └───screenshots
+│       ├   sample_img0.png
+│       ├   sample_img0.xml
+│       ├   sample_img1.png
+│       └   sample_img1.xml
 └───unsorted
     ├───cog
     └───toon
@@ -233,12 +238,15 @@ It's important to take screenshots from various distance and of different angles
 Taking screenshots from up close is preferred.
 When taken from far away, the entity's nametag covers the entity's head, thus causing us to crop the entity's head or include the nametag - neither are good options.</p>
 
-<p><font style="color:red">TODO: Insert example screenshot</font></p>
+<figure class="center" style="width:auto;">
+    <img src="img/sample_screenshot.png" style="width:100%;"/>
+    <figcaption>Sample screenshot containing one Cog and three Toons in battle</figcaption>
+</figure>
 
 <p>There were a few difficulties with acquiring data:</p>
 
 <ol>
-<li>Entities are always moving unless in battle</li>
+<li>Entities are typically moving unless in battle</li>
 <li>Entities often obstruct other entities, which makes for less than ideal training data</li>
 <li>Finding the desired entity is purely a matter of walking around the street and looking for the entity, there's no precision radar</li>
 </ol>
@@ -265,35 +273,15 @@ Labels - also referred to as <code>obj_name</code> - follow the format:</p>
 <p>The cog labels contain shorthand notation (<code>&lt;bb|lb|cb|sb&gt;</code>) for each suit: Bossbot, Lawbot, Cashbot, and Sellbot, respectively.
 This shorthand notation allows us to filter cog data by filename and create a classifier that can distinguish between the 4 suits.</p>
 
-<p>Bounding boxes are saved in XML format - specifically <a href="https://mlhive.com/2022/02/read-and-write-pascal-voc-xml-annotations-in-python">Pascal VOC XML</a> - alongside the image in the <code>raw/screenshots</code> directory.</p>
+<p>Bounding boxes are saved in XML format - specifically <a href="https://mlhive.com/2022/02/read-and-write-pascal-voc-xml-annotations-in-python">Pascal VOC XML</a> - alongside the image in the <code>raw/screenshots</code> directory, as seen in the <a href="#filename-and-data-folder-structure">data folder file structure</a> section above.</p>
 
-<pre><code>img
-├───data
-│   ├───test
-│   │   ├───cog
-│   │   └───toon
-│   ├───train
-│   │   ├───cog
-│   │   └───toon
-│   └───validate
-│       ├───cog
-│       └───toon
-├───raw
-│   ├───processed
-│   └───screenshots
-│       ├   sample_img0.png
-│       ├   sample_img0.xml
-│       ├   sample_img1.png
-│       └   sample_img1.xml
-└───unsorted
-    ├───cog
-    └───toon
-</code></pre>
-
-<p><font style="color:red">TODO: Insert image of labelimg and bounding boxes</font></p>
+<figure class="center" style="width:auto;">
+    <img src="img/sample_screenshot_with_bounding_boxes.png" style="width:100%;"/>
+    <figcaption>Sample screenshot with labeled bounding boxes</figcaption>
+</figure>
 
 <p>How the objects are labeled - how the bounding boxes are drawn - determines how the object will be extracted from the image.
-It's important to draw bounding boxes such that the entity is snugly contained within the bounding box
+It's important to draw bounding boxes such that the entity is snugly contained within the bounding box.
 Furthermore, we must exclude entity nametags in the bounding box because the classifier will learn to "cheat" by identifying objects from their nametag rather than features of the entity itself.</p>
 
 <h3 id="data-extraction">Data extraction</h3>

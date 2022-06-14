@@ -142,64 +142,6 @@ Toon filename structure: `toon_<animal>_<index>.png`.
 
 Data folder structure:
 ```
-├───data
-│   ├───test
-│   │   ├───cog
-│   │   └───toon
-│   ├───train
-│   │   ├───cog
-│   │   └───toon
-│   └───validate
-│       ├───cog
-│       └───toon
-├───raw
-│   ├───processed
-│   └───screenshots
-└───unsorted
-    ├───cog
-    └───toon
-```
-
-There's no need for a unique folder for each Cog suit because we can filter on the filename.
-
-### Data acquisition
-
-Acquiring data is simple: Walk around TT streets, take screenshots, and save them to the raw folder.
-It's important to take screenshots from various distance and of different angles of each entity: front, back, and side.
-Taking screenshots from up close is preferred.
-When taken from far away, the entity's nametag covers the entity's head, thus causing us to crop the entity's head or include the nametag - neither are good options.
-
-<font style="color:red">TODO: Insert example screenshot</font>
-
-There were a few difficulties with acquiring data:
-
-1. Entities are always moving unless in battle
-1. Entities often obstruct other entities, which makes for less than ideal training data
-1. Finding the desired entity is purely a matter of walking around the street and looking for the entity, there's no precision radar
-
-These difficulties result in an imbalanced dataset that will be improved over time.
-
-<font style="color:red">TODO: Insert dataset barchart</font>
-
-#### Can we use GANs to synthesize additional data?
-
-Yes, iff there was a GAN that could generate Toons and Cogs.
-As far as I know, no GAN exists for generating ToonTown entities; perhaps I can take a swing at it later.
-
-### Data labeling
-
-I'm using [labelimg](https://github.com/tzutalin/labelImg) to draw labeled bounding boxes around Toons and Cogs.
-Labels - also referred to as `obj_name` - follow the format:
-
-- `cog_<bb|lb|cb|sb>_<name>_<index>`
-- `toon_<animal>_<index>`
-
-The cog labels contain shorthand notation (`<bb|lb|cb|sb>`) for each suit: Bossbot, Lawbot, Cashbot, and Sellbot, respectively.
-This shorthand notation allows us to filter cog data by filename and create a classifier that can distinguish between the 4 suits.
-
-Bounding boxes are saved in XML format - specifically [Pascal VOC XML](https://mlhive.com/2022/02/read-and-write-pascal-voc-xml-annotations-in-python) - alongside the image in the `raw/screenshots` directory.
-
-```
 img
 ├───data
 │   ├───test
@@ -223,10 +165,55 @@ img
     └───toon
 ```
 
-<font style="color:red">TODO: Insert image of labelimg and bounding boxes</font>
+There's no need for a unique folder for each Cog suit because we can filter on the filename.
+
+### Data acquisition
+
+Acquiring data is simple: Walk around TT streets, take screenshots, and save them to the raw folder.
+It's important to take screenshots from various distance and of different angles of each entity: front, back, and side.
+Taking screenshots from up close is preferred.
+When taken from far away, the entity's nametag covers the entity's head, thus causing us to crop the entity's head or include the nametag - neither are good options.
+
+<figure class="center" style="width:auto;">
+    <img src="img/sample_screenshot.png" style="width:100%;"/>
+    <figcaption>Sample screenshot containing one Cog and three Toons in battle</figcaption>
+</figure>
+
+There were a few difficulties with acquiring data:
+
+1. Entities are typically moving unless in battle
+1. Entities often obstruct other entities, which makes for less than ideal training data
+1. Finding the desired entity is purely a matter of walking around the street and looking for the entity, there's no precision radar
+
+These difficulties result in an imbalanced dataset that will be improved over time.
+
+<font style="color:red">TODO: Insert dataset barchart</font>
+
+#### Can we use GANs to synthesize additional data?
+
+Yes, iff there was a GAN that could generate Toons and Cogs.
+As far as I know, no GAN exists for generating ToonTown entities; perhaps I can take a swing at it later.
+
+### Data labeling
+
+I'm using [labelimg](https://github.com/tzutalin/labelImg) to draw labeled bounding boxes around Toons and Cogs.
+Labels - also referred to as `obj_name` - follow the format:
+
+- `cog_<bb|lb|cb|sb>_<name>_<index>`
+- `toon_<animal>_<index>`
+
+The cog labels contain shorthand notation (`<bb|lb|cb|sb>`) for each suit: Bossbot, Lawbot, Cashbot, and Sellbot, respectively.
+This shorthand notation allows us to filter cog data by filename and create a classifier that can distinguish between the 4 suits.
+
+Bounding boxes are saved in XML format - specifically [Pascal VOC XML](https://mlhive.com/2022/02/read-and-write-pascal-voc-xml-annotations-in-python) - alongside the image in the `raw/screenshots` directory, as seen in the [data folder file structure](#filename-and-data-folder-structure) section above.
+
+<figure class="center" style="width:auto;">
+    <img src="img/sample_screenshot_with_bounding_boxes.png" style="width:100%;"/>
+    <figcaption>Sample screenshot with labeled bounding boxes</figcaption>
+</figure>
 
 How the objects are labeled - how the bounding boxes are drawn - determines how the object will be extracted from the image.
-It's important to draw bounding boxes such that the entity is snugly contained within the bounding box
+It's important to draw bounding boxes such that the entity is snugly contained within the bounding box.
 Furthermore, we must exclude entity nametags in the bounding box because the classifier will learn to "cheat" by identifying objects from their nametag rather than features of the entity itself.
 
 ### Data extraction
