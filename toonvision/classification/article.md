@@ -297,15 +297,24 @@ def process_images(
 
 ### Data processing
 
+<figure class="right">
+    <img src="img/image_size_scale.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
+
 The extracted objects are of various sizes because the screenshots were taken from various angles and distances.
 Large objects are a result of the screenshot taken from up close, while small objects are a result of the screenshot taken from far away.
 
+We can see from the image on the right how the distance of the screenshot affects the extracted object's quality.
+The further the object is from the camera, the smaller and more blurry the object is.
+We lose quite a bit of information about the object when the object is far away.
+
 Overall, it would be ideal for the dataset to consist mostly of large, close-up objects because they contain more information about the object.
-Small, far-away objects lose information about the object and are not as useful for training - we could simulate this loss of information through image augmentation by blurring the image.
-Occlusion - an object is is a common problem with moving objects
+Small, far-away objects lose information about the object and are not as useful for training.
+Further more, we could simulate this loss of information through image augmentation - rescaling or blurring/pixelating the image.
 
-<font style="color:red">TODO: Insert image comparing a small and large object</font>
-
+It would make a fun project to create a model that upscales the images to a higher resolution.
+Then we could use those high-resolution images in this dataset.
 
 ### Creating the datasets
 
