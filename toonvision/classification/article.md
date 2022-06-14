@@ -95,7 +95,15 @@ There are 11 unique animals:
 Each animal can have a unique head shape, body length, and height.
 Furthermore, each animal can have mismatching colors for its head, arms, and legs.
 
-<font style="color:red">TODO: Image grid of animal with various sizes and colors</font>
+<details>
+    <summary>All animal species</summary>
+    This dataset lacks mismatched-colored Toons.
+    As you can see below, all Toons have matching colors for their head, arms, and legs.
+    <figure class="center">
+        <img src="img/unique_animals.png" style="width:100%;background:white;"/>
+        <figcaption>11 unique animal species in ToonTown</figcaption>
+    </figure>
+</details>
 
 ### Cog
 
