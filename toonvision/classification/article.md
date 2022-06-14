@@ -16,6 +16,12 @@ This article covers ...
 - Binary classification: Toon vs Cog
 - Multiclass classification: Cog suits (4 unique suits) and Cog names (32 unique names)
 
+After reading this article, we'll have a better understanding of...
+
+- How to acquire, label, and process samples from image data
+- How to deal with a model overfitting to a small, imbalanced dataset
+- How to utilize image augmentation and dropout to improve the model's generalization capability
+- How to compare different models, optimizers, and hyperparameters
 
 <details>
     <summary>Table of Contents</summary>
@@ -185,14 +191,37 @@ There were a few difficulties with acquiring data:
 1. Entities often obstruct other entities, which makes for less than ideal training data
 1. Finding the desired entity is purely a matter of walking around the street and looking for the entity, there's no precision radar
 
-These difficulties result in an imbalanced dataset that will be improved over time.
+Furthermore, there were class-specific data acquisition problems:
 
-<font style="color:red">TODO: Insert dataset barchart</font>
+1. Cogs are more commonly found in the streets than Toons
+2. Multi-colored Toons are uncommon, therefore the dataset is skewed towards single-colored Toons
+3. The two highest-tiered Cogs are only found in Cog buildings, not in the streets (unless there's an invasion)
+    - Highest-tiered Cogs include Corporate Raiders and The Big Cheese for Bossbots, Legal Eagle and Big Wig for Lawbots, etc.
+
+As a result, we have an imbalanced dataset.
+I hope to balance the dataset over time, but we'll work with the current imbalanced dataset to make our lives harder.
+After using this dataset, we'll have a better understanding of how to deal with a model overfitting to a small dataset.
+
+<figure class="center">
+    <img src="img/dataset_balance.png" style="width:100%;background:white;"/>
+    <figcaption></figcaption>
+</figure>
+
+The green lines indicate the <font style="color:#0F0;">desired number of samples</font> for each class, whereas the red lines indicate the <font style="color:red;">average number of samples</font> per class.
+
+The dataset shows a few overrepresented classes:
+
+- More Cogs than Toons (526 vs 148 Toon samples)
+- Too many cats on the streets (or I have a bias towards taking photos of cats)
+- Not enough horses on the streets (or I have a bias towards not taking photos of horses)
 
 #### Can we use GANs to synthesize additional data?
 
 Yes, iff there was a GAN that could generate Toons and Cogs.
 As far as I know, no GAN exists for generating ToonTown entities; perhaps I can take a swing at it later.
+
+Don't be discouraged about an imbalanced dataset.
+We can use many techniques to adjust for the imbalance and still create an accurate model.
 
 ### Data labeling
 
