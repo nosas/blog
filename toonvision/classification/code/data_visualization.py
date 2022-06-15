@@ -1,13 +1,23 @@
 # %% Imports
+import re
 from collections import Counter
 from glob import glob
 from statistics import mean
 
+import matplotlib.patheffects as PathEffects
 import matplotlib.pyplot as plt
-import re
 import numpy as np
+from matplotlib.patches import Rectangle
+from PIL import Image
 
-from data_processing import RAW_DIR, UNSORTED_COG_DIR, UNSORTED_TOON_DIR, TEST_DIR, TRAIN_DIR, VALIDATE_DIR
+from data_processing import (
+    RAW_DIR,
+    TEST_DIR,
+    TRAIN_DIR,
+    UNSORTED_COG_DIR,
+    UNSORTED_TOON_DIR,
+    VALIDATE_DIR,
+)
 from img_utils import extract_objects_from_xml
 
 # %% Global variables
@@ -26,7 +36,9 @@ def plot_suits_as_bar(img_dir: str = UNSORTED_COG_DIR) -> None:
     # all_cogs = glob(f"{UNSORTED_DIR}/cog/*.png")
     # num_cogs = len(all_cogs)
 
-    all_suits = [glob(f"{img_dir}/**/cog_{suit}*.png", recursive=True) for suit in SUITS_SHORT]
+    all_suits = [
+        glob(f"{img_dir}/**/cog_{suit}*.png", recursive=True) for suit in SUITS_SHORT
+    ]
     num_suits = [len(suit) for suit in all_suits]
     # all_suits_dict = dict(zip(SUITS, num_suits))
     # print(num_cogs, all_suits_dict)
@@ -160,7 +172,7 @@ def plot_history(history: dict, name: str = "Model") -> None:
     axes[1].grid(axis="y")
 
 
-def compare_histories(histories: list) -> None:
+def compare_histories(histories: list, suptitle: str = "") -> None:
     """Plot and compare the histories (acc, val_acc, loss, val_loss) of multiple models
 
     The resulting plot is 4 subplots:
@@ -182,8 +194,10 @@ def compare_histories(histories: list) -> None:
             name = model.name.strip("toonvision_")
             axes[idx].plot(history.history[key], label=f"{name}")
             axes[idx].legend()
-            axes[idx].set_xticks(num_epochs[::2])
+            # axes[idx].set_xticks(num_epochs[::2])
             axes[idx].set_title(key)
+    if suptitle:
+        plt.suptitle(suptitle)
     plt.tight_layout()
 
 
@@ -337,22 +351,29 @@ def plot_datasets_all() -> None:
     train = c_train[0]
     labels = list(train.keys())
     bars_train = plt.barh(labels, train.values(), label="Train")
-    plt.bar_label(bars_train, train.values(), label_type='center')
+    plt.bar_label(bars_train, train.values(), label_type="center")
 
     c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
     validate = c_validate[0]
-    bars_validate = plt.barh(labels, validate.values(), label="Validate", left=list(train.values()))
-    plt.bar_label(bars_validate, validate.values(), label_type='center')
+    bars_validate = plt.barh(
+        labels, validate.values(), label="Validate", left=list(train.values())
+    )
+    plt.bar_label(bars_validate, validate.values(), label_type="center")
 
     c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
     test = c_test[0]
-    bars_test = plt.barh(labels, test.values(), label="Test", left=np.add(list(train.values()), list(validate.values())))
-    plt.bar_label(bars_test, test.values(), label_type='center')
+    bars_test = plt.barh(
+        labels,
+        test.values(),
+        label="Test",
+        left=np.add(list(train.values()), list(validate.values())),
+    )
+    plt.bar_label(bars_test, test.values(), label_type="center")
 
     plt.gca().invert_yaxis()
     plt.xlabel("Labels")
     plt.title("All labels per dataset")
-    plt.grid(axis='x', linestyle="--")
+    plt.grid(axis="x", linestyle="--")
     plt.legend(["Train", "Validate", "Test"])
     plt.show()
 
@@ -362,21 +383,28 @@ def plot_datasets_binary() -> None:
     train = c_train[1]
     labels = list(train.keys())
     bars_train = plt.barh(labels, train.values(), label="Train")
-    plt.bar_label(bars_train, train.values(), label_type='center')
+    plt.bar_label(bars_train, train.values(), label_type="center")
 
     c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
     validate = c_validate[1]
-    bars_validate = plt.barh(labels, validate.values(), label="Validate", left=list(train.values()))
-    plt.bar_label(bars_validate, validate.values(), label_type='center')
+    bars_validate = plt.barh(
+        labels, validate.values(), label="Validate", left=list(train.values())
+    )
+    plt.bar_label(bars_validate, validate.values(), label_type="center")
 
     c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
     test = c_test[1]
-    bars_test = plt.barh(labels, test.values(), label="Test", left=np.add(list(train.values()), list(validate.values())))
-    plt.bar_label(bars_test, test.values(), label_type='center')
+    bars_test = plt.barh(
+        labels,
+        test.values(),
+        label="Test",
+        left=np.add(list(train.values()), list(validate.values())),
+    )
+    plt.bar_label(bars_test, test.values(), label_type="center")
 
     plt.gca().invert_yaxis()
     plt.title("Binary labels per dataset")
-    plt.grid(axis='x', linestyle="--")
+    plt.grid(axis="x", linestyle="--")
     plt.legend(["Train", "Validate", "Test"])
     plt.show()
 
@@ -386,22 +414,29 @@ def plot_datasets_suits():
     train = c_train[2]
     labels = list(train.keys())
     bars_train = plt.barh(labels, train.values(), label="Train")
-    plt.bar_label(bars_train, train.values(), label_type='center')
+    plt.bar_label(bars_train, train.values(), label_type="center")
 
     c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
     validate = c_validate[2]
-    bars_validate = plt.barh(labels, validate.values(), label="Validate", left=list(train.values()))
-    plt.bar_label(bars_validate, validate.values(), label_type='center')
+    bars_validate = plt.barh(
+        labels, validate.values(), label="Validate", left=list(train.values())
+    )
+    plt.bar_label(bars_validate, validate.values(), label_type="center")
 
     c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
     test = c_test[2]
-    bars_test = plt.barh(labels, test.values(), label="Test", left=np.add(list(train.values()), list(validate.values())))
-    plt.bar_label(bars_test, test.values(), label_type='center')
+    bars_test = plt.barh(
+        labels,
+        test.values(),
+        label="Test",
+        left=np.add(list(train.values()), list(validate.values())),
+    )
+    plt.bar_label(bars_test, test.values(), label_type="center")
 
     plt.gca().invert_yaxis()
     plt.xlabel("Suits")
     plt.title("Suit labels per dataset")
-    plt.grid(axis='x', linestyle="--")
+    plt.grid(axis="x", linestyle="--")
     plt.legend(["Train", "Validate", "Test"])
     plt.show()
 
@@ -411,23 +446,78 @@ def plot_datasets_animals():
     train = c_train[3]
     labels = list(train.keys())
     bars_train = plt.barh(labels, train.values(), label="Train")
-    plt.bar_label(bars_train, train.values(), label_type='center')
+    plt.bar_label(bars_train, train.values(), label_type="center")
 
     c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
     validate = c_validate[3]
-    bars_validate = plt.barh(labels, validate.values(), label="Validate", left=list(train.values()))
-    plt.bar_label(bars_validate, validate.values(), label_type='center')
+    bars_validate = plt.barh(
+        labels, validate.values(), label="Validate", left=list(train.values())
+    )
+    plt.bar_label(bars_validate, validate.values(), label_type="center")
 
     c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
     test = c_test[3]
-    bars_test = plt.barh(labels, test.values(), label="Test", left=np.add(list(train.values()), list(validate.values())))
-    plt.bar_label(bars_test, test.values(), label_type='center')
+    bars_test = plt.barh(
+        labels,
+        test.values(),
+        label="Test",
+        left=np.add(list(train.values()), list(validate.values())),
+    )
+    plt.bar_label(bars_test, test.values(), label_type="center")
 
     plt.gca().invert_yaxis()
     plt.title("Animal labels per dataset")
-    plt.grid(axis='x', linestyle="--")
+    plt.grid(axis="x", linestyle="--")
     plt.legend(["Train", "Validate", "Test"])
     plt.show()
+
+
+def draw_bounding_boxes(filepath: str, save_img: str = "") -> None:
+    """Draw bounding boxes around objects in a raw screenshot.
+
+    This function assumes there's a corresponding XML file containing the labeled bounding boxes in
+    the same directory as the same filename.
+
+    Args:
+        filepath (str): Full path to the raw screenshot.
+        save_img (str, optional): Full path to save the labeled image to. Defaults to "".
+    """
+    xml_path = filepath.replace(".png", ".xml")
+    objs = extract_objects_from_xml(xml_path)
+
+    plt.figure(figsize=(21, 9))
+    # Display the image
+    plt.imshow(Image.open(filepath), aspect="auto")
+
+    # Add the patch to the Axes
+    for obj in objs:
+        label, xmin, ymin, xmax, ymax = obj
+        height = ymax - ymin
+        width = xmax - xmin
+        plt.gca().add_patch(
+            Rectangle(
+                (xmin, ymin),
+                width,
+                height,
+                linewidth=3,
+                edgecolor="r",
+                facecolor="none",
+            )
+        )
+        text_coords = (xmin - 75, ymin - 20)
+        text = plt.text(
+            text_coords[0],
+            text_coords[1],
+            label,
+            fontsize=14,
+            color="white",
+            weight="bold",
+        )
+        text.set_path_effects([PathEffects.withStroke(linewidth=4, foreground="black")])
+    plt.axis("off")
+
+    if save_img:
+        plt.savefig(save_img, bbox_inches='tight', pad_inches=0)
 
 
 # %% Plot data
