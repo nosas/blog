@@ -1089,6 +1089,7 @@ We're now ready to start building models for real-world problems.
 
 The following chapter will discuss how to build neural networks for classification and regression problems.
 
+---
 ## Summary
 
 - The fundamental objects of TensorFlow include tensors, variables, tensor operations, and the gradient tape.
