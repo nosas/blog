@@ -8,7 +8,10 @@
    version="1.1"
    id="svg5"
    sodipodi:docname="dot_product.svg"
-   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   inkscape:version="1.2 (dc2aedaf03, 2022-05-15)"
+   inkscape:export-filename="dot_product.png"
+   inkscape:export-xdpi="154.847"
+   inkscape:export-ydpi="154.847"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -23,16 +26,18 @@
      inkscape:pagecheckerboard="0"
      inkscape:document-units="mm"
      showgrid="true"
-     inkscape:zoom="1.7552422"
-     inkscape:cx="11.964161"
-     inkscape:cy="315.91082"
-     inkscape:window-width="3377"
+     inkscape:zoom="1.2411437"
+     inkscape:cx="98.699291"
+     inkscape:cy="340.00899"
+     inkscape:window-width="3378"
      inkscape:window-height="1417"
-     inkscape:window-x="55"
+     inkscape:window-x="54"
      inkscape:window-y="224"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1"
-     inkscape:snap-center="true">
+     inkscape:current-layer="layer9"
+     inkscape:snap-center="true"
+     inkscape:showpageshadow="0"
+     inkscape:deskcolor="#505050">
     <inkscape:grid
        type="xygrid"
        id="grid3688"
@@ -45,17 +50,17 @@
   <defs
      id="defs2">
     <marker
-       style="overflow:visible;"
+       style="overflow:visible"
        id="Arrow1Mend"
-       refX="0.0"
-       refY="0.0"
+       refX="0"
+       refY="0"
        orient="auto"
        inkscape:stockid="Arrow1Mend"
        inkscape:isstock="true">
       <path
-         transform="scale(0.4) rotate(180) translate(10,0)"
-         style="fill-rule:evenodd;fill:context-stroke;stroke:context-stroke;stroke-width:1.0pt;"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         transform="matrix(-0.4,0,0,-0.4,-4,0)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
          id="path13863" />
     </marker>
     <inkscape:path-effect
@@ -90,15 +95,15 @@
      inkscape:groupmode="layer"
      id="layer1"
      inkscape:label="Bg"
-     style="display:inline">
+     style="display:inline;fill:#999999">
     <rect
-       style="opacity:0.691;fill:#9dac93;stroke:none;stroke-width:0.499999;stroke-dasharray:4, 4"
+       style="opacity:1;fill:#cccccc;stroke:none;stroke-width:0.499999;stroke-dasharray:4, 4;fill-opacity:0.96798033"
        id="rect39035"
        width="135.46666"
        height="152.39999"
-       x="8.4666662"
-       y="-4.2333331"
-       inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
+       x="25.400002"
+       y="8.4666681"
+       inkscape:export-filename="matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
        inkscape:export-ydpi="154.847" />
   </g>
@@ -114,49 +119,49 @@
        style="display:inline">
       <path
          style="display:inline;opacity:0.170732;fill:none;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.05833, 1.05833;stroke-dashoffset:0;stroke-opacity:1"
-         d="M 105.83333,84.666666 V 127"
+         d="M 122.76667,97.366667 V 139.7"
          id="path91440"
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
          inkscape:export-ydpi="154.847" />
       <path
          style="display:inline;opacity:0.170732;fill:none;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.05833, 1.05833;stroke-dashoffset:0;stroke-opacity:1"
-         d="M 114.3,84.666666 V 127"
+         d="M 131.23334,97.366667 V 139.7"
          id="path91442"
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
          inkscape:export-ydpi="154.847" />
       <path
          style="display:inline;opacity:0.170732;fill:none;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.05833, 1.05833;stroke-dashoffset:0;stroke-opacity:1"
-         d="M 122.76667,127 V 84.666666"
+         d="M 139.70001,139.7 V 97.366667"
          id="path91444"
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
          inkscape:export-ydpi="154.847" />
       <path
          style="display:inline;opacity:0.170732;fill:none;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.05833, 1.05833;stroke-dashoffset:0;stroke-opacity:1"
-         d="M 97.366665,93.133332 H 131.23333"
+         d="m 114.3,105.83333 h 33.86667"
          id="path91446"
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
          inkscape:export-ydpi="154.847" />
       <path
          style="display:inline;opacity:0.170732;fill:none;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.05833, 1.05833;stroke-dashoffset:0;stroke-opacity:1"
-         d="M 97.366665,101.6 H 131.23333"
+         d="m 114.3,114.3 h 33.86667"
          id="path91448"
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
          inkscape:export-ydpi="154.847" />
       <path
          style="display:inline;opacity:0.170732;fill:none;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.05833, 1.05833;stroke-dashoffset:0;stroke-opacity:1"
-         d="M 97.366665,110.06667 H 131.23333"
+         d="m 114.3,122.76667 h 33.86667"
          id="path91450"
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
          inkscape:export-ydpi="154.847" />
       <path
          style="display:inline;opacity:0.170732;fill:none;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.05833, 1.05833;stroke-dashoffset:0;stroke-opacity:1"
-         d="M 97.366665,118.53333 H 131.23333"
+         d="m 114.3,131.23333 h 33.86667"
          id="path91452"
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
@@ -167,16 +172,16 @@
        id="rect4954"
        width="8.4666691"
        height="8.4666691"
-       x="122.76667"
-       y="110.06667"
+       x="139.70001"
+       y="122.76668"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
        inkscape:export-ydpi="154.847" />
     <text
        xml:space="preserve"
        style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;display:inline;stroke:none;stroke-width:0.264583"
-       x="123.24072"
-       y="116.35191"
+       x="140.17406"
+       y="129.05191"
        id="text2041"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
@@ -184,58 +189,58 @@
          sodipodi:role="line"
          id="tspan2039"
          style="stroke:none;stroke-width:0.264583"
-         x="123.24072"
-         y="116.35191">13</tspan></text>
+         x="0"
+         y="0">13</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;display:inline;fill:#ffffff;stroke:none;stroke-width:0.264583"
-       x="26.618555"
-       y="136.5092"
+       x="43.551891"
+       y="149.2092"
        id="text6099"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
        inkscape:export-ydpi="154.847"><tspan
          sodipodi:role="line"
          id="tspan6097"
-         style="fill:#000000;stroke:none;stroke-width:0.264583"
-         x="26.618555"
-         y="136.5092">(<tspan
-   style="fill:#ff0000;stroke:none"
+         style="fill:#000000;stroke:none;stroke-width:0.1"
+         x="0"
+         y="0">(<tspan
+   style="fill:#ff0000;stroke:none;stroke-width:0.1"
    id="tspan27010">1</tspan>x<tspan
-   style="fill:#ff0000;stroke:none"
+   style="fill:#ff0000;stroke:none;stroke-width:0.1"
    id="tspan28254">2</tspan>) + (<tspan
-   style="fill:#ffcc00;stroke:none"
+   style="fill:#2a7fff;fill-opacity:1;stroke:none;stroke-width:0.1"
    id="tspan29996">3</tspan>x<tspan
-   style="fill:#ffcc00;stroke:none"
+   style="fill:#2a7fff;fill-opacity:1;stroke:none;stroke-width:0.1"
    id="tspan30868">1</tspan>) + (<tspan
-   style="fill:#0000ff;stroke:none"
+   style="fill:#7f2aff;stroke:none;stroke-width:0.1"
    id="tspan31848">0</tspan>x<tspan
-   style="fill:#0000ff;stroke:none"
+   style="fill:#7f2aff;stroke:none;stroke-width:0.1"
    id="tspan33142">3</tspan>) + (<tspan
-   style="fill:#ff55dd;stroke:none"
+   style="fill:#ff55dd;stroke:none;stroke-width:0.1"
    id="tspan34698">4</tspan>x<tspan
-   style="fill:#ff55dd;stroke:none"
+   style="fill:#ff55dd;stroke:none;stroke-width:0.1"
    id="tspan35968">2</tspan>)</tspan><tspan
          sodipodi:role="line"
-         style="fill:#ffffff;stroke:none;stroke-width:0.264583"
-         x="26.618555"
-         y="143.56476"
+         style="fill:#ffffff;stroke:none;stroke-width:0.1"
+         x="0"
+         y="0"
          id="tspan6103"><tspan
-   style="fill:#ff0000;stroke:none"
+   style="fill:#ff0000;stroke:none;stroke-width:0.1"
    id="tspan29540">2</tspan><tspan
-   style="fill:#000000;stroke:none"
+   style="fill:#000000;stroke:none;stroke-width:0.1"
    id="tspan6968"> + <tspan
-   style="fill:#ffcc00;stroke:none"
+   style="fill:#2a7fff;fill-opacity:1;stroke:none;stroke-width:0.1"
    id="tspan9802">3</tspan> + <tspan
-   style="fill:#0000ff;stroke:none"
+   style="fill:#7f2aff;stroke:none;stroke-width:0.1"
    id="tspan11310">0</tspan> + <tspan
-   style="fill:#ff55dd;stroke:none"
+   style="fill:#ff55dd;stroke:none;stroke-width:0.1"
    id="tspan14024">8</tspan> =</tspan> <tspan
-   style="fill:#66ff00;stroke:none"
+   style="fill:#518132;fill-opacity:1;stroke:none;stroke-width:0.1"
    id="tspan9659">13</tspan></tspan></text>
     <path
-       style="display:inline;fill:none;stroke:#66ff00;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Mend)"
-       d="M 84.666666,141.81669 H 127 v -23.28336"
+       style="display:inline;fill:none;stroke:#518132;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Mend)"
+       d="m 101.60526,154.51223 h 42.32807 v -22.76175"
        id="path13852"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
@@ -245,39 +250,11 @@
        id="rect6804"
        width="33.866665"
        height="42.333332"
-       x="97.366669"
-       y="84.666664"
+       x="114.3"
+       y="97.366669"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
        inkscape:export-ydpi="154.847" />
-    <text
-       xml:space="preserve"
-       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;stroke:none;stroke-width:0.264583"
-       x="169.33333"
-       y="139.7"
-       id="text25068"
-       inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
-       inkscape:export-xdpi="154.847"
-       inkscape:export-ydpi="154.847"><tspan
-         sodipodi:role="line"
-         id="tspan25066"
-         style="stroke:none;stroke-width:0.264583"
-         x="169.33333"
-         y="139.7"></tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;stroke:none;stroke-width:0.264583"
-       x="-16.933332"
-       y="127"
-       id="text40719"
-       inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
-       inkscape:export-xdpi="154.847"
-       inkscape:export-ydpi="154.847"><tspan
-         sodipodi:role="line"
-         id="tspan40717"
-         style="stroke:none;stroke-width:0.264583"
-         x="-16.933332"
-         y="127"></tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -294,15 +271,15 @@
          id="rect4804"
          width="33.866669"
          height="8.466671"
-         x="97.366669"
-         y="110.06666"
+         x="114.3"
+         y="122.76666"
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
          inkscape:export-ydpi="154.847" />
       <g
          id="g45510"
          style="display:inline"
-         transform="translate(4.2333357)"
+         transform="translate(21.166672,12.700001)"
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
          inkscape:export-ydpi="154.847">
@@ -312,60 +289,49 @@
            d="m 42.333333,110.06667 v 8.46666 m 16.933334,0 v -8.46666 m 16.933332,0 v 8.46666 m -50.799997,-8.46666 h 67.733329 v 8.46667 H 25.400002 Z" />
         <text
            xml:space="preserve"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#008000;stroke:#666666;stroke-width:0.1"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#803300;stroke:#000000;stroke-width:0.1"
            x="48.794952"
            y="116.3519"
            id="text12932"><tspan
              sodipodi:role="line"
              id="tspan12930"
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffcc00;stroke:#666666;stroke-width:0.1"
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#2a7fff;stroke:#000000;stroke-width:0.1"
              x="48.794952"
              y="116.3519">3</tspan></text>
         <text
            xml:space="preserve"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#0000ff;stroke:#666666;stroke-width:0.1"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#7f2aff;stroke:#000000;stroke-width:0.1"
            x="65.726906"
            y="116.35052"
            id="text17226"><tspan
              sodipodi:role="line"
              id="tspan17224"
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#0000ff;stroke:#666666;stroke-width:0.1"
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#7f2aff;stroke:#000000;stroke-width:0.1"
              x="65.726906"
              y="116.35052">0</tspan></text>
         <text
            xml:space="preserve"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#ff00ff;stroke:#666666;stroke-width:0.1"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#ff00ff;stroke:#000000;stroke-width:0.1"
            x="82.656105"
            y="116.34638"
            id="text65835"><tspan
              sodipodi:role="line"
              id="tspan65833"
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ff55dd;stroke:#666666;stroke-width:0.1"
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ff55dd;stroke:#000000;stroke-width:0.1"
              x="82.656105"
              y="116.34638">4</tspan></text>
         <text
            xml:space="preserve"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#ff0000;stroke:#666666;stroke-width:0.1"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#ff0000;stroke:#000000;stroke-width:0.1"
            x="31.763779"
            y="116.35741"
            id="text72457"><tspan
              sodipodi:role="line"
              id="tspan72455"
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ff0000;stroke:#666666;stroke-width:0.1"
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ff0000;stroke:#000000;stroke-width:0.1"
              x="31.763779"
              y="116.35741">1</tspan></text>
       </g>
-      <text
-         xml:space="preserve"
-         style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;stroke:#666666;stroke-width:0.1;-inkscape-font-specification:'sans-serif Bold';font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal"
-         x="-46.566666"
-         y="135.46666"
-         id="text114247"><tspan
-           sodipodi:role="line"
-           id="tspan114245"
-           style="stroke:#666666;stroke-width:0.1;-inkscape-font-specification:'sans-serif Bold';font-family:sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal"
-           x="-46.566666"
-           y="135.46666"></tspan></text>
     </g>
     <g
        inkscape:groupmode="layer"
@@ -375,7 +341,7 @@
       <path
          id="path31896"
          style="fill:#99ff55;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         d="m 122.90586,33.734374 h 8.46666 m -8.60585,50.93229 h 8.46667 V 16.933327 h -8.46667 z m 10e-6,-16.933331 h 8.46666 m 0,-16.933333 h -8.46666"
+         d="m 139.8392,46.434375 h 8.46666 m -8.60585,50.93229 h 8.46667 V 29.633328 h -8.46667 z m 1e-5,-16.933331 h 8.46666 m 0,-16.933333 h -8.46666"
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
          inkscape:export-ydpi="154.847" />
@@ -385,68 +351,68 @@
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
          inkscape:export-ydpi="154.847"
-         transform="translate(-0.28801262,0.27985669)">
+         transform="translate(16.645323,12.979858)">
         <text
            xml:space="preserve"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ff0000;stroke:#666666;stroke-width:0.1"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ff0000;stroke:#000000;stroke-width:0.1"
            x="125.16721"
            y="27.212004"
            id="text35368"><tspan
              sodipodi:role="line"
              id="tspan35366"
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ff0000;stroke:#666666;stroke-width:0.1"
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ff0000;stroke:#000000;stroke-width:0.1"
              x="125.16721"
              y="27.212004">2</tspan></text>
       </a>
       <text
          xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#008000;stroke:#666666;stroke-width:0.1"
-         x="124.89712"
-         y="44.390743"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#803300;stroke:#000000;stroke-width:0.1"
+         x="141.83046"
+         y="57.090744"
          id="text36494"
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
          inkscape:export-ydpi="154.847"><tspan
            sodipodi:role="line"
            id="tspan36492"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffcc00;stroke:#666666;stroke-width:0.1"
-           x="124.89712"
-           y="44.390743">1</tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#2a7fff;stroke:#000000;stroke-width:0.1"
+           x="141.83046"
+           y="57.090744">1</tspan></text>
       <text
          xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#0000ff;stroke:#666666;stroke-width:0.1"
-         x="124.99496"
-         y="61.318565"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#7f2aff;stroke:#000000;stroke-width:0.1"
+         x="141.9283"
+         y="74.01857"
          id="text39254"
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
          inkscape:export-ydpi="154.847"><tspan
            sodipodi:role="line"
            id="tspan39252"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#0000ff;stroke:#666666;stroke-width:0.1"
-           x="124.99496"
-           y="61.318565">3</tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#7f2aff;stroke:#000000;stroke-width:0.1"
+           x="0"
+           y="0">3</tspan></text>
       <text
          xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#ff00ff;stroke:#666666;stroke-width:0.1"
-         x="124.8792"
-         y="78.291862"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';display:inline;fill:#ff00ff;stroke:#000000;stroke-width:0.1"
+         x="141.81255"
+         y="90.991867"
          id="text41656"
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
          inkscape:export-ydpi="154.847"><tspan
            sodipodi:role="line"
            id="tspan41654"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ff55dd;stroke:#666666;stroke-width:0.1"
-           x="124.8792"
-           y="78.291862">2</tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ff55dd;stroke:#000000;stroke-width:0.1"
+           x="0"
+           y="0">2</tspan></text>
       <rect
          style="display:inline;opacity:0.2;fill:#99ff55;stroke:#008000;stroke-width:0.499999;stroke-miterlimit:4;stroke-dasharray:3.99999, 3.99999;stroke-dashoffset:0"
          id="rect4804-9"
          width="42.333332"
          height="8.466671"
-         x="84.666664"
-         y="-131.23334"
+         x="97.366669"
+         y="-148.16667"
          transform="rotate(90)"
          inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
          inkscape:export-xdpi="154.847"
@@ -455,14 +421,14 @@
     <path
        id="path45300"
        style="display:inline;fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 29.633336,93.133332 h 67.733332 m 0,8.466668 H 29.633336 M 80.433335,84.666666 V 127 m -16.933333,0 V 84.666666 m -16.933333,0 V 127 M 29.633335,84.666664 H 97.366673 V 127 H 29.633335 Z"
+       d="M 46.566672,105.83333 H 114.3 m 0,8.46667 H 46.566672 M 97.366671,97.366667 V 139.7 m -16.933333,0 V 97.366667 m -16.933333,0 V 139.7 M 46.566671,97.366665 H 114.30001 V 139.7 H 46.566671 Z"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
        inkscape:export-ydpi="154.847" />
     <path
        id="path45654"
        style="display:inline;fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 131.23333,33.866666 H 97.366665 m 0,16.933333 h 33.866665 m 0,16.933333 H 97.366665 m 8.466665,16.933334 V 16.933333 m 8.46667,0 V 84.666666 M 97.366669,16.93334 H 131.23333 V 84.666677 H 97.366669 Z"
+       d="M 148.16667,46.566667 H 114.3 M 114.3,63.5 h 33.86667 m 0,16.933333 H 114.3 m 8.46667,16.933334 V 29.633334 m 8.46667,0 V 97.366667 M 114.3,29.633341 h 33.86667 V 97.366678 H 114.3 Z"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
        inkscape:export-ydpi="154.847" />
@@ -473,32 +439,32 @@
      inkscape:label="Markers"
      style="display:inline">
     <path
-       style="display:inline;fill:none;stroke:#ffff00;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 93.133334,21.166667 c 0,0 -3.494449,3.614069 -4.233334,5.926665 -2.193725,6.866021 3.852165,15.507929 0.03768,21.623844 -0.838226,1.343962 -4.271017,2.082818 -4.271017,2.082818 0,0 3.312433,0.803969 4.120279,2.12052 3.763231,6.132951 -2.100784,14.739703 0.113053,21.586156 0.746952,2.310002 4.233334,5.926661 4.233334,5.926661"
+       style="display:inline;fill:none;stroke:#37c837;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 110.06667,33.866668 c 0,0 -3.49445,3.614069 -4.23333,5.926665 -2.19373,6.866021 3.85216,15.507929 0.0377,21.623844 -0.83823,1.343962 -4.27102,2.082818 -4.27102,2.082818 0,0 3.31243,0.803969 4.12028,2.12052 3.76323,6.132951 -2.10079,14.739703 0.11305,21.586156 0.74695,2.310002 4.23333,5.926661 4.23333,5.926661"
        id="path47569-6"
        sodipodi:nodetypes="caacaac"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
        inkscape:export-ydpi="154.847" />
     <path
-       style="display:inline;fill:none;stroke:#ffff00;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 33.866666,80.433332 c 0,0 2.391497,-3.465148 4.233334,-4.233333 7.126422,-2.972255 16.538185,3.851707 23.163958,-0.113053 C 62.604865,75.284568 63.5,71.966667 63.5,71.966667 c 0,0 0.875586,3.347818 2.222174,4.157963 6.620217,3.982905 16.044765,-2.892838 23.177825,0.07537 1.842461,0.766684 4.233333,4.233333 4.233333,4.233333"
+       style="display:inline;fill:none;stroke:#37c837;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 50.800002,93.133333 c 0,0 2.391497,-3.465148 4.233334,-4.233333 7.126422,-2.972255 16.538185,3.851707 23.163958,-0.113053 1.340907,-0.802378 2.236042,-4.120279 2.236042,-4.120279 0,0 0.875586,3.347818 2.222174,4.157963 6.620217,3.982905 16.044765,-2.892838 23.17782,0.07537 1.84247,0.766684 4.23334,4.233333 4.23334,4.233333"
        id="path48086"
        sodipodi:nodetypes="caacaac"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
        inkscape:export-ydpi="154.847" />
     <path
-       style="fill:none;stroke:#ffff00;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 25.4,88.900001 c 0,0 -3.450517,1.757917 -4.233334,3.386666 -1.641196,3.414712 1.972373,8.131173 0,11.365913 -0.826372,1.35527 -4.233333,2.18075 -4.233333,2.18075 0,0 3.397706,0.67552 4.233333,1.99233 2.06362,3.25194 -1.668402,8.08302 0,11.55434 0.782817,1.62875 4.233334,3.38667 4.233334,3.38667"
+       style="fill:none;stroke:#37c837;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 42.333336,101.6 c 0,0 -3.450517,1.75792 -4.233334,3.38667 -1.641196,3.41471 1.972373,8.13117 0,11.36591 -0.826372,1.35527 -4.233333,2.18075 -4.233333,2.18075 0,0 3.397706,0.67552 4.233333,1.99233 2.06362,3.25194 -1.668402,8.08302 0,11.55434 0.782817,1.62875 4.233334,3.38667 4.233334,3.38667"
        id="path47569"
        sodipodi:nodetypes="caacaac"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
        inkscape:export-ydpi="154.847" />
     <path
-       style="fill:none;stroke:#ffff00;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 127,12.7 c 0,0 -2.39396,-3.4592614 -4.23333,-4.2333334 -2.05334,-0.8641183 -4.82974,1.1611127 -6.68285,-0.07537 C 114.8293,7.5542212 114.3,4.2333333 114.3,4.2333333 c 0,0 -0.5293,3.3208879 -1.78382,4.1579638 -1.85311,1.2364822 -4.62951,-0.7887488 -6.68285,0.07537 C 103.99396,9.2407386 101.6,12.7 101.6,12.7"
+       style="fill:none;stroke:#37c837;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 143.93334,25.400001 c 0,0 -2.39396,-3.459261 -4.23333,-4.233333 -2.05334,-0.864118 -4.82974,1.161113 -6.68285,-0.07537 -1.25452,-0.837075 -1.78382,-4.157963 -1.78382,-4.157963 0,0 -0.5293,3.320888 -1.78382,4.157963 -1.85311,1.236483 -4.62951,-0.788748 -6.68285,0.07537 -1.83937,0.774072 -4.23333,4.233333 -4.23333,4.233333"
        id="path49425"
        sodipodi:nodetypes="caacaac"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
@@ -512,9 +478,9 @@
      style="display:inline">
     <text
        xml:space="preserve"
-       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;stroke:none;stroke-width:0.264583"
-       x="12.172414"
-       y="107.36709"
+       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;display:inline;stroke:none;stroke-width:0.264583"
+       x="29.105749"
+       y="120.06709"
        id="text54231"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
@@ -522,13 +488,13 @@
          sodipodi:role="line"
          id="tspan54229"
          style="stroke:none;stroke-width:0.264583"
-         x="12.172414"
-         y="107.36709">a</tspan></text>
+         x="29.105749"
+         y="120.06709">a</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;stroke:none;stroke-width:0.264583"
-       x="61.635529"
-       y="69.692932"
+       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;display:inline;stroke:none;stroke-width:0.264583"
+       x="78.568863"
+       y="82.392937"
        id="text55357"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
@@ -536,35 +502,13 @@
          sodipodi:role="line"
          id="tspan55355"
          style="stroke:none;stroke-width:0.264583"
-         x="61.635529"
-         y="69.692932">b</tspan></text>
+         x="78.568863"
+         y="82.392937">b</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;stroke:none;stroke-width:0.264583"
-       x="80.433334"
-       y="50.799999"
-       id="text55931"><tspan
-         sodipodi:role="line"
-         id="tspan55929"
-         style="stroke:none;stroke-width:0.264583"
-         x="80.433334"
-         y="50.799999"></tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;stroke:none;stroke-width:0.264583"
-       x="80.433334"
-       y="50.799999"
-       id="text58047"><tspan
-         sodipodi:role="line"
-         id="tspan58045"
-         style="stroke:none;stroke-width:0.264583"
-         x="80.433334"
-         y="50.799999"></tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;stroke:none;stroke-width:0.264583"
-       x="79.302795"
-       y="52.901432"
+       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;display:inline;stroke:none;stroke-width:0.264583"
+       x="96.23613"
+       y="65.601433"
        id="text61223"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
@@ -572,13 +516,13 @@
          sodipodi:role="line"
          id="tspan61221"
          style="stroke:none;stroke-width:0.264583"
-         x="79.302795"
-         y="52.901432">b</tspan></text>
+         x="96.23613"
+         y="65.601433">b</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;stroke:none;stroke-width:0.264583"
-       x="112.76211"
-       y="2.8640397"
+       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;display:inline;stroke:none;stroke-width:0.264583"
+       x="129.69545"
+       y="15.564041"
        id="text61557"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
@@ -586,13 +530,13 @@
          sodipodi:role="line"
          id="tspan61555"
          style="stroke:none;stroke-width:0.264583"
-         x="112.76211"
-         y="2.8640397">c</tspan></text>
+         x="129.69545"
+         y="15.564041">c</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;display:inline;stroke:none;stroke-width:0.264583"
-       x="19.948111"
-       y="15.551396"
+       x="36.881447"
+       y="28.251398"
        id="text73204"
        inkscape:export-filename="C:\Users\Sason\Documents\Projects\blog\deep_learning_python\ch2\img\matrix_dot_product.png"
        inkscape:export-xdpi="154.847"
@@ -600,27 +544,27 @@
          sodipodi:role="line"
          id="tspan73202"
          style="stroke:none;stroke-width:0.264583"
-         x="19.948111"
-         y="15.551396">x.shape = (a, b)</tspan><tspan
+         x="36.881447"
+         y="28.251398">x.shape = (a, b)</tspan><tspan
          sodipodi:role="line"
          style="stroke:none;stroke-width:0.264583"
-         x="19.948111"
-         y="22.606947"
+         x="36.881447"
+         y="35.30695"
          id="tspan73206">y.shape = (b, c)</tspan><tspan
          sodipodi:role="line"
          style="stroke:none;stroke-width:0.264583"
-         x="19.948111"
-         y="29.662497"
+         x="36.881447"
+         y="42.362499"
          id="tspan84273">z.shape = (a, c)</tspan><tspan
          sodipodi:role="line"
          style="stroke:none;stroke-width:0.264583"
-         x="19.948111"
-         y="36.718048"
+         x="36.881447"
+         y="49.418049"
          id="tspan73208" /><tspan
          sodipodi:role="line"
          style="stroke:none;stroke-width:0.264583"
-         x="19.948111"
-         y="43.804932"
+         x="36.881447"
+         y="56.504932"
          id="tspan73210">x⋅y = z </tspan></text>
   </g>
 </svg>
