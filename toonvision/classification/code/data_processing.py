@@ -7,6 +7,7 @@ from img_utils import (
 from os import rename, path
 from glob import glob
 from random import shuffle
+from tensorflow.keras.utils import image_dataset_from_directory
 
 # %% Global variables: directories
 IMG_DIR = "../img"
@@ -87,8 +88,8 @@ def process_images(
                 print(f"    No XML file found for {img_path}")
 
 
-def split_data(dry_run: bool = False):
-    """Split the data into train(40%)/validate(20%)/test(40%) data sets"""
+def split_data(split_ratio: list[float, float, float], dry_run: bool = False):
+    """Split the data into train(60%)/validate(20%)/test(20%) data sets"""
     for unsorted_dir in [UNSORTED_COG_DIR, UNSORTED_TOON_DIR]:
         cog_or_toon = unsorted_dir.split("/")[-1]
         # Get all images from unsorted_dir
@@ -96,8 +97,8 @@ def split_data(dry_run: bool = False):
         num_images = len(unsorted_images)
 
         # Split images into train/validate/test sets
-        num_train = int(num_images * 0.4)
-        num_validate = int(num_images * 0.2)
+        num_train = int(num_images * split_ratio[0])
+        num_validate = int(num_images * split_ratio[1])
         num_test = num_images - num_train - num_validate
         print(num_train, num_validate, num_test)
 
@@ -108,7 +109,9 @@ def split_data(dry_run: bool = False):
         test = unsorted_images[-num_test:]
 
         # Move images to train/validate/test directories
-        for images, dir_name in zip([train, validate, test], [TRAIN_DIR, VALIDATE_DIR, TEST_DIR]):
+        for images, dir_name in zip(
+            [train, validate, test], [TRAIN_DIR, VALIDATE_DIR, TEST_DIR]
+        ):
             for img_path in images:
                 new_path = img_path.replace(unsorted_dir, f"{dir_name}/{cog_or_toon}")
                 if dry_run:
@@ -117,11 +120,42 @@ def split_data(dry_run: bool = False):
                     rename(img_path, new_path)
 
 
+def create_datasets(
+    image_size: tuple = (600, 200),
+    batch_size: int = 32,
+    shuffle: bool = True,
+    split_ratio: list[float, float, float] = None,
+    dry_run: bool = False,
+):
+    if split_ratio:
+        split_data(split_ratio=split_ratio, dry_run=dry_run)
+
+    ds_train = image_dataset_from_directory(
+        TRAIN_DIR,
+        image_size=image_size,
+        batch_size=batch_size,
+        shuffle=shuffle,
+    )
+    ds_validate = image_dataset_from_directory(
+        VALIDATE_DIR,
+        image_size=image_size,
+        batch_size=batch_size,
+        shuffle=shuffle,
+    )
+    ds_test = image_dataset_from_directory(
+        TEST_DIR,
+        image_size=image_size,
+        batch_size=batch_size,
+        shuffle=shuffle,
+    )
+    return (ds_train, ds_validate, ds_test)
+
+
 def unsort_data(dry_run: bool = False):
     for dir_name in [TRAIN_DIR, VALIDATE_DIR, TEST_DIR]:
         all_imgs = glob(f"{dir_name}/*/*.png")
         for img in all_imgs:
-            new_path = img.replace("\\", '/').replace(dir_name, UNSORTED_DIR)
+            new_path = img.replace("\\", "/").replace(dir_name, UNSORTED_DIR)
             if dry_run:
                 print(f"Moving {img} to {new_path}")
             else:
