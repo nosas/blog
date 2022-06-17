@@ -5,6 +5,8 @@ import numpy as np
 # from tensorflow import keras
 from keras import layers
 
+from data_processing import create_datasets, unsort_data
+
 
 def make_model(
     name: str = "", augmentation: keras.Sequential = None, dropout: float = 0.0
@@ -56,7 +58,7 @@ def make_model_optimized(
     return model
 
 
-def predict_image(filename: str, model: keras.Model) -> str:
+def predict_image(filename: str, model: keras.Model) -> tuple[str, np.array[float]]:
     img = keras.preprocessing.image.load_img(filename, target_size=(600, 200))
     ia = keras.preprocessing.image.img_to_array(img)
     # plt.imshow(ia/255.)
@@ -66,4 +68,66 @@ def predict_image(filename: str, model: keras.Model) -> str:
     # print(f"{label} : {filename}")
     return (label, classes)
 
-# %%
+
+# %% Create function to repeatedly train models
+def train_model(
+    model: keras.Model,
+    datasets: tuple,
+    epochs: int,
+    callbacks: list,
+) -> tuple[list[dict], tuple[float, float]]:
+    """Train a model on a dataset and return the history and evaluation of the model"""
+    ds_train, ds_validate, ds_test = datasets
+    history = model.fit(
+        ds_train,
+        epochs=epochs,
+        validation_data=ds_validate,
+        callbacks=callbacks,
+    )
+    evaluation = model.evaluate(ds_test, verbose=False)
+    return (history.history, evaluation)
+
+
+# %% Train model 5 times and plot the average of the histories
+def make_baseline_comparisons(
+    epochs: int,
+    num_runs: int,
+    model_kwargs: dict,
+    optimizers: list,
+    callbacks: list,
+    split_ratio: list[float] = [0.6, 0.2, 0.2],
+):
+    """Train model(s) for X num_runs and return the histories and evaluations"""
+    histories_all = {model["name"]: [] for model in model_kwargs}
+    evaluations_all = {model["name"]: [] for model in model_kwargs}
+    for _ in range(num_runs):
+        # Reshuffle the dataset before each run to ensure each model is trained on the same dataset
+        unsort_data()
+        datasets = create_datasets(split_ratio=split_ratio)
+        # Train each model
+        for kwargs, callbacks, optimizer in zip(model_kwargs, callbacks, optimizers):
+            model = make_model_optimized(**kwargs)
+            model.compile(
+                loss="binary_crossentropy",
+                optimizer=optimizer,
+                metrics=["accuracy"],
+            )
+            history, evaluation = train_model(
+                model=model,
+                datasets=datasets,
+                epochs=epochs,
+                callbacks=callbacks,
+            )
+            # plot_history(histories, name=model.name)
+            histories_all[model.name].append(history)
+            evaluations_all[model.name].append(evaluation)
+
+    # Convert dictionaries to tuples of (model_name, histories) and (model_name, evaluations)
+    histories = [
+        (model["name"], histories_all[model["name"]]) for model in model_kwargs
+    ]
+    evaluations = [
+        (model["name"], evaluations_all[model["name"]]) for model in model_kwargs
+    ]
+
+    return histories, evaluations

@@ -6,15 +6,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from keras import layers
-from tensorflow.keras.utils import image_dataset_from_directory
 
 from data_processing import (
     DATA_DIR,
-    SCREENSHOTS_DIR,
-    TEST_DIR,
     TRAIN_DIR,
-    UNSORTED_DIR,
-    VALIDATE_DIR,
     create_datasets,
     process_images,
     split_data,
@@ -26,15 +21,15 @@ from data_visualization import (
     plot_datasets_animals,
     plot_datasets_binary,
     plot_datasets_suits,
+    plot_evaluations_box,
+    plot_histories,
     plot_history,
     plot_image_sizes,
     plot_suits_as_bar,
     plot_toons_as_bar,
     plot_xml_data,
-    plot_histories,
-    plot_evaluations_box,
 )
-from model_utils import make_model, make_model_optimized, predict_image
+from model_utils import make_baseline_comparisons, make_model_optimized, predict_image
 
 plt.style.use("dark_background")
 
@@ -132,78 +127,6 @@ for model in models_all:
     print(f"Test Acc, Loss: {test_accuracy:.2f} {test_loss:.2f} {model.name}")
 
 
-# %% Create function to repeatedly train models
-def train_model(
-    model: keras.Model,
-    datasets: tuple,
-    epochs: int,
-    callbacks: list,
-) -> tuple[list[dict], list[dict]]:
-    # Define the training callbacks
-    ds_train, ds_validate, ds_test = datasets
-    history = model.fit(
-        ds_train,
-        epochs=epochs,
-        validation_data=ds_validate,
-        callbacks=callbacks,
-    )
-    evaluation = model.evaluate(ds_test, verbose=False)
-    return (history.history, evaluation)
-
-
-# %% Train model 5 times and plot the average of the histories
-def make_baseline_comparisons(
-    epochs: int,
-    num_runs: int,
-    model_kwargs: dict,
-    learning_rate: float = 0.0001,
-):
-    histories_all = {model["name"]: [] for model in model_kwargs}
-    evaluations_all = {model["name"]: [] for model in model_kwargs}
-    for _ in range(num_runs):
-        unsort_data()
-        datasets = create_datasets(split_ratio=[0.6, 0.2, 0.2])
-        for kwargs in model_kwargs:
-            callbacks = [
-                keras.callbacks.ModelCheckpoint(
-                    filepath=f"toonvision_{kwargs['name']}.keras",
-                    save_best_only=True,
-                    monitor="val_loss",
-                )
-            ]
-            model = make_model_optimized(**kwargs)
-            if "baseline" in kwargs["name"]:
-                optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-            else:
-                optimizer = tf.keras.optimizers.Adam(
-                    learning_rate=learning_rate, decay=1e-6
-                )
-            model.compile(
-                loss="binary_crossentropy",
-                optimizer=optimizer,
-                metrics=["accuracy"],
-            )
-            history, evaluation = train_model(
-                model=model,
-                datasets=datasets,
-                epochs=epochs,
-                callbacks=callbacks,
-            )
-            # plot_history(histories, name=model.name)
-            histories_all[model.name].append(history)
-            evaluations_all[model.name].append(evaluation)
-
-    # Convert dictionaries to tuples
-    histories = [
-        (model["name"], histories_all[model["name"]]) for model in model_kwargs
-    ]
-    evaluations = [
-        (model["name"], evaluations_all[model["name"]]) for model in model_kwargs
-    ]
-
-    return histories, evaluations
-
-
 # %% Compare training histories against baseline models
 data_augmentation = keras.Sequential(
     [
@@ -217,31 +140,42 @@ data_augmentation = keras.Sequential(
 )
 model_kwargs = [
     {"name": "baseline"},
-    # {"name": "augmentation", "augmentation": data_augmentation},
-    # {"name": "dropout80", "dropout": 0.80},
     {
         "name": "augmentation_dropout",
         "augmentation": data_augmentation,
         "dropout": 0.80,
     },
 ]
+optimizers = [
+    tf.keras.optimizers.Adam(learning_rate=learning_rate),
+    tf.keras.optimizers.Adam(learning_rate=learning_rate, decay=1e-6),
+]
+callbacks = [
+    keras.callbacks.ModelCheckpoint(
+        filepath=f"toonvision_{kwargs['name']}.keras",
+        save_best_only=True,
+        monitor="val_loss",
+    )
+    for kwargs in model_kwargs
+]
 
 # %% Train each model for 100 epochs, and repeat it 10 times
 histories_all, evaluations_all = make_baseline_comparisons(
-    epochs=25, num_runs=50, learning_rate=0.001, model_kwargs=model_kwargs
+    epochs=25,
+    num_runs=50,
+    model_kwargs=model_kwargs,
+    callbacks=callbacks,
+    optimizers=optimizers,
 )
 
 # %% Plot the histories
-plt.figure(figsize=(30, 30), dpi=1200)
-fig, axes = plt.subplots(2, 2, figsize=(10, 10))
 colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"]
 
-
-for color, (model_name, histories) in zip(
-    colors, [histories_all[0], histories_all[-1]]
-):
+plt.figure(figsize=(30, 30), dpi=1200)
+fig, axes = plt.subplots(2, 2, figsize=(10, 10))
+for color, (model_name, histories) in zip(colors, histories_all):
     plot_histories(
-        axes,
+        axes=axes,
         model_name=model_name,
         histories=histories,
         color=color,
@@ -254,9 +188,8 @@ fig.show()
 plt.figure(figsize=(30, 30), dpi=1200)
 fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 # plot_evaluations_box(axes, evaluations_all, colors)
-plot_evaluations_box(axes, [evaluations_all[0], evaluations_all[-1]], colors)
+plot_evaluations_box(axes=axes, evaluations_all=evaluations_all, colors=colors)
 fig.show()
-
 
 # %% Export the histories_all to a JSON file
 import json
@@ -306,5 +239,3 @@ for (model_name, pred_wrong) in preds_wrong:
     plt.suptitle(f"Wrong predictions {len(wrong)} {model_name}")
     plt.tight_layout()
     plt.show()
-
-# %%
