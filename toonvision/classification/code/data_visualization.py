@@ -344,21 +344,23 @@ def plot_counters(counters: tuple[dict, dict, dict, dict], suptitle: str) -> Non
     plt.show()
 
 
-def plot_datasets_all() -> None:
+def plot_datasets_all(text_color: str = "black") -> None:
     plt.figure(figsize=(5, 10))
 
     c_train = list(count_objects(data_dir=f"{TRAIN_DIR}/*/*.png"))
     train = c_train[0]
     labels = list(train.keys())
     bars_train = plt.barh(labels, train.values(), label="Train")
-    plt.bar_label(bars_train, train.values(), label_type="center")
+    plt.bar_label(bars_train, train.values(), label_type="center", color=text_color)
 
     c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
     validate = c_validate[0]
     bars_validate = plt.barh(
         labels, validate.values(), label="Validate", left=list(train.values())
     )
-    plt.bar_label(bars_validate, validate.values(), label_type="center")
+    plt.bar_label(
+        bars_validate, validate.values(), label_type="center", color=text_color
+    )
 
     c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
     test = c_test[0]
@@ -368,7 +370,7 @@ def plot_datasets_all() -> None:
         label="Test",
         left=np.add(list(train.values()), list(validate.values())),
     )
-    plt.bar_label(bars_test, test.values(), label_type="center")
+    plt.bar_label(bars_test, test.values(), label_type="center", color=text_color)
 
     plt.gca().invert_yaxis()
     plt.xlabel("Labels")
@@ -378,19 +380,21 @@ def plot_datasets_all() -> None:
     plt.show()
 
 
-def plot_datasets_binary() -> None:
+def plot_datasets_binary(text_color: str = "black") -> None:
     c_train = list(count_objects(data_dir=f"{TRAIN_DIR}/*/*.png"))
     train = c_train[1]
     labels = list(train.keys())
     bars_train = plt.barh(labels, train.values(), label="Train")
-    plt.bar_label(bars_train, train.values(), label_type="center")
+    plt.bar_label(bars_train, train.values(), label_type="center", color=text_color)
 
     c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
     validate = c_validate[1]
     bars_validate = plt.barh(
         labels, validate.values(), label="Validate", left=list(train.values())
     )
-    plt.bar_label(bars_validate, validate.values(), label_type="center")
+    plt.bar_label(
+        bars_validate, validate.values(), label_type="center", color=text_color
+    )
 
     c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
     test = c_test[1]
@@ -400,7 +404,7 @@ def plot_datasets_binary() -> None:
         label="Test",
         left=np.add(list(train.values()), list(validate.values())),
     )
-    plt.bar_label(bars_test, test.values(), label_type="center")
+    plt.bar_label(bars_test, test.values(), label_type="center", color=text_color)
 
     plt.gca().invert_yaxis()
     plt.title("Binary labels per dataset")
@@ -409,19 +413,21 @@ def plot_datasets_binary() -> None:
     plt.show()
 
 
-def plot_datasets_suits():
+def plot_datasets_suits(text_color: str = "black"):
     c_train = list(count_objects(data_dir=f"{TRAIN_DIR}/*/*.png"))
     train = c_train[2]
     labels = list(train.keys())
     bars_train = plt.barh(labels, train.values(), label="Train")
-    plt.bar_label(bars_train, train.values(), label_type="center")
+    plt.bar_label(bars_train, train.values(), label_type="center", color=text_color)
 
     c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
     validate = c_validate[2]
     bars_validate = plt.barh(
         labels, validate.values(), label="Validate", left=list(train.values())
     )
-    plt.bar_label(bars_validate, validate.values(), label_type="center")
+    plt.bar_label(
+        bars_validate, validate.values(), label_type="center", color=text_color
+    )
 
     c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
     test = c_test[2]
@@ -431,7 +437,7 @@ def plot_datasets_suits():
         label="Test",
         left=np.add(list(train.values()), list(validate.values())),
     )
-    plt.bar_label(bars_test, test.values(), label_type="center")
+    plt.bar_label(bars_test, test.values(), label_type="center", color=text_color)
 
     plt.gca().invert_yaxis()
     plt.xlabel("Suits")
@@ -441,19 +447,21 @@ def plot_datasets_suits():
     plt.show()
 
 
-def plot_datasets_animals():
+def plot_datasets_animals(text_color: str = "black"):
     c_train = list(count_objects(data_dir=f"{TRAIN_DIR}/*/*.png"))
     train = c_train[3]
     labels = list(train.keys())
     bars_train = plt.barh(labels, train.values(), label="Train")
-    plt.bar_label(bars_train, train.values(), label_type="center")
+    plt.bar_label(bars_train, train.values(), label_type="center", color=text_color)
 
     c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
     validate = c_validate[3]
     bars_validate = plt.barh(
         labels, validate.values(), label="Validate", left=list(train.values())
     )
-    plt.bar_label(bars_validate, validate.values(), label_type="center")
+    plt.bar_label(
+        bars_validate, validate.values(), label_type="center", color=text_color
+    )
 
     c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
     test = c_test[3]
@@ -463,7 +471,7 @@ def plot_datasets_animals():
         label="Test",
         left=np.add(list(train.values()), list(validate.values())),
     )
-    plt.bar_label(bars_test, test.values(), label_type="center")
+    plt.bar_label(bars_test, test.values(), label_type="center", color=text_color)
 
     plt.gca().invert_yaxis()
     plt.title("Animal labels per dataset")
@@ -517,7 +525,188 @@ def draw_bounding_boxes(filepath: str, save_img: str = "") -> None:
     plt.axis("off")
 
     if save_img:
-        plt.savefig(save_img, bbox_inches='tight', pad_inches=0)
+        plt.savefig(save_img, bbox_inches="tight", pad_inches=0)
+
+
+# %% Plot the histories
+def plot_histories(
+    axes,
+    model_name: str,
+    histories: list,
+    color: str,
+    alpha_runs: float = 0.15,
+    alpha_mean: float = 0.85,
+    index_slice: tuple = (0, -1),
+) -> None:
+    """Plot the history (accuracy and loss on the validation set) of a model as a line chart"""
+    acc = []
+    val_acc = []
+    loss = []
+    val_loss = []
+    idx_start, idx_end = index_slice
+
+    for history in histories:
+        num_epochs = range(1, len(history["loss"]) + 1)
+        acc.append(history["accuracy"])
+        val_acc.append(history["val_accuracy"])
+        loss.append(history["loss"])
+        val_loss.append(history["val_loss"])
+
+        # Plot training & validation accuracy values
+        axes[0][0].plot(
+            num_epochs[idx_start:idx_end],
+            history["accuracy"][idx_start:idx_end],
+            color=color,
+            alpha=alpha_runs,
+        )
+        axes[0][1].plot(
+            num_epochs[idx_start:idx_end],
+            history["val_accuracy"][idx_start:idx_end],
+            color=color,
+            alpha=alpha_runs,
+        )
+        # Plot training & validation loss values
+        axes[1][0].plot(
+            num_epochs[idx_start:idx_end],
+            history["loss"][idx_start:idx_end],
+            color=color,
+            alpha=alpha_runs,
+        )
+        axes[1][1].plot(
+            num_epochs[idx_start:idx_end],
+            history["val_loss"][idx_start:idx_end],
+            color=color,
+            alpha=alpha_runs,
+        )
+
+    # Average of the histories
+    avg_history = {
+        "accuracy": np.mean(acc, axis=0),
+        "val_accuracy": np.mean(val_acc, axis=0),
+        "loss": np.mean(loss, axis=0),
+        "val_loss": np.mean(val_loss, axis=0),
+    }
+
+    # Plot training & validation accuracy values
+    axes[0][0].plot(
+        num_epochs[idx_start:idx_end],
+        avg_history["accuracy"][idx_start:idx_end],
+        color=color,
+        alpha=alpha_mean,
+        label=model_name,
+    )
+    axes[0][1].plot(
+        num_epochs[idx_start:idx_end],
+        avg_history["val_accuracy"][idx_start:idx_end],
+        color=color,
+        alpha=alpha_mean,
+        label=model_name,
+    )
+    axes[0][0].set_title("Accuracy")
+    axes[0][1].set_title("Val Accuracy")
+    for a in axes[0]:
+        a.set_ylabel("Accuracy")
+        a.legend()
+    # Plot training & validation loss values
+    axes[1][0].plot(
+        num_epochs[idx_start:idx_end],
+        avg_history["loss"][idx_start:idx_end],
+        color=color,
+        alpha=alpha_mean,
+        label=model_name,
+    )
+    axes[1][1].plot(
+        num_epochs[idx_start:idx_end],
+        avg_history["val_loss"][idx_start:idx_end],
+        color=color,
+        alpha=alpha_mean,
+        label=model_name,
+    )
+    axes[1][0].set_title("Loss")
+    axes[1][1].set_title("Val Loss")
+    for a in axes[1]:
+        a.set_ylabel("Loss")
+        a.set_xlabel("Epoch")
+        a.legend()
+
+
+def plot_evaluations_box(axes, evaluations_all: list, colors: list[str]) -> None:
+    """Plot the evaluations (accuracy and loss on the test set) of a model as a box chart"""
+    # Transpose each history so row1 contains all accuracies, row0 all losses
+    # Transpose again once all accuracies are collected so that the rows are the runs
+    # Result: A model's accuracies are located in the same column, but the runs are in different rows
+    # Model data being per-column is necessary for the boxplot, read the documentation
+    all_acc = np.array(
+        [np.array(e).transpose()[1] for _, e in evaluations_all]
+    ).transpose()
+    all_loss = np.array(
+        [np.array(e).transpose()[0] for _, e in evaluations_all]
+    ).transpose()
+    model_names = [e[0] for e in evaluations_all]
+
+    # Plot test accuracy values
+    # Set patch_artist to True so we can use the box's facecolor
+    bp_acc = axes[0].boxplot(all_acc, notch=False, sym="o", patch_artist=True)
+    bp_loss = axes[1].boxplot(all_loss, notch=False, sym="o", patch_artist=True)
+
+    for ax, (bp, label) in enumerate([(bp_acc, "Accuracy"), (bp_loss, "Loss")]):
+        axes[ax].set_title(f"Test {label}")
+        axes[ax].set_ylabel(f"{label}")
+        axes[ax].set_xticks([])  # Remove the x-axis labels
+        axes[ax].xaxis.grid(False)
+        axes[ax].yaxis.grid(
+            True, linestyle="-", which="major", color="lightgrey", alpha=0.5
+        )
+        for box, color in zip(bp["boxes"], colors):
+            box.set_facecolor(color)
+        # Add the legend AFTER setting the colors so the colors in the legend are accurate
+        axes[ax].legend(bp["boxes"], model_names)
+
+
+def plot_evaluations_line_deprecated(
+    axes,
+    model_name: str,
+    evaluations: list,
+    color: str,
+    alpha_runs: float = 0.15,
+    index_slice: tuple = (0, -1),
+) -> None:
+    """Plot the evaluations (accuracy and loss on the test set) of a model as a line chart"""
+    idx_start, idx_end = index_slice
+
+    num_runs = range(1, len(evaluations) + 1)
+    accuracies = [eval[1] for eval in evaluations]
+    losses = [eval[0] for eval in evaluations]
+
+    # Plot test accuracy values
+    axes[0][2].plot(
+        num_runs[idx_start:idx_end],
+        accuracies[idx_start:idx_end],
+        color=color,
+        alpha=alpha_runs,
+        label=model_name,
+    )
+    # Plot test loss values
+    axes[1][2].plot(
+        num_runs[idx_start:idx_end],
+        losses[idx_start:idx_end],
+        color=color,
+        alpha=alpha_runs,
+        label=model_name,
+    )
+
+    axes[0][2].set_title("Test Accuracy")
+    for a in axes[0]:
+        a.set_ylabel("Accuracy")
+        a.legend()
+        a.grid(axis="y")
+
+    axes[1][2].set_title("Test Loss")
+    axes[1][2].set_xlabel("Run")
+    for a in axes[1]:
+        a.set_ylabel("Loss")
+        a.legend()
+        a.grid(axis="y")
 
 
 # %% Plot data
@@ -528,6 +717,3 @@ def draw_bounding_boxes(filepath: str, save_img: str = "") -> None:
 # plot_datasets_binary()
 # plot_datasets_suits()
 # plot_datasets_animals()
-
-# %%
-# %%

@@ -31,8 +31,12 @@ from data_visualization import (
     plot_suits_as_bar,
     plot_toons_as_bar,
     plot_xml_data,
+    plot_histories,
+    plot_evaluations_box,
 )
 from model_utils import make_model, make_model_optimized, predict_image
+
+plt.style.use("dark_background")
 
 # %% Convert all images in screenshots directory to data images
 # process_images()
@@ -200,181 +204,6 @@ def make_baseline_comparisons(
     return histories, evaluations
 
 
-# %% Plot the histories
-def plot_histories(
-    axes,
-    model_name: str,
-    histories: list,
-    color: str,
-    alpha_runs: float = 0.15,
-    alpha_mean: float = 0.85,
-    index_slice: tuple = (0, -1),
-):
-    """Plot the history (accuracy and loss) of a model"""
-    acc = []
-    val_acc = []
-    loss = []
-    val_loss = []
-    idx_start, idx_end = index_slice
-
-    for history in histories:
-        num_epochs = range(1, len(history["loss"]) + 1)
-        acc.append(history["accuracy"])
-        val_acc.append(history["val_accuracy"])
-        loss.append(history["loss"])
-        val_loss.append(history["val_loss"])
-
-        # Plot training & validation accuracy values
-        axes[0][0].plot(
-            num_epochs[idx_start:idx_end],
-            history["accuracy"][idx_start:idx_end],
-            color=color,
-            alpha=alpha_runs,
-        )
-        axes[0][1].plot(
-            num_epochs[idx_start:idx_end],
-            history["val_accuracy"][idx_start:idx_end],
-            color=color,
-            alpha=alpha_runs,
-        )
-        # Plot training & validation loss values
-        axes[1][0].plot(
-            num_epochs[idx_start:idx_end],
-            history["loss"][idx_start:idx_end],
-            color=color,
-            alpha=alpha_runs,
-        )
-        axes[1][1].plot(
-            num_epochs[idx_start:idx_end],
-            history["val_loss"][idx_start:idx_end],
-            color=color,
-            alpha=alpha_runs,
-        )
-
-    # Average of the histories
-    avg_history = {
-        "accuracy": np.mean(acc, axis=0),
-        "val_accuracy": np.mean(val_acc, axis=0),
-        "loss": np.mean(loss, axis=0),
-        "val_loss": np.mean(val_loss, axis=0),
-    }
-    # Plot training & validation accuracy values
-    axes[0][0].plot(
-        num_epochs[idx_start:idx_end],
-        avg_history["accuracy"][idx_start:idx_end],
-        color=color,
-        alpha=alpha_mean,
-        label=model_name,
-    )
-    axes[0][1].plot(
-        num_epochs[idx_start:idx_end],
-        avg_history["val_accuracy"][idx_start:idx_end],
-        color=color,
-        alpha=alpha_mean,
-        label=model_name,
-    )
-    axes[0][0].set_title("Accuracy")
-    axes[0][1].set_title("Val Accuracy")
-    for a in axes[0][:2]:
-        a.set_ylabel("Accuracy")
-        a.legend()
-
-    # Plot training & validation loss values
-    axes[1][0].plot(
-        num_epochs[idx_start:idx_end],
-        avg_history["loss"][idx_start:idx_end],
-        color=color,
-        alpha=alpha_mean,
-        label=model_name,
-    )
-    axes[1][1].plot(
-        num_epochs[idx_start:idx_end],
-        avg_history["val_loss"][idx_start:idx_end],
-        color=color,
-        alpha=alpha_mean,
-        label=model_name,
-    )
-    axes[1][0].set_title("Loss")
-    axes[1][1].set_title("Val Loss")
-    for a in axes[1][:2]:
-        a.set_ylabel("Loss")
-        a.set_xlabel("Epoch")
-        a.legend()
-
-
-def plot_evaluations_line(
-    axes,
-    model_name: str,
-    evaluations: list,
-    color: str,
-    alpha_runs: float = 0.15,
-    index_slice: tuple = (0, -1),
-):
-    """Plot the history (accuracy and loss) of a model"""
-    idx_start, idx_end = index_slice
-
-    num_runs = range(1, len(evaluations) + 1)
-    accuracies = [eval[1] for eval in evaluations]
-    losses = [eval[0] for eval in evaluations]
-
-    # Plot training & validation accuracy values
-    axes[0][2].plot(
-        num_runs[idx_start:idx_end],
-        accuracies[idx_start:idx_end],
-        color=color,
-        alpha=alpha_runs,
-        label=model_name,
-    )
-    # Plot training & validation loss values
-    axes[1][2].plot(
-        num_runs[idx_start:idx_end],
-        losses[idx_start:idx_end],
-        color=color,
-        alpha=alpha_runs,
-        label=model_name,
-    )
-
-    axes[0][2].set_title("Test Accuracy")
-    for a in axes[0]:
-        a.set_ylabel("Accuracy")
-        a.legend()
-        a.grid(axis="y")
-
-    axes[1][2].set_title("Test Loss")
-    axes[1][2].set_xlabel("Run")
-    for a in axes[1]:
-        a.set_ylabel("Loss")
-        a.legend()
-        a.grid(axis="y")
-
-
-def plot_evaluations_box(axes, evaluations_all: list, colors: list[str]):
-    all_acc = np.array(
-        [np.array(e).transpose()[1] for _, e in evaluations_all]
-    ).transpose()
-    all_loss = np.array(
-        [np.array(e).transpose()[0] for _, e in evaluations_all]
-    ).transpose()
-    model_names = [e[0] for e in evaluations_all]
-
-    bp_acc = axes[0, 2].boxplot(all_acc, notch=False, sym="o", patch_artist=True)
-    bp_loss = axes[1, 2].boxplot(all_loss, notch=False, sym="o", patch_artist=True)
-    axes[1, 2].set_xlabel("\nModel")
-
-    for ax, (bp, label) in enumerate([(bp_acc, "Accuracy"), (bp_loss, "Loss")]):
-        # axes[ax, 2].set_xticks(xticks_range, model_names, rotation=15)
-        axes[ax, 2].set_title(f"Test {label}")
-        axes[ax, 2].set_ylabel(f"{label}")
-        axes[ax, 2].set_xticks([])
-        axes[ax, 2].xaxis.grid(False)
-        axes[ax, 2].yaxis.grid(
-            True, linestyle="-", which="major", color="lightgrey", alpha=0.5
-        )
-        for box, color in zip(bp["boxes"], colors):
-            box.set_facecolor(color)
-        axes[ax, 2].legend(bp["boxes"], model_names)
-
-
 # %% Compare training histories against baseline models
 data_augmentation = keras.Sequential(
     [
@@ -388,8 +217,8 @@ data_augmentation = keras.Sequential(
 )
 model_kwargs = [
     {"name": "baseline"},
-    {"name": "augmentation", "augmentation": data_augmentation},
-    {"name": "dropout80", "dropout": 0.80},
+    # {"name": "augmentation", "augmentation": data_augmentation},
+    # {"name": "dropout80", "dropout": 0.80},
     {
         "name": "augmentation_dropout",
         "augmentation": data_augmentation,
@@ -403,17 +232,14 @@ histories_all, evaluations_all = make_baseline_comparisons(
 )
 
 # %% Plot the histories
-plt.figure(figsize=(35, 15), dpi=1200)
-plt.style.use("dark_background")
-fig, axes = plt.subplots(2, 3, figsize=(35, 15))
-for row in range(axes.shape[0]):
-    for column in range(axes.shape[1]):
-        axes[row, column].xaxis.grid(False)
-        axes[row, column].yaxis.grid(
-            True, linestyle="-", which="major", color="lightgrey", alpha=0.5
-        )
+plt.figure(figsize=(30, 30), dpi=1200)
+fig, axes = plt.subplots(2, 2, figsize=(10, 10))
 colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"]
-for color, (model_name, histories) in zip(colors, histories_all):
+
+
+for color, (model_name, histories) in zip(
+    colors, [histories_all[0], histories_all[-1]]
+):
     plot_histories(
         axes,
         model_name=model_name,
@@ -422,7 +248,13 @@ for color, (model_name, histories) in zip(colors, histories_all):
         alpha_runs=0.10,
         alpha_mean=0.99,
     )
-plot_evaluations_box(axes, evaluations_all, colors)
+fig.show()
+
+# %% Plot the evaluations
+plt.figure(figsize=(30, 30), dpi=1200)
+fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+# plot_evaluations_box(axes, evaluations_all, colors)
+plot_evaluations_box(axes, [evaluations_all[0], evaluations_all[-1]], colors)
 fig.show()
 
 
