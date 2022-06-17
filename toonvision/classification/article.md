@@ -62,6 +62,7 @@ After reading this article, we'll have a better understanding of...
         - [Loss and accuracy plots](#loss-and-accuracy-plots)
         - [Model evaluation](#model-evaluation)
         - [Confusion matrix](#confusion-matrix)
+        - [Comparing the baseline model to the optimized model](#comparing-the-baseline-model-to-the-optimized-model)
 
 </details>
 
@@ -305,7 +306,7 @@ def process_images(
 The extracted objects are of various sizes because the screenshots were taken from various angles and distances.
 Large objects are a result of the screenshot taken from up close, while small objects are a result of the screenshot taken from far away.
 
-We can see from the image on the right how the distance of the screenshot affects the extracted object's quality.
+We can see from the image on the right how the object's distance affects the extracted object's quality.
 The further the object is from the camera, the smaller and more blurry the object is.
 We lose quite a bit of information about the object when the object is far away.
 
@@ -320,7 +321,7 @@ Then we could use those high-resolution images in this dataset.
 
 After the objects are extracted and placed in the `unsorted` folder, we can create the datasets.
 First, we need to create a balanced datasets within the `data/[train|validate|test]` folders.
-Remember that we're aiming for a 40/20/40 split of the dataset for training, validation, and testing, respectively.
+Remember that we're aiming for a 60/20/20 split of the dataset for training, validation, and testing, respectively.
 
 #### Spitting the images into train, validate, and test
 
@@ -436,6 +437,11 @@ Before training the actual model, we need to define a simple baseline to compare
 The baseline model will use the same model architecture, datasets, and hyperparameters as the optimized model we're training.
 The only difference is that we will not perform any optimizations - no data augmentation, dropout, batch normalization or learning rate decay.
 
+We'll train the baseline for 25 epochs with a learning rate of 0.001 (1e-3).
+The baseline model will be trained 50 times, each time with a rebalanced dataset.
+The average of all 50 runs will be plotted below.
+
+
 ```python
 model_baseline = create_model()
 # ! TODO`
@@ -492,3 +498,12 @@ data_augmentation = keras.Sequential(
 ### Model evaluation
 
 ### Confusion matrix
+
+### Comparing the baseline model to the optimized model
+
+
+<!-- Split the training line chart and the evaluation bar chart -->
+<figure class="center">
+    <img src="img/baseline_comparison_avg50runs_25epochs.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>

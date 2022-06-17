@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 14, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 16, 2022</p>
 
 <p><title>ToonVision: Binary and Multiclass Classification</title></p>
 
@@ -111,6 +111,7 @@ For now, let's focus on real-time classification.</p>
 <li><a href="#loss-and-accuracy-plots">Loss and accuracy plots</a></li>
 <li><a href="#model-evaluation">Model evaluation</a></li>
 <li><a href="#confusion-matrix">Confusion matrix</a></li>
+<li><a href="#comparing-the-baseline-model-to-the-optimized-model">Comparing the baseline model to the optimized model</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -383,7 +384,7 @@ But this is not at all scalable in the future and I will surely redesign this po
 <p>The extracted objects are of various sizes because the screenshots were taken from various angles and distances.
 Large objects are a result of the screenshot taken from up close, while small objects are a result of the screenshot taken from far away.</p>
 
-<p>We can see from the image on the right how the distance of the screenshot affects the extracted object's quality.
+<p>We can see from the image on the right how the object's distance affects the extracted object's quality.
 The further the object is from the camera, the smaller and more blurry the object is.
 We lose quite a bit of information about the object when the object is far away.</p>
 
@@ -398,7 +399,7 @@ Then we could use those high-resolution images in this dataset.</p>
 
 <p>After the objects are extracted and placed in the <code>unsorted</code> folder, we can create the datasets.
 First, we need to create a balanced datasets within the <code>data/[train|validate|test]</code> folders.
-Remember that we're aiming for a 40/20/40 split of the dataset for training, validation, and testing, respectively.</p>
+Remember that we're aiming for a 60/20/20 split of the dataset for training, validation, and testing, respectively.</p>
 
 <h4 id="spitting-the-images-into-train-validate-and-test">Spitting the images into train, validate, and test</h4>
 
@@ -512,6 +513,10 @@ That's about it.</p>
 The baseline model will use the same model architecture, datasets, and hyperparameters as the optimized model we're training.
 The only difference is that we will not perform any optimizations - no data augmentation, dropout, batch normalization or learning rate decay.</p>
 
+<p>We'll train the baseline for 25 epochs with a learning rate of 0.001 (1e-3).
+The baseline model will be trained 50 times, each time with a rebalanced dataset.
+The average of all 50 runs will be plotted below.</p>
+
 <div class="codehilite"><pre><span></span><code><span class="n">model_baseline</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">()</span>
 <span class="c1"># ! TODO`</span>
 </code></pre></div>
@@ -570,6 +575,13 @@ The only difference is that we will not perform any optimizations - no data augm
 <h3 id="model-evaluation">Model evaluation</h3>
 
 <h3 id="confusion-matrix">Confusion matrix</h3>
+
+<h3 id="comparing-the-baseline-model-to-the-optimized-model">Comparing the baseline model to the optimized model</h3>
+
+<figure class="center">
+    <img src="img/baseline_comparison_avg50runs_25epochs.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
 
 </body>
 </html>
