@@ -1,5 +1,6 @@
 # %% Imports
 import re
+import keras
 from collections import Counter
 from glob import glob
 from statistics import mean
@@ -707,6 +708,32 @@ def plot_evaluations_line_deprecated(
         a.set_ylabel("Loss")
         a.legend()
         a.grid(axis="y")
+
+
+def plot_wrong_predictions(
+    wrong_predictions: list[tuple[str, str, float, float]], model_name: str
+) -> None:
+    # %% Plot the wrong predictions by highest error rate (most wrong)
+    wrong = np.array(wrong_predictions)
+    wrong = wrong[wrong[:, 3].argsort()]  # Sort ascending by error rate
+    wrong = wrong[::-1]  # Reverse the order so the most wrong is on top
+
+    # %% Plot the wrong predictions by highest error rate (most wrong)
+    plt.figure(figsize=(15, 15))
+    for i in range(len(wrong[:10])):
+        plt.subplot(3, 5, i + 1)
+        plt.imshow(
+            keras.preprocessing.image.load_img(wrong[i][0], target_size=(600, 200))
+        )
+        label = wrong[i][1]
+        # Nested as heck because `predict_image` returns an array[float] instead of float
+        accuracy = f"{wrong[i][2][0][0]:.2f}"
+        error = f"{wrong[i][3][0][0]:.2f}"
+        plt.title(f"{label}\n(E:{error}, A:{accuracy})")
+        plt.axis("off")
+    plt.suptitle(f" {len(wrong)} Wrong predictions: {model_name}")
+    plt.tight_layout()
+    plt.show()
 
 
 # %% Plot data

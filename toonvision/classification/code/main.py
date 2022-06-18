@@ -3,7 +3,6 @@ from glob import glob
 
 import keras
 import matplotlib.pyplot as plt
-import numpy as np
 import tensorflow as tf
 from keras import layers
 
@@ -27,10 +26,29 @@ from data_visualization import (
     plot_image_sizes,
     plot_suits_as_bar,
     plot_toons_as_bar,
+    plot_wrong_predictions,
     plot_xml_data,
 )
-from model_utils import make_baseline_comparisons, make_model_optimized, predict_image
+from model_utils import (
+    make_baseline_comparisons,
+    make_model_optimized,
+    predict_image,
+    get_wrong_predictions,
+)
 
+COLORS = [
+    "#1f77b4",
+    "#ff7f0e",
+    "#2ca02c",
+    "#d62728",
+    "#9467bd",
+    "#8c564b",
+    "#e377c2",
+    "#7f7f7f",
+    "#bcbd22",
+    "#17becf",
+]
+LR = 0.001
 plt.style.use("dark_background")
 
 # %% Convert all images in screenshots directory to data images
@@ -61,16 +79,15 @@ plot_datasets_binary()
 plot_datasets_all()
 
 # %% Compile all models
-learning_rate = 0.001
 optimizers = [
-    tf.keras.optimizers.SGD(learning_rate=learning_rate),
-    tf.keras.optimizers.Adam(learning_rate=learning_rate),
-    tf.keras.optimizers.RMSprop(learning_rate=learning_rate),
-    tf.keras.optimizers.Adadelta(learning_rate=learning_rate),
-    tf.keras.optimizers.Adagrad(learning_rate=learning_rate),
-    tf.keras.optimizers.Adamax(learning_rate=learning_rate),
-    tf.keras.optimizers.Nadam(learning_rate=learning_rate),
-    tf.keras.optimizers.Ftrl(learning_rate=learning_rate),
+    tf.keras.optimizers.SGD(learning_rate=LR),
+    tf.keras.optimizers.Adam(learning_rate=LR),
+    tf.keras.optimizers.RMSprop(learning_rate=LR),
+    tf.keras.optimizers.Adadelta(learning_rate=LR),
+    tf.keras.optimizers.Adagrad(learning_rate=LR),
+    tf.keras.optimizers.Adamax(learning_rate=LR),
+    tf.keras.optimizers.Nadam(learning_rate=LR),
+    tf.keras.optimizers.Ftrl(learning_rate=LR),
 ]
 
 models_all = []
@@ -84,23 +101,33 @@ print(model.summary())
 
 # %% Train model
 histories_all = []  # List of tuples: tuple[model, history]
+evaluations_all = []  # List of tuples: tuple[model, evaluation]
 for model in models_all:
-    # Define the training callbacks
-    callbacks = [
-        keras.callbacks.ModelCheckpoint(
-            filepath=f"{model.name}.keras", save_best_only=True, monitor="val_loss"
-        )
-    ]
     history = model.fit(
         ds_train,
         epochs=20,
         validation_data=ds_validate,
-        callbacks=callbacks,
     )
     histories_all.append((model, history))
+    evaluations_all.append((model, model.evaluate(ds_test, verbose=0)))
+
+# %% Test all models
+for model, (test_loss, test_accuracy) in evaluations_all:
+    print(f"Test Acc, Loss: {test_accuracy:.2f} {test_loss:.2f} {model.name}")
 
 # %% Compare training histories for all optimizers
-compare_histories(histories_all)
+plt.figure(figsize=(30, 30), dpi=1200)
+fig, axes = plt.subplots(2, 2, figsize=(20, 10))
+for color, (model, history) in zip(COLORS, histories_all):
+    plot_histories(
+        axes=axes,
+        model_name=model.name,
+        histories=[history.history],
+        color=color,
+        alpha_runs=0.10,
+        alpha_mean=0.99,
+    )
+fig.show()
 
 # %% Remove optimizers with vanishing gradients
 vanishing_gradients = ["Adadelta", "Adagrad", "Ftrl", "SGD"]
@@ -120,13 +147,6 @@ compare_histories(
 # %% Compare training histories for optimizers with vanishing gradients
 compare_histories(histories_vanishing, suptitle="Optimizers with vanishing gradients")
 
-# %% Test all models
-for model in models_all:
-    model = keras.models.load_model(f"{model.name}.keras")
-    test_loss, test_accuracy = model.evaluate(ds_test, verbose=0)
-    print(f"Test Acc, Loss: {test_accuracy:.2f} {test_loss:.2f} {model.name}")
-
-
 # %% Compare training histories against baseline models
 data_augmentation = keras.Sequential(
     [
@@ -141,14 +161,26 @@ data_augmentation = keras.Sequential(
 model_kwargs = [
     {"name": "baseline"},
     {
-        "name": "augmentation_dropout",
+        "name": "optimized",
         "augmentation": data_augmentation,
-        "dropout": 0.80,
+        "dropout": 0.90,
+    },
+    {
+        "name": "optimized_1e-4",
+        "augmentation": data_augmentation,
+        "dropout": 0.90,
+    },
+    {
+        "name": "optimized_1e-5",
+        "augmentation": data_augmentation,
+        "dropout": 0.90,
     },
 ]
 optimizers = [
-    tf.keras.optimizers.Adam(learning_rate=learning_rate),
-    tf.keras.optimizers.Adam(learning_rate=learning_rate, decay=1e-6),
+    tf.keras.optimizers.Adam(learning_rate=LR),
+    tf.keras.optimizers.Adam(learning_rate=LR),
+    tf.keras.optimizers.Adam(learning_rate=LR, decay=1e-4),
+    tf.keras.optimizers.Adam(learning_rate=LR, decay=1e-5),
 ]
 callbacks = [
     keras.callbacks.ModelCheckpoint(
@@ -162,24 +194,22 @@ callbacks = [
 # %% Train each model for 100 epochs, and repeat it 10 times
 histories_all, evaluations_all = make_baseline_comparisons(
     epochs=25,
-    num_runs=50,
+    num_runs=200,
     model_kwargs=model_kwargs,
     callbacks=callbacks,
     optimizers=optimizers,
 )
 
 # %% Plot the histories
-colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"]
-
 plt.figure(figsize=(30, 30), dpi=1200)
 fig, axes = plt.subplots(2, 2, figsize=(10, 10))
-for color, (model_name, histories) in zip(colors, histories_all):
+for color, (model_name, histories) in zip(COLORS, histories_all):
     plot_histories(
         axes=axes,
         model_name=model_name,
         histories=histories,
         color=color,
-        alpha_runs=0.10,
+        alpha_runs=0.05,
         alpha_mean=0.99,
     )
 fig.show()
@@ -188,54 +218,36 @@ fig.show()
 plt.figure(figsize=(30, 30), dpi=1200)
 fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 # plot_evaluations_box(axes, evaluations_all, colors)
-plot_evaluations_box(axes=axes, evaluations_all=evaluations_all, colors=colors)
+plot_evaluations_box(axes=axes, evaluations_all=evaluations_all, colors=COLORS)
 fig.show()
 
 # %% Export the histories_all to a JSON file
-import json
+# import json
 
-with open("histories_all.json", "w") as f:
-    json.dump(histories_all, f)
-with open("evaluations_all.json", "w") as f:
-    json.dump(evaluations_all, f)
+# with open("histories_all.json", "w") as f:
+#     json.dump(histories_all, f)
+# with open("evaluations_all.json", "w") as f:
+#     json.dump(evaluations_all, f)
 
+# %% Retrieve and plot wrong predictions
+# for model_name, _ in histories_all:
+#     model = keras.models.load_model(f"toonvision_{model_name}.keras")
+#     wrong_predictions = get_wrong_predictions(model)
+#     plot_wrong_predictions(wrong_predictions, model_name)
 
-# %% Plot wrong predictions
-preds_wrong = []
-for model_name, _ in histories_all:
-    model = keras.models.load_model(f"toonvision_{model_name}.keras")
-    preds = []
+# %% Retrieve and plot wrong predictions
+unsort_data()
+ds_train, ds_validate, ds_test = create_datasets(split_ratio=[0.6, 0.2, 0.2])
+for model_name, run in [
+    ("baseline", 19),
+    ("optimized", 21),
+    ("optimized_1e-4", 21),
+    ("optimized_1e-5", 1),
+]:
+    model = keras.models.load_model(f"./models/toonvision_{model_name}_run{run}.keras")
+    evaluation = model.evaluate(ds_test, verbose=False)
+    print(f"{model_name} run {run}: {evaluation[1]:.2f} {evaluation[0]:.2f}")
+    wrong_predictions = get_wrong_predictions(model)
+    plot_wrong_predictions(wrong_predictions, model_name)
 
-    for fn in glob(f"{DATA_DIR}/**/cog/*.png", recursive=True):
-        label, pred = predict_image(fn, model)
-        if label == "Toon":
-            preds.append((fn, label, pred, abs(pred - 0.5)))
-
-    for fn in glob(f"{DATA_DIR}/**/toon/*.png", recursive=True):
-        label, pred = predict_image(fn, model)
-        if label == "Cog":
-            preds.append((fn, label, pred, abs(pred - 0.5)))
-
-    preds_wrong.append((model.name, preds))
-
-# %% Plot the wrong predictions by highest error rate (most wrong)
-for (model_name, pred_wrong) in preds_wrong:
-    wrong = np.array(pred_wrong)
-    wrong = wrong[wrong[:, 3].argsort()]
-    wrong = wrong[::-1]
-
-    # %% Plot the wong predictions by highest error rate (most wrong)
-    plt.figure(figsize=(15, 15))
-    for i in range(len(wrong[:10])):
-        plt.subplot(3, 5, i + 1)
-        plt.imshow(
-            keras.preprocessing.image.load_img(wrong[i][0], target_size=(600, 200))
-        )
-        label = wrong[i][1]
-        accuracy = f"{wrong[i][2][0][0]:.2f}"
-        error = f"{wrong[i][3][0][0]:.2f}"
-        plt.title(f"{label}\n(E:{error}, A:{accuracy})")
-        plt.axis("off")
-    plt.suptitle(f"Wrong predictions {len(wrong)} {model_name}")
-    plt.tight_layout()
-    plt.show()
+# %%
