@@ -34,7 +34,7 @@ After reading this article, we'll have a better understanding of...
     - [ToonTown Online](#toontown-online)
         - [Toons](#toons)
             - [ToonTasks](#toontasks)
-        - [Cog](#cog)
+        - [Cogs](#cogs)
         - [Why is it important for Toons to classify Cogs?](#why-is-it-important-for-toons-to-classify-cogs)
     - [The ToonVision dataset](#the-toonvision-dataset)
         - [Dataset considerations](#dataset-considerations)
@@ -119,7 +119,7 @@ We won't discuss too much about the game itself in this article because we're fo
 ### Toons
 
 Toons are the main protagonists of ToonTown online.
-They are cartoon animals that enjoy having fun and are constantly using their arsenal of gags to stop Cogs from invading their neighborhoods and converting ToonTown into a corporate dystopia.
+They are cartoon animals that enjoy having fun and are constantly using their arsenal of gags (jokes/weapons) to stop Cogs from invading their neighborhoods and converting ToonTown into a corporate dystopia.
 
 Players can customize their Toon's name, species, color, clothes, and other attributes.
 There are 11 unique animals:
@@ -162,18 +162,25 @@ Tasks include:
 - Retrieving items from defeated Cogs
 - Defeating Cog buildings
 
-Rewards include jellybeans (currency), laff points (health points), gag advancement (weapons), access to other areas of the game and [more](https://toontown.fandom.com/wiki/ToonTask).
+Rewards include jellybeans (currency), laff points (health points), gag advancements (weapons), access to other areas of the game and [more](https://toontown.fandom.com/wiki/ToonTask).
 
-### Cog
+### Cogs
 
-There are 4 Cog suits: Bossbot, Lawbot, Cashbot, and Sellbot.
+Cogs are the main antagonists of ToonTown online.
+They are corporate robots that are trying to take over ToonTown and convert it into a corporate dystopia.
+
+There are 4 Cog suits, each with a unique color: Bossbot (brown), Lawbot (blue), Cashbot (green), and Sellbot (maroon).
 Each suit has 8 Cogs, totaling 32 unique Cogs.
 
 <font style="color:red">TODO: Insert photo of unique Cog suits</font>
 
 ### Why is it important for Toons to classify Cogs?
 
-ToonTasks, object avoidance
+More often than not, ToonTasks involve defeating Cogs.
+A ToonTown AI must be able to identify which Cogs are in a given image and engage in battle with the correct Cog.
+
+However, there are delivery tasks that require Toons to deliver items to NPCs in the streets of ToonTown.
+Therefore, it's important for Toons to identify and avoid Cogs in its path in order to deliver the items on time.
 
 ---
 ## The ToonVision dataset
