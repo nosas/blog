@@ -5,7 +5,7 @@
 
 This article is first in a series on **ToonVision**.
 
-ToonVision is my personal computer vision project for teaching a machine how to see in [ToonTown Online](https://en.wikipedia.org/wiki/Toontown_Online) - an MMORPG created by Disney in 2002.
+ToonVision is my personal computer vision project for teaching a machine how to see in [ToonTown Online](https://en.wikipedia.org/wiki/Toontown_Online) - an MMORPG created by Disney in 2003.
 The ultimate goal is to teach a machine (nicknamed **OmniToon**) how to play ToonTown and create a self-sustaining ecosystem within the game where the bots progress through the game together.
 
 In later articles, we'll dive into image segmentation and object detection.
@@ -31,8 +31,8 @@ After reading this article, we'll have a better understanding of...
         - [Binary classification](#binary-classification)
         - [Multiclass classification](#multiclass-classification)
             - [Multiclass multilabel classification](#multiclass-multilabel-classification)
-    - [ToonTown](#toontown)
-        - [Toon](#toon)
+    - [ToonTown Online](#toontown-online)
+        - [Toons](#toons)
         - [Cog](#cog)
         - [Why is it important for Toons to classify Cogs?](#why-is-it-important-for-toons-to-classify-cogs)
     - [The ToonVision dataset](#the-toonvision-dataset)
@@ -105,9 +105,15 @@ In the future, I will surely add the classification of the Cog's state: battle, 
 Let's keep it simple for now.
 
 ---
-## ToonTown
+## ToonTown Online
 
-### Toon
+ToonTown Online is a multiplayer online role-playing game (MMORPG) created by Disney in 2003.
+The game is based on a cartoon animal world where each player controls a Toon (a cartoon animal).
+
+Like most MMORPGs, there's no single focus in ToonTown's gameplay.
+Players can perform whatever activities they want: socialize, explore the world, fight Cogs, complete tasks for rewards, fish, race karts, and even play minigames.
+
+### Toons
 
 There are 11 unique animals:
 
