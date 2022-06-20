@@ -65,7 +65,10 @@ For now, let's focus on real-time classification.</p>
 </ul></li>
 <li><a href="#toontown-online">ToonTown Online</a>
 <ul>
-<li><a href="#toons">Toons</a></li>
+<li><a href="#toons">Toons</a>
+<ul>
+<li><a href="#toontasks">ToonTasks</a></li>
+</ul></li>
 <li><a href="#cog">Cog</a></li>
 <li><a href="#why-is-it-important-for-toons-to-classify-cogs">Why is it important for Toons to classify Cogs?</a></li>
 </ul></li>
@@ -167,9 +170,15 @@ The game is based on a cartoon animal world where each player controls a Toon (a
 <p>Like most MMORPGs, there's no single focus in ToonTown's gameplay.
 Players can perform whatever activities they want: socialize, explore the world, fight Cogs, complete tasks for rewards, fish, race karts, and even play minigames.</p>
 
+<p>We won't discuss too much about the game itself in this article because we're focusing on building a image classifier, not a full end-to-end ToonTown AI.</p>
+
 <h3 id="toons">Toons</h3>
 
-<p>There are 11 unique animals:</p>
+<p>Toons are the main protagonists of ToonTown online.
+They are cartoon animals that enjoy having fun and are constantly using their arsenal of gags to stop Cogs from invading their neighborhoods and converting ToonTown into a corporate dystopia.</p>
+
+<p>Players can customize their Toon's name, species, color, clothes, and other attributes.
+There are 11 unique animals:</p>
 
 <ul>
 <li>bear</li>
@@ -198,10 +207,29 @@ Furthermore, each animal can have mismatching colors for its head, arms, and leg
     </figure>
 </details></p>
 
+<p>Toons progress through the game by completing ToonTasks and acquiring rewards.
+Ultimately, the goal is to eliminate the Cogs from the streets and acquire the most powerful gags.</p>
+
+<h4 id="toontasks">ToonTasks</h4>
+
+<p>A ToonTask is a quest given by ToonTown NPCs in which Toons must complete in order to earn rewards.
+Tasks include:</p>
+
+<ul>
+<li>Talking to other NPCs</li>
+<li>Defeating specific Cogs or specific number of Cogs</li>
+<li>Retrieving items from defeated Cogs</li>
+<li>Defeating Cog buildings</li>
+</ul>
+
+<p>Rewards include jellybeans (currency), laff points (health points), gag advancement (weapons), access to other areas of the game and <a href="https://toontown.fandom.com/wiki/ToonTask">more</a>.</p>
+
 <h3 id="cog">Cog</h3>
 
 <p>There are 4 Cog suits: Bossbot, Lawbot, Cashbot, and Sellbot.
 Each suit has 8 Cogs, totaling 32 unique Cogs.</p>
+
+<p><font style="color:red">TODO: Insert photo of unique Cog suits</font></p>
 
 <h3 id="why-is-it-important-for-toons-to-classify-cogs">Why is it important for Toons to classify Cogs?</h3>
 

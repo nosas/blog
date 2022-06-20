@@ -33,6 +33,7 @@ After reading this article, we'll have a better understanding of...
             - [Multiclass multilabel classification](#multiclass-multilabel-classification)
     - [ToonTown Online](#toontown-online)
         - [Toons](#toons)
+            - [ToonTasks](#toontasks)
         - [Cog](#cog)
         - [Why is it important for Toons to classify Cogs?](#why-is-it-important-for-toons-to-classify-cogs)
     - [The ToonVision dataset](#the-toonvision-dataset)
@@ -113,8 +114,14 @@ The game is based on a cartoon animal world where each player controls a Toon (a
 Like most MMORPGs, there's no single focus in ToonTown's gameplay.
 Players can perform whatever activities they want: socialize, explore the world, fight Cogs, complete tasks for rewards, fish, race karts, and even play minigames.
 
+We won't discuss too much about the game itself in this article because we're focusing on building a image classifier, not a full end-to-end ToonTown AI.
+
 ### Toons
 
+Toons are the main protagonists of ToonTown online.
+They are cartoon animals that enjoy having fun and are constantly using their arsenal of gags to stop Cogs from invading their neighborhoods and converting ToonTown into a corporate dystopia.
+
+Players can customize their Toon's name, species, color, clothes, and other attributes.
 There are 11 unique animals:
 
 - bear
@@ -142,10 +149,27 @@ Furthermore, each animal can have mismatching colors for its head, arms, and leg
     </figure>
 </details>
 
+Toons progress through the game by completing ToonTasks and acquiring rewards.
+Ultimately, the goal is to eliminate the Cogs from the streets and acquire the most powerful gags.
+
+#### ToonTasks
+
+A ToonTask is a quest given by ToonTown NPCs in which Toons must complete in order to earn rewards.
+Tasks include:
+
+- Talking to other NPCs
+- Defeating specific Cogs or specific number of Cogs
+- Retrieving items from defeated Cogs
+- Defeating Cog buildings
+
+Rewards include jellybeans (currency), laff points (health points), gag advancement (weapons), access to other areas of the game and [more](https://toontown.fandom.com/wiki/ToonTask).
+
 ### Cog
 
 There are 4 Cog suits: Bossbot, Lawbot, Cashbot, and Sellbot.
 Each suit has 8 Cogs, totaling 32 unique Cogs.
+
+<font style="color:red">TODO: Insert photo of unique Cog suits</font>
 
 ### Why is it important for Toons to classify Cogs?
 
