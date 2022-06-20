@@ -84,7 +84,7 @@ In this article, we're building a model to predict whether an image is a Toon or
 
 ### Multiclass classification
 
-On the other hand, multiclass classification is the type of classification problem where the model is trying to predict which single class an input example belongs to.
+On the other hand, multiclass classification is the type of classification problem where the model is trying to predict which *single class* an input example belongs to.
 Where binary classification is a two-class problem, multiclass classification is a multi-class problem - meaning three or more classes.
 For instance, the model could predict that an animal belongs to the class of dogs, cats, rabbits, horses, or any other animal.
 
@@ -92,10 +92,17 @@ In this article, we're building a model to predict which of the four Cog suits a
 
 #### Multiclass multilabel classification
 
-We could beef up the multiclass classification to a multilabel multiclass classification: Cog state/level/hp/name/suit.
-But this adds unneeded complexity.
-Let's keep it simple.
+Lastly, multiclass multilabel classification is the type of classification problem where the model is trying to predict which *classes* an input example belongs to.
+For instance, a multiclass multilabel animal classifier can predict not only that an image belongs to the class of dogs, cats, rabbits, etc. but also the specific breed of dog, cat, rabbit, etc.
+Alternatively, a vehicle classifier can predict not only that an image belongs to the class of cars, trucks, motorcycle, etc. but also the specific make and model of car, truck, motorcycle, etc.
+
+Other practical applications of multiclass multilabel classification include labeling which classes are present in an image.
+An image of a park, for example, could be labeled as containing a tree, a bench, a flower, a pond, etc.
+
+We could beef up the Cog suit classifier to a multilabel multiclass classification: Cog state/level/hp/name/suit.
+But this adds unneeded complexity to the model and should be an article of its own.
 In the future, I will surely add the classification of the Cog's state: battle, patrolling, spawning, de-spawning, etc.
+Let's keep it simple for now.
 
 ---
 ## ToonTown
