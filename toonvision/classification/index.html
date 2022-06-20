@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 16, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 19, 2022</p>
 
 <p><title>ToonVision: Binary and Multiclass Classification</title></p>
 
@@ -106,6 +106,7 @@ For now, let's focus on real-time classification.</p>
 <li><a href="#preventing-overfitting">Preventing overfitting</a>
 <ul>
 <li><a href="#data-augmentation">Data augmentation</a></li>
+<li><a href="#learning-rate-decay">Learning rate decay</a></li>
 </ul></li>
 <li><a href="#callbacks">Callbacks</a></li>
 <li><a href="#loss-and-accuracy-plots">Loss and accuracy plots</a></li>
@@ -543,7 +544,7 @@ The average of all 50 runs will be plotted below.</p>
 <li><strong>Early stopping</strong> - we can stop training the model if the model doesn't improve after a certain number of epochs.</li>
 </ul>
 
-<p>For the ToonVision model, we'll utilize data augmentation, dropout, regularization, and small learning rate.</p>
+<p>For the ToonVision model, we'll utilize data augmentation, dropout, regularization, small learning rate, and learning rate decay.</p>
 
 <h4 id="data-augmentation">Data augmentation</h4>
 
@@ -568,6 +569,30 @@ The average of all 50 runs will be plotted below.</p>
     <span class="p">])</span>
 </code></pre></div>
 
+<h4 id="learning-rate-decay">Learning rate decay</h4>
+
+<p>Learning rate decay is a technique that helps prevent overfitting.
+It's a simple way to reduce the learning rate of the optimizer as training progresses.
+We can implement learning rate decay in two ways:</p>
+
+<ul>
+<li>Use a learning rate scheduler (callback)</li>
+<li>Add a learning rate decay factor to the optimizer</li>
+</ul>
+
+<p>I'll use the optimizer's <code>lr_decay</code> argument to implement the learning rate decay in training.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">LearningRateScheduler</span>
+
+<span class="k">def</span> <span class="nf">lr_schedule</span><span class="p">(</span><span class="n">epoch</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">0.001</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.1</span> <span class="o">**</span> <span class="p">(</span><span class="n">epoch</span> <span class="o">//</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="c1"># Create a learning rate scheduler</span>
+<span class="n">lr_callback</span> <span class="o">=</span> <span class="n">LearningRateScheduler</span><span class="p">(</span><span class="n">lr_schedule</span><span class="p">)</span>
+<span class="c1"># Add the learning rate decay to the optimizer</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">lr_decay</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+</code></pre></div>
+
 <h3 id="callbacks">Callbacks</h3>
 
 <h3 id="loss-and-accuracy-plots">Loss and accuracy plots</h3>
@@ -578,8 +603,24 @@ The average of all 50 runs will be plotted below.</p>
 
 <h3 id="comparing-the-baseline-model-to-the-optimized-model">Comparing the baseline model to the optimized model</h3>
 
-<figure class="center">
+<!-- Split the training line chart and the evaluation bar chart -->
+
+<figure class="center" style="width:100%;">
     <img src="img/baseline_comparison_avg50runs_25epochs.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
+
+<!-- Split the training line chart and the evaluation bar chart -->
+
+<figure class="center" style="width:100%;">
+    <img src="img/baseline_comparison_train.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
+
+<!-- Split the training line chart and the evaluation bar chart -->
+
+<figure class="center" style="width:100%;">
+    <img src="img/baseline_comparison_test.png" style="width:100%;"/>
     <figcaption></figcaption>
 </figure>
 

@@ -58,6 +58,7 @@ After reading this article, we'll have a better understanding of...
     - [Training the optimized model](#training-the-optimized-model)
         - [Preventing overfitting](#preventing-overfitting)
             - [Data augmentation](#data-augmentation)
+            - [Learning rate decay](#learning-rate-decay)
         - [Callbacks](#callbacks)
         - [Loss and accuracy plots](#loss-and-accuracy-plots)
         - [Model evaluation](#model-evaluation)
@@ -467,7 +468,7 @@ Given that we have a small dataset, we can utilize a few of the following techni
 * **Reducing number of parameters** - too many parameters can cause overfitting.
 * **Early stopping** - we can stop training the model if the model doesn't improve after a certain number of epochs.
 
-For the ToonVision model, we'll utilize data augmentation, dropout, regularization, and small learning rate.
+For the ToonVision model, we'll utilize data augmentation, dropout, regularization, small learning rate, and learning rate decay.
 
 #### Data augmentation
 
@@ -491,6 +492,29 @@ data_augmentation = keras.Sequential(
     ])
 ```
 
+#### Learning rate decay
+
+Learning rate decay is a technique that helps prevent overfitting.
+It's a simple way to reduce the learning rate of the optimizer as training progresses.
+We can implement learning rate decay in two ways:
+
+- Use a learning rate scheduler (callback)
+- Add a learning rate decay factor to the optimizer
+
+I'll use the optimizer's `lr_decay` argument to implement the learning rate decay in training.
+
+```python
+from keras.callbacks import LearningRateScheduler
+
+def lr_schedule(epoch):
+    return 0.001 * (0.1 ** (epoch // 10))
+
+# Create a learning rate scheduler
+lr_callback = LearningRateScheduler(lr_schedule)
+# Add the learning rate decay to the optimizer
+optimizer = keras.optimizers.Adam(lr=0.001, lr_decay=1e-5)
+```
+
 ### Callbacks
 
 ### Loss and accuracy plots
@@ -503,7 +527,19 @@ data_augmentation = keras.Sequential(
 
 
 <!-- Split the training line chart and the evaluation bar chart -->
-<figure class="center">
+<figure class="center" style="width:100%;">
     <img src="img/baseline_comparison_avg50runs_25epochs.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
+
+<!-- Split the training line chart and the evaluation bar chart -->
+<figure class="center" style="width:100%;">
+    <img src="img/baseline_comparison_train.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
+
+<!-- Split the training line chart and the evaluation bar chart -->
+<figure class="center" style="width:100%;">
+    <img src="img/baseline_comparison_test.png" style="width:100%;"/>
     <figcaption></figcaption>
 </figure>
