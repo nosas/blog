@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 19, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 20, 2022</p>
 
 <p><title>ToonVision: Binary and Multiclass Classification</title></p>
 
@@ -109,8 +109,6 @@ For now, let's focus on real-time classification.</p>
 <li><a href="#learning-rate-decay">Learning rate decay</a></li>
 </ul></li>
 <li><a href="#callbacks">Callbacks</a></li>
-<li><a href="#loss-and-accuracy-plots">Loss and accuracy plots</a></li>
-<li><a href="#model-evaluation">Model evaluation</a></li>
 <li><a href="#confusion-matrix">Confusion matrix</a></li>
 <li><a href="#comparing-the-baseline-model-to-the-optimized-model">Comparing the baseline model to the optimized model</a></li>
 </ul></li>
@@ -123,7 +121,19 @@ For now, let's focus on real-time classification.</p>
 
 <h2 id="classification">Classification</h2>
 
+<p>Classification is the process of assigning categorical label(s) (a class) to input examples such as images, timeseries, or text.
+For instance, given a dog-vs-cat classification model and an image of a Pomeranian, the model will predict that the image is a dog.
+Given an email, the model will predict that the email is spam.
+Given user activity data on a website, the model will predict whether the user is a human or a bot.</p>
+
+<p>There are many classification problems: binary classification, multiclass classification, and multilabel classification.</p>
+
 <h3 id="binary-classification">Binary classification</h3>
+
+<p>Binary classification - also called two-class classification - is the most common type of classification problem.
+It is a problem where the model is trying to predict whether an input example belongs to class A or class B.</p>
+
+<p>In this article, we're building a model to predict whether an image is a Toon or a Cog.</p>
 
 <h3 id="multiclass-classification">Multiclass classification</h3>
 
@@ -594,10 +604,6 @@ We can implement learning rate decay in two ways:</p>
 </code></pre></div>
 
 <h3 id="callbacks">Callbacks</h3>
-
-<h3 id="loss-and-accuracy-plots">Loss and accuracy plots</h3>
-
-<h3 id="model-evaluation">Model evaluation</h3>
 
 <h3 id="confusion-matrix">Confusion matrix</h3>
 

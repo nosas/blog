@@ -60,8 +60,6 @@ After reading this article, we'll have a better understanding of...
             - [Data augmentation](#data-augmentation)
             - [Learning rate decay](#learning-rate-decay)
         - [Callbacks](#callbacks)
-        - [Loss and accuracy plots](#loss-and-accuracy-plots)
-        - [Model evaluation](#model-evaluation)
         - [Confusion matrix](#confusion-matrix)
         - [Comparing the baseline model to the optimized model](#comparing-the-baseline-model-to-the-optimized-model)
 
@@ -70,9 +68,22 @@ After reading this article, we'll have a better understanding of...
 ---
 ## Classification
 
+Classification is the process of assigning categorical label(s) (a class) to input examples such as images, timeseries, or text.
+For instance, given a dog-vs-cat classification model and an image of a Pomeranian, the model will predict that the image is a dog.
+Given an email, the model will predict that the email is spam.
+Given user activity data on a website, the model will predict whether the user is a human or a bot.
+
+There are many classification problems: binary classification, multiclass classification, and multilabel classification.
+
 ### Binary classification
 
+Binary classification - also called two-class classification - is the most common type of classification problem.
+It is a problem where the model is trying to predict whether an input example belongs to class A or class B.
+
+In this article, we're building a model to predict whether an image is a Toon or a Cog.
+
 ### Multiclass classification
+
 
 #### Multiclass multilabel classification
 
@@ -517,14 +528,9 @@ optimizer = keras.optimizers.Adam(lr=0.001, lr_decay=1e-5)
 
 ### Callbacks
 
-### Loss and accuracy plots
-
-### Model evaluation
-
 ### Confusion matrix
 
 ### Comparing the baseline model to the optimized model
-
 
 <!-- Split the training line chart and the evaluation bar chart -->
 <figure class="center" style="width:100%;">
