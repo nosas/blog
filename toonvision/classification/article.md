@@ -84,6 +84,11 @@ In this article, we're building a model to predict whether an image is a Toon or
 
 ### Multiclass classification
 
+On the other hand, multiclass classification is the type of classification problem where the model is trying to predict which single class an input example belongs to.
+Where binary classification is a two-class problem, multiclass classification is a multi-class problem - meaning three or more classes.
+For instance, the model could predict that an animal belongs to the class of dogs, cats, rabbits, horses, or any other animal.
+
+In this article, we're building a model to predict which of the four Cog suits an image belongs to.
 
 #### Multiclass multilabel classification
 
