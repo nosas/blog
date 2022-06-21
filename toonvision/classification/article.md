@@ -546,15 +546,16 @@ model_baseline = create_model()
 
 Given that we have a small dataset, we can utilize a few of the following techniques during training to prevent overfitting:
 
-* **Data augmentation** - we can augment the images by randomly rotating, flipping, and cropping them.
-* **Data balancing** - we can balance the datasets by balancing the number of objects in each dataset.
-* **Dropout** - we can dropout some of the nodes in the model to prevent overfitting.
-* **Regularization** - we can regularize the model by adding a penalty to the loss function.
-* **Small learning rate** - we can use a small learning rate to prevent overfitting.
-* **Reducing number of parameters** - too many parameters can cause overfitting.
-* **Early stopping** - we can stop training the model if the model doesn't improve after a certain number of epochs.
+* **Data augmentation** - randomly rotating, flipping, and cropping input images.
+* **Data balancing** - balancing the number of objects in each dataset.
+* **Dropout** - dropout some of the output nodes in the model to prevent overfitting.
+* **Regularization** - regularize the model by adding a penalty to the loss function.
+* **Decrease learning rate** - use a small learning rate to decrease the magnitude of the weight updates and learn slower.
+* **Reducing number of parameters** - too many parameters can the model to memorize the dataset.
+* **Early stopping** - stop training the model if the model doesn't improve after a certain number of epochs.
+* **Learning rate decay** - decrease the learning rate of the optimizer after each epoch.
 
-For the ToonVision model, we'll utilize data augmentation, dropout, regularization, small learning rate, and learning rate decay.
+For the ToonVision model, we'll utilize data augmentation, dropout, regularization, decrease learning rate, and learning rate decay.
 
 #### Data augmentation
 

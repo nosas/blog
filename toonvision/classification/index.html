@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 20, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 21, 2022</p>
 
 <p><title>ToonVision: Binary and Multiclass Classification</title></p>
 
@@ -622,16 +622,17 @@ The average of all 50 runs will be plotted below.</p>
 <p>Given that we have a small dataset, we can utilize a few of the following techniques during training to prevent overfitting:</p>
 
 <ul>
-<li><strong>Data augmentation</strong> - we can augment the images by randomly rotating, flipping, and cropping them.</li>
-<li><strong>Data balancing</strong> - we can balance the datasets by balancing the number of objects in each dataset.</li>
-<li><strong>Dropout</strong> - we can dropout some of the nodes in the model to prevent overfitting.</li>
-<li><strong>Regularization</strong> - we can regularize the model by adding a penalty to the loss function.</li>
-<li><strong>Small learning rate</strong> - we can use a small learning rate to prevent overfitting.</li>
-<li><strong>Reducing number of parameters</strong> - too many parameters can cause overfitting.</li>
-<li><strong>Early stopping</strong> - we can stop training the model if the model doesn't improve after a certain number of epochs.</li>
+<li><strong>Data augmentation</strong> - randomly rotating, flipping, and cropping input images.</li>
+<li><strong>Data balancing</strong> - balancing the number of objects in each dataset.</li>
+<li><strong>Dropout</strong> - dropout some of the output nodes in the model to prevent overfitting.</li>
+<li><strong>Regularization</strong> - regularize the model by adding a penalty to the loss function.</li>
+<li><strong>Decrease learning rate</strong> - use a small learning rate to decrease the magnitude of the weight updates and learn slower.</li>
+<li><strong>Reducing number of parameters</strong> - too many parameters can the model to memorize the dataset.</li>
+<li><strong>Early stopping</strong> - stop training the model if the model doesn't improve after a certain number of epochs.</li>
+<li><strong>Learning rate decay</strong> - decrease the learning rate of the optimizer after each epoch.</li>
 </ul>
 
-<p>For the ToonVision model, we'll utilize data augmentation, dropout, regularization, small learning rate, and learning rate decay.</p>
+<p>For the ToonVision model, we'll utilize data augmentation, dropout, regularization, decrease learning rate, and learning rate decay.</p>
 
 <h4 id="data-augmentation">Data augmentation</h4>
 
