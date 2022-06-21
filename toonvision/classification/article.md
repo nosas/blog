@@ -194,7 +194,7 @@ Therefore, it's important for Toons to identify and *avoid* Cogs in its path in 
 ## The ToonVision dataset
 
 There doesn't exist a dataset for ToonVision, so I'll be creating one from scratch.
-The following sections will explain my process and results.
+The following sections will explain my dataset's design considerations, acquisition process, and extraction results.
 
 ### Dataset considerations
 
@@ -269,11 +269,10 @@ Furthermore, there were class-specific data acquisition problems:
     - Highest-tiered Cogs include Corporate Raiders and The Big Cheese for Bossbots, Legal Eagle and Big Wig for Lawbots, etc.
 
 As a result, we have an imbalanced dataset.
-I hope to balance the dataset over time, but we'll work with the current imbalanced dataset to make our lives harder.
-After using this dataset, we'll have a better understanding of how to deal with a model overfitting to a small dataset.
+I hope to balance the dataset over time, but we'll work with the current imbalanced dataset to gain a better understanding of how to deal with a model overfitting to a small dataset.
 
-<figure class="center">
-    <img src="img/dataset_balance.png" style="width:100%;background:white;"/>
+<figure class="center" style="width:100%">
+    <img src="img/label_balance.png" style="width:100%;background:white;"/>
     <figcaption></figcaption>
 </figure>
 
@@ -397,8 +396,8 @@ Remember that we're aiming for a 60/20/20 split of the dataset for training, val
 Before creating the datasets, we need to move images from `unsorted/[cog|toon]` to `data/[train|validate|test]/[cog|toon]`.
 
 ```python
-def split_data(dry_run: bool = False):
-    """Split the data into train(40%)/validate(20%)/test(40%) data sets"""
+def split_data(split_ratio: list[float, float, float], dry_run: bool = False):
+    """Split the data into train(60%)/validate(20%)/test(20%) data sets"""
     for unsorted_dir in [UNSORTED_COG_DIR, UNSORTED_TOON_DIR]:
         cog_or_toon = unsorted_dir.split("/")[-1]
         # Get all images from unsorted_dir
@@ -406,8 +405,8 @@ def split_data(dry_run: bool = False):
         num_images = len(unsorted_images)
 
         # Split images into train/validate/test sets
-        num_train = int(num_images * 0.4)
-        num_validate = int(num_images * 0.2)
+        num_train = int(num_images * split_ratio[0])
+        num_validate = int(num_images * split_ratio[1])
         num_test = num_images - num_train - num_validate
         print(num_train, num_validate, num_test)
 
@@ -418,7 +417,9 @@ def split_data(dry_run: bool = False):
         test = unsorted_images[-num_test:]
 
         # Move images to train/validate/test directories
-        for images, dir_name in zip([train, validate, test], [TRAIN_DIR, VALIDATE_DIR, TEST_DIR]):
+        for images, dir_name in zip(
+            [train, validate, test], [TRAIN_DIR, VALIDATE_DIR, TEST_DIR]
+        ):
             for img_path in images:
                 new_path = img_path.replace(unsorted_dir, f"{dir_name}/{cog_or_toon}")
                 if dry_run:
@@ -427,9 +428,12 @@ def split_data(dry_run: bool = False):
                     rename(img_path, new_path)
 ```
 
-We can visualize the balances of the datasets using the `plot_all_datasets` function in `data_visualization.py`.
+We can visualize the dataset's balance by using the `plot_datasets_all()` function in the `data_visualization` module.
 
-<font style="color:red">TODO: Insert image of dataset balance</font>
+<figure class="center">
+    <img src="img/dataset_balance.png" style="width:100%;"/>
+    <figcaption>Train, validate, and test datasets</figcaption>
+</figure>
 
 The creation of datasets is straight-forward using keras:
 
@@ -453,8 +457,6 @@ test_dataset = image_dataset_from_directory(
     # batch_size=16
 )
 ```
-
-<font style="color:red">TODO: Insert sample images from train dataset</font>
 
 ## Compiling the model
 

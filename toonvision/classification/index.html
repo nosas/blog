@@ -254,7 +254,7 @@ Therefore, it's important for Toons to identify and <em>avoid</em> Cogs in its p
 <h2 id="the-toonvision-dataset">The ToonVision dataset</h2>
 
 <p>There doesn't exist a dataset for ToonVision, so I'll be creating one from scratch.
-The following sections will explain my process and results.</p>
+The following sections will explain my dataset's design considerations, acquisition process, and extraction results.</p>
 
 <h3 id="dataset-considerations">Dataset considerations</h3>
 
@@ -345,11 +345,10 @@ When taken from far away, the entity's nametag covers the entity's head, thus ca
 </ol>
 
 <p>As a result, we have an imbalanced dataset.
-I hope to balance the dataset over time, but we'll work with the current imbalanced dataset to make our lives harder.
-After using this dataset, we'll have a better understanding of how to deal with a model overfitting to a small dataset.</p>
+I hope to balance the dataset over time, but we'll work with the current imbalanced dataset to gain a better understanding of how to deal with a model overfitting to a small dataset.</p>
 
-<figure class="center">
-    <img src="img/dataset_balance.png" style="width:100%;background:white;"/>
+<figure class="center" style="width:100%">
+    <img src="img/label_balance.png" style="width:100%;background:white;"/>
     <figcaption></figcaption>
 </figure>
 
@@ -477,8 +476,8 @@ Remember that we're aiming for a 60/20/20 split of the dataset for training, val
 
 <p>Before creating the datasets, we need to move images from <code>unsorted/[cog|toon]</code> to <code>data/[train|validate|test]/[cog|toon]</code>.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">split_data</span><span class="p">(</span><span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Split the data into train(40%)/validate(20%)/test(40%) data sets&quot;&quot;&quot;</span>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">split_data</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Split the data into train(60%)/validate(20%)/test(20%) data sets&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">unsorted_dir</span> <span class="ow">in</span> <span class="p">[</span><span class="n">UNSORTED_COG_DIR</span><span class="p">,</span> <span class="n">UNSORTED_TOON_DIR</span><span class="p">]:</span>
         <span class="n">cog_or_toon</span> <span class="o">=</span> <span class="n">unsorted_dir</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="c1"># Get all images from unsorted_dir</span>
@@ -486,8 +485,8 @@ Remember that we're aiming for a 60/20/20 split of the dataset for training, val
         <span class="n">num_images</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">unsorted_images</span><span class="p">)</span>
 
         <span class="c1"># Split images into train/validate/test sets</span>
-        <span class="n">num_train</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_images</span> <span class="o">*</span> <span class="mf">0.4</span><span class="p">)</span>
-        <span class="n">num_validate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_images</span> <span class="o">*</span> <span class="mf">0.2</span><span class="p">)</span>
+        <span class="n">num_train</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_images</span> <span class="o">*</span> <span class="n">split_ratio</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">num_validate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_images</span> <span class="o">*</span> <span class="n">split_ratio</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">num_test</span> <span class="o">=</span> <span class="n">num_images</span> <span class="o">-</span> <span class="n">num_train</span> <span class="o">-</span> <span class="n">num_validate</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">num_train</span><span class="p">,</span> <span class="n">num_validate</span><span class="p">,</span> <span class="n">num_test</span><span class="p">)</span>
 
@@ -498,7 +497,9 @@ Remember that we're aiming for a 60/20/20 split of the dataset for training, val
         <span class="n">test</span> <span class="o">=</span> <span class="n">unsorted_images</span><span class="p">[</span><span class="o">-</span><span class="n">num_test</span><span class="p">:]</span>
 
         <span class="c1"># Move images to train/validate/test directories</span>
-        <span class="k">for</span> <span class="n">images</span><span class="p">,</span> <span class="n">dir_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="n">train</span><span class="p">,</span> <span class="n">validate</span><span class="p">,</span> <span class="n">test</span><span class="p">],</span> <span class="p">[</span><span class="n">TRAIN_DIR</span><span class="p">,</span> <span class="n">VALIDATE_DIR</span><span class="p">,</span> <span class="n">TEST_DIR</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">images</span><span class="p">,</span> <span class="n">dir_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">train</span><span class="p">,</span> <span class="n">validate</span><span class="p">,</span> <span class="n">test</span><span class="p">],</span> <span class="p">[</span><span class="n">TRAIN_DIR</span><span class="p">,</span> <span class="n">VALIDATE_DIR</span><span class="p">,</span> <span class="n">TEST_DIR</span><span class="p">]</span>
+        <span class="p">):</span>
             <span class="k">for</span> <span class="n">img_path</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
                 <span class="n">new_path</span> <span class="o">=</span> <span class="n">img_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">unsorted_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dir_name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">cog_or_toon</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
@@ -507,9 +508,12 @@ Remember that we're aiming for a 60/20/20 split of the dataset for training, val
                     <span class="n">rename</span><span class="p">(</span><span class="n">img_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
 </code></pre></div>
 
-<p>We can visualize the balances of the datasets using the <code>plot_all_datasets</code> function in <code>data_visualization.py</code>.</p>
+<p>We can visualize the dataset's balance by using the <code>plot_datasets_all()</code> function in the <code>data_visualization</code> module.</p>
 
-<p><font style="color:red">TODO: Insert image of dataset balance</font></p>
+<figure class="center">
+    <img src="img/dataset_balance.png" style="width:100%;"/>
+    <figcaption>Train, validate, and test datasets</figcaption>
+</figure>
 
 <p>The creation of datasets is straight-forward using keras:</p>
 
@@ -532,8 +536,6 @@ Remember that we're aiming for a 60/20/20 split of the dataset for training, val
     <span class="c1"># batch_size=16</span>
 <span class="p">)</span>
 </code></pre></div>
-
-<p><font style="color:red">TODO: Insert sample images from train dataset</font></p>
 
 <h2 id="compiling-the-model">Compiling the model</h2>
 
