@@ -1,10 +1,10 @@
 # %% Imports
 import re
-import keras
 from collections import Counter
 from glob import glob
 from statistics import mean
 
+import keras
 import matplotlib.patheffects as PathEffects
 import matplotlib.pyplot as plt
 import numpy as np
@@ -324,25 +324,35 @@ def count_objects(
 
 
 def plot_counters(counters: tuple[dict, dict, dict, dict], suptitle: str) -> None:
+    gridspec_kw = dict(width_ratios=[1, 1.2], height_ratios=[1, 1, 1])
+    fig, ax = plt.subplot_mosaic(
+        [["left", "upper right"], ["left", "middle right"], ["left", "lower right"]],
+        gridspec_kw=gridspec_kw,
+        figsize=(10, 8),
+        dpi=100,
+    )
+
     count_all, count_binary, count_suit, count_animal = counters
     counts_and_titles = [
-        (count_all, "Number of objects per label", 20),
-        (count_binary, "Number of objects per binary label", 640),
-        (count_suit, "Number of objects per suit label", 160),
-        (count_animal, "Number of objects per animal label", 58),
+        (count_all, "Objects per label", 20, "left"),
+        (count_binary, "Objects per binary label", 640, "upper right"),
+        (count_suit, "Objects per suit label", 160, "middle right"),
+        (count_animal, "Objects per animal label", 58, "lower right"),
     ]
-    fig, ax = plt.subplots(
-        4, 1, figsize=(5, 15), gridspec_kw={"height_ratios": [5, 0.75, 0.75, 1.25]}
-    )
+
     fig.suptitle(suptitle, fontsize=20)
-    for idx, (count_dict, title, desired_count) in enumerate(counts_and_titles):
-        hbars = ax[idx].barh(y=list(count_dict.keys()), width=count_dict.values())
-        ax[idx].invert_yaxis()
-        ax[idx].axvline(x=mean(count_dict.values()), color="red", alpha=0.5)
-        ax[idx].axvline(x=desired_count, color="green")
-        ax[idx].set_title(title)
-        ax[idx].bar_label(hbars, count_dict.values())
-    plt.show()
+    for count_dict, title, desired_count, subplot_key in counts_and_titles:
+        hbars = ax[subplot_key].barh(
+            y=list(count_dict.keys()), width=count_dict.values()
+        )
+        ax[subplot_key].invert_yaxis()
+        ax[subplot_key].axvline(x=mean(count_dict.values()), color="red", alpha=0.5)
+        ax[subplot_key].axvline(x=desired_count, color="green")
+        ax[subplot_key].set_title(title)
+        ax[subplot_key].bar_label(hbars, count_dict.values())
+
+    fig.tight_layout()
+    fig.show()
 
 
 def plot_datasets_all(text_color: str = "black") -> None:
