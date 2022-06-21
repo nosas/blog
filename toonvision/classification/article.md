@@ -246,7 +246,8 @@ There's no need for a unique folder for each Cog suit because we can filter on t
 ### Data acquisition
 
 Acquiring data is simple: Walk around TT streets, take screenshots, and save them to the raw folder.
-It's important to take screenshots from various distance and of different angles of each entity: front, back, and side.
+It's important to take screenshots from various distance and angles of each entity: front, back, and side.
+
 Taking screenshots from up close is preferred.
 When taken from far away, the entity's nametag covers the entity's head, thus causing us to crop the entity's head or include the nametag - neither are good options.
 
@@ -269,7 +270,7 @@ Furthermore, there were class-specific data acquisition problems:
     - Highest-tiered Cogs include Corporate Raiders and The Big Cheese for Bossbots, Legal Eagle and Big Wig for Lawbots, etc.
 
 As a result, we have an imbalanced dataset.
-I hope to balance the dataset over time, but we'll work with the current imbalanced dataset to gain a better understanding of how to deal with a model overfitting to a small dataset.
+I hope to balance the dataset over time, but we'll work with the current dataset to gain a better understanding of how to deal with a model overfitting to a small, imbalanced dataset.
 
 <figure class="center" style="width:100%">
     <img src="img/label_balance.png" style="width:100%;background:white;"/>
@@ -331,7 +332,7 @@ The unsorted images directory is used to maintain a counter (referred to as an i
 It gives me a glimpse of how many images are in each category by looking at the filenames in the `unsorted` directory.
 If I want to add more images to the dataset, I would have place images from all datasets back into the `unsorted` directory in order to maintain the counter and avoid overwriting existing images.
 
-Given that my dataset is so small, I can unsort and re-sort the images with ease.
+Given that the dataset is so small, I can unsort and re-sort the images with ease.
 But this is not at all scalable in the future and I will surely redesign this portion of the data pipeline.
 
 ```python
@@ -340,28 +341,31 @@ def process_images(
     raw_images_dir: str = SCREENSHOTS_DIR,
     image_type: str = "png",
     move_images: bool = False,
+    filename_filter: str = "",
 ) -> None:
     """Extract objects from raw images and save them to the unsorted img directory"""
-    screenshots = glob(f"{raw_images_dir}/*.{image_type}", recursive=True)
-    print(f"Found {len(screenshots)} screenshots")
+    screenshots = glob(f"{raw_images_dir}/**/*.{image_type}", recursive=True)
+    print(f"Found {len(screenshots)} screenshots in {raw_images_dir}")
     for img_path in screenshots:
-        print(f"Processing {img_path}")
-        xml_path = img_path.replace(f".{image_type}", ".xml")
-        if path.exists(xml_path):
-            # Extract objects' labels and bounding box dimensions from XML
-            objs_from_xml = extract_objects_from_xml(xml_path)
-            # Extract objects from images using XML data
-            objs_from_img = extract_objects_from_img(img_path, objs_from_xml)
-            # Save extracted objects to images, modify image name to include object index
-            save_objects_to_img(objs_from_img, UNSORTED_DIR)
-            # Move raw image to processed directory
-            if move_images:
-                for f in [img_path, xml_path]:
-                    new_path = f.replace(raw_images_dir, PROCESSED_DIR)
-                    print(f"    Moving {f} to {new_path}")
-                    rename(f, new_path)
-        else:
-            print(f"    No XML file found for {img_path}")
+        if filename_filter in img_path:
+            print(f"Processing {img_path}")
+            xml_path = img_path.replace(f".{image_type}", ".xml")
+            if path.exists(xml_path):
+                # Extract objects' labels and bounding box dimensions from XML
+                objs_from_xml = extract_objects_from_xml(xml_path)
+                # Extract objects from images using XML data
+                objs_from_img = extract_objects_from_img(img_path, objs_from_xml)
+                # Save extracted objects to images, modify image name to include object index
+                save_objects_to_img(objs_from_img, UNSORTED_DIR)
+                # Move raw image to processed directory
+                if move_images:
+                    for f in [img_path, xml_path]:
+                        new_path = f.replace(raw_images_dir, PROCESSED_DIR)
+                        print(f"    Moving {f} to {new_path}")
+                        rename(f, new_path)
+            else:
+                print(f"    No XML file found for {img_path}")
+
 ```
 
 ### Data processing
@@ -430,7 +434,7 @@ def split_data(split_ratio: list[float, float, float], dry_run: bool = False):
 
 We can visualize the dataset's balance by using the `plot_datasets_all()` function in the `data_visualization` module.
 
-<figure class="center">
+<figure class="center" style="width:100%;">
     <img src="img/dataset_balance.png" style="width:100%;"/>
     <figcaption>Train, validate, and test datasets</figcaption>
 </figure>
@@ -438,24 +442,36 @@ We can visualize the dataset's balance by using the `plot_datasets_all()` functi
 The creation of datasets is straight-forward using keras:
 
 ```python
-# %% Create datasets
-from tensorflow.keras.image_dataset_from_directory
+def create_datasets(
+    image_size: tuple = (600, 200),
+    batch_size: int = 32,
+    shuffle: bool = True,
+    split_ratio: list[float, float, float] = None,
+    dry_run: bool = False,
+):
+    if split_ratio:
+        split_data(split_ratio=split_ratio, dry_run=dry_run)
 
-train_dataset = image_dataset_from_directory(
-    TRAIN_DIR,
-    image_size=(600, 200),
-    # batch_size=16
-)
-validation_dataset = image_dataset_from_directory(
-    VALIDATE_DIR,
-    image_size=(600, 200),
-    # batch_size=16
-)
-test_dataset = image_dataset_from_directory(
-    TEST_DIR,
-    image_size=(600, 200),
-    # batch_size=16
-)
+    ds_train = image_dataset_from_directory(
+        TRAIN_DIR,
+        image_size=image_size,
+        batch_size=batch_size,
+        shuffle=shuffle,
+    )
+    ds_validate = image_dataset_from_directory(
+        VALIDATE_DIR,
+        image_size=image_size,
+        batch_size=batch_size,
+        shuffle=shuffle,
+    )
+    ds_test = image_dataset_from_directory(
+        TEST_DIR,
+        image_size=image_size,
+        batch_size=batch_size,
+        shuffle=shuffle,
+    )
+    return (ds_train, ds_validate, ds_test)
+
 ```
 
 ## Compiling the model
