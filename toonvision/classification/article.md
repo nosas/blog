@@ -114,7 +114,7 @@ The game is based on a cartoon animal world where each player controls a Toon (a
 Like most MMORPGs, there's no single focus in ToonTown's gameplay.
 Players can perform whatever activities they want: socialize, explore the world, fight Cogs, complete tasks for rewards, fish, race karts, and even play minigames.
 
-We won't discuss too much about the game itself in this article because we're focusing on building a image classifier, not a full end-to-end ToonTown AI.
+We won't discuss too much about the game itself in this article because we're focusing on building an image classifier, not a full end-to-end ToonTown AI.
 
 ### Toons
 
@@ -143,7 +143,7 @@ Furthermore, each animal can have mismatching colors for its head, arms, and leg
     <summary>All animal species</summary>
     This dataset lacks mismatched-colored Toons.
     As you can see below, all Toons have matching colors for their head, arms, and legs.
-    <figure class="center">
+    <figure class="center" style="width:100%;">
         <img src="img/unique_animals.png" style="width:100%;background:white;"/>
         <figcaption>11 unique animal species in ToonTown</figcaption>
     </figure>
@@ -166,21 +166,29 @@ Rewards include jellybeans (currency), laff points (health points), gag advancem
 
 ### Cogs
 
+<figure class="right">
+    <img src="img/unique_suits.png" style="width:100%;"/>
+    <figcaption>4 unique Cog suits and their respective colors</figcaption>
+</figure>
+
 Cogs are the main antagonists of ToonTown online.
 They are corporate robots that are trying to take over ToonTown and convert it into a corporate dystopia.
 
 There are 4 Cog suits, each with a unique color: Bossbot (brown), Lawbot (blue), Cashbot (green), and Sellbot (maroon).
-Each suit has 8 Cogs, totaling 32 unique Cogs.
+Each suit in the corporate ladder contains 8 Cogs for a total of 32 unique Cogs.
+While most Cogs can be found in the streets, the two highest-tiered Cogs can be found only in Cog buildings.
 
-<font style="color:red">TODO: Insert photo of unique Cog suits</font>
+We'll only acquire data about Cogs in the streets for this model.
+We can leverage Cog invasions in order to find building-specific Cogs in the streets.
+
 
 ### Why is it important for Toons to classify Cogs?
 
 More often than not, ToonTasks involve defeating Cogs.
-A ToonTown AI must be able to identify which Cogs are in a given image and engage in battle with the correct Cog.
+A ToonTown AI must be able to identify which Cogs are in a given image in order to engage in battle with the correct Cog.
 
 However, there are delivery tasks that require Toons to deliver items to NPCs in the streets of ToonTown.
-Therefore, it's important for Toons to identify and avoid Cogs in its path in order to deliver the items on time.
+Therefore, it's important for Toons to identify and *avoid* Cogs in its path in order to deliver the items on time.
 
 ---
 ## The ToonVision dataset
