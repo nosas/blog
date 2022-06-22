@@ -225,16 +225,18 @@ with open("evaluations_all.json", "r") as f:
 
 
 # %% Plot the average history of the baseline model
-baseline_histories = histories_all[0][1][100]
-plot_history(baseline_histories, "Baseline")
-# baseline_avg = get_average_history(baseline_histories)
-# plot_history(baseline_avg, "Baseline Average")
+baseline_histories = histories_all[0][1]
+run = 99 + 1
+plot_history(baseline_histories[100], f"Baseline (run #{run-1})")
+baseline_avg = get_average_history(baseline_histories)
+plot_history(baseline_avg, "Baseline (average)")
 
 # %% Plot the average history of the optimized model
-optimized_histories = histories_all[-1][1][13]
-plot_history(optimized_histories, "Optimized 1e-5")
-# optimized_avg = get_average_history(optimized_histories)
-# plot_history(optimized_avg, "Optimized 1e-5 Average")
+optimized_histories = histories_all[-1][1]
+run = 12 + 1
+plot_history(optimized_histories[13], f"Optimized 1e-5 (run #{run-1})")
+optimized_avg = get_average_history(optimized_histories)
+plot_history(optimized_avg, "Optimized 1e-5 (average)")
 
 # %% Compare the baseline to the optimized
 compare_histories(
