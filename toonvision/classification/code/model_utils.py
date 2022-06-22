@@ -91,6 +91,29 @@ def train_model(
 
 
 # %% Train model 5 times and plot the average of the histories
+def get_average_history(histories: list[dict]) -> dict:
+    """Given a list of histories, return the average of the histories"""
+    acc = []
+    val_acc = []
+    loss = []
+    val_loss = []
+
+    for history in histories:
+        acc.append(history["accuracy"])
+        val_acc.append(history["val_accuracy"])
+        loss.append(history["loss"])
+        val_loss.append(history["val_loss"])
+
+    # Average of the histories
+    avg_history = {
+        "accuracy": np.mean(acc, axis=0),
+        "val_accuracy": np.mean(val_acc, axis=0),
+        "loss": np.mean(loss, axis=0),
+        "val_loss": np.mean(val_loss, axis=0),
+    }
+    return avg_history
+
+
 def make_baseline_comparisons(
     epochs: int,
     num_runs: int,
