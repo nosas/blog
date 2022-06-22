@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 21, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 22, 2022</p>
 
 <p><title>ToonVision: Binary and Multiclass Classification</title></p>
 
@@ -472,12 +472,13 @@ Then we could use those high-resolution images in this dataset.</p>
 <h3 id="creating-the-datasets">Creating the datasets</h3>
 
 <p>After the objects are extracted and placed in the <code>unsorted</code> folder, we can create the datasets.
-First, we need to create a balanced datasets within the <code>data/[train|validate|test]</code> folders.
+First, we need to create balanced datasets within the <code>data/[train|validate|test]</code> folders.
 Remember that we're aiming for a 60/20/20 split of the dataset for training, validation, and testing, respectively.</p>
 
 <h4 id="spitting-the-images-into-train-validate-and-test">Spitting the images into train, validate, and test</h4>
 
-<p>Before creating the datasets, we need to move images from <code>unsorted/[cog|toon]</code> to <code>data/[train|validate|test]/[cog|toon]</code>.</p>
+<p>Before creating the datasets, we need to move images from <code>unsorted/[cog|toon]</code> to <code>data/[train|validate|test]/[cog|toon]</code>.
+We can utilize the <code>split_data()</code> function in the <code>data_processing</code> module to do this.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">split_data</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Split the data into train(60%)/validate(20%)/test(20%) data sets&quot;&quot;&quot;</span>
@@ -511,16 +512,13 @@ Remember that we're aiming for a 60/20/20 split of the dataset for training, val
                     <span class="n">rename</span><span class="p">(</span><span class="n">img_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
 </code></pre></div>
 
-<p>We can visualize the dataset's balance by using the <code>plot_datasets_all()</code> function in the <code>data_visualization</code> module.</p>
+<p>Creating <code>tf.data.Dataset</code> objects is straight-forward when using Keras' <code>image_dataset_from_directory</code> function.
+I wrote a wrapper function, <code>create_datasets</code>, to create the train, validate, and test datasets:</p>
 
-<figure class="center" style="width:100%;">
-    <img src="img/dataset_balance.png" style="width:100%;"/>
-    <figcaption>Train, validate, and test datasets</figcaption>
-</figure>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow.keras.utils</span> <span class="kn">import</span> <span class="n">image_dataset_from_directory</span>
 
-<p>The creation of datasets is straight-forward using keras:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">create_datasets</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">create_datasets</span><span class="p">(</span>
     <span class="n">image_size</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">),</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
     <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -550,6 +548,20 @@ Remember that we're aiming for a 60/20/20 split of the dataset for training, val
     <span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">ds_train</span><span class="p">,</span> <span class="n">ds_validate</span><span class="p">,</span> <span class="n">ds_test</span><span class="p">)</span>
 </code></pre></div>
+
+<p>We can visualize the dataset's balance by using the <code>plot_datasets_all()</code> function in the <code>data_visualization</code> module.</p>
+
+<p><details>
+    <summary>Dataset balance</summary></p>
+
+<figure class="center" style="width:100%;">
+    <img src="img/dataset_balance.png" style="width:100%;"/>
+    <figcaption>Train, validate, and test datasets</figcaption>
+</figure>
+
+<p></details></p>
+
+<hr />
 
 <h2 id="compiling-the-model">Compiling the model</h2>
 
@@ -594,6 +606,8 @@ We'll use the <code>categorical_accuracy</code> metric later for our model with 
 That's about it.</p>
 
 <h3 id="defining-the-model">Defining the model</h3>
+
+<hr />
 
 <h2 id="training-the-baseline-model">Training the baseline model</h2>
 
@@ -666,6 +680,8 @@ Perhaps the color of Toon's shirt is similar to the Lawbot's blue suit?
 We'll interpret the layers' activations as heatmaps later to see if this is the case.</p>
 
 <p>Let's optimize the model's training to prevent overfitting and acquire better results.</p>
+
+<hr />
 
 <h2 id="training-the-optimized-model">Training the optimized model</h2>
 

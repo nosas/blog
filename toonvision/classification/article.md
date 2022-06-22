@@ -181,7 +181,6 @@ While most Cogs can be found in the streets, the two highest-tiered Cogs can be 
 We'll only acquire data about Cogs in the streets for this model.
 We can leverage Cog invasions in order to find building-specific Cogs in the streets.
 
-
 ### Why is it important for Toons to classify Cogs?
 
 More often than not, ToonTasks involve defeating Cogs.
@@ -392,12 +391,13 @@ Then we could use those high-resolution images in this dataset.
 ### Creating the datasets
 
 After the objects are extracted and placed in the `unsorted` folder, we can create the datasets.
-First, we need to create a balanced datasets within the `data/[train|validate|test]` folders.
+First, we need to create balanced datasets within the `data/[train|validate|test]` folders.
 Remember that we're aiming for a 60/20/20 split of the dataset for training, validation, and testing, respectively.
 
 #### Spitting the images into train, validate, and test
 
 Before creating the datasets, we need to move images from `unsorted/[cog|toon]` to `data/[train|validate|test]/[cog|toon]`.
+We can utilize the `split_data()` function in the `data_processing` module to do this.
 
 ```python
 def split_data(split_ratio: list[float, float, float], dry_run: bool = False):
@@ -432,16 +432,13 @@ def split_data(split_ratio: list[float, float, float], dry_run: bool = False):
                     rename(img_path, new_path)
 ```
 
-We can visualize the dataset's balance by using the `plot_datasets_all()` function in the `data_visualization` module.
-
-<figure class="center" style="width:100%;">
-    <img src="img/dataset_balance.png" style="width:100%;"/>
-    <figcaption>Train, validate, and test datasets</figcaption>
-</figure>
-
-The creation of datasets is straight-forward using keras:
+Creating `tf.data.Dataset` objects is straight-forward when using Keras' `image_dataset_from_directory` function.
+I wrote a wrapper function, `create_datasets`, to create the train, validate, and test datasets:
 
 ```python
+from tensorflow.keras.utils import image_dataset_from_directory
+
+
 def create_datasets(
     image_size: tuple = (600, 200),
     batch_size: int = 32,
@@ -471,9 +468,19 @@ def create_datasets(
         shuffle=shuffle,
     )
     return (ds_train, ds_validate, ds_test)
-
 ```
 
+We can visualize the dataset's balance by using the `plot_datasets_all()` function in the `data_visualization` module.
+
+<details>
+    <summary>Dataset balance</summary>
+<figure class="center" style="width:100%;">
+    <img src="img/dataset_balance.png" style="width:100%;"/>
+    <figcaption>Train, validate, and test datasets</figcaption>
+</figure>
+</details>
+
+---
 ## Compiling the model
 
 Now that we've created the datasets, we can compile the model.
@@ -518,6 +525,7 @@ That's about it.
 
 ### Defining the model
 
+---
 ## Training the baseline model
 
 Before training the actual model, we need to define a simple baseline to compare against.
@@ -590,6 +598,7 @@ We'll interpret the layers' activations as heatmaps later to see if this is the 
 
 Let's optimize the model's training to prevent overfitting and acquire better results.
 
+---
 ## Training the optimized model
 
 ### Preventing overfitting
