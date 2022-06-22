@@ -7,6 +7,7 @@ from statistics import mean
 import keras
 import matplotlib.patheffects as PathEffects
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
 from matplotlib.patches import Rectangle
 from PIL import Image
@@ -29,6 +30,21 @@ BINARY = ["cog", "toon"]
 SUITS_LONG = ["bossbot", "lawbot", "cashbot", "sellbot"]
 SUITS_SHORT = ["bb", "lb", "cb", "sb"]
 SUITS_MAP = {short: long for short, long in zip(SUITS_SHORT, SUITS_LONG)}
+COLORS = [
+    "#1f77b4",
+    "#ff7f0e",
+    "#2ca02c",
+    "#d62728",
+    "#9467bd",
+    "#8c564b",
+    "#e377c2",
+    "#7f7f7f",
+    "#bcbd22",
+    "#17becf",
+]
+# Set default plot style and colors
+plt.style.use("dark_background")
+mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=COLORS)
 
 
 # %% Define functions
@@ -132,45 +148,55 @@ def plot_history(history: dict, name: str = "Model") -> None:
     min_val_loss = np.argmin(history["val_loss"]) + 1
     num_epochs = range(1, len(history["loss"]) + 1)
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4), dpi=100)
     fig.tight_layout()
+
     # Plot training & validation accuracy values
-    axes[0].plot(num_epochs, history["accuracy"])
-    axes[0].plot(num_epochs, history["val_accuracy"])
-    axes[0].set_title(f"{name} accuracy")
+    axes[0].plot(num_epochs, history["accuracy"], label="Train acc")
+    axes[0].plot(num_epochs, history["val_accuracy"], label="Val acc")
+    # Plot the maximum training and validation accuracies as vertical and horizontal lines
     axes[0].axvline(
         x=max_accuracy,
-        color="blue",
+        color="#e377c2",
         alpha=0.5,
         ls="--",
+        label="Max acc",
     )
-    axes[0].axvline(x=max_val_accuracy, color="orange", alpha=0.8, ls="--")
+    axes[0].axvline(x=max_val_accuracy, color="#2ca02c", alpha=0.8, ls="--")
     axes[0].axhline(
         y=history["val_accuracy"][max_val_accuracy - 1],
-        color="orange",
+        color="#2ca02c",
         alpha=0.8,
         ls="--",
+        label="Max val acc",
     )
+    axes[0].set_title(f"{name} accuracy")
     axes[0].set_ylabel("Accuracy")
     axes[0].set_xlabel("Epoch")
     axes[0].set_xticks(num_epochs[1::2])
-    axes[0].legend(["Train", "Validation"], loc="upper left")
-    axes[0].grid(axis="y")
+    axes[0].legend()
+    axes[0].grid(axis="y", alpha=0.5, color="lightgrey")
 
     # Plot training & validation loss values
-    axes[1].plot(num_epochs, history["loss"])
-    axes[1].plot(num_epochs, history["val_loss"])
-    axes[1].set_title(f"{name} loss")
-    axes[1].axvline(x=min_loss, color="blue", alpha=0.5, ls="--")
-    axes[1].axvline(x=min_val_loss, color="orange", alpha=0.8, ls="--")
-    axes[1].axhline(
-        y=history["val_loss"][min_val_loss - 1], color="orange", alpha=0.8, ls="--"
+    axes[1].plot(num_epochs, history["loss"], label="Train loss")
+    axes[1].plot(num_epochs, history["val_loss"], label="Val loss")
+    # Plot the minimum training and validation loss as vertical and horizontal lines
+    axes[1].axvline(x=min_loss, color="#e377c2", alpha=0.5, ls="--", label="Min loss")
+    axes[1].axvline(
+        x=min_val_loss, color="#2ca02c", alpha=0.8, ls="--", label="Min val loss"
     )
+    axes[1].axhline(
+        y=history["val_loss"][min_val_loss - 1],
+        color="#2ca02c",
+        alpha=0.8,
+        ls="--",
+    )
+    axes[1].set_title(f"{name} loss")
     axes[1].set_ylabel("Loss")
     axes[1].set_xlabel("Epoch")
-    axes[1].legend(["Train", "Validation"], loc="upper left")
     axes[1].set_xticks(num_epochs[1::2])
-    axes[1].grid(axis="y")
+    axes[1].legend()
+    axes[1].grid(axis="y", alpha=0.5, color="lightgrey")
 
 
 def compare_histories(histories: list, suptitle: str = "") -> None:
@@ -183,17 +209,14 @@ def compare_histories(histories: list, suptitle: str = "") -> None:
     4. Validation loss
 
     Args:
-        histories: List of tuples of (model: keras.Model, history: keras.callbacks.History)
+        histories: List of tuples of (model_name: str, history: dict[str, str, str, str])
     """
-    # TODO - Can we add a plot for max acc and lowest loss?
-    # TODO - Or should we just draw vertical lines for each max/min?
-    # TODO - Is it possible to utilize `plot_history` here?
     _, axes = plt.subplots(nrows=4, ncols=1, figsize=(10, 15))
-    for model, history in histories:
-        num_epochs = range(0, len(history.history["loss"]))
+    for model_name, history in histories:
+        num_epochs = range(0, len(history["loss"]))
         for idx, key in enumerate(["accuracy", "val_accuracy", "loss", "val_loss"]):
-            name = model.name.strip("toonvision_")
-            axes[idx].plot(history.history[key], label=f"{name}")
+            name = model_name.replace("toonvision_", "")
+            axes[idx].plot(history[key], label=f"{name}")
             axes[idx].legend()
             # axes[idx].set_xticks(num_epochs[::2])
             axes[idx].set_title(key)
@@ -641,7 +664,9 @@ def plot_histories(
         a.legend()
 
 
-def plot_evaluations_box(axes, evaluations_all: list, colors: list[str]) -> None:
+def plot_evaluations_box(
+    axes, evaluations_all: list, colors: list[str] = COLORS
+) -> None:
     """Plot the evaluations (accuracy and loss on the test set) of a model as a box chart"""
     # Transpose each history so row1 contains all accuracies, row0 all losses
     # Transpose again once all accuracies are collected so that the rows are the runs
@@ -670,6 +695,7 @@ def plot_evaluations_box(axes, evaluations_all: list, colors: list[str]) -> None
         )
         for box, color in zip(bp["boxes"], colors):
             box.set_facecolor(color)
+            plt.setp(bp["medians"], color="white")
         # Add the legend AFTER setting the colors so the colors in the legend are accurate
         axes[ax].legend(bp["boxes"], model_names)
 
@@ -721,27 +747,36 @@ def plot_evaluations_line_deprecated(
 
 
 def plot_wrong_predictions(
-    wrong_predictions: list[tuple[str, str, float, float]], model_name: str
+    wrong_predictions: list[tuple[str, str, float, float]],
+    model_name: str,
+    show_num_wrong: int = 5,
 ) -> None:
-    # %% Plot the wrong predictions by highest error rate (most wrong)
+    # Plot the wrong predictions by highest error rate (most wrong)
     wrong = np.array(wrong_predictions)
     wrong = wrong[wrong[:, 3].argsort()]  # Sort ascending by error rate
     wrong = wrong[::-1]  # Reverse the order so the most wrong is on top
 
-    # %% Plot the wrong predictions by highest error rate (most wrong)
-    plt.figure(figsize=(15, 15))
-    for i in range(len(wrong[:10])):
-        plt.subplot(3, 5, i + 1)
-        plt.imshow(
-            keras.preprocessing.image.load_img(wrong[i][0], target_size=(600, 200))
-        )
-        label = wrong[i][1]
-        # Nested as heck because `predict_image` returns an array[float] instead of float
-        accuracy = f"{wrong[i][2][0][0]:.2f}"
-        error = f"{wrong[i][3][0][0]:.2f}"
-        plt.title(f"{label}\n(E:{error}, A:{accuracy})")
+    # Plot the wrong predictions
+    plt.figure(figsize=(10, 5), dpi=100)
+    for i in range(show_num_wrong):
+        plt.subplot(1, show_num_wrong, i + 1)
+        try:
+            plt.imshow(
+                keras.preprocessing.image.load_img(wrong[i][0], target_size=(600, 200))
+            )
+            label = wrong[i][1]
+            # Nested as heck because `predict_image` returns an array[float] instead of float
+            accuracy = f"{wrong[i][2][0][0]:.2f}"
+            error = f"{wrong[i][3][0][0]:.2f}"
+            plt.title(f"{label}\n(E:{error}, A:{accuracy})")
+        except IndexError:
+            # If there are less than `show_num_wrong` wrong predictions,
+            # the remaining plots will be empty
+            plt.imshow(np.zeros((600, 200, 3)))
         plt.axis("off")
-    plt.suptitle(f" {len(wrong)} Wrong predictions: {model_name}")
+    plt.suptitle(
+        f" {len(wrong)} Wrong predictions: {model_name}",
+    )
     plt.tight_layout()
     plt.show()
 
