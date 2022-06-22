@@ -54,8 +54,7 @@ After reading this article, we'll have a better understanding of...
         - [Defining the model](#defining-the-model)
     - [Training the baseline model](#training-the-baseline-model)
         - [Baseline loss and accuracy plots](#baseline-loss-and-accuracy-plots)
-        - [Baseline evaluation](#baseline-evaluation)
-        - [Baseline confusion matrix](#baseline-confusion-matrix)
+        - [Baseline wrong predictions](#baseline-wrong-predictions)
     - [Training the optimized model](#training-the-optimized-model)
         - [Preventing overfitting](#preventing-overfitting)
             - [Data augmentation](#data-augmentation)
@@ -536,9 +535,30 @@ model_baseline = create_model()
 
 ### Baseline loss and accuracy plots
 
-### Baseline evaluation
+The model's best run (#99) can be seen plotted below.
+The model overfits to the training data after 9 epochs.
+Note how the model's loss increases and validation accuracy decreases after 9 epochs.
+Additionally, the model's training accuracy plateaus after 13 epochs, showing that it memorized the training data.
 
-### Baseline confusion matrix
+<figure class="center" style="width:90%;">
+    <img src="img/baseline_train.png" style="width:100%;"/>
+    <figcaption>Baseline model's best loss and accuracy</figcaption>
+</figure>
+
+On average, the baseline model overfits after 6 epochs.
+Refer to the plot below to see the average loss and accuracy of the baseline model.
+
+<figure class="center" style="width:90%;">
+    <img src="img/baseline_train_average.png" style="width:100%;"/>
+    <figcaption>Baseline model's average loss and accuracy</figcaption>
+</figure>
+
+It's not surprising to see the model overfit so quickly.
+We're not performing any training optimizations and the learning rate is a bit high for the size of the dataset.
+
+Let's take a peek at the model's predictions on the entire dataset.
+
+### Baseline wrong predictions
 
 ## Training the optimized model
 

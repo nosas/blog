@@ -101,8 +101,7 @@ For now, let's focus on real-time classification.</p>
 <li><a href="#training-the-baseline-model">Training the baseline model</a>
 <ul>
 <li><a href="#baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</a></li>
-<li><a href="#baseline-evaluation">Baseline evaluation</a></li>
-<li><a href="#baseline-confusion-matrix">Baseline confusion matrix</a></li>
+<li><a href="#baseline-wrong-predictions">Baseline wrong predictions</a></li>
 </ul></li>
 <li><a href="#training-the-optimized-model">Training the optimized model</a>
 <ul>
@@ -611,9 +610,30 @@ The average of all 50 runs will be plotted below.</p>
 
 <h3 id="baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</h3>
 
-<h3 id="baseline-evaluation">Baseline evaluation</h3>
+<p>The model's best run (#99) can be seen plotted below.
+The model overfits to the training data after 9 epochs.
+Note how the model's loss increases and validation accuracy decreases after 9 epochs.
+Additionally, the model's training accuracy plateaus after 13 epochs, showing that it memorized the training data.</p>
 
-<h3 id="baseline-confusion-matrix">Baseline confusion matrix</h3>
+<figure class="center" style="width:90%;">
+    <img src="img/baseline_train.png" style="width:100%;"/>
+    <figcaption>Baseline model's best loss and accuracy</figcaption>
+</figure>
+
+<p>On average, the baseline model overfits after 6 epochs.
+Refer to the plot below to see the average loss and accuracy of the baseline model.</p>
+
+<figure class="center" style="width:90%;">
+    <img src="img/baseline_train_average.png" style="width:100%;"/>
+    <figcaption>Baseline model's average loss and accuracy</figcaption>
+</figure>
+
+<p>It's not surprising to see the model overfit so quickly.
+We're not performing any training optimizations and the learning rate is a bit high for the size of the dataset.</p>
+
+<p>Let's take a peek at the model's predictions on the entire dataset.</p>
+
+<h3 id="baseline-wrong-predictions">Baseline wrong predictions</h3>
 
 <h2 id="training-the-optimized-model">Training the optimized model</h2>
 
