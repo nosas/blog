@@ -60,6 +60,7 @@ After reading this article, we'll have a better understanding of...
             - [Data augmentation](#data-augmentation)
             - [Learning rate decay](#learning-rate-decay)
         - [Callbacks](#callbacks)
+        - [Loss and accuracy plots](#loss-and-accuracy-plots)
         - [Wrong predictions](#wrong-predictions)
         - [Comparing the baseline model to the optimized model](#comparing-the-baseline-model-to-the-optimized-model)
 
@@ -630,8 +631,8 @@ data_augmentation = keras.Sequential(
 
 #### Learning rate decay
 
-Learning rate decay is a technique that helps prevent overfitting.
-It's a simple way to reduce the learning rate of the optimizer as training progresses.
+Learning rate decay is a technique that reduces the optimizer's learning rate as training progresses.
+Decreasing the learning rate will help the model to converge smoother and faster.
 We can implement learning rate decay in two ways:
 
 - Use a learning rate scheduler (callback)
@@ -653,7 +654,28 @@ optimizer = keras.optimizers.Adam(lr=0.001, lr_decay=1e-5)
 
 ### Callbacks
 
+### Loss and accuracy plots
+
 ### Wrong predictions
+
+<figure class="right" style="width:50%;">
+    <img src="img/wrong_predictions_optimized3.png" style="width:100%;"/>
+    <figcaption>Baseline model's wrong predictions, ranked from highest error</figcaption>
+</figure>
+
+As expected, the optimized model predicts classes more accurately than the baseline model.
+The model only misclassifies 3 images out of the entire dataset of 674 images.
+Not bad!
+
+The worst prediction - an image of Cog partially occluded by another Cog's nametag - has an error of 0.46/0.50.
+It makes sense for this image to be incorrect because we purposefully excluded occluded Cogs from the dataset.
+Ideally, the model would be able to generalize to the unseen data.
+
+The other two images frequently appeared in wrong predictions.
+I assume it's because the images contain brown in the middle of the image - which is commonly seen in Bossbot and Sellbot Cogs.
+
+We'll interpret the layers' activations as heatmaps later to see if this is the case.
+For now, let's compare the optimized model's training loss and accuracy to the baseline model's.
 
 ### Comparing the baseline model to the optimized model
 

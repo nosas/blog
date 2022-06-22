@@ -111,6 +111,7 @@ For now, let's focus on real-time classification.</p>
 <li><a href="#learning-rate-decay">Learning rate decay</a></li>
 </ul></li>
 <li><a href="#callbacks">Callbacks</a></li>
+<li><a href="#loss-and-accuracy-plots">Loss and accuracy plots</a></li>
 <li><a href="#wrong-predictions">Wrong predictions</a></li>
 <li><a href="#comparing-the-baseline-model-to-the-optimized-model">Comparing the baseline model to the optimized model</a></li>
 </ul></li>
@@ -710,8 +711,8 @@ We'll interpret the layers' activations as heatmaps later to see if this is the 
 
 <h4 id="learning-rate-decay">Learning rate decay</h4>
 
-<p>Learning rate decay is a technique that helps prevent overfitting.
-It's a simple way to reduce the learning rate of the optimizer as training progresses.
+<p>Learning rate decay is a technique that reduces the optimizer's learning rate as training progresses.
+Decreasing the learning rate will help the model to converge smoother and faster.
 We can implement learning rate decay in two ways:</p>
 
 <ul>
@@ -734,7 +735,28 @@ We can implement learning rate decay in two ways:</p>
 
 <h3 id="callbacks">Callbacks</h3>
 
+<h3 id="loss-and-accuracy-plots">Loss and accuracy plots</h3>
+
 <h3 id="wrong-predictions">Wrong predictions</h3>
+
+<figure class="right" style="width:50%;">
+    <img src="img/wrong_predictions_optimized3.png" style="width:100%;"/>
+    <figcaption>Baseline model's wrong predictions, ranked from highest error</figcaption>
+</figure>
+
+<p>As expected, the optimized model predicts classes more accurately than the baseline model.
+The model only misclassifies 3 images out of the entire dataset of 674 images.
+Not bad!</p>
+
+<p>The worst prediction - an image of Cog partially occluded by another Cog's nametag - has an error of 0.46/0.50.
+It makes sense for this image to be incorrect because we purposefully excluded occluded Cogs from the dataset.
+Ideally, the model would be able to generalize to the unseen data.</p>
+
+<p>The other two images frequently appeared in wrong predictions.
+I assume it's because the images contain brown in the middle of the image - which is commonly seen in Bossbot and Sellbot Cogs.</p>
+
+<p>We'll interpret the layers' activations as heatmaps later to see if this is the case.
+For now, let's compare the optimized model's training loss and accuracy to the baseline model's.</p>
 
 <h3 id="comparing-the-baseline-model-to-the-optimized-model">Comparing the baseline model to the optimized model</h3>
 
