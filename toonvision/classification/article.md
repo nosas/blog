@@ -60,7 +60,7 @@ After reading this article, we'll have a better understanding of...
             - [Data augmentation](#data-augmentation)
             - [Learning rate decay](#learning-rate-decay)
         - [Callbacks](#callbacks)
-        - [Confusion matrix](#confusion-matrix)
+        - [Wrong predictions](#wrong-predictions)
         - [Comparing the baseline model to the optimized model](#comparing-the-baseline-model-to-the-optimized-model)
 
 </details>
@@ -536,12 +536,18 @@ model_baseline = create_model()
 ### Baseline loss and accuracy plots
 
 The model's best run (#99) can be seen plotted below.
-The model overfits to the training data after 9 epochs.
-Note how the model's loss increases and validation accuracy decreases after 9 epochs.
-Additionally, the model's training accuracy plateaus after 13 epochs, showing that it memorized the training data.
+It overfits to the training data after 9 epochs - see the validation loss increase.
+Futhermore, the model memorizes the dataset after 13 epochs - see the training accuracy plateau at 100% accuracy.
+
+There are four tell-tale signs of overfitting in the plots below:
+
+1. Train accuracy plateaus
+2. Validation accuracy *decreases*
+3. Train loss converges
+4. Validation loss *increases*
 
 <figure class="center" style="width:90%;">
-    <img src="img/baseline_train.png" style="width:100%;"/>
+    <img src="img/train_baseline.png" style="width:100%;"/>
     <figcaption>Baseline model's best loss and accuracy</figcaption>
 </figure>
 
@@ -549,7 +555,7 @@ On average, the baseline model overfits after 6 epochs.
 Refer to the plot below to see the average loss and accuracy of the baseline model.
 
 <figure class="center" style="width:90%;">
-    <img src="img/baseline_train_average.png" style="width:100%;"/>
+    <img src="img/train_average_baseline.png" style="width:100%;"/>
     <figcaption>Baseline model's average loss and accuracy</figcaption>
 </figure>
 
@@ -559,6 +565,29 @@ We're not performing any training optimizations and the learning rate is a bit h
 Let's take a peek at the model's predictions on the entire dataset.
 
 ### Baseline wrong predictions
+
+<figure class="right" style="width:60%;">
+    <img src="img/wrong_predictions_baseline.png" style="width:100%;"/>
+    <figcaption>Baseline model's wrong predictions, ranked from highest error</figcaption>
+</figure>
+
+Despite the overfitting, the baseline model is still able to predict the correct class with a 99% accuracy rate!
+Looking at the model's predictions on the entire dataset, we see that it's predicting the wrong class for 6 images.
+However, when it's predicting the wrong class, the model is heavily confused.
+
+Take at the model's wrong predictions; the images are ranked from highest error to lowest error.
+The `E` stands for error, or how far away the model's confidence in the prediction is from the actual class.
+The `A` stands for the actual prediction, or confidence in the model's prediction.
+Toons are predicted when `A` > 0.5, and Cogs are predicted when `A` < 0.5.
+
+The first image is clearly a Toon, but the model confidently predicts Cog.
+The second image is also predicted as a Cog, but that makes sense as there's a giant Cog arm occluding the Toon.
+
+There's no obvious reason as to why the model confidently predicts Cog for the first image.
+Perhaps the color of Toon's shirt is similar to the Lawbot's blue suit?
+We'll interpret the layers' activations as heatmaps later to see if this is the case.
+
+Let's optimize the model's training to prevent overfitting and acquire better results.
 
 ## Training the optimized model
 
@@ -624,15 +653,9 @@ optimizer = keras.optimizers.Adam(lr=0.001, lr_decay=1e-5)
 
 ### Callbacks
 
-### Confusion matrix
+### Wrong predictions
 
 ### Comparing the baseline model to the optimized model
-
-<!-- Split the training line chart and the evaluation bar chart -->
-<figure class="center" style="width:100%;">
-    <img src="img/baseline_comparison_avg50runs_25epochs.png" style="width:100%;"/>
-    <figcaption></figcaption>
-</figure>
 
 <!-- Split the training line chart and the evaluation bar chart -->
 <figure class="center" style="width:100%;">

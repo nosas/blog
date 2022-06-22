@@ -111,7 +111,7 @@ For now, let's focus on real-time classification.</p>
 <li><a href="#learning-rate-decay">Learning rate decay</a></li>
 </ul></li>
 <li><a href="#callbacks">Callbacks</a></li>
-<li><a href="#confusion-matrix">Confusion matrix</a></li>
+<li><a href="#wrong-predictions">Wrong predictions</a></li>
 <li><a href="#comparing-the-baseline-model-to-the-optimized-model">Comparing the baseline model to the optimized model</a></li>
 </ul></li>
 </ul></li>
@@ -611,12 +611,20 @@ The average of all 50 runs will be plotted below.</p>
 <h3 id="baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</h3>
 
 <p>The model's best run (#99) can be seen plotted below.
-The model overfits to the training data after 9 epochs.
-Note how the model's loss increases and validation accuracy decreases after 9 epochs.
-Additionally, the model's training accuracy plateaus after 13 epochs, showing that it memorized the training data.</p>
+It overfits to the training data after 9 epochs - see the validation loss increase.
+Futhermore, the model memorizes the dataset after 13 epochs - see the training accuracy plateau at 100% accuracy.</p>
+
+<p>There are four tell-tale signs of overfitting in the plots below:</p>
+
+<ol>
+<li>Train accuracy plateaus</li>
+<li>Validation accuracy <em>decreases</em></li>
+<li>Train loss converges</li>
+<li>Validation loss <em>increases</em></li>
+</ol>
 
 <figure class="center" style="width:90%;">
-    <img src="img/baseline_train.png" style="width:100%;"/>
+    <img src="img/train_baseline.png" style="width:100%;"/>
     <figcaption>Baseline model's best loss and accuracy</figcaption>
 </figure>
 
@@ -624,7 +632,7 @@ Additionally, the model's training accuracy plateaus after 13 epochs, showing th
 Refer to the plot below to see the average loss and accuracy of the baseline model.</p>
 
 <figure class="center" style="width:90%;">
-    <img src="img/baseline_train_average.png" style="width:100%;"/>
+    <img src="img/train_average_baseline.png" style="width:100%;"/>
     <figcaption>Baseline model's average loss and accuracy</figcaption>
 </figure>
 
@@ -634,6 +642,29 @@ We're not performing any training optimizations and the learning rate is a bit h
 <p>Let's take a peek at the model's predictions on the entire dataset.</p>
 
 <h3 id="baseline-wrong-predictions">Baseline wrong predictions</h3>
+
+<figure class="right" style="width:60%;">
+    <img src="img/wrong_predictions_baseline.png" style="width:100%;"/>
+    <figcaption>Baseline model's wrong predictions, ranked from highest error</figcaption>
+</figure>
+
+<p>Despite the overfitting, the baseline model is still able to predict the correct class with a 99% accuracy rate!
+Looking at the model's predictions on the entire dataset, we see that it's predicting the wrong class for 6 images.
+However, when it's predicting the wrong class, the model is heavily confused.</p>
+
+<p>Take at the model's wrong predictions; the images are ranked from highest error to lowest error.
+The <code>E</code> stands for error, or how far away the model's confidence in the prediction is from the actual class.
+The <code>A</code> stands for the actual prediction, or confidence in the model's prediction.
+Toons are predicted when <code>A</code> &gt; 0.5, and Cogs are predicted when <code>A</code> &lt; 0.5.</p>
+
+<p>The first image is clearly a Toon, but the model confidently predicts Cog.
+The second image is also predicted as a Cog, but that makes sense as there's a giant Cog arm occluding the Toon.</p>
+
+<p>There's no obvious reason as to why the model confidently predicts Cog for the first image.
+Perhaps the color of Toon's shirt is similar to the Lawbot's blue suit?
+We'll interpret the layers' activations as heatmaps later to see if this is the case.</p>
+
+<p>Let's optimize the model's training to prevent overfitting and acquire better results.</p>
 
 <h2 id="training-the-optimized-model">Training the optimized model</h2>
 
@@ -703,16 +734,9 @@ We can implement learning rate decay in two ways:</p>
 
 <h3 id="callbacks">Callbacks</h3>
 
-<h3 id="confusion-matrix">Confusion matrix</h3>
+<h3 id="wrong-predictions">Wrong predictions</h3>
 
 <h3 id="comparing-the-baseline-model-to-the-optimized-model">Comparing the baseline model to the optimized model</h3>
-
-<!-- Split the training line chart and the evaluation bar chart -->
-
-<figure class="center" style="width:100%;">
-    <img src="img/baseline_comparison_avg50runs_25epochs.png" style="width:100%;"/>
-    <figcaption></figcaption>
-</figure>
 
 <!-- Split the training line chart and the evaluation bar chart -->
 
