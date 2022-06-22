@@ -1,6 +1,4 @@
 # %% Imports
-from glob import glob
-
 import keras
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -15,6 +13,7 @@ from data_processing import (
     unsort_data,
 )
 from data_visualization import (
+    COLORS,
     compare_histories,
     plot_datasets_all,
     plot_datasets_animals,
@@ -32,24 +31,11 @@ from data_visualization import (
 from model_utils import (
     make_baseline_comparisons,
     make_model_optimized,
-    predict_image,
     get_wrong_predictions,
+    get_average_history,
 )
 
-COLORS = [
-    "#1f77b4",
-    "#ff7f0e",
-    "#2ca02c",
-    "#d62728",
-    "#9467bd",
-    "#8c564b",
-    "#e377c2",
-    "#7f7f7f",
-    "#bcbd22",
-    "#17becf",
-]
 LR = 0.001
-plt.style.use("dark_background")
 
 # %% Convert all images in screenshots directory to data images
 # process_images()
@@ -135,9 +121,9 @@ histories_vanishing = []
 histories_not_vanishing = []
 for model, history in histories_all:
     if model.name.strip("toonvision_") not in vanishing_gradients:
-        histories_not_vanishing.append((model, history))
+        histories_not_vanishing.append((model.name, history.history))
     else:
-        histories_vanishing.append((model, history))
+        histories_vanishing.append((model.name, history.history))
 
 # %% Compare training histories for optimizers without vanishing gradients
 compare_histories(
@@ -201,7 +187,7 @@ histories_all, evaluations_all = make_baseline_comparisons(
 )
 
 # %% Plot the histories
-plt.figure(figsize=(30, 30), dpi=1200)
+plt.figure(figsize=(30, 30), dpi=100)
 fig, axes = plt.subplots(2, 2, figsize=(10, 10))
 for color, (model_name, histories) in zip(COLORS, histories_all):
     plot_histories(
@@ -209,13 +195,13 @@ for color, (model_name, histories) in zip(COLORS, histories_all):
         model_name=model_name,
         histories=histories,
         color=color,
-        alpha_runs=0.05,
+        alpha_runs=0.02,
         alpha_mean=0.99,
     )
 fig.show()
 
 # %% Plot the evaluations
-plt.figure(figsize=(30, 30), dpi=1200)
+plt.figure(figsize=(30, 30), dpi=100)
 fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 # plot_evaluations_box(axes, evaluations_all, colors)
 plot_evaluations_box(axes=axes, evaluations_all=evaluations_all, colors=COLORS)
@@ -229,25 +215,55 @@ fig.show()
 # with open("evaluations_all.json", "w") as f:
 #     json.dump(evaluations_all, f)
 
+# %% Load the histories_all from a JSON file
+import json
+
+with open("histories_all.json", "r") as f:
+    histories_all = json.load(f)
+with open("evaluations_all.json", "r") as f:
+    evaluations_all = json.load(f)
+
+
+# %% Plot the average history of the baseline model
+baseline_histories = histories_all[0][1][100]
+plot_history(baseline_histories, "Baseline")
+# baseline_avg = get_average_history(baseline_histories)
+# plot_history(baseline_avg, "Baseline Average")
+
+# %% Plot the average history of the optimized model
+optimized_histories = histories_all[-1][1][13]
+plot_history(optimized_histories, "Optimized 1e-5")
+# optimized_avg = get_average_history(optimized_histories)
+# plot_history(optimized_avg, "Optimized 1e-5 Average")
+
+# %% Compare the baseline to the optimized
+compare_histories(
+    [("baseline", baseline_histories), ("optimized", optimized_histories)],
+    suptitle="Baseline vs Optimized",
+)
+
 # %% Retrieve and plot wrong predictions
 # for model_name, _ in histories_all:
 #     model = keras.models.load_model(f"toonvision_{model_name}.keras")
 #     wrong_predictions = get_wrong_predictions(model)
 #     plot_wrong_predictions(wrong_predictions, model_name)
 
-# %% Retrieve and plot wrong predictions
+# %% Retrieve wrong predictions for each model
 unsort_data()
 ds_train, ds_validate, ds_test = create_datasets(split_ratio=[0.6, 0.2, 0.2])
+wrong_predictions = []
+
 for model_name, run in [
-    ("baseline", 19),
-    ("optimized", 21),
-    ("optimized_1e-4", 21),
-    ("optimized_1e-5", 1),
+    ("baseline", 99),
+    # ("optimized", 12),
+    # ("optimized_1e-4", 20),
+    ("optimized_1e-5", 12),
 ]:
     model = keras.models.load_model(f"./models/toonvision_{model_name}_run{run}.keras")
     evaluation = model.evaluate(ds_test, verbose=False)
     print(f"{model_name} run {run}: {evaluation[1]:.2f} {evaluation[0]:.2f}")
-    wrong_predictions = get_wrong_predictions(model)
-    plot_wrong_predictions(wrong_predictions, model_name)
+    wrong_predictions.append((model_name, get_wrong_predictions(model)))
 
-# %%
+# %% Plot the wrong predictions
+for model_name, wrong_preds in wrong_predictions:
+    plot_wrong_predictions(wrong_preds, model_name)
