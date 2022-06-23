@@ -493,35 +493,45 @@ The later models will be more complex - classifying 4 or 32 classes - so we'll u
 
 ### Optimizer
 
-There are a few guidelines to choosing an optimizer for classification problems.
-I visualized the process by plotting optimizers' performances using the same model, dataset, hyperparameters, and number of epochs.
+I visualized the process of choosing an optimizer by plotting each optimizer's performance during training.
+Models were trained with each optimizer for 20 epochs using the same model architecture, dataset, hyperparameters, and static learning rate of 0.001 (1e-3).
 
-<font style="color:red">TODO: Insert plot</font>
+<figure class="center" style="width:90%;">
+    <img src="img/optimizer_comparison.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
 
 A handful of the optimizers' losses flattened over the course of training as a result of a low learning rate or *vanishing gradients*.
 SGD commonly encounters this problem, and it's often due to a low learning rate.
 
-I increased the learning rate for all flattened optimizers and plotted the loss scores and accuracies again.
+I increased the learning rate for all flattened optimizers and plotted the loss scores and accuracies again, but didn't see much improvement.
+Additional callbacks, such as the learning rate scheduler, could be used to gradually decrease the learning rate and improve the model's performance.
+Adding *momentum* to the SGD optimizer could also help the model reach global loss minimums and learn more effectively.
+If really wanted to get a feel for the proper optimizer, we should try different learning rates, utilize Keras' callbacks, and tweak the hyperparameters.
+However, this is beyond the scope of the article.
 
-<font style="color:red">TODO: Insert plot with non-equal learning rates</font>
+Optimizers with low performance (`Adadelta`, `Adagrad`, `Ftrl`, and `SGD`) were eliminated from consideration.
+The performance between the remaining four optimizers - `Adam`, `Adamax`, `Nadam`, and `RMSprop` - is close enough that either one is a good choice.
+Looking at the plot below, we see that `Adam` and `Nadam` are the most effective optimizers.
 
-I could use additional callbacks, such as the learning rate scheduler, to gradually decrease the learning rate and improve the model's performance
-Even more, adding *momentum* to the SGD optimizer could help the model reach global loss minimums and learn more effectively.
-Alternatively, I could read an article which discusses the points above and use their suggestions to save time, but where's the fun in that?
+<figure class="center" style="width:90%;">
+    <img src="img/optimizer_comparison_non_vanishing.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
 
-Given the loss scores and accuracies plotted above, I've chosen to go with the `Adam` optimizer.
+The `Adam` optimizer has a smooth accuracy and loss curve, while `Nadam` overfits quickly and has a more jagged curve.
+Given the loss scores and accuracies plotted above, I've decided to go with the `Adam` optimizer.
 
 #### Adam optimizer
 
-The Adam optimizer is a variant of the stochastic gradient descent (SGD) algorithm.
-Adam combines the advantages of two other SGD variants - "AdaGrad" and "RMSProp" - to create a more effective optimization algorithm for computer vision tasks.
-Jason Brownlee wrote an [excellent introduction](https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/) to the Adam algorithm, and I encourage you to read it if you're interested in the technical details.
+The `Adam` optimizer is an adaptive variant of the stochastic gradient descent (`SGD`) algorithm.
+`Adam` combines the advantages of two other `SGD` variants - `AdaGrad` and `RMSProp` - to create a more effective optimization algorithm for computer vision tasks.
+Jason Brownlee wrote an [excellent introduction](https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/) to the `Adam` algorithm, and I encourage you to read it if you're interested in the technical details.
 
 ### Metrics
 
-It's a classification model with only two classes, so we'll use the `binary_accuracy` metric.
-We'll use the `categorical_accuracy` metric later for our model with 4 and 32 classes.
-That's about it.
+We're building a two-class classification model, so we'll use the `binary_accuracy` metric.
+When training the multi-class models - with 4 and 32 classes - we'll utilize the `categorical_accuracy` metric.
 
 ### Defining the model
 
@@ -533,9 +543,8 @@ The baseline model will use the same model architecture, datasets, and hyperpara
 The only difference is that we will not perform any optimizations - no data augmentation, dropout, batch normalization or learning rate decay.
 
 We'll train the baseline for 25 epochs with a learning rate of 0.001 (1e-3).
-The baseline model will be trained 50 times, each time with a rebalanced dataset.
-The average of all 50 runs will be plotted below.
-
+The baseline model will be trained 200 times, each time with a rebalanced dataset.
+The average of all 200 runs will be plotted below.
 
 ```python
 model_baseline = create_model()
