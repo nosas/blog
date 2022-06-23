@@ -250,7 +250,7 @@ It's important to take screenshots from various distance and angles of each enti
 Taking screenshots from up close is preferred.
 When taken from far away, the entity's nametag covers the entity's head, thus causing us to crop the entity's head or include the nametag - neither are good options.
 
-<figure class="center" style="width:auto;">
+<figure class="center" style="width:90%;">
     <img src="img/sample_screenshot.png" style="width:100%;"/>
     <figcaption>Sample screenshot containing one Cog and three Toons in battle</figcaption>
 </figure>
@@ -305,7 +305,7 @@ This shorthand notation allows us to filter cog data by filename and create a cl
 
 Bounding boxes are saved in XML format - specifically [Pascal VOC XML](https://mlhive.com/2022/02/read-and-write-pascal-voc-xml-annotations-in-python) - alongside the image in the `raw/screenshots` directory, as seen in the [data folder file structure](#filename-and-data-folder-structure) section above.
 
-<figure class="center" style="width:auto;">
+<figure class="center" style="width:90%;">
     <img src="img/sample_screenshot_with_bounding_boxes.png" style="width:100%;"/>
     <figcaption>Sample screenshot with labeled bounding boxes</figcaption>
 </figure>
@@ -698,13 +698,13 @@ For now, let's compare the optimized model's training loss and accuracy to the b
 ### Comparing the baseline model to the optimized model
 
 <!-- Split the training line chart and the evaluation bar chart -->
-<figure class="center" style="width:100%;">
+<figure class="center" style="width:90%;">
     <img src="img/baseline_comparison_train.png" style="width:100%;"/>
     <figcaption></figcaption>
 </figure>
 
 <!-- Split the training line chart and the evaluation bar chart -->
-<figure class="center" style="width:100%;">
+<figure class="center" style="width:90%;">
     <img src="img/baseline_comparison_test.png" style="width:100%;"/>
     <figcaption></figcaption>
 </figure>
