@@ -651,6 +651,29 @@ data_augmentation = keras.Sequential(
 
 #### Dropout
 
+Dropout is one of the most effective and most commonly used regularization techniques for neural networks.
+When applied to a layer, dropout randomly *drops out* (sets to zero) a number of output features of the layer.
+The number of dropped features is determined by the *dropout rate* - the percentage of features that are dropped.
+
+For example, given a layer with 6 features, if the dropout rate is 0.5, then 3 features will be dropped.
+Let's say a given layer normal returns a vector `[0.1, 0.2, 0.3, 0.4, 0.5, 0.6]`.
+After applying dropout with a rate of 0.5, the output vector will be `[0.1, 0.2, 0.0, 0.0, 0.5, 0.0]`.
+
+François Chollet, author of the Keras library, recommends using a dropout rate of in the range [0.2, 0.5].
+However, because our dataset is so small and skewed, I found the best dropout rate to be in the range [0.7, 0.9].
+For the remainder of training, we'll use the dropout rate of 0.9.
+
+```python
+model_kwargs = [
+    {"name": "baseline"},
+    {
+        "name": "optimized_1e-5",
+        "augmentation": data_augmentation,
+        "dropout": 0.90,
+    },
+]
+```
+
 #### Learning rate decay
 
 Learning rate decay is a technique that reduces the optimizer's learning rate as training progresses.
@@ -665,13 +688,20 @@ I'll use the optimizer's `lr_decay` argument to implement the learning rate deca
 ```python
 from keras.callbacks import LearningRateScheduler
 
+LR = 0.001  # Global learning rate value
+
+
 def lr_schedule(epoch):
-    return 0.001 * (0.1 ** (epoch // 10))
+    return LR * (0.1 ** (epoch // 10))
 
 # Create a learning rate scheduler
 lr_callback = LearningRateScheduler(lr_schedule)
 # Add the learning rate decay to the optimizer
-optimizer = keras.optimizers.Adam(lr=0.001, lr_decay=1e-5)
+optimizer = keras.optimizers.Adam(learning_rate=LR, lr_decay=1e-5)
+optimizers = [
+    tf.keras.optimizers.Adam(learning_rate=LR),  # baseline
+    tf.keras.optimizers.Adam(learning_rate=LR, decay=1e-5),
+]
 ```
 
 ### Callbacks
