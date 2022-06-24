@@ -104,12 +104,16 @@ For now, let's focus on classification.</p>
 <li><a href="#preventing-overfitting">Preventing overfitting</a>
 <ul>
 <li><a href="#data-augmentation">Data augmentation</a></li>
+<li><a href="#dropout">Dropout</a></li>
 <li><a href="#learning-rate-decay">Learning rate decay</a></li>
 </ul></li>
 <li><a href="#callbacks">Callbacks</a></li>
-<li><a href="#loss-and-accuracy-plots">Loss and accuracy plots</a></li>
 <li><a href="#wrong-predictions">Wrong predictions</a></li>
-<li><a href="#comparing-the-baseline-model-to-the-optimized-model">Comparing the baseline model to the optimized model</a></li>
+<li><a href="#baseline-comparison-training">Baseline comparison: Training</a>
+<ul>
+<li><a href="#whats-with-the-jagged-lines">What's with the jagged lines?</a></li>
+</ul></li>
+<li><a href="#baseline-comparison-evaluation">Baseline comparison: Evaluation</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -732,6 +736,8 @@ We'll interpret the layers' activations as heatmaps later to see if this is the 
     <span class="p">])</span>
 </code></pre></div>
 
+<h4 id="dropout">Dropout</h4>
+
 <h4 id="learning-rate-decay">Learning rate decay</h4>
 
 <p>Learning rate decay is a technique that reduces the optimizer's learning rate as training progresses.
@@ -758,8 +764,6 @@ We can implement learning rate decay in two ways:</p>
 
 <h3 id="callbacks">Callbacks</h3>
 
-<h3 id="loss-and-accuracy-plots">Loss and accuracy plots</h3>
-
 <h3 id="wrong-predictions">Wrong predictions</h3>
 
 <figure class="right" style="width:50%;">
@@ -771,17 +775,26 @@ We can implement learning rate decay in two ways:</p>
 The model only misclassifies 3 images out of the entire dataset of 674 images.
 Not bad!</p>
 
-<p>The worst prediction - an image of Cog partially occluded by another Cog's nametag - has an error of 0.46/0.50.
+<p>The worst prediction - an image of a Cog partially occluded by another Cog's nametag - has an error of 0.46/0.50.
 It makes sense for this image to be incorrect because we purposefully excluded occluded Cogs from the dataset.
 Ideally, the model would be able to generalize to the unseen data.</p>
 
-<p>The other two images frequently appeared in wrong predictions.
-I assume it's because the images contain brown in the middle of the image - which is commonly seen in Bossbot and Sellbot Cogs.</p>
+<p>The other two images frequently appear in wrong predictions of all models.
+I assume it's because the images contain brown in the middle of the image - a feature commonly seen in Bossbot and Sellbot Cogs.</p>
 
 <p>We'll interpret the layers' activations as heatmaps later to see if this is the case.
-For now, let's compare the optimized model's training loss and accuracy to the baseline model's.</p>
+For now, let's compare the optimized model's average training loss and accuracy to the baseline model's.</p>
 
-<h3 id="comparing-the-baseline-model-to-the-optimized-model">Comparing the baseline model to the optimized model</h3>
+<h3 id="baseline-comparison-training">Baseline comparison: Training</h3>
+
+<p>The following plots show clearly the superior performance of the optimized model following 200 training runs.
+In all of the plots, the orange line represents the average loss and accuracy of the optimized model, while the blue line represents the baseline model.</p>
+
+<p>We can see in the accuracy plot (top left) that the optimized model does not overfit to the training data, whereas the baseline model overfits at ~12 epochs.
+This is expected because the optimized model performs  many techniques to prevent overfitting; the most important being <em>dropout</em> and <em>learning rate decay</em>.</p>
+
+<p>The validation accuracy plot (top right) shows a similar trend.
+On average, the optimized model does not overfit, whereas the baseline model overfits at ~12 epochs.</p>
 
 <!-- Split the training line chart and the evaluation bar chart -->
 
@@ -789,6 +802,30 @@ For now, let's compare the optimized model's training loss and accuracy to the b
     <img src="img/baseline_comparison_train.png" style="width:100%;"/>
     <figcaption></figcaption>
 </figure>
+
+<p>The loss plots speak for themselves.
+The optimized model's loss plots are constantly decreasing and never converge to zero.
+One could argue that the validation loss flatlines after ~20 epochs, but at least it's not increasing.</p>
+
+<p>On the other hand, the baseline model displays telltale signs of overfitting: training loss converges to near-zero after ~15 epochs while the validation loss decreases to ~0.13 and steadily increases thereafter.</p>
+
+<h4 id="whats-with-the-jagged-lines">What's with the jagged lines?</h4>
+
+<p>The validation plots for both models are quite sporadic compared to the smooth, continuous training plots.
+We can see that the optimized model often overfits to the validation data - enough to show jagged lines on both validation accuracy and loss plots.</p>
+
+<p>I suspect the validation plots' sporadic movement is due to the small size of the validation dataset.
+The fluctuations could also be due to the validation set being not representative enough of the training set.
+The former is a difficulty I burdened myself with early on in order to learn how to deal with poorly-balanced datasets.
+The latter is why I shuffle the datasets - unsort and split into separate datasets - before each training run in order to get an accurate average over 200 runs.</p>
+
+<p>An alternative to shuffling the datasets would be to  utilize <a href="https://medium.com/the-owl/k-fold-cross-validation-in-keras-3ec4a3a00538">k-fold cross-validation</a>, but that's beyond the scope of this article.
+Remember, we're keeping it simple!</p>
+
+<p>We can now clearly see the optimized model's superior performance during training.
+Let's take a look at the model's performance on the test dataset.</p>
+
+<h3 id="baseline-comparison-evaluation">Baseline comparison: Evaluation</h3>
 
 <!-- Split the training line chart and the evaluation bar chart -->
 

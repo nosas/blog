@@ -56,11 +56,13 @@ For now, let's focus on classification.
     - [Training the optimized model](#training-the-optimized-model)
         - [Preventing overfitting](#preventing-overfitting)
             - [Data augmentation](#data-augmentation)
+            - [Dropout](#dropout)
             - [Learning rate decay](#learning-rate-decay)
         - [Callbacks](#callbacks)
-        - [Loss and accuracy plots](#loss-and-accuracy-plots)
         - [Wrong predictions](#wrong-predictions)
-        - [Comparing the baseline model to the optimized model](#comparing-the-baseline-model-to-the-optimized-model)
+        - [Baseline comparison: Training](#baseline-comparison-training)
+            - [What's with the jagged lines?](#whats-with-the-jagged-lines)
+        - [Baseline comparison: Evaluation](#baseline-comparison-evaluation)
 
 </details>
 
@@ -646,6 +648,8 @@ data_augmentation = keras.Sequential(
     ])
 ```
 
+#### Dropout
+
 #### Learning rate decay
 
 Learning rate decay is a technique that reduces the optimizer's learning rate as training progresses.
@@ -671,8 +675,6 @@ optimizer = keras.optimizers.Adam(lr=0.001, lr_decay=1e-5)
 
 ### Callbacks
 
-### Loss and accuracy plots
-
 ### Wrong predictions
 
 <figure class="right" style="width:50%;">
@@ -684,23 +686,56 @@ As expected, the optimized model predicts classes more accurately than the basel
 The model only misclassifies 3 images out of the entire dataset of 674 images.
 Not bad!
 
-The worst prediction - an image of Cog partially occluded by another Cog's nametag - has an error of 0.46/0.50.
+The worst prediction - an image of a Cog partially occluded by another Cog's nametag - has an error of 0.46/0.50.
 It makes sense for this image to be incorrect because we purposefully excluded occluded Cogs from the dataset.
 Ideally, the model would be able to generalize to the unseen data.
 
-The other two images frequently appeared in wrong predictions.
-I assume it's because the images contain brown in the middle of the image - which is commonly seen in Bossbot and Sellbot Cogs.
+The other two images frequently appear in wrong predictions of all models.
+I assume it's because the images contain brown in the middle of the image - a feature commonly seen in Bossbot and Sellbot Cogs.
 
 We'll interpret the layers' activations as heatmaps later to see if this is the case.
-For now, let's compare the optimized model's training loss and accuracy to the baseline model's.
+For now, let's compare the optimized model's average training loss and accuracy to the baseline model's.
 
-### Comparing the baseline model to the optimized model
+### Baseline comparison: Training
+
+The following plots show clearly the superior performance of the optimized model following 200 training runs.
+In all of the plots, the orange line represents the average loss and accuracy of the optimized model, while the blue line represents the baseline model.
+
+We can see in the accuracy plot (top left) that the optimized model does not overfit to the training data, whereas the baseline model overfits at ~12 epochs.
+This is expected because the optimized model performs  many techniques to prevent overfitting; the most important being *dropout* and *learning rate decay*.
+
+The validation accuracy plot (top right) shows a similar trend.
+On average, the optimized model does not overfit, whereas the baseline model overfits at ~12 epochs.
 
 <!-- Split the training line chart and the evaluation bar chart -->
 <figure class="center" style="width:90%;">
     <img src="img/baseline_comparison_train.png" style="width:100%;"/>
     <figcaption></figcaption>
 </figure>
+
+The loss plots speak for themselves.
+The optimized model's loss plots are constantly decreasing and never converge to zero.
+One could argue that the validation loss flatlines after ~20 epochs, but at least it's not increasing.
+
+On the other hand, the baseline model displays telltale signs of overfitting: training loss converges to near-zero after ~15 epochs while the validation loss decreases to ~0.13 and steadily increases thereafter.
+
+#### What's with the jagged lines?
+
+The validation plots for both models are quite sporadic compared to the smooth, continuous training plots.
+We can see that the optimized model often overfits to the validation data - enough to show jagged lines on both validation accuracy and loss plots.
+
+I suspect the validation plots' sporadic movement is due to the small size of the validation dataset.
+The fluctuations could also be due to the validation set being not representative enough of the training set.
+The former is a difficulty I burdened myself with early on in order to learn how to deal with poorly-balanced datasets.
+The latter is why I shuffle the datasets - unsort and split into separate datasets - before each training run in order to get an accurate average over 200 runs.
+
+An alternative to shuffling the datasets would be to  utilize [k-fold cross-validation](https://medium.com/the-owl/k-fold-cross-validation-in-keras-3ec4a3a00538), but that's beyond the scope of this article.
+Remember, we're keeping it simple!
+
+We can now clearly see the optimized model's superior performance during training.
+Let's take a look at the model's performance on the test dataset.
+
+### Baseline comparison: Evaluation
 
 <!-- Split the training line chart and the evaluation bar chart -->
 <figure class="center" style="width:90%;">
