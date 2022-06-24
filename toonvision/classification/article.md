@@ -705,6 +705,41 @@ optimizers = [
 
 ### Callbacks
 
+Originally, I planned on only using a single callback, `ModelCheckpoint`, to save the model's weights.
+The callback saves the model's weights to a file at some interval - usually after each epoch or at the lowest validation loss value during training.
+
+Saving the model at the lowest validation loss value is flawed the model may have overfit to the data.
+In fact, during my experiments, I found that models that saved their weights at the lowest validation loss value were not performing well during evaluation.
+
+I omitted the use of [ModelCheckpoint](https://keras.io/api/callbacks/model_checkpoint/).
+Rather, I saved the model only if it exceeded the previous run's evaluation accuracy and loss.
+This ensured I got a better model out of the 200 runs compared to the callback.
+I believe this method is still flawed, but it proved to be more effective than saving the model based on the validation loss.
+
+```python
+# Save the model based on the validation loss value
+callbacks = [
+    keras.callbacks.ModelCheckpoint(
+        filepath=f"toonvision_{kwargs['name']}.keras",
+        save_best_only=True,
+        monitor="val_loss",
+    )
+    for kwargs in model_kwargs
+]
+
+# Save the model based on the evaluation accuracy and loss
+for run in range(200):
+    history, evaluation = train_model(...)
+    loss, acc = evaluation
+
+    if (loss < evaluations_best[kwargs["name"]][0]) and (
+        acc > evaluations_best[kwargs["name"]][1]
+    ):
+        evaluations_best[kwargs["name"]] = (loss, acc)
+        # Save the model
+        model.save(f"./models/toonvision_{kwargs['name']}_run{run}.keras")
+```
+
 ### Wrong predictions
 
 <figure class="right" style="width:50%;">

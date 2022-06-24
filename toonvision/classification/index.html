@@ -793,6 +793,40 @@ We can implement learning rate decay in two ways:</p>
 
 <h3 id="callbacks">Callbacks</h3>
 
+<p>Originally, I planned on only using a single callback, <code>ModelCheckpoint</code>, to save the model's weights.
+The callback saves the model's weights to a file at some interval - usually after each epoch or at the lowest validation loss value during training.</p>
+
+<p>Saving the model at the lowest validation loss value is flawed the model may have overfit to the data.
+In fact, during my experiments, I found that models that saved their weights at the lowest validation loss value were not performing well during evaluation.</p>
+
+<p>I omitted the use of <a href="https://keras.io/api/callbacks/model_checkpoint/">ModelCheckpoint</a>.
+Rather, I saved the model only if it exceeded the previous run's evaluation accuracy and loss.
+This ensured I got a better model out of the 200 runs compared to the callback.
+I believe this method is still flawed, but it proved to be more effective than saving the model based on the validation loss.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="c1"># Save the model based on the validation loss value</span>
+<span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">ModelCheckpoint</span><span class="p">(</span>
+        <span class="n">filepath</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;toonvision_</span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.keras&quot;</span><span class="p">,</span>
+        <span class="n">save_best_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="n">model_kwargs</span>
+<span class="p">]</span>
+
+<span class="c1"># Save the model based on the evaluation accuracy and loss</span>
+<span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">):</span>
+    <span class="n">history</span><span class="p">,</span> <span class="n">evaluation</span> <span class="o">=</span> <span class="n">train_model</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">loss</span><span class="p">,</span> <span class="n">acc</span> <span class="o">=</span> <span class="n">evaluation</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">loss</span> <span class="o">&lt;</span> <span class="n">evaluations_best</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]][</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="n">acc</span> <span class="o">&gt;</span> <span class="n">evaluations_best</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="p">):</span>
+        <span class="n">evaluations_best</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">acc</span><span class="p">)</span>
+        <span class="c1"># Save the model</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./models/toonvision_</span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">_run</span><span class="si">{</span><span class="n">run</span><span class="si">}</span><span class="s2">.keras&quot;</span><span class="p">)</span>
+</code></pre></div>
+
 <h3 id="wrong-predictions">Wrong predictions</h3>
 
 <figure class="right" style="width:50%;">
