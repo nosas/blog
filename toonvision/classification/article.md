@@ -63,6 +63,7 @@ For now, let's focus on classification.
         - [Baseline comparison: Training](#baseline-comparison-training)
             - [What's with the jagged lines?](#whats-with-the-jagged-lines)
         - [Baseline comparison: Evaluation](#baseline-comparison-evaluation)
+    - [Model interpretation](#model-interpretation)
 
 </details>
 
@@ -737,8 +738,28 @@ Let's take a look at the model's performance on the test dataset.
 
 ### Baseline comparison: Evaluation
 
+Recall that we split the dataset into three sets: training (60%), validation (20%), and test (20%).
+The test set is used to evaluate the model's performance on never-before-seen data.
+
+The box plots below show the distribution of 200 evaluations of the models' predictions on the test dataset.
+Once again, the optimized model outshines the baseline model.
+
+The optimized model has a smaller test accuracy spread (smaller box) and its median (0.978) is more than a basis point higher than the baseline (0.965).
+Furthermore, excluding the outliers, the optimized model's minimum accuracy does not fall below 0.95, whereas the baseline model's minimum accuracy falls well below 0.93.
+
 <!-- Split the training line chart and the evaluation bar chart -->
 <figure class="center" style="width:90%;">
     <img src="img/baseline_comparison_test.png" style="width:100%;"/>
     <figcaption></figcaption>
 </figure>
+
+The loss plot is even more damning for the baseline model.
+The optimized model's loss box is much smaller (Q1: 0.4, Median: 0.65, Q3: 0.9) and lower than the baseline model's.
+We see the baseline model has a median loss of 1.6 while the optimized model's median loss is 0.5.
+Lastly, the optimized model's outliers are more contained with a range of [0.18, 0.21] whereas the baseline model's outliers range from [0.42, 0.68].
+
+Enough proving that the optimized model is superior to the baseline model.
+Let's interpret what the model's layers are seeing as heatmaps.
+
+---
+## Model interpretation
