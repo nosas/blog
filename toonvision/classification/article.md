@@ -8,13 +8,8 @@ This article is first in a series on **ToonVision**.
 ToonVision is my personal computer vision project for teaching a machine how to see in [ToonTown Online](https://en.wikipedia.org/wiki/Toontown_Online) - an MMORPG created by Disney in 2003.
 The ultimate goal is to teach a machine (nicknamed **OmniToon**) how to play ToonTown and create a self-sustaining ecosystem within the game where the bots progress through the game together.
 
-In later articles, we'll dive into image segmentation and object detection.
-For now, let's focus on real-time classification.
-
-This article covers ...
-
-- Binary classification: Toon vs Cog
-- Multiclass classification: Cog suits (4 unique suits) and Cog names (32 unique names)
+This article covers binary classification of Toons and Cogs.
+The following article will cover multiclass classification of Cog suits (4 unique suits) and Cog names (32 unique names).
 
 After reading this article, we'll have a better understanding of...
 
@@ -22,6 +17,9 @@ After reading this article, we'll have a better understanding of...
 - How to deal with a model overfitting to a small, imbalanced dataset
 - How to utilize image augmentation and dropout to improve the model's generalization capability
 - How to compare different models, optimizers, and hyperparameters
+
+In later articles, we'll dive into image segmentation and object detection.
+For now, let's focus on classification.
 
 <details>
     <summary>Table of Contents</summary>
@@ -79,28 +77,29 @@ There are many classification problems: binary classification, multiclass classi
 ### Binary classification
 
 Binary classification - also called two-class classification - is the most common type of classification problem.
-It is a problem where the model is trying to predict whether an input example belongs to class A or class B.
+It is a problem where the model predicts whether an input example belongs to class A or class B.
 
 In this article, we're building a model to predict whether an image is a Toon or a Cog.
 
 ### Multiclass classification
 
-On the other hand, multiclass classification is the type of classification problem where the model is trying to predict which *single class* an input example belongs to.
+On the other hand, multiclass classification is the type of classification problem where the model predicts which *single class* an input example belongs to.
 Where binary classification is a two-class problem, multiclass classification is a multi-class problem - meaning three or more classes.
 For instance, the model could predict that an animal belongs to the class of dogs, cats, rabbits, horses, or any other animal.
 
-In this article, we're building a model to predict which of the four Cog suits an image belongs to.
+In the next article, we'll build a model to predict which of the four Cog suits an image belongs to.
+We can push the model even further to predict which of the 32 Cog names an image belongs to.
 
 #### Multiclass multilabel classification
 
-Lastly, multiclass multilabel classification is the type of classification problem where the model is trying to predict which *classes* an input example belongs to.
+Lastly, multiclass multilabel classification is a classification problem where the model predicts which *classes* an input example belongs to.
 For instance, a multiclass multilabel animal classifier can predict not only that an image belongs to the class of dogs, cats, rabbits, etc. but also the specific breed of dog, cat, rabbit, etc.
 Alternatively, a vehicle classifier can predict not only that an image belongs to the class of cars, trucks, motorcycle, etc. but also the specific make and model of car, truck, motorcycle, etc.
 
 Other practical applications of multiclass multilabel classification include labeling which classes are present in an image.
-An image of a park, for example, could be labeled as containing a tree, a bench, a flower, a pond, etc.
+For example, an image of a park could be labeled as containing a tree, a bench, a flower, a pond, etc.
 
-We could beef up the Cog suit classifier to a multilabel multiclass classification: Cog state/level/hp/name/suit.
+We could upgrade the single-label multiclass Cog suit classifier to a multilabel multiclass classification model and have it predict Cog state/level/hp/name/suit.
 But this adds unneeded complexity to the model and should be an article of its own.
 In the future, I will surely add the classification of the Cog's state: battle, patrolling, spawning, de-spawning, etc.
 Let's keep it simple for now.
@@ -112,7 +111,7 @@ ToonTown Online is a multiplayer online role-playing game (MMORPG) created by Di
 The game is based on a cartoon animal world where each player controls a Toon (a cartoon animal).
 
 Like most MMORPGs, there's no single focus in ToonTown's gameplay.
-Players can perform whatever activities they want: socialize, explore the world, fight Cogs, complete tasks for rewards, fish, race karts, and even play minigames.
+Players can perform whatever activities they want: socialize, fight Cogs, explore the world, complete tasks for rewards, fish, race karts, and even play minigames.
 
 We won't discuss too much about the game itself in this article because we're focusing on building an image classifier, not a full end-to-end ToonTown AI.
 
@@ -157,10 +156,10 @@ Ultimately, the goal is to eliminate the Cogs from the streets and acquire the m
 A ToonTask is a quest given by ToonTown NPCs in which Toons must complete in order to earn rewards.
 Tasks include:
 
-- Talking to other NPCs
 - Defeating specific Cogs or specific number of Cogs
 - Retrieving items from defeated Cogs
 - Defeating Cog buildings
+- Talking to other NPCs
 
 Rewards include jellybeans (currency), laff points (health points), gag advancements (weapons), access to other areas of the game and [more](https://toontown.fandom.com/wiki/ToonTask).
 
@@ -176,7 +175,7 @@ They are corporate robots that are trying to take over ToonTown and convert it i
 
 There are 4 Cog suits, each with a unique color: Bossbot (brown), Lawbot (blue), Cashbot (green), and Sellbot (maroon).
 Each suit in the corporate ladder contains 8 Cogs for a total of 32 unique Cogs.
-While most Cogs can be found in the streets, the two highest-tiered Cogs can be found only in Cog buildings.
+While most Cogs can be found in the streets, the two highest-tiered Cogs of each suit can be found only in Cog buildings.
 
 We'll only acquire data about Cogs in the streets for this model.
 We can leverage Cog invasions in order to find building-specific Cogs in the streets.
@@ -489,7 +488,7 @@ Compiling the model requires choosing a loss function, optimizer, and metrics to
 ### Loss function
 
 Our first model is classifying between two classes, therefore we'll use the `binary_crossentropy` loss function.
-The later models will be more complex - classifying 4 or 32 classes - so we'll use the `categorical_crossentropy` loss function.
+The later models will be more complex - classifying 4 or 32 classes - so we'll use the `[sparse_]categorical_crossentropy` loss function.
 
 ### Optimizer
 
