@@ -697,7 +697,6 @@ def lr_schedule(epoch):
 # Create a learning rate scheduler
 lr_callback = LearningRateScheduler(lr_schedule)
 # Add the learning rate decay to the optimizer
-optimizer = keras.optimizers.Adam(learning_rate=LR, lr_decay=1e-5)
 optimizers = [
     tf.keras.optimizers.Adam(learning_rate=LR),  # baseline
     tf.keras.optimizers.Adam(learning_rate=LR, decay=1e-5),
