@@ -792,7 +792,7 @@ We can see that the optimized model often overfits to the validation data - enou
 I suspect the validation plots' sporadic movement is due to the small size of the validation dataset.
 The fluctuations could also be due to the validation set being not representative enough of the training set.
 The former is a difficulty I burdened myself with early on in order to learn how to deal with poorly-balanced datasets.
-The latter is why I shuffle the datasets - unsort and split into separate datasets - before each training run in order to get an accurate average over 200 runs.
+The latter is why I rebalance the datasets - unsort and re-split datasets - before each training run in order to get an accurate model performance over 200 runs.
 
 An alternative to shuffling the datasets would be to  utilize [k-fold cross-validation](https://medium.com/the-owl/k-fold-cross-validation-in-keras-3ec4a3a00538), but that's beyond the scope of this article.
 Remember, we're keeping it simple!
