@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 23, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 25, 2022</p>
 
 <p><title>ToonVision: Binary and Multiclass Classification</title></p>
 
@@ -33,13 +33,14 @@ The ultimate goal is to teach a machine (nicknamed <strong>OmniToon</strong>) ho
 <p>This article covers binary classification of Toons and Cogs.
 The following article will cover multiclass classification of Cog suits (4 unique suits) and Cog names (32 unique names).</p>
 
-<p>After reading this article, we'll have a better understanding of...</p>
+<p>After reading this article, we'll have a better understanding of how to</p>
 
 <ul>
-<li>How to acquire, label, and process samples from image data</li>
-<li>How to deal with a model overfitting to a small, imbalanced dataset</li>
-<li>How to utilize image augmentation and dropout to improve the model's generalization capability</li>
-<li>How to compare different models, optimizers, and hyperparameters</li>
+<li>acquire, label, and process samples from image data</li>
+<li>deal with a model overfitting to a small, imbalanced dataset</li>
+<li>utilize image augmentation and dropout to improve the model's generalization capability</li>
+<li>compare different models, optimizers, and hyperparameters</li>
+<li>interpret and visualize what the model is learning</li>
 </ul>
 
 <p>In later articles, we'll dive into image segmentation and object detection.
@@ -72,10 +73,7 @@ For now, let's focus on classification.</p>
 <ul>
 <li><a href="#dataset-considerations">Dataset considerations</a></li>
 <li><a href="#filename-and-data-folder-structure">Filename and data folder structure</a></li>
-<li><a href="#data-acquisition">Data acquisition</a>
-<ul>
-<li><a href="#can-we-use-gans-to-synthesize-additional-data">Can we use GANs to synthesize additional data?</a></li>
-</ul></li>
+<li><a href="#data-acquisition">Data acquisition</a></li>
 <li><a href="#data-labeling">Data labeling</a></li>
 <li><a href="#data-extraction">Data extraction</a></li>
 <li><a href="#data-processing">Data processing</a></li>
@@ -115,7 +113,12 @@ For now, let's focus on classification.</p>
 </ul></li>
 <li><a href="#baseline-comparison-evaluation">Baseline comparison: Evaluation</a></li>
 </ul></li>
-<li><a href="#model-interpretation">Model interpretation</a></li>
+<li><a href="#model-interpretation">Model interpretation</a>
+<ul>
+<li><a href="#visualizing-intermediate-convnet-outputs-intermediate-activations">Visualizing intermediate convnet outputs (intermediate activations)</a></li>
+<li><a href="#visualizing-convnet-filters">Visualizing convnet filters</a></li>
+<li><a href="#visualizing-heatmaps-of-class-activation-in-an-image">Visualizing heatmaps of class activation in an image</a></li>
+</ul></li>
 </ul></li>
 </ul>
 
@@ -348,7 +351,7 @@ When taken from far away, the entity's nametag covers the entity's head, thus ca
 </ol>
 
 <p>As a result, we have an imbalanced dataset.
-I hope to balance the dataset over time, but we'll work with the current dataset to gain a better understanding of how to deal with a model overfitting to a small, imbalanced dataset.</p>
+I hope to balance the dataset over time, but we'll work with the current dataset to better understand how to deal with a model overfitting to a small, imbalanced dataset.</p>
 
 <figure class="center" style="width:100%">
     <img src="img/label_balance.png" style="width:100%;background:white;"/>
@@ -361,17 +364,10 @@ I hope to balance the dataset over time, but we'll work with the current dataset
 
 <ul>
 <li>More Cogs than Toons (526 vs 148 Toon samples)</li>
+<li>Less-than-average Sellbot samples (cog_sb_*), specifically Glad Handers, Mover &amp; Shakers, and Two Faces</li>
 <li>Too many cats on the streets (or I have a bias towards taking photos of cats)</li>
 <li>Not enough horses on the streets (or I have a bias towards not taking photos of horses)</li>
 </ul>
-
-<h4 id="can-we-use-gans-to-synthesize-additional-data">Can we use GANs to synthesize additional data?</h4>
-
-<p>Yes, iff there was a GAN that could generate Toons and Cogs.
-As far as I know, no GAN exists for generating ToonTown entities; perhaps I can take a swing at it later.</p>
-
-<p>Don't be discouraged about an imbalanced dataset.
-We can use many techniques to adjust for the imbalance and still create an accurate model.</p>
 
 <h3 id="data-labeling">Data labeling</h3>
 
@@ -556,7 +552,7 @@ I wrote a wrapper function, <code>create_datasets</code>, to create the train, v
 <p><details>
     <summary>Dataset balance</summary></p>
 
-<figure class="center" style="width:100%;">
+<figure class="center" style="width:60%;">
     <img src="img/dataset_balance.png" style="width:100%;"/>
     <figcaption>Train, validate, and test datasets</figcaption>
 </figure>
@@ -655,6 +651,28 @@ I believe this method is still flawed, but it proved to be more effective than s
 
 <h3 id="defining-the-model">Defining the model</h3>
 
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">make_model</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">augmentation</span><span class="p">:</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>  <span class="c1"># Height, width, channels</span>
+    <span class="k">if</span> <span class="n">augmentation</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">augmentation</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Rescaling</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dropout</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
+</code></pre></div>
+
 <hr />
 
 <h2 id="training-the-baseline-model">Training the baseline model</h2>
@@ -667,8 +685,35 @@ The only difference is that we will not perform any optimizations - no data augm
 The baseline model will be trained 200 times, each time with a rebalanced dataset.
 The average of all 200 runs will be plotted below.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">model_baseline</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">()</span>
-<span class="c1"># ! TODO`</span>
+<div class="codehilite"><pre><span></span><code><span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;baseline&quot;</span><span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;optimized_1e-5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;augmentation&quot;</span><span class="p">:</span> <span class="n">data_augmentation</span><span class="p">,</span>
+        <span class="s2">&quot;dropout&quot;</span><span class="p">:</span> <span class="mf">0.90</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+<span class="n">optimizers</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">LR</span><span class="p">),</span>  <span class="c1"># baseline</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">LR</span><span class="p">,</span> <span class="n">decay</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">),</span>
+<span class="p">]</span>
+<span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">ModelCheckpoint</span><span class="p">(</span>
+        <span class="n">filepath</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;toonvision_</span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.keras&quot;</span><span class="p">,</span>
+        <span class="n">save_best_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="n">model_kwargs</span>
+<span class="p">]</span>
+
+<span class="c1"># %% Train each model for 25 epochs, and repeat it 200 times</span>
+<span class="n">histories_all</span><span class="p">,</span> <span class="n">evaluations_all</span> <span class="o">=</span> <span class="n">make_baseline_comparisons</span><span class="p">(</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
+    <span class="n">num_runs</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks</span><span class="p">,</span>
+    <span class="n">optimizers</span><span class="o">=</span><span class="n">optimizers</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
 <h3 id="baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</h3>
@@ -917,6 +962,12 @@ Let's interpret what the model's layers are seeing as heatmaps.</p>
 <hr />
 
 <h2 id="model-interpretation">Model interpretation</h2>
+
+<h3 id="visualizing-intermediate-convnet-outputs-intermediate-activations">Visualizing intermediate convnet outputs (intermediate activations)</h3>
+
+<h3 id="visualizing-convnet-filters">Visualizing convnet filters</h3>
+
+<h3 id="visualizing-heatmaps-of-class-activation-in-an-image">Visualizing heatmaps of class activation in an image</h3>
 
 </body>
 </html>

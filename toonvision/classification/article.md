@@ -11,12 +11,13 @@ The ultimate goal is to teach a machine (nicknamed **OmniToon**) how to play Too
 This article covers binary classification of Toons and Cogs.
 The following article will cover multiclass classification of Cog suits (4 unique suits) and Cog names (32 unique names).
 
-After reading this article, we'll have a better understanding of...
+After reading this article, we'll have a better understanding of how to
 
-- How to acquire, label, and process samples from image data
-- How to deal with a model overfitting to a small, imbalanced dataset
-- How to utilize image augmentation and dropout to improve the model's generalization capability
-- How to compare different models, optimizers, and hyperparameters
+- acquire, label, and process samples from image data
+- deal with a model overfitting to a small, imbalanced dataset
+- utilize image augmentation and dropout to improve the model's generalization capability
+- compare different models, optimizers, and hyperparameters
+- interpret and visualize what the model is learning
 
 In later articles, we'll dive into image segmentation and object detection.
 For now, let's focus on classification.
@@ -38,7 +39,6 @@ For now, let's focus on classification.
         - [Dataset considerations](#dataset-considerations)
         - [Filename and data folder structure](#filename-and-data-folder-structure)
         - [Data acquisition](#data-acquisition)
-            - [Can we use GANs to synthesize additional data?](#can-we-use-gans-to-synthesize-additional-data)
         - [Data labeling](#data-labeling)
         - [Data extraction](#data-extraction)
         - [Data processing](#data-processing)
@@ -64,6 +64,9 @@ For now, let's focus on classification.
             - [What's with the jagged lines?](#whats-with-the-jagged-lines)
         - [Baseline comparison: Evaluation](#baseline-comparison-evaluation)
     - [Model interpretation](#model-interpretation)
+        - [Visualizing intermediate convnet outputs (intermediate activations)](#visualizing-intermediate-convnet-outputs-intermediate-activations)
+        - [Visualizing convnet filters](#visualizing-convnet-filters)
+        - [Visualizing heatmaps of class activation in an image](#visualizing-heatmaps-of-class-activation-in-an-image)
 
 </details>
 
@@ -271,7 +274,7 @@ Furthermore, there were class-specific data acquisition problems:
     - Highest-tiered Cogs include Corporate Raiders and The Big Cheese for Bossbots, Legal Eagle and Big Wig for Lawbots, etc.
 
 As a result, we have an imbalanced dataset.
-I hope to balance the dataset over time, but we'll work with the current dataset to gain a better understanding of how to deal with a model overfitting to a small, imbalanced dataset.
+I hope to balance the dataset over time, but we'll work with the current dataset to better understand how to deal with a model overfitting to a small, imbalanced dataset.
 
 <figure class="center" style="width:100%">
     <img src="img/label_balance.png" style="width:100%;background:white;"/>
@@ -283,16 +286,9 @@ The green lines indicate the <font style="color:#0F0;">desired number of samples
 The dataset shows a few overrepresented classes:
 
 - More Cogs than Toons (526 vs 148 Toon samples)
+- Less-than-average Sellbot samples (cog_sb_*), specifically Glad Handers, Mover & Shakers, and Two Faces
 - Too many cats on the streets (or I have a bias towards taking photos of cats)
 - Not enough horses on the streets (or I have a bias towards not taking photos of horses)
-
-#### Can we use GANs to synthesize additional data?
-
-Yes, iff there was a GAN that could generate Toons and Cogs.
-As far as I know, no GAN exists for generating ToonTown entities; perhaps I can take a swing at it later.
-
-Don't be discouraged about an imbalanced dataset.
-We can use many techniques to adjust for the imbalance and still create an accurate model.
 
 ### Data labeling
 
@@ -476,7 +472,7 @@ We can visualize the dataset's balance by using the `plot_datasets_all()` functi
 
 <details>
     <summary>Dataset balance</summary>
-<figure class="center" style="width:100%;">
+<figure class="center" style="width:60%;">
     <img src="img/dataset_balance.png" style="width:100%;"/>
     <figcaption>Train, validate, and test datasets</figcaption>
 </figure>
@@ -574,6 +570,29 @@ for run in range(200):
 
 ### Defining the model
 
+```python
+def make_model(
+    name: str = "", augmentation: keras.Sequential = None, dropout: float = 0.0
+) -> keras.Model:
+    inputs = keras.Input(shape=(600, 200, 3))  # Height, width, channels
+    if augmentation:
+        x = augmentation(inputs)
+    x = layers.Rescaling(1.0 / 255)(inputs)
+    x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.Conv2D(filters=16, kernel_size=3, activation="relu")(x)
+    x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.Conv2D(filters=32, kernel_size=3, activation="relu")(x)
+    x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.Conv2D(filters=32, kernel_size=3, activation="relu")(x)
+    x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.Flatten()(x)
+    if dropout:
+        x = layers.Dropout(dropout)(x)
+    outputs = layers.Dense(units=1, activation="sigmoid")(x)
+    model = keras.Model(name=name, inputs=inputs, outputs=outputs)
+    return model
+```
+
 ---
 ## Training the baseline model
 
@@ -586,8 +605,35 @@ The baseline model will be trained 200 times, each time with a rebalanced datase
 The average of all 200 runs will be plotted below.
 
 ```python
-model_baseline = create_model()
-# ! TODO`
+model_kwargs = [
+    {"name": "baseline"},
+    {
+        "name": "optimized_1e-5",
+        "augmentation": data_augmentation,
+        "dropout": 0.90,
+    },
+]
+optimizers = [
+    tf.keras.optimizers.Adam(learning_rate=LR),  # baseline
+    tf.keras.optimizers.Adam(learning_rate=LR, decay=1e-5),
+]
+callbacks = [
+    keras.callbacks.ModelCheckpoint(
+        filepath=f"toonvision_{kwargs['name']}.keras",
+        save_best_only=True,
+        monitor="val_loss",
+    )
+    for kwargs in model_kwargs
+]
+
+# %% Train each model for 25 epochs, and repeat it 200 times
+histories_all, evaluations_all = make_baseline_comparisons(
+    epochs=25,
+    num_runs=200,
+    model_kwargs=model_kwargs,
+    callbacks=callbacks,
+    optimizers=optimizers,
+)
 ```
 
 ### Baseline loss and accuracy plots
@@ -827,3 +873,11 @@ Let's interpret what the model's layers are seeing as heatmaps.
 
 ---
 ## Model interpretation
+
+### Visualizing intermediate convnet outputs (intermediate activations)
+
+
+
+### Visualizing convnet filters
+
+### Visualizing heatmaps of class activation in an image
