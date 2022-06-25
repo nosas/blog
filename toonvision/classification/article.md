@@ -732,8 +732,8 @@ For the ToonVision model, we'll utilize data augmentation, dropout, regularizati
 During training, we'll perform the following data augmentation techniques:
 
 * Horizontal flip (50% chance)
-* Rotate +- 20%
-* Zoom +-30%
+* Rotate +- 7.5%
+* Zoom +-20%
 
 ```python
 from keras import layers
@@ -742,16 +742,31 @@ data_augmentation = keras.Sequential(
     [
         # Apply horizontal flipping to 50% of the images
         layers.RandomFlip("horizontal"),
-        # Rotate the input image by some factor in range [-20%, 20%] or [-72, 72] in degrees
-        layers.RandomRotation(0.2),
-        # Zoom in or out by a random factor in range [-30%, 30%]
-        layers.RandomZoom(0.3),
-    ])
+        # Rotate the input image by some factor in range [-7.5%, 7.5%] or [-27, 27] in degrees
+        layers.RandomRotation(0.075),
+        # Zoom in or out by a random factor in range [-20%, 20%]
+        layers.RandomZoom(0.2),
+    ]
+)
 ```
+
+The purpose of the data augmentation is to increase the number of training examples so the model can learn from more data and never see the same sample twice.
+
+It's important to augment the data just enough so the samples remain representative of the dataset.
+If we rotate the image too much, or zoom in/out too much, we lose the context of the image and the model will not be able to learn from it.
+
+Looking at the grid below, we see a single image that has been augmented with the data augmentation techniques.
+The top four images result from a slight data augmentation, whereas the bottom four images are from an aggressive data augmentation.
+The more aggressive augmentation are not representative of the dataset or real-world samples.
+
+<figure class="center" style="width:50%">
+    <img src="img/image_augmentation.png" style="width:100%;"/>
+    <figcaption>Top four: Tame image augmentation resulting in realistic samples. Bottom four: Aggressive image augmentation resulting in unrealistic samples.</figcaption>
+</figure>
 
 #### Dropout
 
-Dropout is one of the most effective and most commonly used regularization techniques for neural networks.
+Dropout is one of the most effective and commonly used regularization techniques for neural networks.
 When applied to a layer, dropout randomly *drops out* (sets to zero) a number of output features of the layer.
 The number of dropped features is determined by the *dropout rate* - the percentage of features that are dropped.
 

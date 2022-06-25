@@ -818,8 +818,8 @@ We'll interpret the layers' activations as heatmaps later to see if this is the 
 
 <ul>
 <li>Horizontal flip (50% chance)</li>
-<li>Rotate +- 20%</li>
-<li>Zoom +-30%</li>
+<li>Rotate +- 7.5%</li>
+<li>Zoom +-20%</li>
 </ul>
 
 <div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">layers</span>
@@ -828,16 +828,31 @@ We'll interpret the layers' activations as heatmaps later to see if this is the 
     <span class="p">[</span>
         <span class="c1"># Apply horizontal flipping to 50% of the images</span>
         <span class="n">layers</span><span class="o">.</span><span class="n">RandomFlip</span><span class="p">(</span><span class="s2">&quot;horizontal&quot;</span><span class="p">),</span>
-        <span class="c1"># Rotate the input image by some factor in range [-20%, 20%] or [-72, 72] in degrees</span>
-        <span class="n">layers</span><span class="o">.</span><span class="n">RandomRotation</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span>
-        <span class="c1"># Zoom in or out by a random factor in range [-30%, 30%]</span>
-        <span class="n">layers</span><span class="o">.</span><span class="n">RandomZoom</span><span class="p">(</span><span class="mf">0.3</span><span class="p">),</span>
-    <span class="p">])</span>
+        <span class="c1"># Rotate the input image by some factor in range [-7.5%, 7.5%] or [-27, 27] in degrees</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">RandomRotation</span><span class="p">(</span><span class="mf">0.075</span><span class="p">),</span>
+        <span class="c1"># Zoom in or out by a random factor in range [-20%, 20%]</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">RandomZoom</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
 </code></pre></div>
+
+<p>The purpose of the data augmentation is to increase the number of training examples so the model can learn from more data and never see the same sample twice.</p>
+
+<p>It's important to augment the data just enough so the samples remain representative of the dataset.
+If we rotate the image too much, or zoom in/out too much, we lose the context of the image and the model will not be able to learn from it.</p>
+
+<p>Looking at the grid below, we see a single image that has been augmented with the data augmentation techniques.
+The top four images result from a slight data augmentation, whereas the bottom four images are from an aggressive data augmentation.
+The more aggressive augmentation are not representative of the dataset or real-world samples.</p>
+
+<figure class="center" style="width:50%">
+    <img src="img/image_augmentation.png" style="width:100%;"/>
+    <figcaption>Top four: Tame image augmentation resulting in realistic samples. Bottom four: Aggressive image augmentation resulting in unrealistic samples.</figcaption>
+</figure>
 
 <h4 id="dropout">Dropout</h4>
 
-<p>Dropout is one of the most effective and most commonly used regularization techniques for neural networks.
+<p>Dropout is one of the most effective and commonly used regularization techniques for neural networks.
 When applied to a layer, dropout randomly <em>drops out</em> (sets to zero) a number of output features of the layer.
 The number of dropped features is determined by the <em>dropout rate</em> - the percentage of features that are dropped.</p>
 
