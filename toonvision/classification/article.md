@@ -605,6 +605,34 @@ def make_model(
     return model
 ```
 
+<details>
+    <summary>Model summary</summary>
+```
+Model: "optimized_1e-5"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #
+=================================================================
+ input_53 (InputLayer)       [(None, 600, 200, 3)]     0
+ rescaling_52 (Rescaling)    (None, 600, 200, 3)       0
+ max_pooling2d_208           (None, 300, 100, 3)       0
+ conv2d_156                  (None, 298, 98, 16)       448
+ max_pooling2d_209           (None, 149, 49, 16)       0
+ conv2d_157                  (None, 147, 47, 32)       4640
+ max_pooling2d_210           (None, 73, 23, 32)        0
+ conv2d_158                  (None, 71, 21, 32)        9248
+ max_pooling2d_211           (None, 35, 10, 32)        0
+ flatten_52 (Flatten)        (None, 11200)             0
+ dropout_38 (Dropout)        (None, 11200)             0
+ dense_52 (Dense)            (None, 1)                 11201
+
+=================================================================
+Total params: 25,537
+Trainable params: 25,537
+Non-trainable params: 0
+_________________________________________________________________
+```
+</details>
+
 I believe the architecture above has room for improvement.
 More experimentation - remove some Conv2D and MaxPooling2D layers, reduce the filter sizes, or maybe add strides to the Conv2D layers - could fine-tune the architecture and improve the model's performance.
 The chosen architecture may not be the best, but it will suffice.
