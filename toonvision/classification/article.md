@@ -536,12 +536,12 @@ When training the multi-class models - with 4 and 32 classes - we'll utilize the
 Originally, I planned on only using a single callback, `ModelCheckpoint`, to save the model's weights.
 The callback saves the model's weights to a file at some interval - usually after each epoch or at the lowest validation loss value during training.
 
-Saving the model at the lowest validation loss value is flawed the model may have overfit to the data.
+Saving the model at the lowest validation loss value is flawed because the model may have overfit to the data.
 In fact, during my experiments, I found that models that saved their weights at the lowest validation loss value were not performing well during evaluation.
 
-I omitted the use of [ModelCheckpoint](https://keras.io/api/callbacks/model_checkpoint/).
+As a result, I omitted the use of [ModelCheckpoint](https://keras.io/api/callbacks/model_checkpoint/).
 Rather, I saved the model only if it exceeded the previous run's evaluation accuracy and loss.
-This ensured I got a better model out of the 200 runs compared to the callback.
+This ensured I got a better model out of the 200 runs compared to the `ModelCheckpoint` callback.
 I believe this method is still flawed, but it proved to be more effective than saving the model based on the validation loss.
 
 ```python
@@ -580,7 +580,7 @@ It's defined in the `model_utils` module within the `make_model()` function.
 
 After experimenting with a handful of different architectures, I found the best architecture to contain few intermediate layers with small filters.
 Remember that the more layers and filters in the model, the more room for the model to overfit to the data.
-We must find the right balance in the architecture to ensure the model small enough to prevent overfitting, but accurate enough to generalize on never-before-seen data.
+We must find the right balance in the architecture to ensure the model is small enough to prevent overfitting, but accurate enough to generalize on never-before-seen data.
 
 ```python
 def make_model(
@@ -606,52 +606,41 @@ def make_model(
 ```
 
 I believe the architecture above has room for improvement.
-More experimentation could fine-tune the architecture to improve the model's performance.
-We could remove some Conv2D and MaxPooling2D layers, reduce the filter sizes, or maybe add strides to the Conv2D layers.
-The chosen architecture is *for sure* not the best, but it will suffice.
+More experimentation - remove some Conv2D and MaxPooling2D layers, reduce the filter sizes, or maybe add strides to the Conv2D layers - could fine-tune the architecture and improve the model's performance.
+The chosen architecture may not be the best, but it will suffice.
 
 ---
 ## Training the baseline model
 
 Before training the actual model, we need to define a simple baseline to compare against.
 The baseline model will use the same model architecture, datasets, and hyperparameters as the optimized model we're training.
-The only difference is that we will not perform any optimizations - no data augmentation, dropout, batch normalization or learning rate decay.
-
-We'll train the baseline for 25 epochs with a learning rate of 0.001 (1e-3).
-The baseline model will be trained 200 times, each time with a rebalanced dataset.
-The average of all 200 runs will be plotted below.
+The only difference is that baseline model not perform any optimizations during training or within the model - no data augmentation, dropout, batch normalization or learning rate decay.
 
 ```python
 model_kwargs = [
-    {"name": "baseline"},
+    {
+        "name": "baseline",
+        "optimizer": tf.keras.optimizers.Adam(learning_rate=LR)
+    },
     {
         "name": "optimized_1e-5",
+        "optimizer": tf.keras.optimizers.Adam(learning_rate=LR, decay=1e-5),
         "augmentation": data_augmentation,
         "dropout": 0.90,
     },
-]
-optimizers = [
-    tf.keras.optimizers.Adam(learning_rate=LR),  # baseline
-    tf.keras.optimizers.Adam(learning_rate=LR, decay=1e-5),
-]
-callbacks = [
-    keras.callbacks.ModelCheckpoint(
-        filepath=f"toonvision_{kwargs['name']}.keras",
-        save_best_only=True,
-        monitor="val_loss",
-    )
-    for kwargs in model_kwargs
 ]
 
 # %% Train each model for 25 epochs, and repeat it 200 times
 histories_all, evaluations_all = make_baseline_comparisons(
     epochs=25,
-    num_runs=200,
+    num_runs=5,
     model_kwargs=model_kwargs,
-    callbacks=callbacks,
-    optimizers=optimizers,
 )
 ```
+
+We'll train the baseline for 25 epochs with a learning rate of 0.001 (1e-3).
+The baseline model will be trained 200 times, each time with a rebalanced dataset.
+The average of all 200 runs is plotted below.
 
 ### Baseline loss and accuracy plots
 
@@ -712,6 +701,8 @@ Let's optimize the model's training to prevent overfitting and acquire better re
 ---
 ## Training the optimized model
 
+Now that we have a baseline to compare against, we can train the optimized model.
+
 ### Preventing overfitting
 
 Given that we have a small dataset, we can utilize a few of the following techniques during training to prevent overfitting:
@@ -720,12 +711,12 @@ Given that we have a small dataset, we can utilize a few of the following techni
 * **Data balancing** - balancing the number of objects in each dataset.
 * **Dropout** - dropout some of the output nodes in the model to prevent overfitting.
 * **Regularization** - regularize the model by adding a penalty to the loss function.
-* **Decrease learning rate** - use a small learning rate to decrease the magnitude of the weight updates and learn slower.
+* **Small learning rate** - use a small learning rate to decrease the magnitude of the weight updates and learn slower.
 * **Reducing number of parameters** - too many parameters can the model to memorize the dataset.
 * **Early stopping** - stop training the model if the model doesn't improve after a certain number of epochs.
-* **Learning rate decay** - decrease the learning rate of the optimizer after each epoch.
+* **Learning rate decay** - decrease the optimizer's learning rate after each epoch.
 
-For the ToonVision model, we'll utilize data augmentation, dropout, regularization, decrease learning rate, and learning rate decay.
+For the ToonVision model, we'll utilize data augmentation, dropout, regularization, small learning rate, and learning rate decay.
 
 #### Data augmentation
 

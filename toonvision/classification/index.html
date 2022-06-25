@@ -618,12 +618,12 @@ When training the multi-class models - with 4 and 32 classes - we'll utilize the
 <p>Originally, I planned on only using a single callback, <code>ModelCheckpoint</code>, to save the model's weights.
 The callback saves the model's weights to a file at some interval - usually after each epoch or at the lowest validation loss value during training.</p>
 
-<p>Saving the model at the lowest validation loss value is flawed the model may have overfit to the data.
+<p>Saving the model at the lowest validation loss value is flawed because the model may have overfit to the data.
 In fact, during my experiments, I found that models that saved their weights at the lowest validation loss value were not performing well during evaluation.</p>
 
-<p>I omitted the use of <a href="https://keras.io/api/callbacks/model_checkpoint/">ModelCheckpoint</a>.
+<p>As a result, I omitted the use of <a href="https://keras.io/api/callbacks/model_checkpoint/">ModelCheckpoint</a>.
 Rather, I saved the model only if it exceeded the previous run's evaluation accuracy and loss.
-This ensured I got a better model out of the 200 runs compared to the callback.
+This ensured I got a better model out of the 200 runs compared to the <code>ModelCheckpoint</code> callback.
 I believe this method is still flawed, but it proved to be more effective than saving the model based on the validation loss.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="c1"># Save the model based on the validation loss value</span>
@@ -661,7 +661,7 @@ It's defined in the <code>model_utils</code> module within the <code>make_model(
 
 <p>After experimenting with a handful of different architectures, I found the best architecture to contain few intermediate layers with small filters.
 Remember that the more layers and filters in the model, the more room for the model to overfit to the data.
-We must find the right balance in the architecture to ensure the model small enough to prevent overfitting, but accurate enough to generalize on never-before-seen data.</p>
+We must find the right balance in the architecture to ensure the model is small enough to prevent overfitting, but accurate enough to generalize on never-before-seen data.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">make_model</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">augmentation</span><span class="p">:</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
@@ -686,9 +686,8 @@ We must find the right balance in the architecture to ensure the model small eno
 </code></pre></div>
 
 <p>I believe the architecture above has room for improvement.
-More experimentation could fine-tune the architecture to improve the model's performance.
-We could remove some Conv2D and MaxPooling2D layers, reduce the filter sizes, or maybe add strides to the Conv2D layers.
-The chosen architecture is <em>for sure</em> not the best, but it will suffice.</p>
+More experimentation - remove some Conv2D and MaxPooling2D layers, reduce the filter sizes, or maybe add strides to the Conv2D layers - could fine-tune the architecture and improve the model's performance.
+The chosen architecture may not be the best, but it will suffice.</p>
 
 <hr />
 
@@ -696,42 +695,32 @@ The chosen architecture is <em>for sure</em> not the best, but it will suffice.<
 
 <p>Before training the actual model, we need to define a simple baseline to compare against.
 The baseline model will use the same model architecture, datasets, and hyperparameters as the optimized model we're training.
-The only difference is that we will not perform any optimizations - no data augmentation, dropout, batch normalization or learning rate decay.</p>
-
-<p>We'll train the baseline for 25 epochs with a learning rate of 0.001 (1e-3).
-The baseline model will be trained 200 times, each time with a rebalanced dataset.
-The average of all 200 runs will be plotted below.</p>
+The only difference is that baseline model not perform any optimizations during training or within the model - no data augmentation, dropout, batch normalization or learning rate decay.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;baseline&quot;</span><span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;baseline&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">LR</span><span class="p">)</span>
+    <span class="p">},</span>
     <span class="p">{</span>
         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;optimized_1e-5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">LR</span><span class="p">,</span> <span class="n">decay</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">),</span>
         <span class="s2">&quot;augmentation&quot;</span><span class="p">:</span> <span class="n">data_augmentation</span><span class="p">,</span>
         <span class="s2">&quot;dropout&quot;</span><span class="p">:</span> <span class="mf">0.90</span><span class="p">,</span>
     <span class="p">},</span>
-<span class="p">]</span>
-<span class="n">optimizers</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">LR</span><span class="p">),</span>  <span class="c1"># baseline</span>
-    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">LR</span><span class="p">,</span> <span class="n">decay</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">),</span>
-<span class="p">]</span>
-<span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">ModelCheckpoint</span><span class="p">(</span>
-        <span class="n">filepath</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;toonvision_</span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.keras&quot;</span><span class="p">,</span>
-        <span class="n">save_best_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">for</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="n">model_kwargs</span>
 <span class="p">]</span>
 
 <span class="c1"># %% Train each model for 25 epochs, and repeat it 200 times</span>
 <span class="n">histories_all</span><span class="p">,</span> <span class="n">evaluations_all</span> <span class="o">=</span> <span class="n">make_baseline_comparisons</span><span class="p">(</span>
     <span class="n">epochs</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
-    <span class="n">num_runs</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">num_runs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
-    <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks</span><span class="p">,</span>
-    <span class="n">optimizers</span><span class="o">=</span><span class="n">optimizers</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
+
+<p>We'll train the baseline for 25 epochs with a learning rate of 0.001 (1e-3).
+The baseline model will be trained 200 times, each time with a rebalanced dataset.
+The average of all 200 runs is plotted below.</p>
 
 <h3 id="baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</h3>
 
@@ -795,6 +784,8 @@ We'll interpret the layers' activations as heatmaps later to see if this is the 
 
 <h2 id="training-the-optimized-model">Training the optimized model</h2>
 
+<p>Now that we have a baseline to compare against, we can train the optimized model.</p>
+
 <h3 id="preventing-overfitting">Preventing overfitting</h3>
 
 <p>Given that we have a small dataset, we can utilize a few of the following techniques during training to prevent overfitting:</p>
@@ -804,13 +795,13 @@ We'll interpret the layers' activations as heatmaps later to see if this is the 
 <li><strong>Data balancing</strong> - balancing the number of objects in each dataset.</li>
 <li><strong>Dropout</strong> - dropout some of the output nodes in the model to prevent overfitting.</li>
 <li><strong>Regularization</strong> - regularize the model by adding a penalty to the loss function.</li>
-<li><strong>Decrease learning rate</strong> - use a small learning rate to decrease the magnitude of the weight updates and learn slower.</li>
+<li><strong>Small learning rate</strong> - use a small learning rate to decrease the magnitude of the weight updates and learn slower.</li>
 <li><strong>Reducing number of parameters</strong> - too many parameters can the model to memorize the dataset.</li>
 <li><strong>Early stopping</strong> - stop training the model if the model doesn't improve after a certain number of epochs.</li>
-<li><strong>Learning rate decay</strong> - decrease the learning rate of the optimizer after each epoch.</li>
+<li><strong>Learning rate decay</strong> - decrease the optimizer's learning rate after each epoch.</li>
 </ul>
 
-<p>For the ToonVision model, we'll utilize data augmentation, dropout, regularization, decrease learning rate, and learning rate decay.</p>
+<p>For the ToonVision model, we'll utilize data augmentation, dropout, regularization, small learning rate, and learning rate decay.</p>
 
 <h4 id="data-augmentation">Data augmentation</h4>
 
