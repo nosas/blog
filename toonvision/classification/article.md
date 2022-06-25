@@ -798,7 +798,7 @@ We can implement learning rate decay in two ways:
 - Use a learning rate scheduler (callback)
 - Add a learning rate decay factor to the optimizer
 
-I'll use the optimizer's `lr_decay` argument to implement the learning rate decay in training.
+I'll use the optimizer's `decay` argument to implement the learning rate decay in training.
 
 ```python
 from keras.callbacks import LearningRateScheduler
