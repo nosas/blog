@@ -755,14 +755,14 @@ The purpose of the data augmentation is to increase the number of training examp
 It's important to augment the data just enough so the samples remain representative of the dataset.
 If we rotate the image too much, or zoom in/out too much, we lose the context of the image and the model will not be able to learn from it.
 
-Looking at the grid below, we see a single image that has been augmented with the data augmentation techniques.
-The top four images result from a slight data augmentation, whereas the bottom four images are from an aggressive data augmentation.
-The more aggressive augmentation are not representative of the dataset or real-world samples.
-
 <figure class="center" style="width:50%">
     <img src="img/image_augmentation.png" style="width:100%;"/>
     <figcaption>Top four: Tame image augmentation resulting in realistic samples. Bottom four: Aggressive image augmentation resulting in unrealistic samples.</figcaption>
 </figure>
+
+Looking at the grid above, we see a single image that has been augmented with the data augmentation techniques.
+The top four images result from a slight data augmentation, whereas the bottom four images are from an aggressive data augmentation.
+The more aggressive augmentation are not representative of the dataset or real-world samples.
 
 #### Dropout
 
