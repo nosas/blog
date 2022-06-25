@@ -11,35 +11,9 @@ from data_processing import DATA_DIR, create_datasets, unsort_data
 
 
 def make_model(
-    name: str = "", augmentation: keras.Sequential = None, dropout: float = 0.0
-) -> keras.Model:
-    inputs = keras.Input(shape=(600, 200, 3))
-    if augmentation:
-        x = augmentation(inputs)
-    x = layers.Rescaling(1.0 / 255)(inputs)
-    x = layers.MaxPooling2D(pool_size=2)(x)
-    x = layers.Conv2D(filters=32, kernel_size=3, activation="relu")(x)
-    x = layers.Conv2D(filters=32, kernel_size=3, activation="relu")(x)
-    x = layers.MaxPooling2D(pool_size=2)(x)
-    x = layers.Conv2D(filters=64, kernel_size=3, activation="relu")(x)
-    x = layers.Conv2D(filters=64, kernel_size=3, activation="relu")(x)
-    x = layers.MaxPooling2D(pool_size=2)(x)
-    x = layers.Conv2D(filters=64, kernel_size=3, activation="relu")(x)
-    x = layers.Conv2D(filters=64, kernel_size=3, activation="relu")(x)
-    x = layers.Conv2D(filters=64, kernel_size=3, activation="relu")(x)
-    x = layers.MaxPooling2D(pool_size=2)(x)
-    x = layers.Conv2D(filters=128, kernel_size=3, activation="relu")(x)
-    x = layers.MaxPooling2D(pool_size=2)(x)
-    x = layers.Flatten()(x)
-    if dropout:
-        x = layers.Dropout(dropout)(x)
-    outputs = layers.Dense(units=1, activation="sigmoid")(x)
-    model = keras.Model(name=name, inputs=inputs, outputs=outputs)
-    return model
-
-
-def make_model_optimized(
-    name: str = "", augmentation: keras.Sequential = None, dropout: float = 0.0
+    name: str = "",
+    augmentation: keras.Sequential = None,
+    dropout: float = 0.0,
 ) -> keras.Model:
     inputs = keras.Input(shape=(600, 200, 3))
     if augmentation:
@@ -118,9 +92,9 @@ def make_baseline_comparisons(
     epochs: int,
     num_runs: int,
     model_kwargs: dict,
-    optimizers: list,
-    callbacks: list,
+    train_kwargs: dict,
     split_ratio: list[float] = [0.6, 0.2, 0.2],
+    save_best: bool = True,
 ) -> tuple[list[tuple[str, dict]], list[tuple[str, tuple[float, float]]]]:
     """Train model(s) for X num_runs and return the histories and evaluations"""
     histories_all = {model["name"]: [] for model in model_kwargs}
@@ -131,29 +105,29 @@ def make_baseline_comparisons(
         unsort_data()
         datasets = create_datasets(split_ratio=split_ratio)
         # Train each model
-        for kwargs, callback, optimizer in zip(model_kwargs, callbacks, optimizers):
-            model = make_model_optimized(**kwargs)
+        for kw_model, kw_train in zip(model_kwargs, train_kwargs):
+            model = make_model(**kw_model)
             model.compile(
                 loss="binary_crossentropy",
-                optimizer=optimizer,
+                optimizer=kw_train["optimizer"],
                 metrics=["accuracy"],
             )
             history, evaluation = train_model(
                 model=model,
                 datasets=datasets,
                 epochs=epochs,
-                callbacks=callback,
+                callbacks=kw_train.get("callbacks", None),
             )
             loss, acc = evaluation
             # TODO Figure out how to retain the dataset of the best model
             # Possible send a seed to numpy?
-
-            if (loss < evaluations_best[kwargs["name"]][0]) and (
-                acc > evaluations_best[kwargs["name"]][1]
-            ):
-                evaluations_best[kwargs["name"]] = (loss, acc)
-                # Save the model
-                model.save(f"./models/toonvision_{kwargs['name']}_run{run}.keras")
+            if save_best:
+                if (loss < evaluations_best[kw_model["name"]][0]) and (
+                    acc > evaluations_best[kw_model["name"]][1]
+                ):
+                    evaluations_best[kw_model["name"]] = (loss, acc)
+                    # Save the model
+                    model.save(f"./models/toonvision_{kw_model['name']}_run{run}.keras")
 
             # plot_history(histories, name=model.name)
             histories_all[model.name].append(history)

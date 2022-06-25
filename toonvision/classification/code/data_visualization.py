@@ -379,7 +379,7 @@ def plot_counters(counters: tuple[dict, dict, dict, dict], suptitle: str) -> Non
 
 
 def plot_datasets_all(text_color: str = "black") -> None:
-    plt.figure(figsize=(5, 10))
+    plt.figure(figsize=(5, 10), dpi=100)
 
     c_train = list(count_objects(data_dir=f"{TRAIN_DIR}/*/*.png"))
     train = c_train[0]
@@ -612,6 +612,7 @@ def plot_histories(
             color=color,
             alpha=alpha_runs,
         )
+        axes[1][1].set_ylim(0, 1)
 
     # Average of the histories
     avg_history = {

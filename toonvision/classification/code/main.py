@@ -30,7 +30,7 @@ from data_visualization import (
 )
 from model_utils import (
     make_baseline_comparisons,
-    make_model_optimized,
+    make_model,
     get_wrong_predictions,
     get_average_history,
 )
@@ -56,7 +56,8 @@ plot_toons_as_bar(img_dir=DATA_DIR)
 plot_xml_data()
 
 # # %% Plot all image sizes in unsorted directory
-plot_image_sizes(TRAIN_DIR)
+# plt.clf()
+# plot_image_sizes(TRAIN_DIR)
 
 # %% Plot the balance of the datasets
 plot_datasets_suits()
@@ -78,7 +79,7 @@ optimizers = [
 
 models_all = []
 for opt in optimizers:
-    model = make_model_optimized(name="toonvision_" + opt._name)
+    model = make_model(name="toonvision_" + opt._name)
     model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
     models_all.append(model)
 
@@ -102,13 +103,13 @@ for model, (test_loss, test_accuracy) in evaluations_all:
     print(f"Test Acc, Loss: {test_accuracy:.2f} {test_loss:.2f} {model.name}")
 
 # %% Compare training histories for all optimizers
-plt.figure(figsize=(30, 30), dpi=1200)
-fig, axes = plt.subplots(2, 2, figsize=(20, 10))
+plt.figure(figsize=(10, 10), dpi=100)
+fig, axes = plt.subplots(2, 2, figsize=(15, 12))
 for color, (model, history) in zip(COLORS, histories_all):
     plot_histories(
         axes=axes,
-        model_name=model.name,
         histories=[history.history],
+        model_name=model.name.replace("toonvision_", ""),
         color=color,
         alpha_runs=0.10,
         alpha_mean=0.99,
@@ -126,83 +127,89 @@ for model, history in histories_all:
         histories_vanishing.append((model.name, history.history))
 
 # %% Compare training histories for optimizers without vanishing gradients
-compare_histories(
-    histories_not_vanishing, suptitle="Optimizers without vanishing gradients"
-)
+# compare_histories(
+#     histories_not_vanishing, suptitle="Optimizers without vanishing gradients"
+# )
+plt.figure(figsize=(10, 10), dpi=100)
+fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+for color, (model_name, history) in zip(COLORS, histories_not_vanishing):
+    plot_histories(
+        axes=axes,
+        histories=[history],
+        model_name=model_name.replace("toonvision_", ""),
+        color=color,
+        alpha_runs=0.10,
+        alpha_mean=0.99,
+    )
+fig.show()
 
 # %% Compare training histories for optimizers with vanishing gradients
 compare_histories(histories_vanishing, suptitle="Optimizers with vanishing gradients")
 
-# %% Compare training histories against baseline models
+# %% Define data augmentation and models to use
 data_augmentation = keras.Sequential(
     [
         # Apply horizontal flipping to 50% of the images
         layers.RandomFlip("horizontal"),
-        # Rotate the input image by some factor in range [-20%, 20%] or [-72, 72] in degrees
-        layers.RandomRotation(0.2),
-        # Zoom in or out by a random factor in range [-30%, 30%]
-        layers.RandomZoom(0.3),
+        # Rotate the input image by some factor in range [-7.5%, 7.5%] or [-27, 27] in degrees
+        layers.RandomRotation(0.075),
+        # Zoom in or out by a random factor in range [-20%, 20%]
+        layers.RandomZoom(0.2),
     ]
 )
 model_kwargs = [
     {"name": "baseline"},
-    {
-        "name": "optimized",
-        "augmentation": data_augmentation,
-        "dropout": 0.90,
-    },
-    {
-        "name": "optimized_1e-4",
-        "augmentation": data_augmentation,
-        "dropout": 0.90,
-    },
+    # {
+    #     "name": "optimized",
+    #     "augmentation": data_augmentation,
+    #     "dropout": 0.90,
+    # },
+    # {
+    #     "name": "optimized_1e-4",
+    #     "augmentation": data_augmentation,
+    #     "dropout": 0.90,
+    # },
     {
         "name": "optimized_1e-5",
         "augmentation": data_augmentation,
         "dropout": 0.90,
     },
 ]
-optimizers = [
-    tf.keras.optimizers.Adam(learning_rate=LR),
-    tf.keras.optimizers.Adam(learning_rate=LR),
-    tf.keras.optimizers.Adam(learning_rate=LR, decay=1e-4),
-    tf.keras.optimizers.Adam(learning_rate=LR, decay=1e-5),
-]
-callbacks = [
-    keras.callbacks.ModelCheckpoint(
-        filepath=f"toonvision_{kwargs['name']}.keras",
-        save_best_only=True,
-        monitor="val_loss",
-    )
-    for kwargs in model_kwargs
+
+train_kwargs = [
+    {"optimizer": tf.keras.optimizers.Adam(learning_rate=LR)},
+    # {"optimizer": tf.keras.optimizers.Adam(learning_rate=LR)},
+    # {"optimizer": tf.keras.optimizers.Adam(learning_rate=LR, decay=1e-4)},
+    {"optimizer": tf.keras.optimizers.Adam(learning_rate=LR, decay=1e-5)},
 ]
 
-# %% Train each model for 100 epochs, and repeat it 10 times
+# %% Train each model for 25 epochs, and repeat it for 200 runs
 histories_all, evaluations_all = make_baseline_comparisons(
     epochs=25,
     num_runs=200,
     model_kwargs=model_kwargs,
-    callbacks=callbacks,
-    optimizers=optimizers,
+    train_kwargs=train_kwargs,
 )
 
 # %% Plot the histories
-plt.figure(figsize=(30, 30), dpi=100)
+plt.figure(figsize=(10, 10), dpi=100)
 fig, axes = plt.subplots(2, 2, figsize=(10, 10))
+h = [histories_all[0], histories_all[-1]]
 for color, (model_name, histories) in zip(COLORS, histories_all):
     plot_histories(
         axes=axes,
         model_name=model_name,
         histories=histories,
         color=color,
-        alpha_runs=0.02,
+        alpha_runs=0.03,
         alpha_mean=0.99,
     )
 fig.show()
 
 # %% Plot the evaluations
-plt.figure(figsize=(30, 30), dpi=100)
+plt.figure(figsize=(10, 10), dpi=100)
 fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+e = [evaluations_all[0], evaluations_all[-1]]
 # plot_evaluations_box(axes, evaluations_all, colors)
 plot_evaluations_box(axes=axes, evaluations_all=evaluations_all, colors=COLORS)
 fig.show()
@@ -239,8 +246,14 @@ optimized_avg = get_average_history(optimized_histories)
 plot_history(optimized_avg, "Optimized 1e-5 (average)")
 
 # %% Compare the baseline to the optimized
+# compare_histories(
+#     [("baseline", baseline_histories), ("optimized", optimized_histories)],
+#     suptitle="Baseline vs Optimized",
+# )
+
+# %% Compare the baseline to the optimized (average)
 compare_histories(
-    [("baseline", baseline_histories), ("optimized", optimized_histories)],
+    [("baseline", baseline_avg), ("optimized", optimized_avg)],
     suptitle="Baseline vs Optimized",
 )
 
@@ -268,4 +281,4 @@ for model_name, run in [
 
 # %% Plot the wrong predictions
 for model_name, wrong_preds in wrong_predictions:
-    plot_wrong_predictions(wrong_preds, model_name)
+    plot_wrong_predictions(wrong_preds, model_name, show_num_wrong=3)
