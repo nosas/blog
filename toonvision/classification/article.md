@@ -570,6 +570,18 @@ for run in range(200):
 
 ### Defining the model
 
+The model is simple CNN (convolutional neural network) with three Conv2D layers and four MaxPooling2D layers.
+It's defined in the `model_utils` module within the `make_model()` function.
+
+<figure class="center" style="width:80%">
+    <img src="img/model_architecture.png" style="width:100%;"/>
+    <figcaption>Model architecture, visualized with python package "visualkeras"</figcaption>
+</figure>
+
+After experimenting with a handful of different architectures, I found the best architecture to contain few intermediate layers with small filters.
+Remember that the more layers and filters in the model, the more room for the model to overfit to the data.
+We must find the right balance in the architecture to ensure the model small enough to prevent overfitting, but accurate enough to generalize on never-before-seen data.
+
 ```python
 def make_model(
     name: str = "", augmentation: keras.Sequential = None, dropout: float = 0.0
@@ -592,6 +604,11 @@ def make_model(
     model = keras.Model(name=name, inputs=inputs, outputs=outputs)
     return model
 ```
+
+I believe the architecture above has room for improvement.
+More experimentation could fine-tune the architecture to improve the model's performance.
+We could remove some Conv2D and MaxPooling2D layers, reduce the filter sizes, or maybe add strides to the Conv2D layers.
+The chosen architecture is *for sure* not the best, but it will suffice.
 
 ---
 ## Training the baseline model

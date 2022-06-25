@@ -651,6 +651,18 @@ I believe this method is still flawed, but it proved to be more effective than s
 
 <h3 id="defining-the-model">Defining the model</h3>
 
+<p>The model is simple CNN (convolutional neural network) with three Conv2D layers and four MaxPooling2D layers.
+It's defined in the <code>model_utils</code> module within the <code>make_model()</code> function.</p>
+
+<figure class="center" style="width:80%">
+    <img src="img/model_architecture.png" style="width:100%;"/>
+    <figcaption>Model architecture, visualized with python package "visualkeras"</figcaption>
+</figure>
+
+<p>After experimenting with a handful of different architectures, I found the best architecture to contain few intermediate layers with small filters.
+Remember that the more layers and filters in the model, the more room for the model to overfit to the data.
+We must find the right balance in the architecture to ensure the model small enough to prevent overfitting, but accurate enough to generalize on never-before-seen data.</p>
+
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">make_model</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">augmentation</span><span class="p">:</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
@@ -672,6 +684,11 @@ I believe this method is still flawed, but it proved to be more effective than s
     <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
 </code></pre></div>
+
+<p>I believe the architecture above has room for improvement.
+More experimentation could fine-tune the architecture to improve the model's performance.
+We could remove some Conv2D and MaxPooling2D layers, reduce the filter sizes, or maybe add strides to the Conv2D layers.
+The chosen architecture is <em>for sure</em> not the best, but it will suffice.</p>
 
 <hr />
 
