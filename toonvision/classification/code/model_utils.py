@@ -10,7 +10,34 @@ from keras import layers
 from data_processing import DATA_DIR, create_datasets, unsort_data
 
 
-def make_model(
+def make_model_padding(
+    name: str = "",
+    augmentation: keras.Sequential = None,
+    dropout: float = 0.0,
+) -> keras.Model:
+    inputs = keras.Input(shape=(600, 200, 3))
+    if augmentation:
+        x = augmentation(inputs)
+    x = layers.Rescaling(1.0 / 255)(inputs)
+    x = layers.Conv2D(filters=8, kernel_size=3, activation="relu", padding="same")(x)
+    x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.Conv2D(filters=8, kernel_size=3, activation="relu", padding="same")(x)
+    x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.Conv2D(filters=16, kernel_size=3, activation="relu", padding="same")(x)
+    x = layers.Conv2D(filters=16, kernel_size=3, activation="relu", padding="same")(x)
+    x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.Conv2D(filters=32, kernel_size=3, activation="relu", padding="same")(x)
+    x = layers.Conv2D(filters=32, kernel_size=3, activation="relu", padding="same")(x)
+    x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.Flatten()(x)
+    if dropout:
+        x = layers.Dropout(dropout)(x)
+    outputs = layers.Dense(units=1, activation="sigmoid")(x)
+    model = keras.Model(name=name, inputs=inputs, outputs=outputs)
+    return model
+
+
+def make_model_original(
     name: str = "",
     augmentation: keras.Sequential = None,
     dropout: float = 0.0,
@@ -32,6 +59,13 @@ def make_model(
     outputs = layers.Dense(units=1, activation="sigmoid")(x)
     model = keras.Model(name=name, inputs=inputs, outputs=outputs)
     return model
+
+
+def make_model(
+    model_func: callable,
+    kwargs: dict = None,
+) -> keras.Model:
+    return model_func(**(kwargs or {}))
 
 
 def predict_image(filename: str, model: keras.Model) -> tuple[str, np.array]:
@@ -97,9 +131,10 @@ def make_baseline_comparisons(
     save_best: bool = True,
 ) -> tuple[list[tuple[str, dict]], list[tuple[str, tuple[float, float]]]]:
     """Train model(s) for X num_runs and return the histories and evaluations"""
-    histories_all = {model["name"]: [] for model in model_kwargs}
-    evaluations_all = {model["name"]: [] for model in model_kwargs}
-    evaluations_best = {model["name"]: (1, 0) for model in model_kwargs}
+    model_names = [model['kwargs']['name'] for model in model_kwargs]
+    histories_all = {model_name: [] for model_name in model_names}
+    evaluations_all = {model_name: [] for model_name in model_names}
+    evaluations_best = {model_name: (1, 0) for model_name in model_names}
     for run in range(num_runs):
         # Reshuffle the dataset before each run to ensure each model is trained on the same dataset
         unsort_data()
@@ -107,6 +142,7 @@ def make_baseline_comparisons(
         # Train each model
         for kw_model, kw_train in zip(model_kwargs, train_kwargs):
             model = make_model(**kw_model)
+            name = model.name
             model.compile(
                 loss="binary_crossentropy",
                 optimizer=kw_train["optimizer"],
@@ -122,12 +158,12 @@ def make_baseline_comparisons(
             # TODO Figure out how to retain the dataset of the best model
             # Possible send a seed to numpy?
             if save_best:
-                if (loss < evaluations_best[kw_model["name"]][0]) and (
-                    acc > evaluations_best[kw_model["name"]][1]
+                if (loss < evaluations_best[name][0]) and (
+                    acc > evaluations_best[name][1]
                 ):
-                    evaluations_best[kw_model["name"]] = (loss, acc)
+                    evaluations_best[name] = (loss, acc)
                     # Save the model
-                    model.save(f"./models/toonvision_{kw_model['name']}_run{run}.keras")
+                    model.save(f"./models/toonvision_{name}_run{run}.keras")
 
             # plot_history(histories, name=model.name)
             histories_all[model.name].append(history)
@@ -135,10 +171,10 @@ def make_baseline_comparisons(
 
     # Convert dictionaries to tuples of (model_name, histories) and (model_name, evaluations)
     histories = [
-        (model["name"], histories_all[model["name"]]) for model in model_kwargs
+        (model_name, histories_all[model_name]) for model_name in model_names
     ]
     evaluations = [
-        (model["name"], evaluations_all[model["name"]]) for model in model_kwargs
+        (model_name, evaluations_all[model_name]) for model_name in model_names
     ]
     return histories, evaluations
 

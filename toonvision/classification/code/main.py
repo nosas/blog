@@ -31,6 +31,8 @@ from data_visualization import (
 from model_utils import (
     make_baseline_comparisons,
     make_model,
+    make_model_original,
+    make_model_padding,
     get_wrong_predictions,
     get_average_history,
 )
@@ -158,35 +160,46 @@ data_augmentation = keras.Sequential(
     ]
 )
 model_kwargs = [
-    {"name": "baseline"},
-    # {
-    #     "name": "optimized",
-    #     "augmentation": data_augmentation,
-    #     "dropout": 0.90,
-    # },
-    # {
-    #     "name": "optimized_1e-4",
-    #     "augmentation": data_augmentation,
-    #     "dropout": 0.90,
-    # },
     {
-        "name": "optimized_1e-5",
-        "augmentation": data_augmentation,
-        "dropout": 0.90,
+        "model_func": make_model_original,
+        "kwargs": {
+            "name": "base_orig",
+        },
+    },
+    {
+        "model_func": make_model_padding,
+        "kwargs": {
+            "name": "base_pad",
+        },
+    },
+    {
+        "model_func": make_model_original,
+        "kwargs": {
+            "name": "opt_orig",
+            "augmentation": data_augmentation,
+            "dropout": 0.90,
+        },
+    },
+    {
+        "model_func": make_model_padding,
+        "kwargs": {
+            "name": "opt_pad",
+            "dropout": 0.90,
+        },
     },
 ]
 
 train_kwargs = [
     {"optimizer": tf.keras.optimizers.Adam(learning_rate=LR)},
-    # {"optimizer": tf.keras.optimizers.Adam(learning_rate=LR)},
-    # {"optimizer": tf.keras.optimizers.Adam(learning_rate=LR, decay=1e-4)},
+    {"optimizer": tf.keras.optimizers.Adam(learning_rate=LR)},
+    {"optimizer": tf.keras.optimizers.Adam(learning_rate=LR, decay=1e-5)},
     {"optimizer": tf.keras.optimizers.Adam(learning_rate=LR, decay=1e-5)},
 ]
 
 # %% Train each model for 25 epochs, and repeat it for 200 runs
 histories_all, evaluations_all = make_baseline_comparisons(
     epochs=25,
-    num_runs=200,
+    num_runs=100,
     model_kwargs=model_kwargs,
     train_kwargs=train_kwargs,
 )
@@ -217,31 +230,31 @@ fig.show()
 # %% Export the histories_all to a JSON file
 # import json
 
-# with open("histories_all.json", "w") as f:
+# with open("histories_all_new_pad.json", "w") as f:
 #     json.dump(histories_all, f)
-# with open("evaluations_all.json", "w") as f:
+# with open("evaluations_all_new_pad.json", "w") as f:
 #     json.dump(evaluations_all, f)
 
 # %% Load the histories_all from a JSON file
-import json
+# import json
 
-with open("histories_all.json", "r") as f:
-    histories_all = json.load(f)
-with open("evaluations_all.json", "r") as f:
-    evaluations_all = json.load(f)
+# with open("histories_all.json", "r") as f:
+#     histories_all = json.load(f)
+# with open("evaluations_all.json", "r") as f:
+#     evaluations_all = json.load(f)
 
 
 # %% Plot the average history of the baseline model
 baseline_histories = histories_all[0][1]
 run = 99 + 1
-plot_history(baseline_histories[100], f"Baseline (run #{run-1})")
+plot_history(baseline_histories[0], f"Baseline (run #{run-1})")
 baseline_avg = get_average_history(baseline_histories)
 plot_history(baseline_avg, "Baseline (average)")
 
 # %% Plot the average history of the optimized model
 optimized_histories = histories_all[-1][1]
-run = 12 + 1
-plot_history(optimized_histories[13], f"Optimized 1e-5 (run #{run-1})")
+run = 2
+plot_history(optimized_histories[run], f"Optimized 1e-5 (run #{run + 1})")
 optimized_avg = get_average_history(optimized_histories)
 plot_history(optimized_avg, "Optimized 1e-5 (average)")
 
@@ -269,10 +282,10 @@ ds_train, ds_validate, ds_test = create_datasets(split_ratio=[0.6, 0.2, 0.2])
 wrong_predictions = []
 
 for model_name, run in [
-    ("baseline", 99),
-    # ("optimized", 12),
-    # ("optimized_1e-4", 20),
-    ("optimized_1e-5", 12),
+    ("base_orig", 23),
+    ("base_pad", 7),
+    ("opt_orig", 17),
+    ("opt_pad", 2),
 ]:
     model = keras.models.load_model(f"./models/toonvision_{model_name}_run{run}.keras")
     evaluation = model.evaluate(ds_test, verbose=False)
@@ -281,4 +294,83 @@ for model_name, run in [
 
 # %% Plot the wrong predictions
 for model_name, wrong_preds in wrong_predictions:
-    plot_wrong_predictions(wrong_preds, model_name, show_num_wrong=3)
+    plot_wrong_predictions(wrong_preds, model_name, show_num_wrong=5)
+
+
+# %% Load the optimized model
+model = keras.models.load_model("./models/toonvision_opt_pad_run2.keras")
+
+# %% Load an example image and turn it into a tensor
+import numpy as np
+
+
+def get_img_array(img_path, target_size):
+    img = tf.keras.utils.load_img(img_path, target_size=target_size)
+    array = tf.keras.utils.img_to_array(img)
+    array = np.expand_dims(array, axis=0)
+    return array
+
+
+# fname = '../img/data\\train\\cog\\cog_lb_bloodsucker_15.png'
+# img_tensor = get_img_array(fname, target_size=(600, 200))
+# img_tensor = ds_train.take(1)
+# img_tensor = img_tensor[0]
+for image, label in ds_train.take(1):
+    img_tensor = image.numpy().astype("uint8")
+    plt.imshow(img_tensor[0])
+    plt.axis("off")
+    plt.show()
+
+# %% Visualize the model's intermediate convnet outputs
+from tensorflow.keras import layers
+
+layer_outputs = []
+layer_names = []
+for layer in model.layers:
+    if isinstance(layer, (layers.Conv2D, layers.MaxPooling2D)):
+        # if isinstance(layer, (layers.Conv2D)):
+        layer_outputs.append(layer.output)
+        layer_names.append(layer.name)
+activation_model = keras.Model(inputs=model.input, outputs=layer_outputs)
+
+activations = activation_model.predict(img_tensor)
+
+# Get the activations of the last convolutional layer
+activations_conv2d = activations[-1]
+# Display the ninth channel of the activation
+# This channel appears to encode the black pixels of the image
+# plt.matshow(activations_conv2d[0, :, :, 8], cmap="viridis")
+
+# %% Plot a complete visualization of all activations in the network
+images_per_row = 2
+for layer_name, layer_activation in zip(layer_names[:], activations[:]):
+    n_features = layer_activation.shape[-1]
+    r, c = layer_activation.shape[1], layer_activation.shape[2]
+    n_cols = n_features // images_per_row
+    display_grid = np.zeros((images_per_row * (r + 1) - 1, (c + 1) * n_cols - 1))
+    for col in range(n_cols):
+        for row in range(images_per_row):
+            channel_index = col * images_per_row + row
+            channel_image = layer_activation[0, :, :, channel_index].copy()
+            if channel_image.sum() != 0:
+                channel_image -= channel_image.mean()
+                channel_image /= channel_image.std()
+                channel_image *= 64
+                channel_image += 128
+            channel_image = np.clip(channel_image, 0, 255).astype("uint8")
+            display_grid[
+                row * (r + 1) : (row + 1) * r + row,
+                col * (c + 1) : (col + 1) * c + col,
+            ] = channel_image
+
+    # scale = r * (1.25)./r
+    # scale = r * (1.25)./r
+    scale = 0.1
+    plt.figure(figsize=(scale * 600, scale * 200))
+    plt.title(layer_name)
+    plt.grid(False)
+    plt.axis("off")
+    plt.imshow(display_grid, aspect="auto", cmap="viridis")
+
+
+# %%
