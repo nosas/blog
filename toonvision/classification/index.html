@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 25, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 27, 2022</p>
 
 <p><title>ToonVision: Binary and Multiclass Classification</title></p>
 
@@ -118,6 +118,12 @@ For now, let's focus on classification.</p>
 <li><a href="#visualizing-intermediate-convnet-outputs-intermediate-activations">Visualizing intermediate convnet outputs (intermediate activations)</a></li>
 <li><a href="#visualizing-convnet-filters">Visualizing convnet filters</a></li>
 <li><a href="#visualizing-heatmaps-of-class-activation-in-an-image">Visualizing heatmaps of class activation in an image</a></li>
+</ul></li>
+<li><a href="#future-improvements">Future improvements</a>
+<ul>
+<li><a href="#dataset-balance">Dataset balance</a></li>
+<li><a href="#model-architecture">Model architecture</a></li>
+<li><a href="#model-interpretation-1">Model interpretation</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -1020,6 +1026,38 @@ Let's interpret what the model's layers are seeing as heatmaps.</p>
 <h3 id="visualizing-convnet-filters">Visualizing convnet filters</h3>
 
 <h3 id="visualizing-heatmaps-of-class-activation-in-an-image">Visualizing heatmaps of class activation in an image</h3>
+
+<hr />
+
+<h2 id="future-improvements">Future improvements</h2>
+
+<p>As much as I enjoyed writing this article, there are many areas in which I would like to improve: dataset balance, model architecture, and model interpretation.
+The following article will ensure improvement in the areas listed above.</p>
+
+<h3 id="dataset-balance">Dataset balance</h3>
+
+<p>Balancing the dataset requires time and effort.
+The imbalanced dataset in this article was because I wanted a quick dataset to train on, but I also wanted to learn how to work with a poorly-balanced dataset.
+With time, I'm confident in my ability to balance the dataset.
+I've concluded that using an imbalanced dataset should be avoided if possible, but it's not much of a hindrance for small models.</p>
+
+<h3 id="model-architecture">Model architecture</h3>
+
+<p>Model architecture is a bit of a challenge.
+I'm not sure how to best structure the model's layers and filters, and my readings have shown no clear direction for designing architectures.</p>
+
+<p>The original model architecture was based on a model found in François Chollet's book, "<em>Deep Learning with Python</em>".
+After writing this article, I'm sure the model can be improved.
+For instance, the first MaxPooling2D layer should be removed.
+Multiple dropout layers can be added in between the convolutional layers rather than a single layer at the end of the model.
+Stacks of convolutional layers can be added to the model to increase the number of filters.</p>
+
+<p>I must streamline a process to design, compare, and measure performance of different model architectures.
+This will allow me to select the best model for my dataset without having to manually design and test models.</p>
+
+<p>Of course, measuring performance is heavily dependent on a well-balanced dataset, so that must remain my highest priority.</p>
+
+<h3 id="model-interpretation-2">Model interpretation</h3>
 
 </body>
 </html>

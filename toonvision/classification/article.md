@@ -67,6 +67,10 @@ For now, let's focus on classification.
         - [Visualizing intermediate convnet outputs (intermediate activations)](#visualizing-intermediate-convnet-outputs-intermediate-activations)
         - [Visualizing convnet filters](#visualizing-convnet-filters)
         - [Visualizing heatmaps of class activation in an image](#visualizing-heatmaps-of-class-activation-in-an-image)
+    - [Future improvements](#future-improvements)
+        - [Dataset balance](#dataset-balance)
+        - [Model architecture](#model-architecture)
+        - [Model interpretation](#model-interpretation-1)
 
 </details>
 
@@ -927,8 +931,40 @@ Let's interpret what the model's layers are seeing as heatmaps.
 
 ### Visualizing intermediate convnet outputs (intermediate activations)
 
-
-
 ### Visualizing convnet filters
 
 ### Visualizing heatmaps of class activation in an image
+
+---
+## Future improvements
+
+As much as I enjoyed writing this article, there are many areas in which I would like to improve: dataset balance, model architecture, and model interpretation.
+The following article will ensure improvement in the areas listed above.
+
+### Dataset balance
+
+Balancing the dataset requires time and effort.
+The imbalanced dataset in this article was because I wanted a quick dataset to train on, but I also wanted to learn how to work with a poorly-balanced dataset.
+With time, I'm confident in my ability to balance the dataset.
+I've concluded that using an imbalanced dataset should be avoided if possible, but it's not much of a hindrance for small models.
+
+### Model architecture
+
+Model architecture is a bit of a challenge.
+I'm not sure how to best structure the model's layers and filters, and my readings have shown no clear direction for designing architectures.
+
+The original model architecture was based on a model found in François Chollet's book, "*Deep Learning with Python*".
+After writing this article, I'm sure the model can be improved.
+For instance, the first MaxPooling2D layer should be removed.
+Multiple dropout layers can be added in between the convolutional layers rather than a single layer at the end of the model.
+Stacks of convolutional layers can be added to the model to increase the number of filters.
+
+I must streamline a process to design, compare, and measure performance of different model architectures.
+This will allow me to select the best model for my dataset without having to manually design and test models.
+
+Of course, measuring performance is heavily dependent on a well-balanced dataset, so that must remain my highest priority.
+
+### Model interpretation
+
+
+
