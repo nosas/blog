@@ -929,6 +929,16 @@ Let's interpret what the model's layers are seeing as heatmaps.
 ---
 ## Model interpretation
 
+Neural networks are often considered to be black boxes.
+You throw a bunch of data at a network of math functions and it solves all of your problems; it's basically magic.
+If you try to understand the network by looking at the layers and their activations, you'll find that it still doesn't make sense.
+
+Convolutional neural networks - specifically for image classification problems - are quite the opposite.
+We can visualize the layers' activations - outputs - as heatmaps and clearly understand what the model is looking for in an image.
+
+
+
+
 ### Visualizing intermediate convnet outputs (intermediate activations)
 
 ### Visualizing convnet filters
