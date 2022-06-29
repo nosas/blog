@@ -946,7 +946,13 @@ The following article will ensure improvement in the areas listed above.
 Balancing the dataset requires time and effort.
 The imbalanced dataset in this article was because I wanted a quick dataset to train on, but I also wanted to learn how to work with a poorly-balanced dataset.
 With time, I'm confident in my ability to balance the dataset.
-I've concluded that using an imbalanced dataset should be avoided if possible, but it's not much of a hindrance for small models.
+
+Furthermore, the use of a validation set resulted in small training, validation, and testing dataset.
+As a consequence, the validation scores changed a lot depending on which data points we chose for validation and which we chose for training.
+This is commonly referred to as having a "high *variance*" with regard to the validation split, and prevents us from properly evaluating our model.
+Future articles will forego the use of validation sets until the dataset is sufficiently grown and balanced, or implement K-fold cross-validation.
+
+In conclusion, using an imbalanced dataset should be avoided if possible, but it's not much of a hindrance for small models.
 
 ### Model architecture
 
@@ -970,10 +976,10 @@ Model interpretation is a crucial step in the process of model selection.
 It's important to understand the model's output and how it is interpreting the output.
 We can understand what the model is looking for in an input image - what features are important to the model - by visualizing its layers' outputs.
 
-Interpreting my model's output above was an eye-opener for me.
-The intermediate activations of the model's convolutional layers are shown as heatmaps which are superimposed on the input image.
-The heatmaps clearly highlighted how the model is looking for a specific feature in the image, such as a face, gloves, or ears.
+Interpreting the model's output above was an eye-opener for me.
+The intermediate layers activations are shown as heatmaps which are superimposed on the input image.
+The heatmaps clearly highlighted how the model searches for a specific feature in the image, such as a face, gloves, or ears.
 These interpretations are incredibly useful for understanding the model.
 
 Moving forward, I will streamline the process of visualizing the model's layers' outputs.
-I would like to be able to visualize the model's outputs in a way that is easy to understand.
+I would like to be able to visualize the model's outputs in a way that is easy to understand in order to select the best model after training.
