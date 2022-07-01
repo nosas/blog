@@ -113,17 +113,17 @@ For now, let's focus on classification.</p>
 </ul></li>
 <li><a href="#baseline-comparison-evaluation">Baseline comparison: Evaluation</a></li>
 </ul></li>
-<li><a href="#model-interpretation">Model interpretation</a>
+<li><a href="#model-interpretation-and-visualization">Model interpretation and visualization</a>
 <ul>
-<li><a href="#visualizing-intermediate-convnet-outputs-intermediate-activations">Visualizing intermediate convnet outputs (intermediate activations)</a></li>
-<li><a href="#visualizing-convnet-filters">Visualizing convnet filters</a></li>
-<li><a href="#visualizing-heatmaps-of-class-activation-in-an-image">Visualizing heatmaps of class activation in an image</a></li>
+<li><a href="#intermediate-convnet-outputs-intermediate-activations">Intermediate convnet outputs (intermediate activations)</a></li>
+<li><a href="#convnet-filters">Convnet filters</a></li>
+<li><a href="#heatmaps-of-class-activation-in-an-image">Heatmaps of class activation in an image</a></li>
 </ul></li>
 <li><a href="#future-improvements">Future improvements</a>
 <ul>
 <li><a href="#dataset-balance">Dataset balance</a></li>
 <li><a href="#model-architecture">Model architecture</a></li>
-<li><a href="#model-interpretation-1">Model interpretation</a></li>
+<li><a href="#model-interpretation">Model interpretation</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -1019,7 +1019,7 @@ Let's interpret what the model's layers are seeing as heatmaps.</p>
 
 <hr />
 
-<h2 id="model-interpretation">Model interpretation</h2>
+<h2 id="model-interpretation-and-visualization">Model interpretation and visualization</h2>
 
 <p>Neural networks are often considered to be black boxes: they learn data representations that are difficult to interpret in human-readable form.
 You throw a bunch of data at a network of math functions and it solves all of your problems; it's basically magic.</p>
@@ -1029,7 +1029,7 @@ We can visualize the convnet's activations - intermediate layer outputs - as hea
 
 <p>We'll peel back the layers of the model in the following sections and interpret what the model has learned from our dataset.</p>
 
-<h3 id="visualizing-intermediate-convnet-outputs-intermediate-activations">Visualizing intermediate convnet outputs (intermediate activations)</h3>
+<h3 id="intermediate-convnet-outputs-intermediate-activations">Intermediate convnet outputs (intermediate activations)</h3>
 
 <figure class="right" style="width: 40%;margin-right: 1em;">
     <img src="img/layer_activations_sample_image.png">
@@ -1072,9 +1072,9 @@ Toon ears - such as deer/dog ears - were also strong Toon indicators for the mod
 <p>I'm quite fond of being able to visualize the model's activations.
 It is a great way to understand how the model is learning to recognize the input data.</p>
 
-<h3 id="visualizing-convnet-filters">Visualizing convnet filters</h3>
+<h3 id="convnet-filters">Convnet filters</h3>
 
-<h3 id="visualizing-heatmaps-of-class-activation-in-an-image">Visualizing heatmaps of class activation in an image</h3>
+<h3 id="heatmaps-of-class-activation-in-an-image">Heatmaps of class activation in an image</h3>
 
 <hr />
 
@@ -1112,7 +1112,7 @@ This will allow me to select the best model for my dataset without having to man
 
 <p>Of course, measuring performance is heavily dependent on a well-balanced dataset, so that must remain my highest priority.</p>
 
-<h3 id="model-interpretation-2">Model interpretation</h3>
+<h3 id="model-interpretation">Model interpretation</h3>
 
 <p>Model interpretation is a crucial step in the process of model selection.
 It's important to understand the model's output and how it is interpreting the output.

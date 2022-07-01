@@ -63,14 +63,14 @@ For now, let's focus on classification.
         - [Baseline comparison: Training](#baseline-comparison-training)
             - [What's with the jagged lines?](#whats-with-the-jagged-lines)
         - [Baseline comparison: Evaluation](#baseline-comparison-evaluation)
-    - [Model interpretation](#model-interpretation)
-        - [Visualizing intermediate convnet outputs (intermediate activations)](#visualizing-intermediate-convnet-outputs-intermediate-activations)
-        - [Visualizing convnet filters](#visualizing-convnet-filters)
-        - [Visualizing heatmaps of class activation in an image](#visualizing-heatmaps-of-class-activation-in-an-image)
+    - [Model interpretation and visualization](#model-interpretation-and-visualization)
+        - [Intermediate convnet outputs (intermediate activations)](#intermediate-convnet-outputs-intermediate-activations)
+        - [Convnet filters](#convnet-filters)
+        - [Heatmaps of class activation in an image](#heatmaps-of-class-activation-in-an-image)
     - [Future improvements](#future-improvements)
         - [Dataset balance](#dataset-balance)
         - [Model architecture](#model-architecture)
-        - [Model interpretation](#model-interpretation-1)
+        - [Model interpretation](#model-interpretation)
 
 </details>
 
@@ -927,7 +927,7 @@ Enough proving that the optimized model is superior to the baseline model.
 Let's interpret what the model's layers are seeing as heatmaps.
 
 ---
-## Model interpretation
+## Model interpretation and visualization
 
 Neural networks are often considered to be black boxes: they learn data representations that are difficult to interpret in human-readable form.
 You throw a bunch of data at a network of math functions and it solves all of your problems; it's basically magic.
@@ -937,7 +937,7 @@ We can visualize the convnet's activations - intermediate layer outputs - as hea
 
 We'll peel back the layers of the model in the following sections and interpret what the model has learned from our dataset.
 
-### Visualizing intermediate convnet outputs (intermediate activations)
+### Intermediate convnet outputs (intermediate activations)
 
 <figure class="right" style="width: 40%;margin-right: 1em;">
     <img src="img/layer_activations_sample_image.png">
@@ -980,9 +980,9 @@ Toon ears - such as deer/dog ears - were also strong Toon indicators for the mod
 I'm quite fond of being able to visualize the model's activations.
 It is a great way to understand how the model is learning to recognize the input data.
 
-### Visualizing convnet filters
+### Convnet filters
 
-### Visualizing heatmaps of class activation in an image
+### Heatmaps of class activation in an image
 
 ---
 ## Future improvements
