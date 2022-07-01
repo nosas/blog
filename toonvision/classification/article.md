@@ -969,18 +969,31 @@ We'll discuss patterns and filters in the next section.
 
 <figure class="center" style="width:95%;">
     <img src="img/layer_activations_feature_maps.png" style="width:100%;"/>
-    <figcaption></figcaption>
+    <figcaption>Feature maps of the sample image above, extracted from each layer's output (excluding the first MaxPooling2D layer)</figcaption>
 </figure>
 
 After looking at the activations of different inputs, I found that that the model learned to recognize the Cogs by their suit shape and color.
-I had anticipated that the model would identify Toons by their facial features, or maybe their gloves, but I was wrong.
-The model recognizes Toons by their accessories and clothes: backpacks, shoes, and pants were all strong feature indicators.
-Toon ears - such as deer/dog ears - were also strong Toon indicators for the model.
+I anticipated that the model would identify Toons by their facial features or gloves, and I was *somewhat* correct.
+However, the model mostly classified Toons by their accessories and clothes: backpacks, shoes, pants, and sometimes gloves were all strong feature indicators.
+Surprisingly, dog/deer faces - specifically ears, antlers, and noses - were the only features to outperform accessories/clothes indicators.
+
+<details>
+    <summary>Feature maps of a dog Toon</summary>
+
+<figure class="center" style="width:95%;">
+    <img src="img/layer_activations_feature_maps_dog.png" style="width:100%;"/>
+    <figcaption>Note the large number of ear and nose-shaped activations in the final layer</figcaption>
+</figure>
+</details>
 
 I'm quite fond of being able to visualize the model's activations.
 It is a great way to understand how the model is learning to recognize the input data.
 
 ### Convnet filters
+
+Filters are the weights that are learned by the network.
+They are used to extract information - extract patterns - from the input data.
+We can utilize *gradient ascent* to visualize the filters on
 
 ### Heatmaps of class activation in an image
 
