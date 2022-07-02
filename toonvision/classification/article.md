@@ -1030,7 +1030,7 @@ We can make out blue and yellow patterns with diagonal and straight-line edges, 
 
 If our model were larger, or trained for more epochs, we would see more complex patterns.
 More interesting patterns can be seen in the Keras blog post [How convolutional neural networks see the world](https://blog.keras.io/how-convolutional-neural-networks-see-the-world.html).
-It's definitely worth the read!
+It's definitely worth the read to see how beautiful the patterns can be in more complex models.
 
 ### Heatmaps of class activation in an image
 
