@@ -66,7 +66,7 @@ For now, let's focus on classification.
     - [Model interpretation and visualization](#model-interpretation-and-visualization)
         - [Intermediate convnet outputs (intermediate activations)](#intermediate-convnet-outputs-intermediate-activations)
         - [Convnet filters](#convnet-filters)
-        - [Heatmaps of class activation in an image](#heatmaps-of-class-activation-in-an-image)
+        - [Class activation heatmaps](#class-activation-heatmaps)
     - [Future improvements](#future-improvements)
         - [Dataset balance](#dataset-balance)
         - [Model architecture](#model-architecture)
@@ -1032,7 +1032,17 @@ If our model were larger, or trained for more epochs, we would see more complex 
 More interesting patterns can be seen in the Keras blog post [How convolutional neural networks see the world](https://blog.keras.io/how-convolutional-neural-networks-see-the-world.html).
 It's definitely worth the read to see how beautiful the patterns can be in more complex models.
 
-### Heatmaps of class activation in an image
+### Class activation heatmaps
+
+The final visualization technique - *class activation maps* (CAM) - is useful for understanding which parts of an image led to a specific class prediction.
+This is helpful for debugging wrong predictions and understanding classification mistakes.
+The technique involves scoring subsections of the image based on how much they activate a class's feature detectors.
+We then use the scores to generate a heatmap of the image, where the hotter the pixel, the more activation the class's feature detectors had.
+Lastly, we superimpose the heatmap on the original image to visualize the activation - visualize what parts of the image activate the class.
+
+We'll use the following image to visualize the CAM.
+This image was mentioned earlier as always showing up in the wrong predictions of our models.
+Let's figure out *why* the models cannot predict the correct class for this image by visualizing the CAM.
 
 ---
 ## Future improvements

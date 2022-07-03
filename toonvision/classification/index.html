@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 01, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 02, 2022</p>
 
 <p><title>ToonVision: Binary and Multiclass Classification</title></p>
 
@@ -117,7 +117,7 @@ For now, let's focus on classification.</p>
 <ul>
 <li><a href="#intermediate-convnet-outputs-intermediate-activations">Intermediate convnet outputs (intermediate activations)</a></li>
 <li><a href="#convnet-filters">Convnet filters</a></li>
-<li><a href="#heatmaps-of-class-activation-in-an-image">Heatmaps of class activation in an image</a></li>
+<li><a href="#class-activation-heatmaps">Class activation heatmaps</a></li>
 </ul></li>
 <li><a href="#future-improvements">Future improvements</a>
 <ul>
@@ -1125,7 +1125,17 @@ We can make out blue and yellow patterns with diagonal and straight-line edges, 
 More interesting patterns can be seen in the Keras blog post <a href="https://blog.keras.io/how-convolutional-neural-networks-see-the-world.html">How convolutional neural networks see the world</a>.
 It's definitely worth the read to see how beautiful the patterns can be in more complex models.</p>
 
-<h3 id="heatmaps-of-class-activation-in-an-image">Heatmaps of class activation in an image</h3>
+<h3 id="class-activation-heatmaps">Class activation heatmaps</h3>
+
+<p>The final visualization technique - <em>class activation maps</em> (CAM) - is useful for understanding which parts of an image led to a specific class prediction.
+This is helpful for debugging wrong predictions and understanding classification mistakes.
+The technique involves scoring subsections of the image based on how much they activate a class's feature detectors.
+We then use the scores to generate a heatmap of the image, where the hotter the pixel, the more activation the class's feature detectors had.
+Lastly, we superimpose the heatmap on the original image to visualize the activation - visualize what parts of the image activate the class.</p>
+
+<p>We'll use the following image to visualize the CAM.
+This image was mentioned earlier as always showing up in the wrong predictions of our models.
+Let's figure out <em>why</em> the models cannot predict the correct class for this image by visualizing the CAM.</p>
 
 <hr />
 
