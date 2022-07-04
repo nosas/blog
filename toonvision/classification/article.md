@@ -67,6 +67,7 @@ For now, let's focus on classification.
         - [Intermediate convnet outputs (intermediate activations)](#intermediate-convnet-outputs-intermediate-activations)
         - [Convnet filters](#convnet-filters)
         - [Class activation heatmaps](#class-activation-heatmaps)
+            - [Additional CAM findings](#additional-cam-findings)
     - [Future improvements](#future-improvements)
         - [Dataset balance](#dataset-balance)
         - [Model architecture](#model-architecture)
@@ -1010,14 +1011,14 @@ Filters tell us a lot about how the convnet layers see the world.
         <td>
             <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
                 <small>
-                    <i>Filters from first MaxPooling2D and Conv2D layers<i>
+                    <i>Filters from first MaxPooling2D and Conv2D layers</i>
                 </small>
             </span>
         </td>
         <td>
             <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
                 <small>
-                    <i>Filters from remaining layers<i>
+                    <i>Filters from remaining layers</i>
                 </small>
             </span>
         </td>
@@ -1036,32 +1037,66 @@ It's definitely worth the read to see how beautiful the patterns can be in more 
 
 <figure class="right" style="width:20%;">
     <img src="img/cam_sample_cat.png"/>
-    <figcaption>Sample cat Toon</figcaption>
+    <figcaption>Sample cat Toon, "cat_20"</figcaption>
 </figure>
 
 The final visualization technique - *class activation maps* (CAM) - is useful for understanding which parts of an image led to a specific class prediction.
 This is helpful for debugging wrong predictions and understanding classification mistakes.
 The technique involves scoring subsections of the image based on how much they activate a class's feature detectors.
-We then use the scores to generate a heatmap of the image, where the hotter the pixel, the more activation the class's feature detectors had.
+We take the average score across all feature maps to generate a heatmap of the image, where the hotter the pixel, the more activation of the predicted class.
 Lastly, we superimpose the heatmap on the original image to visualize the activation - visualize what parts of the image activate the class.
 
-We'll use the cat Toon on the right to visualize the CAM.
+We'll use the Toon on the right, "cat_20", to visualize the CAM.
 This image was mentioned earlier as always showing up in the wrong predictions of our models.
 Let's figure out *why* the models cannot predict the correct class for this image by visualizing the CAM.
 
-<figure class="center">
-    <img src="img/cam_sample_cat_superimposed.png" style="width:100%;"/>
-    <figcaption>Images, in order: original, heatmap, superimposed</figcaption>
-</figure>
+<table style="width:100%;">
+    <tr>
+        <td style="width:50%;">
+            <img src="img/cam_sample_cat_superimposed.png" style="width:100%;"/>
+        </td>
+        <td style="width:50%;">
+            <img src="img/cam_sample_bloodsucker_superimposed.png" style="width:100%;"/>
+        </td>
+    </tr>
+    <tr >
+        <td>
+            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                <small>
+                    <i>Toon "cat_20" commonly predicted as Cog</i>
+                </small>
+            </span>
+        </td>
+        <td>
+            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                <small>
+                    <i>Cog with similar heatmap as "cat_20"</i>
+                </small>
+            </span>
+        </td>
+    </tr>
+</table>
 
-The heatmap and superimposed images show that the model notices Toon accessories more than Toon features.
+The Toon's heatmap and superimposed images show that the model identifies Toon accessories more than Toon features (eyes, face, gloves).
 If the model recognizes the accessories, why does it still predict the wrong class?
 The issue seems to be two-fold:
 
-1. The Toon's coloring is similar to that of a Cog: brown/maroon top, brown skin, and black shoes
+1. The Toon's coloring shares that of a Cog: brown/maroon top, dark pants, and black shoes
 2. The heatmap is incredibly similar to that of a Cog's: activations around the head area and more activation around the hands.
 
-<font style="color:red">TODO: Insert heatmap of a Cog for reference</font>
+Point 1 demonstrates that we need must include more Toons images with the same coloration as Cogs.
+Notice how the Toon's black shoes were not detected by the model because they match the Cogs' black shoes.
+
+Point 2 is tricker to resolve.
+We can see the model identify the Toon's facial features, but that's not enough for it to correctly label the image.
+In order to fix point 2, we need to include more Toons in our dataset.
+The class imbalance is a great problem in edge cases like this.
+
+An alternative solution to point 2 is to include padding in our convnet layers so as to not lose information.
+With padding, the heatmap would include the entirety of the backpack seen in the original image instead of cropping it out.
+The entire backpack being included in the heatmap likely would have resulted in a correct prediction.
+
+#### Additional CAM findings
 
 
 
@@ -1091,7 +1126,7 @@ I'm not sure how to best structure the model's layers and filters, and my readin
 
 The original model architecture was based on a model found in François Chollet's book, "*Deep Learning with Python*".
 After writing this article, I'm sure the model can be improved.
-For instance, the first MaxPooling2D layer should be removed.
+For instance, the first MaxPooling2D layer should be removed and padding should be added to prevent information loss.
 Multiple dropout layers can be added in between the convolutional layers rather than a single layer at the end of the model.
 Stacks of convolutional layers can be added to the model to increase the number of filters.
 
