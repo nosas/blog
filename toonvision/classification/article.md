@@ -78,8 +78,9 @@ For now, let's focus on classification.
 ---
 ## Classification
 
-Classification is the process of assigning categorical label(s) (a class) to input examples such as images, timeseries, or text.
+Classification is the process of assigning categorical labels to input examples such as images, timeseries, or text.
 For instance, given a dog-vs-cat classification model and an image of a Pomeranian, the model will predict that the image is a dog.
+Technically, we would say that the model predicts that the image belongs to the "dog" class.
 Given an email, the model will predict that the email is spam.
 Given user activity data on a website, the model will predict whether the user is a human or a bot.
 
@@ -94,7 +95,7 @@ In this article, we're building a model to predict whether an image is a Toon or
 
 ### Multiclass classification
 
-On the other hand, multiclass classification is the type of classification problem in which the model predicts which *single class* an input example belongs.
+On the other hand, multiclass classification is a problem in which the model predicts which *single class* an input example belongs.
 Where binary classification is a two-class problem, multiclass classification is a multi-class problem - meaning three or more classes.
 For instance, the model could predict that an animal belongs to the class of dogs, cats, rabbits, horses, or any other animal.
 
@@ -124,7 +125,8 @@ The game is based on a cartoon animal world where each player controls a Toon (a
 Like most MMORPGs, there's no single focus in ToonTown's gameplay.
 Players can perform whatever activities they want: socialize, fight Cogs, explore the world, complete tasks for rewards, fish, race karts, and even play minigames.
 
-We won't discuss too much about the game itself in this article because we're focusing on building an image classifier, not a full end-to-end ToonTown AI.
+We won't discuss too many game details in this article because they are not relevant for our classification problem.
+We're building an image classifier, not a full end-to-end ToonTown AI (yet).
 
 ### Toons
 
@@ -181,13 +183,19 @@ Rewards include jellybeans (currency), laff points (health points), gag advancem
     <figcaption>4 unique Cog suits and their respective colors</figcaption>
 </figure>
 
-Cogs are the main antagonists of ToonTown online.
+Cogs are the main antagonists of ToonTown Online.
 They are corporate robots that are trying to take over ToonTown and convert it into a corporate dystopia.
 
-There are 4 Cog suits, each with a unique color: Bossbot (brown), Lawbot (blue), Cashbot (green), and Sellbot (maroon).
-Each suit in the corporate ladder contains 8 Cogs for a total of 32 unique Cogs.
-While most Cogs can be found in the streets, the two highest-tiered Cogs of each suit can be found only in Cog buildings.
+There are 4 Cog suits, each with a unique color:
 
+- Bossbot (brown)
+- Lawbot (blue)
+- Cashbot (green)
+- and Sellbot (maroon)
+
+Each suit in the corporate ladder contains 8 Cogs for a total of 32 unique Cogs.
+
+While most Cogs can be found in the streets, the two highest-tiered Cogs of each suit can be found only in Cog buildings.
 We'll only acquire data about Cogs in the streets for this model.
 We can leverage Cog invasions to find building-specific Cogs in the streets.
 
@@ -196,7 +204,7 @@ We can leverage Cog invasions to find building-specific Cogs in the streets.
 More often than not, ToonTasks involve defeating Cogs.
 A ToonTown AI must be able to identify which Cogs are in a given image to engage in battle with the correct Cog.
 
-However, there are delivery tasks that require Toons to deliver items to NPCs in the streets of ToonTown.
+There also exists delivery tasks that require Toons to deliver items to NPCs in the streets of ToonTown.
 Therefore, Toons need to identify and *avoid* Cogs in its path to deliver the items on time.
 
 ---
@@ -207,7 +215,9 @@ The following sections will explain my dataset's design considerations, acquisit
 
 ### Dataset considerations
 
-- Images are split into training, validation, and test sets: 40% training, 20% validation, and 40% test.
+- Images are split into training, validation, and test sets: 60% training, 20% validation, and 20% test
+    - There must be an equal part of Toons and Cogs in each set
+    - There must be an equal part of Cog suits in each set
 - Images of Toons and Cogs must be...
     - Taken at various distances from each street, not playground
     - Taken of the entity's front, back, and side
@@ -215,8 +225,6 @@ The following sections will explain my dataset's design considerations, acquisit
     - There must be an equal part of each unique Cog (32 unique Cogs)
         - There is a minimum requirement of 20 images per unique Cog (32*20 = 640 images total)
     - Must not include the Cog's nametag in the image
-- There must be an equal part of Toons and Cogs in each set
-    - There must be an equal part Cog suit in each set
 - In the Toon dataset, a balance of animal types is welcome but not necessary
 
 ### Filename and data folder structure
@@ -297,13 +305,13 @@ The dataset shows a few overrepresented classes:
 ### Data labeling
 
 I'm using [labelimg](https://github.com/tzutalin/labelImg) to draw labeled bounding boxes around Toons and Cogs.
-Labels - also referred to as `obj_name` - follow the format:
+Labels - also referred to as `obj_name` in our Python code - follow the format:
 
 - `cog_<bb|lb|cb|sb>_<name>_<index>`
 - `toon_<animal>_<index>`
 
-The cog labels contain shorthand notation (`<bb|lb|cb|sb>`) for each suit: Bossbot, Lawbot, Cashbot, and Sellbot, respectively.
-This shorthand notation allows us to filter cog data by filename and create a classifier that can distinguish between the 4 suits.
+The Cog labels contain shorthand notation (`<bb|lb|cb|sb>`) for each suit: Bossbot, Lawbot, Cashbot, and Sellbot, respectively.
+This shorthand notation allows us to filter Cog data by filename and create a classifier that can distinguish between the 4 suits.
 
 Bounding boxes are saved in XML format - specifically [Pascal VOC XML](https://mlhive.com/2022/02/read-and-write-pascal-voc-xml-annotations-in-python) - alongside the image in the `raw/screenshots` directory, as seen in the [data folder file structure](#filename-and-data-folder-structure) section above.
 
@@ -318,8 +326,8 @@ Furthermore, we must exclude entity nametags in the bounding box because the cla
 
 ### Data extraction
 
-The raw data (screenshot) is passed into the `data_processing.py` script.
-The script utilizes functions in `img_utils.py` to extract objects from the images using the labeled bounding boxes found in the image's corresponding XML files.
+The raw data (screenshot) is processed by functions in the `data_processing` module.
+The module utilizes functions in `img_utils.py` to extract objects from the images using the labeled bounding boxes found in the image's corresponding XML files.
 Specifically, the data extraction workflow is as follows:
 
 - Acquire bounding box dimensions and labels from the XML files
@@ -391,11 +399,11 @@ Then we could use those high-resolution images in this dataset.
 
 After the objects are extracted and placed in the `unsorted` folder, we can create the datasets.
 First, we need to create balanced datasets within the `data/[train|validate|test]` folders.
-Remember that we're aiming for a 60/20/20 split of the dataset for training, validation, and testing, respectively.
+Remember that we're aiming for a 60/20/20 split for the training, validation, and testing datasets`, respectively.
 
 #### Spitting the images into train, validate, and test
 
-Before creating the datasets, we need to move images from `unsorted/[cog|toon]` to `data/[train|validate|test]/[cog|toon]`.
+Before creating the dataset objects, we need to move images from `unsorted/[cog|toon]` to `data/[train|validate|test]/[cog|toon]`.
 We can utilize the `split_data()` function in the `data_processing` module to do this.
 
 ```python
@@ -413,8 +421,8 @@ def split_data(split_ratio: list[float, float, float], dry_run: bool = False):
         num_test = num_images - num_train - num_validate
         print(num_train, num_validate, num_test)
 
-        # # Shuffle filenames to randomize the order of the images
-        shuffle(unsorted_images)
+        # Shuffle filenames to randomize the order of the images
+        random.shuffle(unsorted_images)
         train = unsorted_images[:num_train]
         validate = unsorted_images[num_train:-num_test]
         test = unsorted_images[-num_test:]
@@ -487,7 +495,7 @@ Compiling the model requires choosing a loss function, optimizer, and metrics to
 
 ### Loss function
 
-Our first model is classifying between two classes, therefore we'll use the `binary_crossentropy` loss function.
+Our model is classifying between two classes, therefore we'll use the `binary_crossentropy` loss function.
 The later models will be more complex - classifying 4 or 32 classes - so we'll use the `[sparse_]categorical_crossentropy` loss function.
 
 ### Optimizer
@@ -534,15 +542,15 @@ When training the multi-class models - with 4 and 32 classes - we'll utilize the
 
 ### Callbacks
 
-Originally, I planned on only using a single callback, `ModelCheckpoint`, to save the model's weights.
+Originally, I planned on only using a single callback, [ModelCheckpoint](https://keras.io/api/callbacks/model_checkpoint/), to save the model's weights.
 The callback saves the model's weights to a file at some interval - usually after each epoch or at the lowest validation loss value during training.
 
 Saving the model at the lowest validation loss value is flawed because the model may have overfit to the data.
 In fact, during my experiments, I found that models that saved their weights at the lowest validation loss value were not performing well during evaluation.
 
-As a result, I omitted the use of [ModelCheckpoint](https://keras.io/api/callbacks/model_checkpoint/).
+As a result, I omitted the use of `ModelCheckpoint`.
 Rather, I saved the model only if it exceeded the previous run's evaluation accuracy and loss.
-This ensured I got a better model out of the 200 runs compared to the `ModelCheckpoint` callback.
+This ensured I got a better model out of the 200 runs.
 I believe this method is still flawed, but it proved to be more effective than saving the model based on the validation loss.
 
 ```python
@@ -608,42 +616,41 @@ def make_model(
 
 <details>
     <summary>Model summary</summary>
-```
-Model: "optimized_1e-5"
-_________________________________________________________________
- Layer (type)                Output Shape              Param #
-=================================================================
- input_53 (InputLayer)       [(None, 600, 200, 3)]     0
- rescaling_52 (Rescaling)    (None, 600, 200, 3)       0
- max_pooling2d_208           (None, 300, 100, 3)       0
- conv2d_156                  (None, 298, 98, 16)       448
- max_pooling2d_209           (None, 149, 49, 16)       0
- conv2d_157                  (None, 147, 47, 32)       4640
- max_pooling2d_210           (None, 73, 23, 32)        0
- conv2d_158                  (None, 71, 21, 32)        9248
- max_pooling2d_211           (None, 35, 10, 32)        0
- flatten_52 (Flatten)        (None, 11200)             0
- dropout_38 (Dropout)        (None, 11200)             0
- dense_52 (Dense)            (None, 1)                 11201
 
-=================================================================
-Total params: 25,537
-Trainable params: 25,537
-Non-trainable params: 0
-_________________________________________________________________
-```
+    Model: "optimized_1e-5"
+    _________________________________________________________________
+    Layer (type)                Output Shape              Param #
+    =================================================================
+    input_53 (InputLayer)       [(None, 600, 200, 3)]     0
+    rescaling_52 (Rescaling)    (None, 600, 200, 3)       0
+    max_pooling2d_208           (None, 300, 100, 3)       0
+    conv2d_156                  (None, 298, 98, 16)       448
+    max_pooling2d_209           (None, 149, 49, 16)       0
+    conv2d_157                  (None, 147, 47, 32)       4640
+    max_pooling2d_210           (None, 73, 23, 32)        0
+    conv2d_158                  (None, 71, 21, 32)        9248
+    max_pooling2d_211           (None, 35, 10, 32)        0
+    flatten_52 (Flatten)        (None, 11200)             0
+    dropout_38 (Dropout)        (None, 11200)             0
+    dense_52 (Dense)            (None, 1)                 11201
+
+    =================================================================
+    Total params: 25,537
+    Trainable params: 25,537
+    Non-trainable params: 0
+    _________________________________________________________________
 </details>
 
 I believe the architecture above has room for improvement.
-More experimentation - removing some Conv2D and MaxPooling2D layers, reducing the filter sizes, or maybe adding strides to the Conv2D layers - could fine-tune the architecture and improve the model's performance.
+More experimentation - removing some Conv2D and MaxPooling2D layers, reducing the filter sizes, or maybe adding strides or padding to the Conv2D layers - could fine-tune the architecture and improve the model's performance.
 The chosen architecture may not be the best, but it will suffice.
 
 ---
 ## Training the baseline model
 
 Before training the actual model, we need to define a simple baseline to compare against.
-The baseline model will use the same model architecture, datasets, and hyperparameters as the optimized model we're training.
-The only difference is that the baseline model does not perform any optimizations during training or within the model - no data augmentation, dropout, batch normalization, or learning rate decay.
+The baseline model will use the same model architecture, datasets, and hyperparameters as the optimized model.
+The only difference is that the baseline model does not perform any optimizations within the model or during training - no data augmentation, dropout, batch normalization, or learning rate decay.
 
 ```python
 model_kwargs = [
@@ -662,7 +669,7 @@ model_kwargs = [
 # %% Train each model for 25 epochs, and repeat it 200 times
 histories_all, evaluations_all = make_baseline_comparisons(
     epochs=25,
-    num_runs=5,
+    num_runs=200,
     model_kwargs=model_kwargs,
 )
 ```
@@ -713,7 +720,7 @@ Despite the overfitting, the baseline model is still able to predict the correct
 Looking at the model's predictions on the entire dataset, we see that it's predicting the wrong class for 6 images.
 However, when it's predicting the wrong class, the model is heavily confused.
 
-Take at the model's wrong predictions; the images are ranked from highest error to lowest error.
+The images are ranked from highest error to lowest error.
 The `E` stands for error, or how far away the model's confidence in the prediction is from the actual class.
 The `A` stands for the actual prediction or confidence in the model's prediction.
 Toons are predicted when `A` > 0.5, and Cogs are predicted when `A` < 0.5.
@@ -916,7 +923,7 @@ Furthermore, excluding the outliers, the optimized model's minimum accuracy does
 </figure>
 
 The loss plot is even more damning for the baseline model.
-The optimized model's loss box is much smaller (Q1: 0.4, Median: 0.65, Q3: 0.9) and lower than the baseline model's.
+The optimized model's loss spread is much smaller and lower than the baseline model's.
 We see the baseline model has a median loss of 1.6 while the optimized model's median loss is 0.5.
 Lastly, the optimized model's outliers are more contained with a range of [0.18, 0.21] whereas the baseline model's outliers range from [0.42, 0.68].
 
@@ -933,7 +940,7 @@ Convolutional neural networks - specifically for image classification problems -
 We can visualize the convnet's activations - intermediate layer outputs - as heatmaps and clearly understand what the model is looking for in an image.
 
 We'll peel back the layers of the model in the following sections and interpret what the model has learned from our dataset.
-Specific code examples will not be provided in the below sections; instead, you'll be guided through the process of interpreting the model's activations.
+Specific code examples will not be provided in the sections below; instead, you'll be guided through the process of interpreting the model's activations.
 The code can be found in `main.py` on my [GitHub](https://github.com/nosas/blog/blob/main/toonvision/classification/code/main.py).
 
 ### Intermediate convnet outputs (intermediate activations)
@@ -944,7 +951,7 @@ The code can be found in `main.py` on my [GitHub](https://github.com/nosas/blog/
 </figure>
 
 Visualizing intermediate activations is useful for understanding how success layers transform the input data.
-This will give us a view into how the input is decomposed into different filters learned by the network.
+This will give us a view into how the input is decomposed by the network's learned filters.
 We'll input the image seen on the right through the model and interpret the activations.
 
 The following image grid shows the activations of all Conv2D and MaxPooling2D layers.
@@ -1096,8 +1103,7 @@ Including the entire backpack in the heatmap likely would have resulted in a cor
 #### Additional CAM findings
 
 I found the heatmaps to be the most useful visualization technique for understanding the model's predictions.
-Below are additional findings that I found interesting.
-In summary, the following are the key findings:
+Below are additional findings that I found interesting:
 
 - Cog hands are important Cog feature indicators
 - Light-colored clothing and accessories are strong Toon feature indicators
