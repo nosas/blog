@@ -1034,15 +1034,36 @@ It's definitely worth the read to see how beautiful the patterns can be in more 
 
 ### Class activation heatmaps
 
+<figure class="right" style="width:20%;">
+    <img src="img/cam_sample_cat.png"/>
+    <figcaption>Sample cat Toon</figcaption>
+</figure>
+
 The final visualization technique - *class activation maps* (CAM) - is useful for understanding which parts of an image led to a specific class prediction.
 This is helpful for debugging wrong predictions and understanding classification mistakes.
 The technique involves scoring subsections of the image based on how much they activate a class's feature detectors.
 We then use the scores to generate a heatmap of the image, where the hotter the pixel, the more activation the class's feature detectors had.
 Lastly, we superimpose the heatmap on the original image to visualize the activation - visualize what parts of the image activate the class.
 
-We'll use the following image to visualize the CAM.
+We'll use the cat Toon on the right to visualize the CAM.
 This image was mentioned earlier as always showing up in the wrong predictions of our models.
 Let's figure out *why* the models cannot predict the correct class for this image by visualizing the CAM.
+
+<figure class="center">
+    <img src="img/cam_sample_cat_superimposed.png" style="width:100%;"/>
+    <figcaption>Images, in order: original, heatmap, superimposed</figcaption>
+</figure>
+
+The heatmap and superimposed images show that the model notices Toon accessories more than Toon features.
+If the model recognizes the accessories, why does it still predict the wrong class?
+The issue seems to be two-fold:
+
+1. The Toon's coloring is similar to that of a Cog: brown/maroon top, brown skin, and black shoes
+2. The heatmap is incredibly similar to that of a Cog's: activations around the head area and more activation around the hands.
+
+<font style="color:red">TODO: Insert heatmap of a Cog for reference</font>
+
+
 
 ---
 ## Future improvements
