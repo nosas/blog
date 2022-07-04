@@ -3,10 +3,10 @@
 # ToonVision - Classification
 
 
-This article is first in a series on **ToonVision**.
+This article is the first in a series on **ToonVision**.
 
-ToonVision is my personal computer vision project for teaching a machine how to see in [ToonTown Online](https://en.wikipedia.org/wiki/Toontown_Online) - an MMORPG created by Disney in 2003.
-The ultimate goal is to teach a machine (nicknamed **OmniToon**) how to play ToonTown and create a self-sustaining ecosystem within the game where the bots progress through the game together.
+ToonVision is my computer vision project for teaching a machine how to see in [ToonTown Online](https://en.wikipedia.org/wiki/Toontown_Online) - an MMORPG created by Disney in 2003.
+The ultimate goal is to teach a machine (nicknamed **OmniToon**) how to play ToonTown and create a self-sustaining ecosystem where the bots progress through the game together.
 
 This article covers binary classification of Toons and Cogs.
 The following article will cover multiclass classification of Cog suits (4 unique suits) and Cog names (32 unique names).
@@ -94,7 +94,7 @@ In this article, we're building a model to predict whether an image is a Toon or
 
 ### Multiclass classification
 
-On the other hand, multiclass classification is the type of classification problem where the model predicts which *single class* an input example belongs to.
+On the other hand, multiclass classification is the type of classification problem in which the model predicts which *single class* an input example belongs.
 Where binary classification is a two-class problem, multiclass classification is a multi-class problem - meaning three or more classes.
 For instance, the model could predict that an animal belongs to the class of dogs, cats, rabbits, horses, or any other animal.
 
@@ -103,9 +103,9 @@ We can push the model even further to predict which of the 32 Cog names an image
 
 #### Multiclass multilabel classification
 
-Lastly, multiclass multilabel classification is a classification problem where the model predicts which *classes* an input example belongs to.
+Lastly, multiclass multilabel classification is a classification problem where the model predicts which *classes* an input example belongs.
 For instance, a multiclass multilabel animal classifier can predict not only that an image belongs to the class of dogs, cats, rabbits, etc. but also the specific breed of dog, cat, rabbit, etc.
-Alternatively, a vehicle classifier can predict not only that an image belongs to the class of cars, trucks, motorcycle, etc. but also the specific make and model of car, truck, motorcycle, etc.
+Alternatively, a vehicle classifier can predict not only that an image belongs to the class of cars, trucks, motorcycles, etc. but also the specific make and model of car, truck, motorcycle, etc.
 
 Other practical applications of multiclass multilabel classification include labeling which classes are present in an image.
 For example, an image of a park could be labeled as containing a tree, a bench, a flower, a pond, etc.
@@ -131,7 +131,7 @@ We won't discuss too much about the game itself in this article because we're fo
 Toons are the main protagonists of ToonTown online.
 They are cartoon animals that enjoy having fun and are constantly using their arsenal of gags (jokes/weapons) to stop Cogs from invading their neighborhoods and converting ToonTown into a corporate dystopia.
 
-Players can customize their Toon's name, species, color, clothes, and other attributes.
+Players can customize their Toon name, species, color, clothes, and other attributes.
 There are 11 unique animals:
 
 - bear
@@ -164,15 +164,15 @@ Ultimately, the goal is to eliminate the Cogs from the streets and acquire the m
 
 #### ToonTasks
 
-A ToonTask is a quest given by ToonTown NPCs in which Toons must complete in order to earn rewards.
+A ToonTask is a quest given by ToonTown NPCs in which Toons must complete to earn rewards.
 Tasks include:
 
-- Defeating specific Cogs or specific number of Cogs
+- Defeating specific Cogs or a specific number of Cogs
 - Retrieving items from defeated Cogs
 - Defeating Cog buildings
 - Talking to other NPCs
 
-Rewards include jellybeans (currency), laff points (health points), gag advancements (weapons), access to other areas of the game and [more](https://toontown.fandom.com/wiki/ToonTask).
+Rewards include jellybeans (currency), laff points (health points), gag advancements (weapons), access to other areas of the game, and [more](https://toontown.fandom.com/wiki/ToonTask).
 
 ### Cogs
 
@@ -189,15 +189,15 @@ Each suit in the corporate ladder contains 8 Cogs for a total of 32 unique Cogs.
 While most Cogs can be found in the streets, the two highest-tiered Cogs of each suit can be found only in Cog buildings.
 
 We'll only acquire data about Cogs in the streets for this model.
-We can leverage Cog invasions in order to find building-specific Cogs in the streets.
+We can leverage Cog invasions to find building-specific Cogs in the streets.
 
 ### Why is it important for Toons to classify Cogs?
 
 More often than not, ToonTasks involve defeating Cogs.
-A ToonTown AI must be able to identify which Cogs are in a given image in order to engage in battle with the correct Cog.
+A ToonTown AI must be able to identify which Cogs are in a given image to engage in battle with the correct Cog.
 
 However, there are delivery tasks that require Toons to deliver items to NPCs in the streets of ToonTown.
-Therefore, it's important for Toons to identify and *avoid* Cogs in its path in order to deliver the items on time.
+Therefore, Toons need to identify and *avoid* Cogs in its path to deliver the items on time.
 
 ---
 ## The ToonVision dataset
@@ -212,12 +212,12 @@ The following sections will explain my dataset's design considerations, acquisit
     - Taken at various distances from each street, not playground
     - Taken of the entity's front, back, and side
 - In the Cog dataset, there must be an equal part of each Cog suit
-    - There must must be an equal part of each unique Cog (32 unique Cogs)
+    - There must be an equal part of each unique Cog (32 unique Cogs)
         - There is a minimum requirement of 20 images per unique Cog (32*20 = 640 images total)
     - Must not include the Cog's nametag in the image
 - There must be an equal part of Toons and Cogs in each set
     - There must be an equal part Cog suit in each set
-- In the Toon dataset, balance of animal types is welcome but not necessary
+- In the Toon dataset, a balance of animal types is welcome but not necessary
 
 ### Filename and data folder structure
 
@@ -239,7 +239,6 @@ img
 │       ├───cog
 │       └───toon
 ├───raw
-│   ├───processed
 │   └───screenshots
 │       ├   sample_img0.png
 │       ├   sample_img0.xml
@@ -250,12 +249,12 @@ img
     └───toon
 ```
 
-There's no need for a unique folder for each Cog suit because we can filter on the filename.
+There is no need to create folders for each Cog suit because we can filter on the filename.
 
 ### Data acquisition
 
-Acquiring data is simple: Walk around TT streets, take screenshots, and save them to the raw folder.
-It's important to take screenshots from various distance and angles of each entity: front, back, and side.
+Data acquisition is simple: Walk around TT streets, take screenshots, and save them to the raw folder.
+It's important to take screenshots from various distances and angles of each entity: front, back, and side.
 
 Taking screenshots from up close is preferred.
 When taken from far away, the entity's nametag covers the entity's head, thus causing us to crop the entity's head or include the nametag - neither are good options.
@@ -269,7 +268,7 @@ There were a few difficulties with acquiring data:
 
 1. Entities are typically moving unless in battle
 1. Entities often obstruct other entities, which makes for less than ideal training data
-1. Finding the desired entity is purely a matter of walking around the street and looking for the entity, there's no precision radar
+1. Finding the desired entity is purely a matter of walking around the street and looking for the entity as there is no precision radar
 
 Furthermore, there were class-specific data acquisition problems:
 
@@ -314,7 +313,7 @@ Bounding boxes are saved in XML format - specifically [Pascal VOC XML](https://m
 </figure>
 
 How the objects are labeled - how the bounding boxes are drawn - determines how the object will be extracted from the image.
-It's important to draw bounding boxes such that the entity is snugly contained within the bounding box.
+It's crucial to draw bounding boxes such that the entity is snugly contained within the bounding box.
 Furthermore, we must exclude entity nametags in the bounding box because the classifier will learn to "cheat" by identifying objects from their nametag rather than features of the entity itself.
 
 ### Data extraction
@@ -324,18 +323,16 @@ The script utilizes functions in `img_utils.py` to extract objects from the imag
 Specifically, the data extraction workflow is as follows:
 
 - Acquire bounding box dimensions and labels from the XML files
-- Extract object (Toon or Cog) from the image using the dimensions and labels found in the XML files
+- Extract the object (Toon or Cog) from the image using the dimensions and labels found in the XML files
 - Save the cropped image of the object to the `img/unsorted` folder
 - Move the raw image and its corresponding XML file to the `raw/processed` folder
 
-*Why move the cropped image to unsorted and then processed?*
+*Why move the raw image and XML file to the processed directory?*
 
-The unsorted images directory is used to maintain a counter (referred to as an index) for each label.
-It gives me a glimpse of how many images are in each category by looking at the filenames in the `unsorted` directory.
-If I want to add more images to the dataset, I would have place images from all datasets back into the `unsorted` directory in order to maintain the counter and avoid overwriting existing images.
-
-Given that the dataset is so small, I can unsort and re-sort the images with ease.
-But this is not at all scalable in the future and I will surely redesign this portion of the data pipeline.
+The processed directory is used to maintain a counter (referred to as an index) for each label.
+The data within the XML files are used to count the number of samples for each label.
+The label's counter is appended to a newly-extracted object's filename and the counter is incremented by 1.
+This process ensures we never overwrite existing sample images.
 
 ```python
 # %% Convert raw images to data images
@@ -359,7 +356,7 @@ def process_images(
                 objs_from_img = extract_objects_from_img(img_path, objs_from_xml)
                 # Save extracted objects to images, modify image name to include object index
                 save_objects_to_img(objs_from_img, UNSORTED_DIR)
-                # Move raw image to processed directory
+                # Move raw image and its XML to processed directory
                 if move_images:
                     for f in [img_path, xml_path]:
                         new_path = f.replace(raw_images_dir, PROCESSED_DIR)
@@ -367,7 +364,6 @@ def process_images(
                         rename(f, new_path)
             else:
                 print(f"    No XML file found for {img_path}")
-
 ```
 
 ### Data processing
@@ -386,7 +382,7 @@ We lose quite a bit of information about the object when the object is far away.
 
 Overall, it would be ideal for the dataset to consist mostly of large, close-up objects because they contain more information about the object.
 Small, far-away objects lose information about the object and are not as useful for training.
-Further more, we could simulate this loss of information through image augmentation - rescaling or blurring/pixelating the image.
+Furthermore, we could simulate this loss of information through image augmentation - rescaling or blurring/pixelating the image.
 
 It would make a fun project to create a model that upscales the images to a higher resolution.
 Then we could use those high-resolution images in this dataset.
@@ -510,7 +506,7 @@ SGD commonly encounters this problem, and it's often due to a low learning rate.
 I increased the learning rate for all flattened optimizers and plotted the loss scores and accuracies again, but didn't see much improvement.
 Additional callbacks, such as the learning rate scheduler, could be used to gradually decrease the learning rate and improve the model's performance.
 Adding *momentum* to the SGD optimizer could also help the model reach global loss minimums and learn more effectively.
-If really wanted to get a feel for the proper optimizer, we should try different learning rates, utilize Keras' callbacks, and tweak the hyperparameters.
+To find the best optimizer we should try different learning rates, utilize Keras' callbacks, and tweak the hyperparameters.
 However, this is beyond the scope of the article.
 
 Optimizers with low performance (`Adadelta`, `Adagrad`, `Ftrl`, and `SGD`) were eliminated from consideration.
@@ -575,7 +571,7 @@ for run in range(200):
 
 ### Defining the model
 
-The model is simple CNN (convolutional neural network) with three Conv2D layers and four MaxPooling2D layers.
+The model is a simple CNN (convolutional neural network) with three Conv2D layers and four MaxPooling2D layers.
 It's defined in the `model_utils` module within the `make_model()` function.
 
 <figure class="center" style="width:80%">
@@ -583,9 +579,9 @@ It's defined in the `model_utils` module within the `make_model()` function.
     <figcaption>Model architecture, visualized with python package "visualkeras"</figcaption>
 </figure>
 
-After experimenting with a handful of different architectures, I found the best architecture to contain few intermediate layers with small filters.
+After experimenting with a handful of different architectures, I found the best architecture to contain a few intermediate layers with small filters.
 Remember that the more layers and filters in the model, the more room for the model to overfit to the data.
-We must find the right balance in the architecture to ensure the model is small enough to prevent overfitting, but accurate enough to generalize on never-before-seen data.
+We must find the right balance in the architecture to ensure the model is small enough to prevent overfitting but accurate enough to generalize on never-before-seen data.
 
 ```python
 def make_model(
@@ -639,7 +635,7 @@ _________________________________________________________________
 </details>
 
 I believe the architecture above has room for improvement.
-More experimentation - remove some Conv2D and MaxPooling2D layers, reduce the filter sizes, or maybe add strides to the Conv2D layers - could fine-tune the architecture and improve the model's performance.
+More experimentation - removing some Conv2D and MaxPooling2D layers, reducing the filter sizes, or maybe adding strides to the Conv2D layers - could fine-tune the architecture and improve the model's performance.
 The chosen architecture may not be the best, but it will suffice.
 
 ---
@@ -647,7 +643,7 @@ The chosen architecture may not be the best, but it will suffice.
 
 Before training the actual model, we need to define a simple baseline to compare against.
 The baseline model will use the same model architecture, datasets, and hyperparameters as the optimized model we're training.
-The only difference is that baseline model not perform any optimizations during training or within the model - no data augmentation, dropout, batch normalization or learning rate decay.
+The only difference is that the baseline model does not perform any optimizations during training or within the model - no data augmentation, dropout, batch normalization, or learning rate decay.
 
 ```python
 model_kwargs = [
@@ -679,7 +675,7 @@ The average of all 200 runs is plotted below.
 
 The model's best run (#99) can be seen plotted below.
 It overfits to the training data after 9 epochs - see the validation loss increase.
-Futhermore, the model memorizes the dataset after 13 epochs - see the training accuracy plateau at 100% accuracy.
+Furthermore, the model memorizes the dataset after 13 epochs - see the training accuracy plateau at 100% accuracy.
 
 There are four tell-tale signs of overfitting in the plots below:
 
@@ -719,10 +715,10 @@ However, when it's predicting the wrong class, the model is heavily confused.
 
 Take at the model's wrong predictions; the images are ranked from highest error to lowest error.
 The `E` stands for error, or how far away the model's confidence in the prediction is from the actual class.
-The `A` stands for the actual prediction, or confidence in the model's prediction.
+The `A` stands for the actual prediction or confidence in the model's prediction.
 Toons are predicted when `A` > 0.5, and Cogs are predicted when `A` < 0.5.
 
-The first image is clearly a Toon, but the model confidently predicts Cog.
+The first image is a Toon, but the model confidently predicts Cog.
 The second image is also predicted as a Cog, but that makes sense as there's a giant Cog arm occluding the Toon.
 
 There's no obvious reason as to why the model confidently predicts Cog for the first image.
@@ -745,7 +741,7 @@ Given that we have a small dataset, we can utilize a few of the following techni
 * **Dropout** - dropout some of the output nodes in the model to prevent overfitting.
 * **Regularization** - regularize the model by adding a penalty to the loss function.
 * **Small learning rate** - use a small learning rate to decrease the magnitude of the weight updates and learn slower.
-* **Reducing number of parameters** - too many parameters can the model to memorize the dataset.
+* **Reducing number of parameters** - too many parameters conditions the model to memorize the dataset.
 * **Early stopping** - stop training the model if the model doesn't improve after a certain number of epochs.
 * **Learning rate decay** - decrease the optimizer's learning rate after each epoch.
 
@@ -777,7 +773,7 @@ data_augmentation = keras.Sequential(
 The purpose of the data augmentation is to increase the number of training examples so the model can learn from more data and never see the same sample twice.
 
 It's important to augment the data just enough so the samples remain representative of the dataset.
-If we rotate the image too much, or zoom in/out too much, we lose the context of the image and the model will not be able to learn from it.
+If we rotate the image too much or zoom in/out too much, we lose the context of the image and the model will not be able to learn from it.
 
 <figure class="center" style="width:50%">
     <img src="img/image_augmentation.png" style="width:100%;"/>
@@ -786,21 +782,21 @@ If we rotate the image too much, or zoom in/out too much, we lose the context of
 
 Looking at the grid above, we see a single image that has been augmented with the data augmentation techniques.
 The top four images result from a slight data augmentation, whereas the bottom four images are from an aggressive data augmentation.
-The more aggressive augmentation are not representative of the dataset or real-world samples.
+The more aggressive augmentation is not representative of the dataset or real-world samples.
 
 #### Dropout
 
 Dropout is one of the most effective and commonly used regularization techniques for neural networks.
-When applied to a layer, dropout randomly *drops out* (sets to zero) a number of output features of the layer.
+When applied to a layer, dropout randomly *drops out* (sets to zero) several output features of the layer.
 The number of dropped features is determined by the *dropout rate* - the percentage of features that are dropped.
 
 For example, given a layer with 6 features, if the dropout rate is 0.5, then 3 features will be dropped.
 Let's say a given layer normal returns a vector `[0.1, 0.2, 0.3, 0.4, 0.5, 0.6]`.
 After applying dropout with a rate of 0.5, the output vector will be `[0.1, 0.2, 0.0, 0.0, 0.5, 0.0]`.
 
-François Chollet, author of the Keras library, recommends using a dropout rate of in the range [0.2, 0.5].
+François Chollet, the author of the Keras library, recommends using a dropout rate in the range [0.2, 0.5].
 However, because our dataset is so small and skewed, I found the best dropout rate to be in the range [0.7, 0.9].
-For the remainder of training, we'll use the dropout rate of 0.9.
+For the remainder of the training, we'll use the dropout rate of 0.9.
 
 ```python
 model_kwargs = [
@@ -857,7 +853,7 @@ The worst prediction - an image of a Cog partially occluded by another Cog's nam
 It makes sense for this image to be incorrect because we purposefully excluded occluded Cogs from the dataset.
 Ideally, the model would be able to generalize to the unseen data.
 
-The other two images frequently appear in wrong predictions of all models.
+The other two images frequently appear in the wrong predictions of all models.
 I assume it's because the images contain brown in the middle of the image - a feature commonly seen in Bossbot and Sellbot Cogs.
 
 We'll interpret the layers' activations as heatmaps later to see if this is the case.
@@ -869,7 +865,7 @@ The following plots show clearly the superior performance of the optimized model
 In all of the plots, the orange line represents the average loss and accuracy of the optimized model, while the blue line represents the baseline model.
 
 We can see in the accuracy plot (top left) that the optimized model does not overfit to the training data, whereas the baseline model overfits at ~12 epochs.
-This is expected because the optimized model performs  many techniques to prevent overfitting; the most important being *dropout* and *learning rate decay*.
+This is expected because the optimized model performs many techniques to prevent overfitting; the most important being *dropout* and *learning rate decay*.
 
 The validation accuracy plot (top right) shows a similar trend.
 On average, the optimized model does not overfit, whereas the baseline model overfits at ~12 epochs.
@@ -893,10 +889,10 @@ We can see that the optimized model often overfits to the validation data - enou
 
 I suspect the validation plots' sporadic movement is due to the small size of the validation dataset.
 The fluctuations could also be due to the validation set being not representative enough of the training set.
-The former is a difficulty I burdened myself with early on in order to learn how to deal with poorly-balanced datasets.
-The latter is why I rebalance the datasets - unsort and re-split datasets - before each training run in order to get an accurate model performance over 200 runs.
+The former is a difficulty I burdened myself with early on to learn how to deal with poorly-balanced datasets.
+The latter is why I rebalance the datasets - un-split and re-split datasets - before each training run to get an accurate model performance over 200 runs.
 
-An alternative to shuffling the datasets would be to  utilize [k-fold cross-validation](https://medium.com/the-owl/k-fold-cross-validation-in-keras-3ec4a3a00538), but that's beyond the scope of this article.
+An alternative to shuffling the datasets would be to utilize [k-fold cross-validation](https://medium.com/the-owl/k-fold-cross-validation-in-keras-3ec4a3a00538), but that's beyond the scope of this article.
 Remember, we're keeping it simple!
 
 We can now clearly see the optimized model's superior performance during training.
@@ -931,7 +927,7 @@ Let's interpret what the model's layers are seeing as heatmaps.
 ## Model interpretation and visualization
 
 Neural networks are often considered to be black boxes: they learn data representations that are difficult to interpret in human-readable form.
-You throw a bunch of data at a network of math functions and it solves all of your problems; it's basically magic.
+You throw a bunch of data at a network of math functions and it solves all of your problems; it's magic.
 
 Convolutional neural networks - specifically for image classification problems - are quite the opposite.
 We can visualize the convnet's activations - intermediate layer outputs - as heatmaps and clearly understand what the model is looking for in an image.
@@ -953,15 +949,15 @@ We'll input the image seen on the right through the model and interpret the acti
 
 The following image grid shows the activations of all Conv2D and MaxPooling2D layers.
 Notice how the number of *feature maps* - also called *activation channels* - increases as the input progresses through the model.
-The growing feature maps is due to the number of filters used in each layer: 16, 16, 32, 32, 32, 32, as seen in the [model summary](#defining-the-model).
+The growing feature maps are due to the number of filters used in each layer: 16, 16, 32, 32, 32, 32, as seen in the [model summary](#defining-the-model).
 The earlier layers act as edge detectors, while the later layers encode feature detectors.
 In English, the earlier layers contain image-specific features (edges, colors, darkness, etc.) and the later layers contain class-specific features (suits, shoes, ears, eyes, etc.).
 
 Furthermore, we find that the image becomes smaller and more abstract as it progresses through the network.
 This is a direct result of the sub-sampling performed by the MaxPooling2D layers.
 Recall that MaxPooling2D layers reduce the input's size by a factor of `pool_size`, where our `pool_size` is 2 - meaning the input is halved in both dimensions.
-This allows the network to pool together useful information from the input's pixels that are closest to each other.
-In short, our input transforms from a 200x600 image to a 10x35 image - high-quality image to an abstract, low quality image.
+This allows the network to pool together useful information from the input pixels that are closest to each other.
+In short, our input transforms from a 200x600 image to a 10x35 image - a high-quality image to an abstract, low-quality image.
 
 Lastly, we see that the network learned to recognize the image's shape and color.
 The brightest pixels represent the highest activations in that specific channel.
@@ -975,9 +971,9 @@ We'll discuss patterns and filters in the next section.
     <figcaption>Feature maps of the sample image above, extracted from each layer's output (excluding the first MaxPooling2D layer)</figcaption>
 </figure>
 
-After looking at the activations of different inputs, I found that that the model learned to recognize the Cogs by their heads, hands, and dark-colored suits.
+After looking at the activations of different inputs, I found that the model learned to recognize the Cogs by their heads, hands, and dark-colored suits.
 I anticipated that the model would identify Toons by their facial features or gloves, and I was *somewhat* correct.
-However, the model classified Toons by their accessories and clothes: backpacks, shoes, and pants, were all strong feature indicators.
+However, the model classified Toons by their accessories and clothes: backpacks, shoes, and pants, which were all strong feature indicators.
 Surprisingly, dog/deer faces - specifically ears, antlers, and noses - were the only features to outperform accessories/clothes indicators.
 
 <details>
@@ -995,7 +991,7 @@ It is a great way to understand how the model is learning to recognize the input
 ### Convnet filters
 
 Filters are the weights that are learned by the network - they are the model's "knowledge".
-They are used to extract information, or extract patterns, from the input data.
+They are used to extract information or extract patterns, from the input data.
 Filters tell us a lot about how the convnet layers see the world.
 
 <table style="width:100%;">
@@ -1029,7 +1025,7 @@ The filters from the first layers in the model encode simple directional edges a
 The remaining layers encode more complex patterns, although the patterns are not as clear in such a small model.
 We can make out blue and yellow patterns with diagonal and straight-line edges, but not much else.
 
-If our model were larger, or trained for more epochs, we would see more complex patterns.
+If our model were larger or trained for more epochs, we would see more complex patterns.
 More interesting patterns can be seen in the Keras blog post [How convolutional neural networks see the world](https://blog.keras.io/how-convolutional-neural-networks-see-the-world.html).
 It's definitely worth the read to see how beautiful the patterns can be in more complex models.
 
@@ -1041,7 +1037,7 @@ It's definitely worth the read to see how beautiful the patterns can be in more 
 </figure>
 
 The final visualization technique - *class activation maps* (CAM) - is useful for understanding which parts of an image led to a specific class prediction.
-This is helpful for debugging wrong predictions and understanding classification mistakes.
+This helps debug wrong predictions and understand classification mistakes.
 
 The technique involves scoring subsections of the image based on how much they activate a class's feature detectors.
 We take the average score across all feature maps to generate a heatmap of the image, where the hotter the pixel, the more activation of the predicted class.
@@ -1088,14 +1084,14 @@ The issue seems to be two-fold:
 Point 1 demonstrates that we need must include more Toons images with the same coloration as Cogs.
 Notice how the Toon's black shoes were not detected by the model because they match the Cogs' black shoes.
 
-Point 2 is tricker to resolve.
+Point 2 is trickier to resolve.
 We can see the model identify the Toon's facial features, but that's not enough for it to correctly label the image.
-In order to fix point 2, we need to include more Toons in our dataset.
+To fix point 2, we need to include more Toons in our dataset.
 The class imbalance is a great problem in edge cases like this.
 
-An alternative solution to point 2 is to include padding in our convnet layers so as to not lose information.
+An alternative solution to point 2 is to include padding in our convnet layers to not lose information.
 With padding, the heatmap would include the entirety of the backpack seen in the original image instead of cropping it out.
-The entire backpack being included in the heatmap likely would have resulted in a correct prediction.
+Including the entire backpack in the heatmap likely would have resulted in a correct prediction.
 
 #### Additional CAM findings
 
@@ -1153,7 +1149,7 @@ The colorization of a Toon's clothes and accessories greatly affects the model's
 The lighter the Toon's clothes/accessories, the higher chance the model will predict the correct class.
 The darker the Toon's clothes/accessories, the lower chance the model will predict the correct class.
 
-On the left we see a mouse with light-color clothing and accessories.
+On the left, we see a mouse with light-color clothing and accessories.
 Both the clothing and the accessories are highly activated.
 We can even see the facial features, gloves, and ears being activated.
 
@@ -1161,7 +1157,7 @@ The crocodile on the right, however, is wearing dark-colored clothing.
 That doesn't stop the model from identifying the Toon's pink hat and shoes and correctly labeling the image.
 Unfortunately, the Toon's facial features are barely activated.
 
-It would be ideal for the Toon's features (face and gloves) to be the prominent feature indicators in the model, but that's not possible with our small dataset.
+It would be ideal for Toon's facial features and gloves to be the prominent feature indicators in the model, but that's not possible with our small dataset.
 </details>
 
 <details>
@@ -1194,7 +1190,7 @@ It would be ideal for the Toon's features (face and gloves) to be the prominent 
 </table>
 
 The Toons' eyes and gloves are highly activated in both heatmaps.
-Also note how the dark streak on the Toons' shirts (under the right arm) are not at all activated in the heatmaps.
+Also, note how the dark streak on the Toons' shirts (under the right arm) is not at all activated in the heatmaps.
 This is commonly seen in heatmaps containing Toons with Cog-colored clothing; dark clothes are not activated.
 </details>
 
@@ -1207,12 +1203,13 @@ The following article will ensure improvement in the areas listed above.
 ### Dataset balance
 
 Balancing the dataset requires time and effort.
-The imbalanced dataset in this article was because I wanted a quick dataset to train on, but I also wanted to learn how to work with a poorly-balanced dataset.
+The imbalanced dataset in this article was created in haste.
+I wanted a quick dataset to train on so I could write this article, but I also wanted to learn how to work with a poorly-balanced dataset.
 With time, I'm confident in my ability to balance the dataset.
 
-Furthermore, the use of a validation set resulted in small training, validation, and testing dataset.
-As a consequence, the validation scores changed a lot depending on which data points we chose for validation and which we chose for training.
-This is commonly referred to as having a "high *variance*" with regard to the validation split, and prevents us from properly evaluating our model.
+Furthermore, the use of a validation set resulted in small training, validation, and testing datasets.
+As a consequence, the validation scores changed a lot depending on which data points were chosen for validation and training sets.
+This is commonly referred to as having a "high *variance*" with regard to the validation split and prevents us from properly evaluating our model.
 Future articles will forego the use of validation sets until the dataset is sufficiently grown and balanced, or implement K-fold cross-validation.
 
 In conclusion, using an imbalanced dataset should be avoided if possible, but it's not much of a hindrance for small models.
@@ -1228,7 +1225,7 @@ For instance, the first MaxPooling2D layer should be removed and padding should 
 Multiple dropout layers can be added in between the convolutional layers rather than a single layer at the end of the model.
 Stacks of convolutional layers can be added to the model to increase the number of filters.
 
-I must streamline a process to design, compare, and measure performance of different model architectures.
+I must streamline a process to design, compare, and measure the performance of different model architectures.
 This will allow me to select the best model for my dataset without having to manually design and test models.
 
 Of course, measuring performance is heavily dependent on a well-balanced dataset, so that must remain my highest priority.
@@ -1240,9 +1237,9 @@ It's important to understand the model's output and how it is interpreting the o
 We can understand what the model is looking for in an input image - what features are important to the model - by visualizing its layers' outputs.
 
 Interpreting the model's output above was an eye-opener for me.
-The intermediate layers activations are shown as heatmaps which are superimposed on the input image.
-The heatmaps clearly highlighted how the model searches for a specific feature in the image, such as a face, gloves, or ears.
+The intermediate layer activations are shown as heatmaps which are superimposed on the input image.
+The heatmaps highlighted how the model searches for a specific feature in the image, such as faces, gloves, or accessories.
 These interpretations are incredibly useful for understanding the model.
 
 Moving forward, I will streamline the process of visualizing the model's layers' outputs.
-I would like to be able to visualize the model's outputs in a way that is easy to understand in order to select the best model after training.
+I would like to be able to visualize the model's outputs in a way that is easy to understand to select the best model after training.
