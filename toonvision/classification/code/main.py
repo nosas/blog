@@ -282,10 +282,11 @@ ds_train, ds_validate, ds_test = create_datasets(split_ratio=[0.6, 0.2, 0.2])
 wrong_predictions = []
 
 for model_name, run in [
-    ("base_orig", 23),
-    ("base_pad", 7),
-    ("opt_orig", 17),
-    ("opt_pad", 2),
+    # ("base_orig", 23),
+    # ("base_pad", 7),
+    # ("opt_orig", 17),
+    # ("opt_pad", 2),
+    ("optimized_1e-5", 12),
 ]:
     model = keras.models.load_model(f"./models/toonvision_{model_name}_run{run}.keras")
     evaluation = model.evaluate(ds_test, verbose=False)
@@ -298,7 +299,7 @@ for model_name, wrong_preds in wrong_predictions:
 
 
 # %% Load the optimized model
-model = keras.models.load_model("./models/toonvision_opt_pad_run2.keras")
+model = keras.models.load_model("./models/toonvision_optimized_1e-5_run12.keras")
 
 # %% Load an example image and turn it into a tensor
 import numpy as np
@@ -328,7 +329,6 @@ layer_outputs = []
 layer_names = []
 for layer in model.layers:
     if isinstance(layer, (layers.Conv2D, layers.MaxPooling2D)):
-        # if isinstance(layer, (layers.Conv2D)):
         layer_outputs.append(layer.output)
         layer_names.append(layer.name)
 activation_model = keras.Model(inputs=model.input, outputs=layer_outputs)
@@ -339,38 +339,383 @@ activations = activation_model.predict(img_tensor)
 activations_conv2d = activations[-1]
 # Display the ninth channel of the activation
 # This channel appears to encode the black pixels of the image
-# plt.matshow(activations_conv2d[0, :, :, 8], cmap="viridis")
+# plt.matshow(activations_conv2d[0, :, :, 9], cmap="viridis")
 
-# %% Plot a complete visualization of all activations in the network
-images_per_row = 2
-for layer_name, layer_activation in zip(layer_names[:], activations[:]):
+# %% Plot a complete visualization of all activations (feature maps) in the network
+feature_maps = list(zip(layer_names[1:], activations[1:]))
+n_maps = len(feature_maps)
+
+for layer_name, layer_activation in feature_maps:
     n_features = layer_activation.shape[-1]
-    r, c = layer_activation.shape[1], layer_activation.shape[2]
-    n_cols = n_features // images_per_row
-    display_grid = np.zeros((images_per_row * (r + 1) - 1, (c + 1) * n_cols - 1))
-    for col in range(n_cols):
-        for row in range(images_per_row):
-            channel_index = col * images_per_row + row
-            channel_image = layer_activation[0, :, :, channel_index].copy()
-            if channel_image.sum() != 0:
-                channel_image -= channel_image.mean()
-                channel_image /= channel_image.std()
-                channel_image *= 64
-                channel_image += 128
-            channel_image = np.clip(channel_image, 0, 255).astype("uint8")
-            display_grid[
-                row * (r + 1) : (row + 1) * r + row,
-                col * (c + 1) : (col + 1) * c + col,
-            ] = channel_image
+    img_size = (layer_activation.shape[1], layer_activation.shape[2])
+    image_belt = np.zeros((img_size[0], img_size[1] * n_features))
+    x1 = 0  # Starting x-coordinate for each feature map
+    for i in range(n_features):
+        # Normalize the image so it's human-visible
+        feature_image = layer_activation[0, :, :, i]
+        feature_image -= feature_image.mean()
+        feature_image /= feature_image.std()
+        feature_image *= 64
+        feature_image += 128
+        feature_image = np.clip(feature_image, 0, 255).astype("uint8")
+        # Plot the image on the horizontal belt
+        image_belt[:, x1 : x1 + img_size[1]] = feature_image
+        # Increment the x-coordinate for the next feature map
+        x1 += img_size[1]
 
-    # scale = r * (1.25)./r
-    # scale = r * (1.25)./r
-    scale = 0.1
-    plt.figure(figsize=(scale * 600, scale * 200))
-    plt.title(layer_name)
+    scale = 25.0 / n_features
+    plt.figure(figsize=(scale * n_features, 2 * scale), dpi=100)
+    plt.title(
+        f"{layer_name}: {layer_activation.shape[1]}x{layer_activation.shape[2]} img_size, {n_features} features"
+    )
     plt.grid(False)
     plt.axis("off")
-    plt.imshow(display_grid, aspect="auto", cmap="viridis")
+    plt.imshow(image_belt, aspect="auto", cmap="inferno")
+    # plt.imshow(image_belt, aspect="auto", cmap="gist_earth")
+
+
+# %% Plot a complete visualization of all activations (feature maps) in the network
+fig, ax = plt.subplots(n_maps, figsize=(10, 8), dpi=100)
+for row, (layer_name, layer_activation) in enumerate(feature_maps):
+    plt.subplot(n_maps, 1, row + 1)
+    n_features = layer_activation.shape[-1]
+    img_size = (layer_activation.shape[1], layer_activation.shape[2])
+    image_belt = np.zeros((img_size[0], img_size[1] * n_features))
+    x1 = 0  # Starting x-coordinate for each feature map
+    for i in range(n_features):
+        # Normalize the image so it's human-visible
+        feature_image = layer_activation[0, :, :, i]
+        feature_image -= feature_image.mean()
+        feature_image /= feature_image.std()
+        feature_image *= 64
+        feature_image += 128
+        feature_image = np.clip(feature_image, 0, 255).astype("uint8")
+        # Plot the image on the horizontal belt
+        image_belt[:, x1 : x1 + img_size[1]] = feature_image
+        # Increment the x-coordinate for the next feature map
+        x1 += img_size[1]
+
+    scale = 25.0 / n_features
+    # ax[row].figure(figsize=(scale * n_features, 2 * scale))
+    plt.title(
+        f"{layer_name}: {layer_activation.shape[1]}x{layer_activation.shape[2]} img_size, {n_features} features",
+        fontsize=10,
+    )
+    plt.grid(False)
+    plt.axis("off")
+    ax[row].imshow(image_belt, cmap="inferno")
+# plt.tight_layout()
+
+# %% Plot wrong predictions
+evaluation = model.evaluate(ds_test, verbose=False)
+print(f"{model.name}  {evaluation[1]:.2f} {evaluation[0]:.2f}")
+plot_wrong_predictions(get_wrong_predictions(model), model.name, show_num_wrong=5)
+
+# %% Create a feature extractor model
+layer_name = layer_names[-1]  # Second convolutional layer
+layer = model.get_layer(name=layer_name)
+feature_extractor = keras.Model(inputs=model.inputs, outputs=layer.output)
+# activation = feature_extractor(img_tensor)
+
+
+# %% Use the feature extractor
+def get_feature_extractor(layer_name):
+    layer = model.get_layer(name=layer_name)
+    feature_extractor = keras.Model(inputs=model.inputs, outputs=layer.output)
+    return feature_extractor
+
+
+def compute_loss(image, filter_index, feature_extractor) -> float:
+    """Return a scalar quantifying how much a given input image "activates" a layer's filter"""
+    # Get the activation of the selected filter
+    activation = feature_extractor(image)
+    filter_activation = activation[:, :, :, filter_index]
+    # Compute the loss
+    loss = tf.reduce_mean(filter_activation)
+    return loss
+
+
+@tf.function
+def gradient_ascent_step(image, filter_index, learning_rate, feature_extractor):
+    with tf.GradientTape() as tape:
+        tape.watch(image)
+        loss = compute_loss(image, filter_index, feature_extractor)
+    # Compute the gradient of the loss with respect to the image
+    grads = tape.gradient(loss, image)
+    # Smoothen the gradient descent process, ensure magnitude of updates are within same range
+    grads = tf.math.l2_normalize(grads)
+    # Update the image
+    # Move the image in a direction that activates our target more strongly
+    image += learning_rate * grads
+    return image
+
+
+def generate_filter_pattern(filter_index, feature_extractor) -> np.ndarray:
+    iterations = 30
+    learning_rate = 10.0
+    image = tf.random.uniform(minval=0.4, maxval=0.6, shape=(1, 600, 200, 3))
+    for i in range(iterations):
+        image = gradient_ascent_step(
+            image, filter_index, learning_rate, feature_extractor
+        )
+    return image[0].numpy()
+
+
+def deprocess_image(image):
+    # Normalize image values within [0, 255] range
+    image -= image.mean()
+    image /= image.std()
+    image *= 64
+    image += 128
+    image = np.clip(image, 0, 255).astype("uint8")
+    image = image[25:-25, 25:-25, :]  # Center crop to remove border artifacts
+    return image
+
+
+# %% Generate a filter pattern for a given filter
+filter_index = -16
+filter_pattern = generate_filter_pattern(filter_index, feature_extractor)
+filter_pattern = deprocess_image(filter_pattern)
+plt.figure(figsize=(10, 10))
+plt.imshow(filter_pattern)
+
+
+# %% Generate a grid of images for all filter patterns
+def generate_filter_grid(layer):
+    feature_extractor = get_feature_extractor(layer.name)
+
+    all_images = []
+    for filter_index in range(layer.output.shape[-1]):
+        filter_pattern = generate_filter_pattern(filter_index, feature_extractor)
+        filter_pattern = deprocess_image(filter_pattern)
+        all_images.append(filter_pattern)
+
+    margin = 5
+    n = len(all_images)
+    img_per_row = 8
+    num_rows = int(np.ceil(n / img_per_row))
+
+    cropped_width = 200 - 25 * 2
+    cropped_height = 600 - 25 * 2
+
+    width = img_per_row * cropped_width + (img_per_row - 1) * margin
+    height = num_rows * cropped_height + (num_rows - 1) * margin
+
+    stitched_filters = np.zeros((height, width, 3))
+    for col in range(img_per_row):
+        for row in range(num_rows):
+            filter_index = col * num_rows + row
+            filter_pattern = all_images[filter_index]
+
+            row_start = (cropped_height + margin) * row
+            row_end = row_start + cropped_height
+            col_start = (cropped_width + margin) * col
+            col_end = col_start + cropped_width
+            stitched_filters[row_start:row_end, col_start:col_end, :] = filter_pattern
+    tf.keras.utils.save_img(f"filters_{layer.name}.png", stitched_filters)
+
+
+# %% Generate a grid of images for each layer
+for layer_name in layer_names[:]:
+    layer = model.get_layer(name=layer_name)
+    generate_filter_grid(layer)
+
+# %% Make a gif of all the layers' filter patterns
+import imageio
+
+
+def make_gif(layer_names, filename):
+    images = []
+    for layer_name in layer_names:
+        images.append(imageio.imread(f"../img/filters_{layer_name}.png"))
+    imageio.mimsave(f"../img/{filename}.gif", images, duration=1)
+
+
+# make_gif(layer_names[1:3], filename="filters_first_two")  # First two layers
+# make_gif(layer_names[3:], filename="filters_remaining")  # Remaining layers
+
+# %% Get filenames of wrong predictions
+fns = []
+for w in wrong_predictions[0][1]:
+    fns.append(w[0])
+
+# %% Display the image
+from glob import glob
+from random import choice
+
+img_fp = choice(glob("../img/data/**/cog_*.png", recursive=True))
+# img_fp = '../img/data\\test\\toon\\toon_cat_20.png'
+# img_fp = '../img/data\\train\\toon\\toon_dog_12.png'
+img = tf.keras.utils.load_img(img_fp, target_size=(600, 200))
+img_title = img_fp.split("\\")[-1].replace(".png", "")
+plt.title(img_title)
+plt.axis("off")
+plt.imshow(img)
+
+# %% Expand dimensions of the model to (1, 600, 200, 3), a single-item batch of images
+img = np.expand_dims(img, axis=0)
+
+# %% Predict the class of the image
+pred = model.predict(img)
+pred_class = "Toon" if pred[0][0] > 0.5 else "Cog"
+pred_class, pred[0][0]  # (0.2666575, 'Cog')
+
+# %% Set up a model that returns the last convolutional layer's output
+last_conv_layer_name = "max_pooling2d_211"
+classifier_layer_names = ["flatten_52", "dropout_38", "dense_52"]
+last_conv_layer = model.get_layer(name=last_conv_layer_name)
+last_conv_layer_model = keras.Model(model.inputs, last_conv_layer.output)
+
+# %% Reapply the classifier to the last convolutional layer's output
+classifier_input = keras.Input(shape=last_conv_layer.output.shape[1:])
+x = classifier_input
+for layer_name in classifier_layer_names:
+    x = model.get_layer(name=layer_name)(x)
+classifier_model = keras.Model(classifier_input, x)
+
+
+# %% Retrieve the gradients of the top predicted class
+with tf.GradientTape() as tape:
+    last_conv_layer_output = last_conv_layer_model(img)
+    tape.watch(last_conv_layer_output)
+    pred = classifier_model(last_conv_layer_output)
+    top_class_channel = pred[:, 0]
+
+grads = tape.gradient(top_class_channel, last_conv_layer_output)
+
+# %% Gradient pooling and chanel-importance weighting
+pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2)).numpy()
+last_conv_layer_output = last_conv_layer_output.numpy()[0]
+for i in range(pooled_grads.shape[-1]):
+    last_conv_layer_output[:, :, i] *= pooled_grads[i]
+heatmap = np.mean(last_conv_layer_output, axis=-1)
+
+# %% Heatmap post-processing: normalize and scale to [0, 1]
+heatmap = np.maximum(heatmap, 0)
+heatmap /= np.max(heatmap)
+plt.matshow(heatmap, cmap="jet")
+
+# %% Superimpose the heatmap on the original image
+import matplotlib.cm as cm
+
+img = tf.keras.utils.load_img(img_fp, target_size=(600, 200))
+img = tf.keras.utils.img_to_array(img)
+heatmap = np.uint(255 * heatmap)
+
+jet = cm.get_cmap("jet")
+jet_colors = jet(np.arange(256))[:, :3]
+jet_heatmap = jet_colors[heatmap]
+
+jet_heatmap = tf.keras.utils.array_to_img(jet_heatmap)
+jet_heatmap = jet_heatmap.resize((img.shape[1], img.shape[0]))
+jet_heatmap = tf.keras.utils.img_to_array(jet_heatmap)
+
+superimposed_img = jet_heatmap * 0.4 + img
+superimposed_img = tf.keras.utils.array_to_img(superimposed_img)
+plt.title(img_title)
+plt.axis("off")
+plt.imshow(superimposed_img)
+
+
+# %% Create functions to streamline heatmap generation
+def generate_heatmap(
+    img_fp: str,
+    model: keras.Model,
+    layer_name_last_conv: str,
+    layers_classifier: list[str],
+) -> tuple[np.array, np.array]:
+    img = tf.keras.utils.load_img(img_fp, target_size=(600, 200))
+    img = np.expand_dims(img, axis=0)
+
+    # %% Set up a model that returns the last convolutional layer's output
+    last_conv_layer = model.get_layer(name=layer_name_last_conv)
+    last_conv_layer_model = keras.Model(model.inputs, last_conv_layer.output)
+
+    # %% Reapply the classifier to the last convolutional layer's output
+    classifier_input = keras.Input(shape=last_conv_layer.output.shape[1:])
+    x = classifier_input
+    for layer_name in layers_classifier:
+        x = model.get_layer(name=layer_name)(x)
+    classifier_model = keras.Model(classifier_input, x)
+
+    # %% Retrieve the gradients of the top predicted class
+    with tf.GradientTape() as tape:
+        last_conv_layer_output = last_conv_layer_model(img)
+        tape.watch(last_conv_layer_output)
+        pred = classifier_model(last_conv_layer_output)
+        top_class_channel = pred[:, 0]
+    grads = tape.gradient(top_class_channel, last_conv_layer_output)
+
+    # %% Gradient pooling and chanel-importance weighting
+    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2)).numpy()
+    last_conv_layer_output = last_conv_layer_output.numpy()[0]
+    for i in range(pooled_grads.shape[-1]):
+        last_conv_layer_output[:, :, i] *= pooled_grads[i]
+    heatmap = np.mean(last_conv_layer_output, axis=-1)
+
+    # %% Heatmap post-processing: normalize and scale to [0, 1]
+    heatmap = np.maximum(heatmap, 0)
+    heatmap /= np.max(heatmap)
+
+    # %% Superimpose the heatmap on the original image
+    import matplotlib.cm as cm
+
+    img = tf.keras.utils.load_img(img_fp, target_size=(600, 200))
+    img = tf.keras.utils.img_to_array(img)
+    unscaled_heatmap = np.uint(255 * heatmap)
+
+    jet = cm.get_cmap("jet")
+    jet_colors = jet(np.arange(256))[:, :3]
+    jet_heatmap = jet_colors[unscaled_heatmap]
+
+    jet_heatmap = tf.keras.utils.array_to_img(jet_heatmap)
+    jet_heatmap = jet_heatmap.resize((img.shape[1], img.shape[0]))
+    jet_heatmap = tf.keras.utils.img_to_array(jet_heatmap)
+
+    superimposed_img = jet_heatmap * 0.4 + img
+    superimposed_img = tf.keras.utils.array_to_img(superimposed_img)
+    return heatmap, superimposed_img
+
+
+# %% Select an image to generate a heatmap for
+# toon_cat_20: Face, glove, hat, and backpack activation
+# toon_duck_9: Face and glove activation
+# toon_crocodile_2: Hat and shoes activation
+# toon_mouse_3: Fairy wings and glove activation
+img_fp = choice(glob("../img/data/**/toon_duck_9.png", recursive=True))
+img = tf.keras.utils.load_img(img_fp, target_size=(600, 200))
+img_title = img_fp.split("\\")[-1].replace(".png", "")
+plt.title(img_title)
+plt.axis("off")
+plt.imshow(img)
+
+# %% Generate the heatmaps and the superimposed image
+layer_names = np.array([layer.name for layer in model.layers])
+layer_name_last_conv = layer_names[-4]
+layers_classifier = layer_names[-3:]
+heatmap, superimposed_img = generate_heatmap(
+    img_fp=img_fp,
+    model=model,
+    layer_name_last_conv=layer_name_last_conv,
+    layers_classifier=layers_classifier,
+)
+
+# %% Display the original image, heatmap, and superimposed image
+pred = model.predict(np.expand_dims(img, axis=0))[0][0]
+pred_label = "Toon" if pred > 0.5 else "Cog"
+
+figure, ax = plt.subplots(1, 3, figsize=(5, 5), dpi=100)
+ax[0].imshow(img)
+ax[0].set_title("Original", y=1.01)
+ax[1].matshow(heatmap)
+ax[1].set_title("Heatmap", y=1.01)
+ax[2].imshow(superimposed_img)
+ax[2].set_title("Superimposed", y=1.01)
+
+for ax_idx in range(len(ax)):
+    ax[ax_idx].axis("off")
+figure.suptitle(f"{img_title}, {pred_label}, {pred:.2f}")
+figure.tight_layout()
 
 
 # %%
