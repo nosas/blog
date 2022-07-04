@@ -975,9 +975,9 @@ We'll discuss patterns and filters in the next section.
     <figcaption>Feature maps of the sample image above, extracted from each layer's output (excluding the first MaxPooling2D layer)</figcaption>
 </figure>
 
-After looking at the activations of different inputs, I found that that the model learned to recognize the Cogs by their suit shape and color.
+After looking at the activations of different inputs, I found that that the model learned to recognize the Cogs by their heads, hands, and dark-colored suits.
 I anticipated that the model would identify Toons by their facial features or gloves, and I was *somewhat* correct.
-However, the model mostly classified Toons by their accessories and clothes: backpacks, shoes, pants, and sometimes gloves were all strong feature indicators.
+However, the model classified Toons by their accessories and clothes: backpacks, shoes, and pants, were all strong feature indicators.
 Surprisingly, dog/deer faces - specifically ears, antlers, and noses - were the only features to outperform accessories/clothes indicators.
 
 <details>
@@ -1042,6 +1042,7 @@ It's definitely worth the read to see how beautiful the patterns can be in more 
 
 The final visualization technique - *class activation maps* (CAM) - is useful for understanding which parts of an image led to a specific class prediction.
 This is helpful for debugging wrong predictions and understanding classification mistakes.
+
 The technique involves scoring subsections of the image based on how much they activate a class's feature detectors.
 We take the average score across all feature maps to generate a heatmap of the image, where the hotter the pixel, the more activation of the predicted class.
 Lastly, we superimpose the heatmap on the original image to visualize the activation - visualize what parts of the image activate the class.
@@ -1098,7 +1099,104 @@ The entire backpack being included in the heatmap likely would have resulted in 
 
 #### Additional CAM findings
 
+I found the heatmaps to be the most useful visualization technique for understanding the model's predictions.
+Below are additional findings that I found interesting.
+In summary, the following are the key findings:
 
+- Cog hands are important Cog feature indicators
+- Light-colored clothing and accessories are strong Toon feature indicators
+- Dark-colored Toon clothing leads to confusion between Toon and Cog features
+- Toon features are decent indicators for Toons without accessories
+
+<details>
+    <summary>Cog hands are important Cog feature indicators</summary>
+<figure class="center">
+    <img src="img/cam_sample_bloodsucker_superimposed1.png" style="width:100%;"/>
+    <figcaption>Bloodsucker labeled as a Toon because its hands are occluded</figcaption>
+</figure>
+
+The Bloodsucker Cog from the [wrong predictions](#wrong-predictions) section is wrongly classified as a Toon because the Cog's hands are occluded by the nametag.
+Furthermore, the heatmap shows high activations in the image's midsection, which is commonly seen in Toon images.
+</details>
+
+<details>
+    <summary>Colorization of Toon clothing/accessories affect model accuracy</summary>
+
+<table style="width:100%;">
+    <tr>
+        <td style="width:50%;">
+            <img src="img/cam_sample_mouse_superimposed.png" style="width:100%;">
+        </td>
+        <td style="width:50%;">
+            <img src="img/cam_sample_crocodile_superimposed.png" style="width:100%;">
+        </td>
+    </tr>
+    <tr >
+        <td>
+            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                <small>
+                    <i>Light-colored clothing and accessories</i>
+                </small>
+            </span>
+        </td>
+        <td>
+            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                <small>
+                    <i>Dark-colored clothing with highly-activated accessories</i>
+                </small>
+            </span>
+        </td>
+    </tr>
+</table>
+
+The colorization of a Toon's clothes and accessories greatly affects the model's accuracy.
+The lighter the Toon's clothes/accessories, the higher chance the model will predict the correct class.
+The darker the Toon's clothes/accessories, the lower chance the model will predict the correct class.
+
+On the left we see a mouse with light-color clothing and accessories.
+Both the clothing and the accessories are highly activated.
+We can even see the facial features, gloves, and ears being activated.
+
+The crocodile on the right, however, is wearing dark-colored clothing.
+That doesn't stop the model from identifying the Toon's pink hat and shoes and correctly labeling the image.
+Unfortunately, the Toon's facial features are barely activated.
+
+It would be ideal for the Toon's features (face and gloves) to be the prominent feature indicators in the model, but that's not possible with our small dataset.
+</details>
+
+<details>
+    <summary>Toon features are decent indicators on accessory-less Toons</summary>
+<table style="width:100%;">
+    <tr>
+        <td style="width:50%;">
+            <img src="img/cam_sample_duck_superimposed.png" style="width:100%;">
+        </td>
+        <td style="width:50%;">
+            <img src="img/cam_sample_dog_superimposed.png" style="width:100%;">
+        </td>
+    </tr>
+    <tr >
+        <td>
+            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                <small>
+                    <i>High facial-activations on a duck Toon</i>
+                </small>
+            </span>
+        </td>
+        <td>
+            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                <small>
+                    <i>High facial and glove activations on a dog Toon</i>
+                </small>
+            </span>
+        </td>
+    </tr>
+</table>
+
+The Toons' eyes and gloves are highly activated in both heatmaps.
+Also note how the dark streak on the Toons' shirts (under the right arm) are not at all activated in the heatmaps.
+This is commonly seen in heatmaps containing Toons with Cog-colored clothing; dark clothes are not activated.
+</details>
 
 ---
 ## Future improvements
