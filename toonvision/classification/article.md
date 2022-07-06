@@ -997,43 +997,21 @@ It is a great way to understand how the model is learning to recognize the input
 
 ### Convnet filters
 
+<figure class="right" style="width:55%;">
+    <img src="img/interesting_filters.gif" style="width:100%;"/>
+    <figcaption>Filters from intermediate layers: conv2d_157, max_pooling2d_210</figcaption>
+</figure>
+
 Filters are the weights that are learned by the network - they are the model's "knowledge".
 They are used to extract information or extract patterns, from the input data.
 Filters tell us a lot about how the convnet layers see the world.
-
-<table style="width:100%;">
-    <tr>
-        <td style="width:50%;">
-            <img src="img/filters_first_two.gif" style="width:100%;">
-        </td>
-        <td style="width:50%;">
-            <img src="img/filters_remaining.gif" style="width:75%;margin-left:3em;">
-        </td>
-    </tr>
-    <tr >
-        <td>
-            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
-                <small>
-                    <i>Filters from first MaxPooling2D and Conv2D layers</i>
-                </small>
-            </span>
-        </td>
-        <td>
-            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
-                <small>
-                    <i>Filters from remaining layers</i>
-                </small>
-            </span>
-        </td>
-    </tr>
-</table>
 
 The filters from the first layers in the model encode simple directional edges and colors.
 The remaining layers encode more complex patterns, although the patterns are not as clear in such a small model.
 We can make out blue and yellow patterns with diagonal and straight-line edges, but not much else.
 
 If our model were larger or trained for more epochs, we would see more complex patterns.
-More interesting patterns can be seen in the Keras blog post [How convolutional neural networks see the world](https://blog.keras.io/how-convolutional-neural-networks-see-the-world.html).
+More interesting patterns can be seen in the Keras blog post, [How convolutional neural networks see the world](https://blog.keras.io/how-convolutional-neural-networks-see-the-world.html).
 It's definitely worth the read to see how beautiful the patterns can be in more complex models.
 
 ### Class activation heatmaps
