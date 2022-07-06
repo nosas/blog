@@ -29,6 +29,7 @@ Articles in this series will sequentially review key concepts, examples, and int
         - [Neural Network training loop](#neural-network-training-loop)
         - [Deep Learning simplified](#deep-learning-simplified)
     - [What has Deep Learning achieved so far?](#what-has-deep-learning-achieved-so-far)
+    - [Summary](#summary)
 
 </details>
 
@@ -246,4 +247,14 @@ More specifically, deep learning has enabled the following breakthroughs, all in
 * Ability to answer natural language questions
 
 
-<font style="color:red">TODO: Add recap, summary</font>
+---
+## Summary
+
+Deep learning is still a relatively new field of machine learning, but it has achieved a lot of progress in the last few years.
+It has delivered revolutions in the field of natural language processing, computer vision, and speech recognition.
+
+There are three things needed to make deep learning work: input data, expected output data, and a measure of success.
+Deep learning models *learn* by predicting the output of some input data, and updating its knowledge based on the correctness of its prediction.
+The ultimate goal of deep learning is to create a model that transforms input data into useful representations in order to find the correct output for our problems.
+
+We'll dive deeper into the details of DL in the following articles.
