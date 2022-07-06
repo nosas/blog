@@ -412,7 +412,7 @@ print(f"{model.name}  {evaluation[1]:.2f} {evaluation[0]:.2f}")
 plot_wrong_predictions(get_wrong_predictions(model), model.name, show_num_wrong=5)
 
 # %% Create a feature extractor model
-layer_name = layer_names[-1]  # Second convolutional layer
+layer_name = layer_names[-1]  # Last convolutional layer
 layer = model.get_layer(name=layer_name)
 feature_extractor = keras.Model(inputs=model.inputs, outputs=layer.output)
 # activation = feature_extractor(img_tensor)
@@ -452,7 +452,7 @@ def gradient_ascent_step(image, filter_index, learning_rate, feature_extractor):
 
 def generate_filter_pattern(filter_index, feature_extractor) -> np.ndarray:
     iterations = 30
-    learning_rate = 10.0
+    learning_rate = 15.0
     image = tf.random.uniform(minval=0.4, maxval=0.6, shape=(1, 600, 200, 3))
     for i in range(iterations):
         image = gradient_ascent_step(
@@ -468,7 +468,7 @@ def deprocess_image(image):
     image *= 64
     image += 128
     image = np.clip(image, 0, 255).astype("uint8")
-    image = image[25:-25, 25:-25, :]  # Center crop to remove border artifacts
+    image = image[200:-200, 25:-25, :]  # Center crop to remove border artifacts and reduce img size
     return image
 
 
@@ -481,22 +481,24 @@ plt.imshow(filter_pattern)
 
 
 # %% Generate a grid of images for all filter patterns
-def generate_filter_grid(layer):
+def generate_filter_grid(layer, filter_indices: list[int] = None, img_per_row: int =  8):
     feature_extractor = get_feature_extractor(layer.name)
 
+    if filter_indices is None:
+        filter_indices = range(layer.output_shape[-1])
+
     all_images = []
-    for filter_index in range(layer.output.shape[-1]):
+    for filter_index in filter_indices:
         filter_pattern = generate_filter_pattern(filter_index, feature_extractor)
         filter_pattern = deprocess_image(filter_pattern)
         all_images.append(filter_pattern)
 
     margin = 5
-    n = len(all_images)
-    img_per_row = 8
-    num_rows = int(np.ceil(n / img_per_row))
+    num_images = len(all_images)
+    num_rows = int(np.ceil(num_images / img_per_row))
 
     cropped_width = 200 - 25 * 2
-    cropped_height = 600 - 25 * 2
+    cropped_height = 600 - 200 * 2
 
     width = img_per_row * cropped_width + (img_per_row - 1) * margin
     height = num_rows * cropped_height + (num_rows - 1) * margin
@@ -516,9 +518,11 @@ def generate_filter_grid(layer):
 
 
 # %% Generate a grid of images for each layer
-for layer_name in layer_names[:]:
+for layer_name in layer_names[-4:-2]:
     layer = model.get_layer(name=layer_name)
+    # generate_filter_grid(layer, img_per_row=5, filter_indices=[1, 4, 8, 10, 14, 16, 20, 23, 27, 31])
     generate_filter_grid(layer)
+
 
 # %% Make a gif of all the layers' filter patterns
 import imageio
@@ -533,6 +537,7 @@ def make_gif(layer_names, filename):
 
 # make_gif(layer_names[1:3], filename="filters_first_two")  # First two layers
 # make_gif(layer_names[3:], filename="filters_remaining")  # Remaining layers
+# make_gif(layer_names[-4:-2], filename="interesting_filters")  # Remaining layers
 
 # %% Get filenames of wrong predictions
 fns = []
@@ -682,7 +687,7 @@ def generate_heatmap(
 # toon_duck_9: Face and glove activation
 # toon_crocodile_2: Hat and shoes activation
 # toon_mouse_3: Fairy wings and glove activation
-img_fp = choice(glob("../img/data/**/toon_duck_9.png", recursive=True))
+img_fp = choice(glob("../img/data/**/*.png", recursive=True))
 img = tf.keras.utils.load_img(img_fp, target_size=(600, 200))
 img_title = img_fp.split("\\")[-1].replace(".png", "")
 plt.title(img_title)
@@ -716,6 +721,3 @@ for ax_idx in range(len(ax)):
     ax[ax_idx].axis("off")
 figure.suptitle(f"{img_title}, {pred_label}, {pred:.2f}")
 figure.tight_layout()
-
-
-# %%
