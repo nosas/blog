@@ -77,7 +77,7 @@ For now, let's focus on classification.</p>
 <li><a href="#data-labeling">Data labeling</a></li>
 <li><a href="#data-extraction">Data extraction</a></li>
 <li><a href="#data-processing">Data processing</a></li>
-<li><a href="#creating-the-datasets">Creating the datasets</a>
+<li><a href="#creating-the-dataset-objects">Creating the dataset objects</a>
 <ul>
 <li><a href="#spitting-the-images-into-train-validate-and-test">Spitting the images into train, validate, and test</a></li>
 </ul></li>
@@ -483,9 +483,9 @@ Furthermore, we could simulate this loss of information through image augmentati
 <p>It would make a fun project to create a model that upscales the images to a higher resolution.
 Then we could use those high-resolution images in this dataset.</p>
 
-<h3 id="creating-the-datasets">Creating the datasets</h3>
+<h3 id="creating-the-dataset-objects">Creating the dataset objects</h3>
 
-<p>After the objects are extracted and placed in the <code>unsorted</code> folder, we can create the datasets.
+<p>After the objects are extracted and placed in the <code>unsorted</code> folder, we can create the <a href="https://www.tensorflow.org/api_docs/python/tf/data/Dataset">Keras dataset objects</a>.
 First, we need to create balanced datasets within the <code>data/[train|validate|test]</code> folders.
 Remember that we're aiming for a 60/20/20 split for the training, validation, and testing datasets`, respectively.</p>
 

@@ -2,7 +2,6 @@
 
 # ToonVision - Classification
 
-
 This article is the first in a series on **ToonVision**.
 
 ToonVision is my computer vision project for teaching a machine how to see in [ToonTown Online](https://en.wikipedia.org/wiki/Toontown_Online) - an MMORPG created by Disney in 2003.
@@ -42,7 +41,7 @@ For now, let's focus on classification.
         - [Data labeling](#data-labeling)
         - [Data extraction](#data-extraction)
         - [Data processing](#data-processing)
-        - [Creating the datasets](#creating-the-datasets)
+        - [Creating the dataset objects](#creating-the-dataset-objects)
             - [Spitting the images into train, validate, and test](#spitting-the-images-into-train-validate-and-test)
     - [Compiling the model](#compiling-the-model)
         - [Loss function](#loss-function)
@@ -395,9 +394,9 @@ Furthermore, we could simulate this loss of information through image augmentati
 It would make a fun project to create a model that upscales the images to a higher resolution.
 Then we could use those high-resolution images in this dataset.
 
-### Creating the datasets
+### Creating the dataset objects
 
-After the objects are extracted and placed in the `unsorted` folder, we can create the datasets.
+After the objects are extracted and placed in the `unsorted` folder, we can create the [Keras dataset objects](https://www.tensorflow.org/api_docs/python/tf/data/Dataset).
 First, we need to create balanced datasets within the `data/[train|validate|test]` folders.
 Remember that we're aiming for a 60/20/20 split for the training, validation, and testing datasets`, respectively.
 
