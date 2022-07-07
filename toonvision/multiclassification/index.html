@@ -1,0 +1,112 @@
+
+<html>
+
+<head>
+  <link rel="stylesheet" type="text/css" href="../../css/default_dark.css">
+  <link rel="stylesheet" type="text/css" href="../../css/syntax_dark.css">
+</head>
+
+<body>
+  <center>
+    <div style="display: inline-block; vertical-align:middle;">
+      <a href="/" style="text-decoration: none;">SASON REZA<br>
+      </a>
+      <hr>
+      <div style="text-align: center;display: inline-block; width: 100%;">
+        <a class="title" href="../../about">ABOUT</a> &nbsp;<a class="title" href="../../contact">CONTACT</a>
+      </div>
+    </div>
+  </center>
+
+  <br>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 06, 2022</p>
+
+<p><title>ToonVision: Multiclass Classification</title></p>
+
+<h1 id="toonvision-multiclass-classification">ToonVision - Multiclass Classification</h1>
+
+<p>This article is the second in a series on <strong>ToonVision</strong>.
+The <a href="https://fars.io/toonvision/classification/">first article</a> covers the basics of classification - specifically binary classification of Toons and Cogs.</p>
+
+<p>ToonVision is my computer vision project for teaching a machine how to see in <a href="https://en.wikipedia.org/wiki/Toontown_Online">ToonTown Online</a> - an MMORPG created by Disney in 2003.
+The ultimate goal is to teach a machine (nicknamed <strong>OmniToon</strong>) how to play ToonTown and create a self-sustaining ecosystem where the bots progress through the game together.</p>
+
+<p>This article covers multiclass classification of Cogs: Cog suits (4 unique suits) and Cog entities (32 unique Cogs).</p>
+
+<p>After reading this article, we'll have a better understanding of how to</p>
+
+<ul>
+<li>deal with a model overfitting to a small, imbalanced dataset</li>
+<li>utilize image augmentation and dropout to improve the model's generalization capability</li>
+<li>compare different models, optimizers, and hyperparameters</li>
+<li>interpret and visualize what the model is learning</li>
+</ul>
+
+<p>The following article will cover image segmentation of ToonTown's streets, roads, Cogs, and Cog buildings.
+Afterwards, we'll implement real-time object detection and, if possible, image segmentation.
+For now, let's focus on multiclass classification.</p>
+
+<hr />
+
+<h2 id="classification">Classification</h2>
+
+<h3 id="multiclass-classification">Multiclass classification</h3>
+
+<hr />
+
+<h2 id="the-toonvision-dataset">The ToonVision dataset</h2>
+
+<h3 id="dataset-considerations">Dataset considerations</h3>
+
+<h3 id="dataset-balance">Dataset balance</h3>
+
+<h3 id="creating-the-dataset-objects">Creating the dataset objects</h3>
+
+<h4 id="splitting-the-images-into-train-validate-and-test">Splitting the images into train, validate, and test</h4>
+
+<hr />
+
+<h2 id="compiling-the-model">Compiling the model</h2>
+
+<h3 id="loss-function">Loss function</h3>
+
+<h3 id="optimizer">Optimizer</h3>
+
+<h3 id="metrics">Metrics</h3>
+
+<h3 id="callbacks">Callbacks</h3>
+
+<h3 id="defining-the-model">Defining the model</h3>
+
+<hr />
+
+<h2 id="training-the-baseline-model">Training the baseline model</h2>
+
+<h3 id="baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</h3>
+
+<h3 id="baseline-wrong-predictions">Baseline wrong predictions</h3>
+
+<hr />
+
+<h2 id="training-the-optimized-model">Training the optimized model</h2>
+
+<h3 id="preventing-overfitting">Preventing overfitting</h3>
+
+<h3 id="wrong-predictions">Wrong predictions</h3>
+
+<h3 id="baseline-comparison-training">Baseline comparison: Training</h3>
+
+<h3 id="baseline-comparison-evaluation">Baseline comparison: Evaluation</h3>
+
+<hr />
+
+<h2 id="model-interpretation-and-visualization">Model interpretation and visualization</h2>
+
+<h3 id="intermediate-convnet-outputs-intermediate-activations">Intermediate convnet outputs (intermediate activations)</h3>
+
+<h3 id="convnet-filters">Convnet filters</h3>
+
+<h3 id="class-activation-heatmaps">Class activation heatmaps</h3>
+
+</body>
+</html>
