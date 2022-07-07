@@ -1,4 +1,4 @@
-<title>ToonVision: Binary and Multiclass Classification</title>
+<title>ToonVision: Binary Classification</title>
 
 # ToonVision - Classification
 
