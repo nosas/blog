@@ -27,7 +27,7 @@ For now, let's focus on multiclass classification.
 As discussed in the [previous article](https://fars.io/toonvision/classification/#classification), image classification is the process of assigning a label to an input image.
 For instance, given a dog-vs-cat classification model and an image of a Pomeranian, the model will predict that the image is a dog.
 
-There are a few variants of image classification problems: binary, multiclass, multi-label, and so on.
+There are a few variants of the image classification problem: binary, multiclass, multi-label, and so on.
 We'll focus on [multiclass classification](https://fars.io/toonvision/classification/#multiclass-classification) in this article.
 
 ### Multiclass classification
