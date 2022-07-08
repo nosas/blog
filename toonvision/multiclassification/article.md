@@ -24,7 +24,22 @@ For now, let's focus on multiclass classification.
 ---
 ## Classification
 
+As discussed in the [previous article](https://fars.io/toonvision/classification/#classification), image classification is the process of assigning a label to an input image.
+For instance, given a dog-vs-cat classification model and an image of a Pomeranian, the model will predict that the image is a dog.
+
+There are a few variants of image classification problems: binary, multiclass, multi-label, and so on.
+We'll focus on [multiclass classification](https://fars.io/toonvision/classification/#multiclass-classification) in this article.
+
 ### Multiclass classification
+
+Multiclass classification is a problem in which the model predicts which class an input image belongs.
+For instance, the model could predict that an animal belongs to the class of dogs, cats, rabbits, horses, or any other animal.
+
+We're building a model to predict which Cog suit a Cog belongs to - a 4-class classification problem.
+We'll push the model further by also predicting which Cog entity a Cog belongs to - a 32-class classification problem.
+Both multiclass classification problems require us to improve the ToonVision dataset.
+The current dataset is imbalanced and does not contain samples of all the Cog suits and entities.
+Let's look at how we can improve the dataset in the next section.
 
 ---
 ## The ToonVision dataset
