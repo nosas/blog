@@ -17,6 +17,38 @@ The following article will cover image segmentation of ToonTown's streets, roads
 Afterwards, we'll implement real-time object detection and, if possible, image segmentation.
 For now, let's focus on multiclass classification.
 
+<details>
+    <summary>Table of Contents</summary>
+
+- [ToonVision - Multiclass Classification](#toonvision---multiclass-classification)
+    - [ToonVision](#toonvision)
+    - [Classification](#classification)
+        - [Multiclass classification](#multiclass-classification)
+    - [The ToonVision dataset](#the-toonvision-dataset)
+        - [Dataset considerations](#dataset-considerations)
+        - [Dataset balance](#dataset-balance)
+        - [Creating the dataset objects](#creating-the-dataset-objects)
+            - [Splitting the images into train, validate, and test](#splitting-the-images-into-train-validate-and-test)
+    - [Compiling the model](#compiling-the-model)
+        - [Loss function](#loss-function)
+        - [Optimizer](#optimizer)
+        - [Metrics](#metrics)
+        - [Callbacks](#callbacks)
+        - [Defining the model](#defining-the-model)
+    - [Training the baseline model](#training-the-baseline-model)
+        - [Baseline loss and accuracy plots](#baseline-loss-and-accuracy-plots)
+        - [Baseline wrong predictions](#baseline-wrong-predictions)
+    - [Training the optimized model](#training-the-optimized-model)
+        - [Preventing overfitting](#preventing-overfitting)
+        - [Wrong predictions](#wrong-predictions)
+        - [Baseline comparison: Training](#baseline-comparison-training)
+        - [Baseline comparison: Evaluation](#baseline-comparison-evaluation)
+    - [Model interpretation and visualization](#model-interpretation-and-visualization)
+        - [Intermediate convnet outputs (intermediate activations)](#intermediate-convnet-outputs-intermediate-activations)
+        - [Convnet filters](#convnet-filters)
+        - [Class activation heatmaps](#class-activation-heatmaps)
+</details>
+
 ## ToonVision
 
 ToonVision is my computer vision project for teaching a machine how to see in [ToonTown Online](https://en.wikipedia.org/wiki/Toontown_Online) - an MMORPG created by Disney in 2003.

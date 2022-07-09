@@ -42,6 +42,56 @@ This article covers multiclass classification of Cogs: Cog suits (4 unique suits
 Afterwards, we'll implement real-time object detection and, if possible, image segmentation.
 For now, let's focus on multiclass classification.</p>
 
+<p><details>
+    <summary>Table of Contents</summary></p>
+
+<ul>
+<li><a href="#toonvision---multiclass-classification">ToonVision - Multiclass Classification</a>
+<ul>
+<li><a href="#toonvision">ToonVision</a></li>
+<li><a href="#classification">Classification</a>
+<ul>
+<li><a href="#multiclass-classification">Multiclass classification</a></li>
+</ul></li>
+<li><a href="#the-toonvision-dataset">The ToonVision dataset</a>
+<ul>
+<li><a href="#dataset-considerations">Dataset considerations</a></li>
+<li><a href="#dataset-balance">Dataset balance</a></li>
+<li><a href="#creating-the-dataset-objects">Creating the dataset objects</a>
+<ul>
+<li><a href="#splitting-the-images-into-train-validate-and-test">Splitting the images into train, validate, and test</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#compiling-the-model">Compiling the model</a>
+<ul>
+<li><a href="#loss-function">Loss function</a></li>
+<li><a href="#optimizer">Optimizer</a></li>
+<li><a href="#metrics">Metrics</a></li>
+<li><a href="#callbacks">Callbacks</a></li>
+<li><a href="#defining-the-model">Defining the model</a></li>
+</ul></li>
+<li><a href="#training-the-baseline-model">Training the baseline model</a>
+<ul>
+<li><a href="#baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</a></li>
+<li><a href="#baseline-wrong-predictions">Baseline wrong predictions</a></li>
+</ul></li>
+<li><a href="#training-the-optimized-model">Training the optimized model</a>
+<ul>
+<li><a href="#preventing-overfitting">Preventing overfitting</a></li>
+<li><a href="#wrong-predictions">Wrong predictions</a></li>
+<li><a href="#baseline-comparison-training">Baseline comparison: Training</a></li>
+<li><a href="#baseline-comparison-evaluation">Baseline comparison: Evaluation</a></li>
+</ul></li>
+<li><a href="#model-interpretation-and-visualization">Model interpretation and visualization</a>
+<ul>
+<li><a href="#intermediate-convnet-outputs-intermediate-activations">Intermediate convnet outputs (intermediate activations)</a></li>
+<li><a href="#convnet-filters">Convnet filters</a></li>
+<li><a href="#class-activation-heatmaps">Class activation heatmaps</a>
+</details></li>
+</ul></li>
+</ul></li>
+</ul>
+
 <h2 id="toonvision">ToonVision</h2>
 
 <p>ToonVision is my computer vision project for teaching a machine how to see in <a href="https://en.wikipedia.org/wiki/Toontown_Online">ToonTown Online</a> - an MMORPG created by Disney in 2003.
