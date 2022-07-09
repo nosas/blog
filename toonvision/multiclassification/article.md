@@ -3,11 +3,7 @@
 # ToonVision - Multiclass Classification
 
 This article is the second in a series on **ToonVision**.
-The [first article](https://fars.io/toonvision/classification/) covers the basics of classification - specifically binary classification of Toons and Cogs.
-
-ToonVision is my computer vision project for teaching a machine how to see in [ToonTown Online](https://en.wikipedia.org/wiki/Toontown_Online) - an MMORPG created by Disney in 2003.
-The ultimate goal is to teach a machine (nicknamed **OmniToon**) how to play ToonTown and create a self-sustaining ecosystem where the bots progress through the game together.
-
+The [first article](https://fars.io/toonvision/classification/) covered the basics of classification and binary classification of Toons and Cogs.
 This article covers multiclass classification of Cogs: Cog suits (4 unique suits) and Cog entities (32 unique Cogs).
 
 After reading this article, we'll have a better understanding of how to
@@ -20,6 +16,11 @@ After reading this article, we'll have a better understanding of how to
 The following article will cover image segmentation of ToonTown's streets, roads, Cogs, and Cog buildings.
 Afterwards, we'll implement real-time object detection and, if possible, image segmentation.
 For now, let's focus on multiclass classification.
+
+## ToonVision
+
+ToonVision is my computer vision project for teaching a machine how to see in [ToonTown Online](https://en.wikipedia.org/wiki/Toontown_Online) - an MMORPG created by Disney in 2003.
+The ultimate goal is to teach a machine (nicknamed **OmniToon**) how to play ToonTown and create a self-sustaining ecosystem where the bots progress through the game together.
 
 ---
 ## Classification
