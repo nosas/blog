@@ -196,6 +196,8 @@
 
     details {
       background-color: #151c14;
+      outline: rgb(173, 255, 47) outset 1px;
+      padding: 1px;
     }
 
     details>summary {
