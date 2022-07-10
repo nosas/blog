@@ -26,6 +26,7 @@ For now, let's focus on multiclass classification.
         - [Multiclass classification](#multiclass-classification)
     - [The ToonVision dataset](#the-toonvision-dataset)
         - [Dataset considerations](#dataset-considerations)
+        - [Why does the street matter?](#why-does-the-street-matter)
         - [Dataset balance](#dataset-balance)
         - [Creating the dataset objects](#creating-the-dataset-objects)
             - [Splitting the images into train, validate, and test](#splitting-the-images-into-train-validate-and-test)
@@ -78,6 +79,25 @@ Let's look at how we can improve the dataset in the next section.
 ## The ToonVision dataset
 
 ### Dataset considerations
+
+We'll tweak the existing dataset considerations to focus on balancing the dataset's Cog entity samples.
+The current Cog dataset contains two glaring problems:
+
+1. The samples do not account for *where* - on *which street* - the Cog is located.
+1. There are no samples of the two highest-ranked Cogs
+
+To address problem #1, the ToonVision dataset now requires a balanced number of samples from each of the 6 uniquely designed streets: The Brrrgh, Daisy's Garden, Donald's Dreamland, Donald's Dock, Minnie's Melodyland, and ToonTown Central.
+Given that there are 6 streets, the sample images per Cog will increase from 20 to 30; we need 5 images of a Cog from each street.
+
+We'll leverage Cog invasions to ensure we meet the new dataset requirement because some Cogs are not present in certain streets *unless* there's an ongoing invasion.
+Cog invasions will solve both problems moving forward.
+
+### Why does the street matter?
+
+Each street in ToonTown has a unique design.
+If we provide samples of a Cog in different streets - different background, floors, ambiance, etc. - the model will learn features about the Cog itself rather than the street.
+<!-- TOOD -->
+
 
 ### Dataset balance
 

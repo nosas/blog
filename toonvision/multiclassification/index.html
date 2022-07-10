@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 08, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 09, 2022</p>
 
 <p><title>ToonVision: Multiclass Classification</title></p>
 
@@ -56,6 +56,7 @@ For now, let's focus on multiclass classification.</p>
 <li><a href="#the-toonvision-dataset">The ToonVision dataset</a>
 <ul>
 <li><a href="#dataset-considerations">Dataset considerations</a></li>
+<li><a href="#why-does-the-street-matter">Why does the street matter?</a></li>
 <li><a href="#dataset-balance">Dataset balance</a></li>
 <li><a href="#creating-the-dataset-objects">Creating the dataset objects</a>
 <ul>
@@ -123,6 +124,26 @@ Let's look at how we can improve the dataset in the next section.</p>
 <h2 id="the-toonvision-dataset">The ToonVision dataset</h2>
 
 <h3 id="dataset-considerations">Dataset considerations</h3>
+
+<p>We'll tweak the existing dataset considerations to focus on balancing the dataset's Cog entity samples.
+The current Cog dataset contains two glaring problems:</p>
+
+<ol>
+<li>The samples do not account for <em>where</em> - on <em>which street</em> - the Cog is located.</li>
+<li>There are no samples of the two highest-ranked Cogs</li>
+</ol>
+
+<p>To address problem #1, the ToonVision dataset now requires a balanced number of samples from each of the 6 uniquely designed streets: The Brrrgh, Daisy's Garden, Donald's Dreamland, Donald's Dock, Minnie's Melodyland, and ToonTown Central.
+Given that there are 6 streets, the sample images per Cog will increase from 20 to 30; we need 5 images of a Cog from each street.</p>
+
+<p>We'll leverage Cog invasions to ensure we meet the new dataset requirement because some Cogs are not present in certain streets <em>unless</em> there's an ongoing invasion.
+Cog invasions will solve both problems moving forward.</p>
+
+<h3 id="why-does-the-street-matter">Why does the street matter?</h3>
+
+<p>Each street in ToonTown has a unique design.
+If we provide samples of a Cog in different streets - different background, floors, ambiance, etc. - the model will learn features about the Cog itself rather than the street.
+<!-- TOOD --></p>
 
 <h3 id="dataset-balance">Dataset balance</h3>
 
