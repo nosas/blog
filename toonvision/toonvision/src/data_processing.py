@@ -95,13 +95,13 @@ def split_data(split_ratio: list[float, float, float], dry_run: bool = False):
         # Get all images from unsorted_dir
         unsorted_images = glob(f"{unsorted_dir}/*.png")
         num_images = len(unsorted_images)
-        print(f"{unsorted_dir} # Unsorted images: ", num_images)
+        print(f"{unsorted_dir.split('toonvision')[-1]} # Unsorted images: ", num_images)
 
         # Split images into train/validate/test sets
         num_train = int(num_images * split_ratio[0])
         num_validate = int(num_images * split_ratio[1])
         num_test = num_images - num_train - num_validate
-        print(f"{unsorted_dir} # Train, Val, Test: ", num_train, num_validate, num_test)
+        print(f"{unsorted_dir.split('toonvision')[-1]} # Train, Val, Test: ", num_train, num_validate, num_test)
 
         # # Shuffle filenames to randomize the order of the images
         shuffle(unsorted_images)
@@ -126,10 +126,20 @@ def create_datasets(
     batch_size: int = 32,
     shuffle: bool = True,
     split_ratio: list[float, float, float] = None,
-    dry_run: bool = False,
 ):
+    """Create binary datasets for training, validation, and testing
+
+    Args:
+        image_size (tuple, optional): Tuple of height and width. Defaults to (600, 200).
+        batch_size (int, optional): Number of samples per batch. Defaults to 32.
+        shuffle (bool, optional): Shuffle images in dataset. Defaults to True.
+        split_ratio (list[float, float, float], optional): Train/val/test split. Defaults to None.
+
+    Returns:
+        tuple[keras.Dataset, keras.Dataset, keras.Dataset]: Train, validate, and test datasets.
+    """
     if split_ratio:
-        split_data(split_ratio=split_ratio, dry_run=dry_run)
+        split_data(split_ratio=split_ratio, dry_run=False)
 
     ds_train = image_dataset_from_directory(
         TRAIN_DIR,
