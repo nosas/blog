@@ -57,11 +57,13 @@ model = make_model_padding(name="base")
 from tensorflow.keras.utils import image_dataset_from_directory
 from data_visualization import get_obj_details_from_filepath
 from os import walk
+from glob import glob
 TRAIN_DIR = DATA_DIR + "/train"
 
 
 def get_suit_labels():
-    filepaths = [fp for fp in walk(TRAIN_DIR + "/cog")][0][2]
+    # filepaths = [fp for fp in walk(TRAIN_DIR + "/cog")]
+    filepaths = [fp.split("\\")[-1] for fp in glob(TRAIN_DIR + "/**/cog*.png", recursive=True)]
     obj_details = [get_obj_details_from_filepath(fp) for fp in filepaths]
     labels = [cog['suit'] for cog in obj_details]
     return labels
@@ -70,7 +72,7 @@ def get_suit_labels():
 ds_labels = get_suit_labels()
 
 ds_train = image_dataset_from_directory(
-    TRAIN_DIR + "/cog",
+    TRAIN_DIR,
     labels=ds_labels,
     label_mode="int",
     image_size=(600, 200),
