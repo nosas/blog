@@ -1,8 +1,10 @@
 # %% Import libraries
-import cv2
+import re
 import xml.etree.ElementTree as ET
-from os import path
 from glob import glob
+from os import path
+
+import cv2
 
 
 # %% Define utility functions
@@ -62,22 +64,68 @@ def extract_objects_from_img(
     return objects
 
 
-def get_save_directory(obj_name: str) -> str:
-    """Given an object name, return the save directory for the object.
+def get_obj_name_from_filepath(filepath: str, file_ext: str = "png") -> str:
+    """Given a filepath, return the full object name
 
     Args:
-        obj_name (str): Name of the object
+        filepath: Path to a file
+        file_ext: File extension
 
     Returns:
-        str: Save directory for the object
+        str: Full object name (ex: "cog_bb_flunky_1", "toon_cat_32")
     """
-    if obj_name.startswith("cog_"):
-        dir = "cog/"
-    elif obj_name.startswith("toon_"):
-        dir = "toon/"
-    else:
-        dir = "unknown/"
-    return dir
+    regex_obj_name = re.compile(rf"((cog|toon)_.*)(\.{file_ext})?$")
+    try:
+        return regex_obj_name.search(filepath).group(0)
+    except AttributeError as e:
+        print("Could not find object name in filepath:", filepath)
+        raise e
+
+
+def get_obj_details_from_name(obj_name: str) -> dict:
+    """Given an object name, return the object's binary label and class-specific details
+
+    Args:
+        obj_name: Full object name (ex: "cog_bb_flunky_1", "toon_cat_32")
+
+    Returns:
+        dict: Object details
+
+    Example:
+        >>> get_obj_details_from_name("cog_bb_flunky_1")
+        {'binary': 'cog', 'suit': 'bb', 'name': 'flunky', 'animal': None, 'index': '1'}
+        >>> get_obj_details_from_name("toon_cat_32")
+        {'binary': 'toon', 'suit': None, 'name': None, 'animal': 'cat', 'index': '32'}
+        >>> get_obj_details_from_name("cog_lb_backstabber")
+        {'binary': 'cog', 'suit': 'lb', 'name': 'backstabber', 'animal': None, 'index': None}
+    """
+    # https://regex101.com/r/0UbU06/1
+    regex_details = re.compile(
+        r"""
+    (?P<binary>cog|toon)_
+    (
+        ((?P<suit>bb|cb|lb|sb)_(?P<name>[a-zA-Z]+)) |
+        (?P<animal>[a-zA-Z]+)
+    )
+    (
+        _
+        (?P<index>\d+)
+        (?P<file_ext>\.png)?
+    )?
+    """,
+        re.VERBOSE,
+    )
+    res = regex_details.search(obj_name)
+    if res is None:
+        raise ValueError(f"Could not parse object name: {obj_name}")
+    details = res.groupdict()
+    return details
+
+
+def get_obj_details_from_filepath(filepath) -> dict:
+    obj_name = get_obj_name_from_filepath(filepath)
+    details = get_obj_details_from_name(obj_name)
+    return details
 
 
 def save_objects_to_img(objs_from_img: tuple[str, list], save_path: str, data_path: str):
@@ -94,7 +142,8 @@ def save_objects_to_img(objs_from_img: tuple[str, list], save_path: str, data_pa
     for obj in objs_from_img:
         obj_name, obj_img = obj
         # save_dir can be "cog/", "toon/", or "unknown/"
-        toon_or_cog = get_save_directory(obj_name)
+        obj_details = get_obj_details_from_name(obj_name)
+        toon_or_cog = obj_details["binary"]
 
         sorted_obj_fps = glob(f"{data_path}/**/{obj_name}_*.png", recursive=True)
         unsorted_obj_fps = glob(f"{save_path}/{toon_or_cog}/{obj_name}_*.png")

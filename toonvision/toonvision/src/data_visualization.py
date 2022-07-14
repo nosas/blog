@@ -1,27 +1,30 @@
 # %% Imports
-import re
 from collections import Counter
 from glob import glob
 from statistics import mean
 
 import keras
+import matplotlib as mpl
 import matplotlib.patheffects as PathEffects
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import numpy as np
 from matplotlib.patches import Rectangle
 from PIL import Image
 
 from data_processing import (
+    PROCESSED_DIR,
     RAW_DIR,
     TEST_DIR,
     TRAIN_DIR,
     UNSORTED_COG_DIR,
     UNSORTED_TOON_DIR,
-    PROCESSED_DIR,
     VALIDATE_DIR,
 )
-from img_utils import extract_objects_from_xml
+from img_utils import (
+    extract_objects_from_xml,
+    get_obj_details_from_filepath,
+    get_obj_details_from_name,
+)
 
 # %% Global variables
 with open(f"{RAW_DIR}/data/predefined_classes.txt", "r") as f:
@@ -214,7 +217,7 @@ def compare_histories(histories: list, suptitle: str = "") -> None:
     """
     _, axes = plt.subplots(nrows=4, ncols=1, figsize=(10, 15))
     for model_name, history in histories:
-        num_epochs = range(0, len(history["loss"]))
+        # num_epochs = range(0, len(history["loss"]))
         for idx, key in enumerate(["accuracy", "val_accuracy", "loss", "val_loss"]):
             name = model_name.replace("toonvision_", "")
             axes[idx].plot(history[key], label=f"{name}")
@@ -224,70 +227,6 @@ def compare_histories(histories: list, suptitle: str = "") -> None:
     if suptitle:
         plt.suptitle(suptitle)
     plt.tight_layout()
-
-
-def get_obj_name_from_filepath(filepath: str, file_ext: str = "png") -> str:
-    """Given a filepath, return the full object name
-
-    Args:
-        filepath: Path to a file
-        file_ext: File extension
-
-    Returns:
-        str: Full object name (ex: "cog_bb_flunky_1", "toon_cat_32")
-    """
-    regex_obj_name = re.compile(rf"((cog|toon)_.*)\.{file_ext}")
-    try:
-        return regex_obj_name.search(filepath).group(0)
-    except AttributeError as e:
-        print("Could not find object name in filepath:", filepath)
-        raise e
-
-
-def get_obj_details_from_name(obj_name: str) -> dict:
-    """Given an object name, return the object's binary label and class-specific details
-
-    Args:
-        obj_name: Full object name (ex: "cog_bb_flunky_1", "toon_cat_32")
-
-    Returns:
-        dict: Object details
-
-    Example:
-        >>> get_obj_details_from_name("cog_bb_flunky_1")
-        {'binary': 'cog', 'suit': 'bb', 'name': 'flunky', 'animal': None, 'index': '1'}
-        >>> get_obj_details_from_name("toon_cat_32")
-        {'binary': 'toon', 'suit': None, 'name': None, 'animal': 'cat', 'index': '32'}
-        >>> get_obj_details_from_name("cog_lb_backstabber")
-        {'binary': 'cog', 'suit': 'lb', 'name': 'backstabber', 'animal': None, 'index': None}
-    """
-    # https://regex101.com/r/0UbU06/1
-    regex_details = re.compile(
-        r"""
-    (?P<binary>cog|toon)_
-    (
-        ((?P<suit>bb|cb|lb|sb)_(?P<name>[a-zA-Z]+)) |
-        (?P<animal>[a-zA-Z]+)
-    )
-    (
-        _
-        (?P<index>\d+)
-        (?P<file_ext>\.png)?
-    )?
-    """,
-        re.VERBOSE,
-    )
-    res = regex_details.search(obj_name)
-    if res is None:
-        raise ValueError(f"Could not parse object name: {obj_name}")
-    details = res.groupdict()
-    return details
-
-
-def get_obj_details_from_filepath(filepath) -> dict:
-    obj_name = get_obj_name_from_filepath(filepath)
-    details = get_obj_details_from_name(obj_name)
-    return details
 
 
 def count_objects(
