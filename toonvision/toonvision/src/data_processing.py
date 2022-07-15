@@ -1,13 +1,17 @@
 # %% Imports
+from glob import glob
+from os import path, rename
+from random import shuffle
+
+import numpy as np
+from tensorflow.keras.utils import image_dataset_from_directory
+
 from img_utils import (
-    extract_objects_from_xml,
     extract_objects_from_img,
+    extract_objects_from_xml,
+    get_obj_details_from_filepath,
     save_objects_to_img,
 )
-from os import rename, path
-from glob import glob
-from random import shuffle
-from tensorflow.keras.utils import image_dataset_from_directory
 
 # %% Global variables: directories
 IMG_DIR = path.dirname(__file__).replace("src", "img").replace("\\", "/")
@@ -25,6 +29,14 @@ SCREENSHOTS_DIR = RAW_DIR + "/screenshots"
 UNSORTED_DIR = IMG_DIR + "/unsorted"
 UNSORTED_COG_DIR = UNSORTED_DIR + "/cog"
 UNSORTED_TOON_DIR = UNSORTED_DIR + "/toon"
+MAP_SUIT_TO_INT = {"bb": 0, "cb": 1, "lb": 2, "sb": 3}
+MAP_SUIT_TO_ONEHOT = {
+    "bb": [1, 0, 0, 0],
+    "cb": [0, 1, 0, 0],
+    "lb": [0, 0, 1, 0],
+    "sb": [0, 0, 0, 1],
+}
+MAP_INT_TO_SUIT = {v: k for k, v in MAP_SUIT_TO_INT.items()}
 
 
 def verify_folder_structure():
@@ -79,7 +91,9 @@ def process_images(
                 # Extract objects from images using XML data
                 objs_from_img = extract_objects_from_img(img_path, objs_from_xml)
                 # Save extracted objects to images, modify image name to include object index
-                save_objects_to_img(objs_from_img, UNSORTED_DIR, DATA_DIR, verbose=verbose)
+                save_objects_to_img(
+                    objs_from_img, UNSORTED_DIR, DATA_DIR, verbose=verbose
+                )
                 # Move raw image to processed directory
                 if move_images:
                     for f in [img_path, xml_path]:
@@ -104,7 +118,12 @@ def split_data(split_ratio: list[float, float, float], dry_run: bool = False):
         num_train = int(num_images * split_ratio[0])
         num_validate = int(num_images * split_ratio[1])
         num_test = num_images - num_train - num_validate
-        print(f"{unsorted_dir.split('toonvision')[-1]} # Train, Val, Test: ", num_train, num_validate, num_test)
+        print(
+            f"{unsorted_dir.split('toonvision')[-1]} # Train, Val, Test: ",
+            num_train,
+            num_validate,
+            num_test,
+        )
 
         # # Shuffle filenames to randomize the order of the images
         shuffle(unsorted_images)
@@ -165,45 +184,46 @@ def create_datasets(
     return (ds_train, ds_validate, ds_test)
 
 
-# def create_suit_datasets(
-#     image_size: tuple = (600, 200),
-#     batch_size: int = 32,
-#     shuffle: bool = True,
-#     split_ratio: list[float, float, float] = None,
-# ):
-#     """Create multiclass Cog suit datasets for training, validation, and testing
+def create_suit_datasets(
+    image_size: tuple = (600, 200),
+    batch_size: int = 32,
+    shuffle: bool = True,
+    split_ratio: list[float, float, float] = None,
+):
+    """Create multiclass Cog suit datasets for training, validation, and testing
 
-#     Args:
-#         image_size (tuple, optional): Tuple of height and width. Defaults to (600, 200).
-#         batch_size (int, optional): Number of samples per batch. Defaults to 32.
-#         shuffle (bool, optional): Shuffle images in dataset. Defaults to True.
-#         split_ratio (list[float, float, float], optional): Train/val/test split. Defaults to None.
+    Args:
+        image_size (tuple, optional): Tuple of height and width. Defaults to (600, 200).
+        batch_size (int, optional): Number of samples per batch. Defaults to 32.
+        shuffle (bool, optional): Shuffle images in dataset. Defaults to True.
+        split_ratio (list[float, float, float], optional): Train/val/test split. Defaults to None.
 
-#     Returns:
-#         tuple[keras.Dataset, keras.Dataset, keras.Dataset]: Train, validate, and test datasets.
-#     """
-#     if split_ratio:
-#         split_data(split_ratio=split_ratio, dry_run=False)
+    Returns:
+        tuple[keras.Dataset, keras.Dataset, keras.Dataset]: Train, validate, and test datasets.
+    """
+    if split_ratio:
+        split_data(split_ratio=split_ratio, dry_run=False)
 
-#     # ds_train = image_dataset_from_directory(
-#     #     TRAIN_DIR + "/cog",
-#     #     image_size=image_size,
-#     #     batch_size=batch_size,
-#     #     shuffle=shuffle,
-#     # )
-#     # ds_validate = image_dataset_from_directory(
-#     #     VALIDATE_DIR + "/cog",
-#     #     image_size=image_size,
-#     #     batch_size=batch_size,
-#     #     shuffle=shuffle,
-#     # )
-#     # ds_test = image_dataset_from_directory(
-#     #     TEST_DIR + "/cog",
-#     #     image_size=image_size,
-#     #     batch_size=batch_size,
-#     #     shuffle=shuffle,
-#     # )
-#     return (ds_train, ds_validate, ds_test)
+    # ds_train = image_dataset_from_directory(
+    #     TRAIN_DIR + "/cog",
+    #     image_size=image_size,
+    #     batch_size=batch_size,
+    #     shuffle=shuffle,
+    # )
+    # ds_validate = image_dataset_from_directory(
+    #     VALIDATE_DIR + "/cog",
+    #     image_size=image_size,
+    #     batch_size=batch_size,
+    #     shuffle=shuffle,
+    # )
+    # ds_test = image_dataset_from_directory(
+    #     TEST_DIR + "/cog",
+    #     image_size=image_size,
+    #     batch_size=batch_size,
+    #     shuffle=shuffle,
+    # )
+    # return (ds_train, ds_validate, ds_test)
+    return None
 
 
 def unsort_data(dry_run: bool = False):
@@ -215,6 +235,57 @@ def unsort_data(dry_run: bool = False):
                 print(f"Moving {img} to {new_path}")
             else:
                 rename(img, new_path)
+
+
+def get_suits_from_dir(directories: list[str] = [DATA_DIR]) -> dict[str, tuple]:
+    """Get filepaths and labels for all Cog suits in the directories. Defaults to entire dataset.
+
+    Args:
+        directories (list[str], optional): Directories to search for Cog suits. Defaults to [TRAIN_DIR, VALIDATE_DIR, TEST_DIR].
+
+    Returns:
+        dict[str, tuple]: Filepaths and labels for all Cog suits.
+    """
+    # filepaths = [fp for fp in walk(TRAIN_DIR + "/cog")]
+    result = {}
+    for dir in directories:
+        filepaths = glob(dir + "/**/cog/*.png", recursive=True)
+        obj_names = [
+            fp.split("\\")[-1] for fp in filepaths
+        ]  # Glob always returns double backslash
+        obj_details = [get_obj_details_from_filepath(object) for object in obj_names]
+        labels = [cog["suit"] for cog in obj_details]
+        result[dir] = (filepaths, labels)
+    return result
+
+
+def suit_to_integer(suits: list[str]) -> list[int]:
+    """Get integer labels for all suits in the list.
+
+    Returns:
+        dict[str, tuple]: Filepaths and labels for all Cog suits.
+    """
+    return [MAP_SUIT_TO_INT[suit] for suit in suits]
+
+
+def suit_to_onehot(suits: list[str]) -> list[np.ndarray]:
+    """Get one-hot labels for all suits in the list.
+
+    Args:
+        suits (list[str]): List of Cog suits.
+
+    Returns:
+        list[np.ndarray]: One-hot labels for all Cog suits.
+
+    Numpy alternative:
+        n_suits = np.max(suits) + 1
+        np.eye(n_suits)[suits]
+        array([[1., 0., 0., 0.],
+               [0., 1., 0., 0.],
+               [0., 0., 1., 0.],
+               [0., 0., 0., 1.]])
+    """
+    return [MAP_SUIT_TO_ONEHOT[suit] for suit in suits]
 
 
 # # %% Split data
