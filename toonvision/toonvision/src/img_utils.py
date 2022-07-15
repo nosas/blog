@@ -128,7 +128,12 @@ def get_obj_details_from_filepath(filepath) -> dict:
     return details
 
 
-def save_objects_to_img(objs_from_img: tuple[str, list], save_path: str, data_path: str):
+def save_objects_to_img(
+    objs_from_img: tuple[str, list],
+    save_path: str,
+    data_path: str,
+    verbose: bool = False,
+):
     """Save objects to an image given a tuple of objects `from extract_object_from_img()`
 
     Given a tuple of objects and a path to save the objects to, save the objects to the
@@ -141,7 +146,7 @@ def save_objects_to_img(objs_from_img: tuple[str, list], save_path: str, data_pa
     """
     for obj in objs_from_img:
         obj_name, obj_img = obj
-        # save_dir can be "cog/", "toon/", or "unknown/"
+        # save_dir can be "cog/", "toon/"
         obj_details = get_obj_details_from_name(obj_name)
         toon_or_cog = obj_details["binary"]
 
@@ -161,5 +166,6 @@ def save_objects_to_img(objs_from_img: tuple[str, list], save_path: str, data_pa
             print("    ERROR: Path exists: ", filepath)
         else:
             # Save image to filepath
-            print(f"    Saving {obj_name} to {filepath}")
+            if verbose:
+                print(f"    Saving {obj_name} to {filepath}")
             cv2.imwrite(filepath, obj_img)
