@@ -204,7 +204,7 @@ def plot_history(history: dict, name: str = "Model", multiclass: bool = False) -
     axes[1].grid(axis="y", alpha=0.5, color="lightgrey")
 
 
-def compare_histories(histories: list, suptitle: str = "") -> None:
+def compare_histories(histories: list, suptitle: str = "", multiclass: bool = False) -> None:
     """Plot and compare the histories (acc, val_acc, loss, val_loss) of multiple models
 
     The resulting plot is 4 subplots:
@@ -217,9 +217,11 @@ def compare_histories(histories: list, suptitle: str = "") -> None:
         histories: List of tuples of (model_name: str, history: dict[str, str, str, str])
     """
     _, axes = plt.subplots(nrows=4, ncols=1, figsize=(10, 15))
+    accuracy_str = "accuracy" if not multiclass else "sparse_categorical_accuracy"
+    val_accuracy_str = "val_" + accuracy_str
     for model_name, history in histories:
         # num_epochs = range(0, len(history["loss"]))
-        for idx, key in enumerate(["accuracy", "val_accuracy", "loss", "val_loss"]):
+        for idx, key in enumerate([accuracy_str, val_accuracy_str, "loss", "val_loss"]):
             name = model_name.replace("toonvision_", "")
             axes[idx].plot(history[key], label=f"{name}")
             axes[idx].legend()
