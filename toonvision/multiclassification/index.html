@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 09, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 15, 2022</p>
 
 <p><title>ToonVision: Multiclass Classification</title></p>
 
@@ -141,9 +141,10 @@ Cog invasions will solve both problems moving forward.</p>
 
 <h3 id="why-does-the-street-matter">Why does the street matter?</h3>
 
-<p>Each street in ToonTown has a unique design.
-If we provide samples of a Cog in different streets - different background, floors, ambiance, etc. - the model will learn features about the Cog itself rather than the street.
-<!-- TOOD --></p>
+<p>Each street in ToonTown has a unique design - colors, houses, floors, obstacles - resulting in unique backgrounds for our extracted objects.
+In this case, our extracted objects are Cogs.
+If we have a diverse dataset of Cogs with different backgrounds, we can teach our model to better recognize Cog features rather than background features.
+Therefore, it's important to take screenshots of Cogs from each street so our model can generalize Cog features across all streets.</p>
 
 <h3 id="dataset-balance">Dataset balance</h3>
 

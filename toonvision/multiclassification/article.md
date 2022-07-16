@@ -94,10 +94,10 @@ Cog invasions will solve both problems moving forward.
 
 ### Why does the street matter?
 
-Each street in ToonTown has a unique design.
-If we provide samples of a Cog in different streets - different background, floors, ambiance, etc. - the model will learn features about the Cog itself rather than the street.
-<!-- TOOD -->
-
+Each street in ToonTown has a unique design - colors, houses, floors, obstacles - resulting in unique backgrounds for our extracted objects.
+In this case, our extracted objects are Cogs.
+If we have a diverse dataset of Cogs with different backgrounds, we can teach our model to better recognize Cog features rather than background features.
+Therefore, it's important to take screenshots of Cogs from each street so our model can generalize Cog features across all streets.
 
 ### Dataset balance
 
