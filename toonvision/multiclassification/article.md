@@ -101,6 +101,14 @@ Therefore, it's important to take screenshots of Cogs from each street so our mo
 
 ### Dataset balance
 
+The Cog vs Toon dataset is imbalanced with a majority of the dataset belonging to the Cog class.
+However, the Cog dataset is mostly balanced.
+Our goal is ~30 samples per Cog entity with at least 5 samples per street.
+We have achieved the 30 samples per Cog entity requirement, but we're not meeting the 5 samples per street requirement.
+Refer to the image below to see the current dataset balance and the balance per street.
+
+<font style="color:red">TODO: Add image of dataset balance per street</font>
+
 ### Creating the dataset objects
 
 #### Splitting the images into train, validate, and test
