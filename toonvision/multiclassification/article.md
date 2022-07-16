@@ -31,6 +31,7 @@ For now, let's focus on multiclass classification.
         - [Creating the dataset objects](#creating-the-dataset-objects)
             - [Splitting the images into train, validate, and test](#splitting-the-images-into-train-validate-and-test)
     - [Compiling the model](#compiling-the-model)
+        - [Keras Tuner](#keras-tuner)
         - [Loss function](#loss-function)
         - [Optimizer](#optimizer)
         - [Metrics](#metrics)
@@ -115,6 +116,12 @@ Refer to the image below to see the current dataset balance and the balance per 
 
 ---
 ## Compiling the model
+
+### Keras Tuner
+
+`KerasTuner` is a tool for fine-tuning a model's hyperparameters.
+Hyperparameters include the model's layers, layer sizes, and optimizer.
+We can leverage this tool to find the best hyperparameters for our model instead of manually tuning the model and comparing the results.
 
 ### Loss function
 

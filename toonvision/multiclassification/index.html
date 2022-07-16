@@ -65,6 +65,7 @@ For now, let's focus on multiclass classification.</p>
 </ul></li>
 <li><a href="#compiling-the-model">Compiling the model</a>
 <ul>
+<li><a href="#keras-tuner">Keras Tuner</a></li>
 <li><a href="#loss-function">Loss function</a></li>
 <li><a href="#optimizer">Optimizer</a></li>
 <li><a href="#metrics">Metrics</a></li>
@@ -163,6 +164,12 @@ Refer to the image below to see the current dataset balance and the balance per 
 <hr />
 
 <h2 id="compiling-the-model">Compiling the model</h2>
+
+<h3 id="keras-tuner">Keras Tuner</h3>
+
+<p><code>KerasTuner</code> is a tool for fine-tuning a model's hyperparameters.
+Hyperparameters include the model's layers, layer sizes, and optimizer.
+We can leverage this tool to find the best hyperparameters for our model instead of manually tuning the model and comparing the results.</p>
 
 <h3 id="loss-function">Loss function</h3>
 
