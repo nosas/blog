@@ -46,6 +46,7 @@ COLORS = [
     "#bcbd22",
     "#17becf",
 ]
+STREETS = ["br", "dd", "ddl", "dg", "mml", "ttc"]
 # Set default plot style and colors
 plt.style.use("dark_background")
 mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=COLORS)
@@ -232,6 +233,7 @@ def compare_histories(histories: list, suptitle: str = "", multiclass: bool = Fa
     plt.tight_layout()
 
 
+# TODO Refactor to return a dictionary instead of tuple
 def count_objects(
     data_dir: str = None, obj_names: list[str] = None
 ) -> tuple[dict, dict, dict, dict]:
@@ -688,10 +690,85 @@ def plot_wrong_predictions(
 # %% Plot data
 # plot_suits_as_bar()
 # plot_toons_as_bar()
-# plot_xml_data()
+plot_xml_data()
 # plot_datasets_all()
 # plot_datasets_binary()
 # plot_datasets_suits()
 # plot_datasets_animals()
 
+# %%
+plot_suits_as_bar()
+plot_datasets_suits()
+
+
+# %%
+def get_street_counters() -> None:
+    obj_names = {}
+    for street in STREETS:
+        obj_names[street] = []
+        for xml_path in glob(f"{PROCESSED_DIR}/{street}/*.xml", recursive=True):
+            for obj in extract_objects_from_xml(xml_path):
+                obj_name, _, _, _, _ = obj
+                obj_names[street].append(obj_name)
+
+    street_counters = {street: count_objects(obj_names=obj_names[street]) for street in STREETS}
+    return street_counters
+
+# plot_xml_data_per_street()
+# %%
+
+
+
+
+
+def plot_streets_suits() -> None:
+    c_suit = Counter()
+    # Initialize all counters to 0
+    c_suit.update({key: 0 for key in SUITS_LONG})
+    street_counters = get_street_counters()
+
+    plt.figure(figsize=(8, 6), dpi=100)
+    for i, street in enumerate(street_counters):
+        counter = street_counters[street][2]
+        labels = list(counter.keys())
+        # values = list(counter.values())
+        bars = plt.barh(labels, counter.values(), color=COLORS[i], left=list(c_suit.values()))
+        plt.bar_label(bars, counter.values())
+        c_suit.update(counter)
+
+    plt.gca().invert_yaxis()
+    plt.title("Suits per street")
+    plt.grid(axis="x", linestyle="--", color="lightgrey", alpha=0.8)
+    plt.xlabel("Number of suits")
+    plt.ylabel("Street")
+    plt.legend(STREETS)
+    plt.show()
+
+
+def plot_streets_all() -> None:
+    c_all = Counter()
+    # Initialize all counters to 0
+    c_all.update({key: 0 for key in ALL_LABELS})
+    street_counters = get_street_counters()
+
+    plt.figure(figsize=(8, 12), dpi=100)
+    for i, street in enumerate(street_counters):
+        counter = street_counters[street][0]
+        labels = list(counter.keys())
+        # values = list(counter.values())
+        bars = plt.barh(labels, counter.values(), color=COLORS[i], left=list(c_all.values()))
+        plt.bar_label(bars, counter.values())
+        c_all.update(counter)
+
+    plt.gca().invert_yaxis()
+    plt.title("Labels per street")
+    plt.grid(axis="x", linestyle="--", color="lightgrey", alpha=0.8)
+    plt.xlabel("Number of labels")
+    plt.ylabel("Label")
+    plt.legend(STREETS)
+    plt.show()
+
+# %%
+plot_streets_suits()
+plot_streets_all()
 # %%
