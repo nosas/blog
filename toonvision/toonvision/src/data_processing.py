@@ -268,6 +268,15 @@ def suit_to_integer(suits: list[str]) -> list[int]:
     return [MAP_SUIT_TO_INT[suit] for suit in suits]
 
 
+def integer_to_suit(suits: list[int]) -> list[str]:
+    """Get integer labels for all suits in the list.
+
+    Returns:
+        dict[str, tuple]: Filepaths and labels for all Cog suits.
+    """
+    return [MAP_INT_TO_SUIT[suit] for suit in suits]
+
+
 def suit_to_onehot(suits: list[str]) -> list[np.ndarray]:
     """Get one-hot labels for all suits in the list.
 
