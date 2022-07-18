@@ -29,6 +29,7 @@ from data_visualization import (
     plot_history,
     plot_suits_as_bar,
     plot_toons_as_bar,
+    plot_streets,
     plot_xml_data,
 )
 from img_utils import get_obj_details_from_filepath
@@ -54,6 +55,9 @@ plot_toons_as_bar(img_dir=DATA_DIR)
 
 # # %% Plot xml data
 plot_xml_data()
+
+# # % Plot street data
+plot_streets()
 
 # %% Plot the balance of the datasets
 plot_datasets_suits()

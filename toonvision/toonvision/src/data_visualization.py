@@ -46,6 +46,14 @@ COLORS = [
     "#bcbd22",
     "#17becf",
 ]
+COLORS_STREETS = [
+    "#228e99",  # The Brrrgh
+    "#a14e4a",  # Donald's Dock
+    "#363251",  # Donald's Dreamland
+    "#2a873b",  # Daisy Gardens
+    "#9b3d7f",  # Minnie's Melodyland
+    "#c06635",  # ToonTown Central
+]
 STREETS = ["br", "dd", "ddl", "dg", "mml", "ttc"]
 # Set default plot style and colors
 plt.style.use("dark_background")
@@ -205,7 +213,9 @@ def plot_history(history: dict, name: str = "Model", multiclass: bool = False) -
     axes[1].grid(axis="y", alpha=0.5, color="lightgrey")
 
 
-def compare_histories(histories: list, suptitle: str = "", multiclass: bool = False) -> None:
+def compare_histories(
+    histories: list, suptitle: str = "", multiclass: bool = False
+) -> None:
     """Plot and compare the histories (acc, val_acc, loss, val_loss) of multiple models
 
     The resulting plot is 4 subplots:
@@ -517,7 +527,7 @@ def plot_histories(
     alpha_mean: float = 0.85,
     index_slice: tuple = (0, -1),
     loss_ylim: tuple[int, int] = None,
-    multiclass: bool = False
+    multiclass: bool = False,
 ) -> None:
     """Plot the history (accuracy and loss on the validation set) of a model as a line chart"""
     acc = []
@@ -687,22 +697,8 @@ def plot_wrong_predictions(
     plt.show()
 
 
-# %% Plot data
-# plot_suits_as_bar()
-# plot_toons_as_bar()
-plot_xml_data()
-# plot_datasets_all()
-# plot_datasets_binary()
-# plot_datasets_suits()
-# plot_datasets_animals()
-
 # %%
-plot_suits_as_bar()
-plot_datasets_suits()
-
-
-# %%
-def get_street_counters() -> None:
+def get_street_counters() -> dict[str, tuple[dict, dict, dict, dict]]:
     obj_names = {}
     for street in STREETS:
         obj_names[street] = []
@@ -711,64 +707,129 @@ def get_street_counters() -> None:
                 obj_name, _, _, _, _ = obj
                 obj_names[street].append(obj_name)
 
-    street_counters = {street: count_objects(obj_names=obj_names[street]) for street in STREETS}
+    street_counters = {
+        street: count_objects(obj_names=obj_names[street]) for street in STREETS
+    }
     return street_counters
+
 
 # plot_xml_data_per_street()
 # %%
+def _help_plot_streets(
+    ax: plt.Axes, counter_keys: list[str], counter_idx: int, figsize=(6, 4)
+):
 
+    if ax is None:
+        _, ax = plt.subplots(1, 1, figsize=figsize, dpi=100)
 
-
-
-
-def plot_streets_suits() -> None:
-    c_suit = Counter()
+    counter = Counter()
     # Initialize all counters to 0
-    c_suit.update({key: 0 for key in SUITS_LONG})
+    counter.update({key: 0 for key in counter_keys})
     street_counters = get_street_counters()
 
-    plt.figure(figsize=(8, 6), dpi=100)
     for i, street in enumerate(street_counters):
-        counter = street_counters[street][2]
-        labels = list(counter.keys())
-        # values = list(counter.values())
-        bars = plt.barh(labels, counter.values(), color=COLORS[i], left=list(c_suit.values()))
-        plt.bar_label(bars, counter.values())
-        c_suit.update(counter)
+        street_counter = street_counters[street][counter_idx]
+        labels = list(street_counter.keys())
+        bars = ax.barh(
+            labels,
+            street_counter.values(),
+            color=COLORS_STREETS[i],
+            left=list(counter.values()),
+        )
+        bar_labels = ax.bar_label(
+            bars, list(street_counter.values()), label_type="center"
+        )
+        # TODO Remove if statement below when dataset is balanced
+        if counter_idx == 1:  # Reduce crowding of labels for COUNTER_BINARY
+            bar_labels = [
+                label.set_text(None)
+                for label in bar_labels
+                if int(label.get_text()) < 20
+            ]
+        else:
+            bar_labels = [
+                label.set_text(None)
+                for label in bar_labels
+                if int(label.get_text()) == 0
+            ]
 
-    plt.gca().invert_yaxis()
-    plt.title("Suits per street")
-    plt.grid(axis="x", linestyle="--", color="lightgrey", alpha=0.8)
-    plt.xlabel("Number of suits")
-    plt.ylabel("Street")
-    plt.legend(STREETS)
-    plt.show()
+        counter.update(street_counter)
+    ax.grid(axis="x", linestyle="--", color="lightgrey", alpha=0.5)
+    ax.invert_yaxis()
+    return ax
 
 
-def plot_streets_all() -> None:
-    c_all = Counter()
-    # Initialize all counters to 0
-    c_all.update({key: 0 for key in ALL_LABELS})
-    street_counters = get_street_counters()
+def plot_streets_all(ax: plt.Axes = None, show_legend: bool = False) -> None:
+    ax = _help_plot_streets(ax, counter_keys=ALL_LABELS, counter_idx=0, figsize=(4, 8))
+    ax.set_title("Labels per street")
+    if show_legend:
+        ax.legend(STREETS)
+    return ax
 
-    plt.figure(figsize=(8, 12), dpi=100)
-    for i, street in enumerate(street_counters):
-        counter = street_counters[street][0]
-        labels = list(counter.keys())
-        # values = list(counter.values())
-        bars = plt.barh(labels, counter.values(), color=COLORS[i], left=list(c_all.values()))
-        plt.bar_label(bars, counter.values())
-        c_all.update(counter)
 
-    plt.gca().invert_yaxis()
-    plt.title("Labels per street")
-    plt.grid(axis="x", linestyle="--", color="lightgrey", alpha=0.8)
-    plt.xlabel("Number of labels")
-    plt.ylabel("Label")
-    plt.legend(STREETS)
-    plt.show()
+def plot_streets_binary(ax: plt.Axes = None, show_legend: bool = False) -> None:
+    ax = _help_plot_streets(ax, counter_keys=BINARY, counter_idx=1)
+    ax.set_title("Binary per street")
+    if show_legend:
+        ax.legend(STREETS)
+    return ax
+
+
+def plot_streets_suits(ax: plt.Axes = None, show_legend: bool = False) -> None:
+    ax = _help_plot_streets(ax, counter_keys=SUITS_LONG, counter_idx=2)
+    ax.set_title("Suits per street")
+    if show_legend:
+        ax.legend(STREETS)
+    return ax
+
+
+def plot_streets_animals(ax: plt.Axes = None, show_legend: bool = False) -> None:
+    ax = _help_plot_streets(ax, counter_keys=ANIMALS, counter_idx=3)
+    ax.set_title("Animals per street")
+    if show_legend:
+        ax.legend(STREETS)
+
+    return ax
+
 
 # %%
-plot_streets_suits()
-plot_streets_all()
+def plot_streets() -> None:
+    gridspec_kw = dict(width_ratios=[1, 1.2], height_ratios=[1, 1, 1])
+    fig, ax = plt.subplot_mosaic(
+        [["left", "upper right"], ["left", "middle right"], ["left", "lower right"]],
+        gridspec_kw=gridspec_kw,
+        figsize=(10, 8),
+        dpi=100,
+    )
+
+    counts_and_titles = [
+        (plot_streets_all, "left"),
+        (plot_streets_binary, "upper right"),
+        (plot_streets_suits, "middle right"),
+        (plot_streets_animals, "lower right"),
+    ]
+
+    fig.suptitle("Labels grouped by street", fontsize=20)
+    for func_plot, subplot_key in counts_and_titles:
+        func_plot(ax[subplot_key])
+
+    fig.tight_layout()
+    fig.legend(STREETS, loc="upper left")
+    fig.show()
+
+
+# %% Plot data
+# plot_suits_as_bar()
+# plot_toons_as_bar()
+# plot_datasets_all()
+# plot_datasets_binary()
+# plot_datasets_suits()
+# plot_datasets_animals()
+# plot_streets_all()
+# plot_streets_binary()
+# plot_streets_suits()
+# plot_streets_animals(show_legend=True)
+
 # %%
+# plot_xml_data
+# plot_streets()
