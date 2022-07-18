@@ -697,6 +697,35 @@ def plot_wrong_predictions(
     plt.show()
 
 
+def plot_wrong_predictions_multiclass(
+    wrong_predictions: list[tuple[str, str, str]],
+    model_name: str,
+    show_num_wrong: int = 5,
+) -> None:
+    wrong = np.asarray(wrong_predictions)
+
+    # Plot the wrong predictions
+    plt.figure(figsize=(10, 5), dpi=100)
+    for i in range(show_num_wrong):
+        plt.subplot(1, show_num_wrong, i + 1)
+        try:
+            img_fp, label_wrong, label_actual = wrong[i]
+            plt.imshow(
+                keras.preprocessing.image.load_img(img_fp, target_size=(600, 200))
+            )
+            plt.title(f"(P:{label_wrong}, A:{label_actual})")
+        except IndexError:
+            # If there are less than `show_num_wrong` wrong predictions,
+            # the remaining plots will be empty
+            plt.imshow(np.zeros((600, 200, 3)))
+        plt.axis("off")
+    plt.suptitle(
+        f" {len(wrong)} Wrong predictions: {model_name}",
+    )
+    plt.tight_layout()
+    plt.show()
+
+
 # %%
 def get_street_counters() -> dict[str, tuple[dict, dict, dict, dict]]:
     obj_names = {}
