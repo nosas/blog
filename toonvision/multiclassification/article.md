@@ -28,6 +28,8 @@ For now, let's focus on multiclass classification.
         - [Dataset considerations](#dataset-considerations)
         - [Why does the street matter?](#why-does-the-street-matter)
         - [Dataset balance](#dataset-balance)
+            - [Why does The Brrrgh have the most Bossbot samples?](#why-does-the-brrrgh-have-the-most-bossbot-samples)
+            - [Why are there so many Lawbot and Sellbot samples in Daisy's Garden?](#why-are-there-so-many-lawbot-and-sellbot-samples-in-daisys-garden)
         - [Creating the dataset objects](#creating-the-dataset-objects)
             - [Splitting the images into train, validate, and test](#splitting-the-images-into-train-validate-and-test)
     - [Compiling the model](#compiling-the-model)
@@ -106,9 +108,32 @@ The Cog vs Toon dataset is imbalanced with a majority of the dataset belonging t
 However, the Cog dataset is mostly balanced.
 Our goal is ~30 samples per Cog entity with at least 5 samples per street.
 We have achieved the 30 samples per Cog entity requirement, but we're not meeting the 5 samples per street requirement.
-Refer to the image below to see the current dataset balance and the balance per street.
 
-<font style="color:red">TODO: Add image of dataset balance per street</font>
+<figure class="center" style="width:95%">
+    <img src="img/dataset_streets.png" style="width:100%;"/>
+    <figcaption>Dataset balance per street</figcaption>
+</figure>
+
+There image above shows two notable imbalances.
+In the Suits per street graph, we can see:
+
+1. Daisy's Garden (DG) has the most Lawbot and Sellbot samples.
+2. The Brrrgh (BR) has the most Bossbot samples.
+
+#### Why does The Brrrgh have the most Bossbot samples?
+
+The street I frequented to acquire samples in The Brrrgh was [Walrus Way](https://toontown.fandom.com/wiki/Walrus_Way), where the Cog presence is split [90%, 10%] between Bossbots and Lawbots, respectively.
+It's no surprise that the majority of the samples from the Brrrgh street are Bossbot samples.
+
+#### Why are there so many Lawbot and Sellbot samples in Daisy's Garden?
+
+The Lawbot imbalance is because the street I visited was majority Lawbot and I took too many screenshots of Bottom Feeders.
+The Sellbot imbalance, on the other hand, is due to the Sellbot HQ being located near Daisy's Garden.
+As a result, the majority of Sellbot Cogs reside in the [streets of DG](https://toontown.fandom.com/wiki/Daisy_Gardens#Streets).
+
+I would not have noticed either of these imbalances without charting the samples per street.
+Moving forward, we'll be more conscious of street imbalance and take screenshots of Cogs from other streets.
+
 
 ### Creating the dataset objects
 

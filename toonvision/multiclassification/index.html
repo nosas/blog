@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 15, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 18, 2022</p>
 
 <p><title>ToonVision: Multiclass Classification</title></p>
 
@@ -57,7 +57,11 @@ For now, let's focus on multiclass classification.</p>
 <ul>
 <li><a href="#dataset-considerations">Dataset considerations</a></li>
 <li><a href="#why-does-the-street-matter">Why does the street matter?</a></li>
-<li><a href="#dataset-balance">Dataset balance</a></li>
+<li><a href="#dataset-balance">Dataset balance</a>
+<ul>
+<li><a href="#why-does-the-brrrgh-have-the-most-bossbot-samples">Why does The Brrrgh have the most Bossbot samples?</a></li>
+<li><a href="#why-are-there-so-many-lawbot-and-sellbot-samples-in-daisys-garden">Why are there so many Lawbot and Sellbot samples in Daisy's Garden?</a></li>
+</ul></li>
 <li><a href="#creating-the-dataset-objects">Creating the dataset objects</a>
 <ul>
 <li><a href="#splitting-the-images-into-train-validate-and-test">Splitting the images into train, validate, and test</a></li>
@@ -152,10 +156,34 @@ Therefore, it's important to take screenshots of Cogs from each street so our mo
 <p>The Cog vs Toon dataset is imbalanced with a majority of the dataset belonging to the Cog class.
 However, the Cog dataset is mostly balanced.
 Our goal is ~30 samples per Cog entity with at least 5 samples per street.
-We have achieved the 30 samples per Cog entity requirement, but we're not meeting the 5 samples per street requirement.
-Refer to the image below to see the current dataset balance and the balance per street.</p>
+We have achieved the 30 samples per Cog entity requirement, but we're not meeting the 5 samples per street requirement.</p>
 
-<p><font style="color:red">TODO: Add image of dataset balance per street</font></p>
+<figure class="center" style="width:95%">
+    <img src="img/dataset_streets.png" style="width:100%;"/>
+    <figcaption>Dataset balance per street</figcaption>
+</figure>
+
+<p>There image above shows two notable imbalances.
+In the Suits per street graph, we can see:</p>
+
+<ol>
+<li>Daisy's Garden (DG) has the most Lawbot and Sellbot samples.</li>
+<li>The Brrrgh (BR) has the most Bossbot samples.</li>
+</ol>
+
+<h4 id="why-does-the-brrrgh-have-the-most-bossbot-samples">Why does The Brrrgh have the most Bossbot samples?</h4>
+
+<p>The street I frequented to acquire samples in The Brrrgh was <a href="https://toontown.fandom.com/wiki/Walrus_Way">Walrus Way</a>, where the Cog presence is split [90%, 10%] between Bossbots and Lawbots, respectively.
+It's no surprise that the majority of the samples from the Brrrgh street are Bossbot samples.</p>
+
+<h4 id="why-are-there-so-many-lawbot-and-sellbot-samples-in-daisys-garden">Why are there so many Lawbot and Sellbot samples in Daisy's Garden?</h4>
+
+<p>The Lawbot imbalance is because the street I visited was majority Lawbot and I took too many screenshots of Bottom Feeders.
+The Sellbot imbalance, on the other hand, is due to the Sellbot HQ being located near Daisy's Garden.
+As a result, the majority of Sellbot Cogs reside in the <a href="https://toontown.fandom.com/wiki/Daisy_Gardens#Streets">streets of DG</a>.</p>
+
+<p>I would not have noticed either of these imbalances without charting the samples per street.
+Moving forward, we'll be more conscious of street imbalance and take screenshots of Cogs from other streets.</p>
 
 <h3 id="creating-the-dataset-objects">Creating the dataset objects</h3>
 
