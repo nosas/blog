@@ -843,7 +843,7 @@ def plot_streets() -> None:
         func_plot(ax[subplot_key])
 
     fig.tight_layout()
-    fig.legend(STREETS, loc="upper left")
+    fig.legend(STREETS, loc="lower left")
     fig.show()
 
 
