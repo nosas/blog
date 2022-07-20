@@ -44,7 +44,6 @@ def make_multiclass_model_padding(
         x = augmentation(inputs)
     x = layers.Rescaling(1.0 / 255)(inputs)
     x = layers.Conv2D(filters=4, kernel_size=3, activation="relu", padding="same")(x)
-    x = layers.Dropout(dropout)(x)
     x = layers.MaxPooling2D(pool_size=2)(x)
     x = layers.MaxPooling2D(pool_size=2)(x)
     x = layers.Conv2D(filters=4, kernel_size=3, activation="relu", padding="same")(x)

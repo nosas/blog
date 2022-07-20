@@ -1,14 +1,14 @@
 # %% Import libraries
-import tensorflow as tf
-import keras
-import numpy as np
-from keras import layers
 import re
 import xml.etree.ElementTree as ET
 from glob import glob
 from os import path
 
 import cv2
+import keras
+import numpy as np
+import tensorflow as tf
+from keras import layers
 
 
 # %% Define utility functions
