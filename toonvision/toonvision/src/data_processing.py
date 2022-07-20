@@ -1,4 +1,5 @@
 # %% Imports
+from collections import Counter
 from glob import glob
 from os import path, rename
 from random import shuffle
@@ -10,6 +11,7 @@ from img_utils import (
     extract_objects_from_img,
     extract_objects_from_xml,
     get_obj_details_from_filepath,
+    get_obj_details_from_name,
     save_objects_to_img,
 )
 
@@ -29,14 +31,24 @@ SCREENSHOTS_DIR = RAW_DIR + "/screenshots"
 UNSORTED_DIR = IMG_DIR + "/unsorted"
 UNSORTED_COG_DIR = UNSORTED_DIR + "/cog"
 UNSORTED_TOON_DIR = UNSORTED_DIR + "/toon"
-MAP_SUIT_TO_INT = {"bb": 0, "cb": 1, "lb": 2, "sb": 3}
+
+# Global variables: labels
+with open(f"{RAW_DIR}/data/predefined_classes.txt", "r") as f:
+    ALL_LABELS = [line for line in f.read().splitlines() if not line.startswith("=")]
+ANIMALS = [label.split("_")[1] for label in ALL_LABELS if label.startswith("toon_")]
+BINARY = ["cog", "toon"]
+
+SUITS_LONG = ["bossbot", "lawbot", "cashbot", "sellbot"]
+SUITS_SHORT = ["bb", "lb", "cb", "sb"]
+MAP_INT_TO_SUIT = {i: suit for i, suit in enumerate(SUITS_SHORT)}
+MAP_SUIT_TO_INT = {v: k for k, v in MAP_INT_TO_SUIT.items()}
 MAP_SUIT_TO_ONEHOT = {
-    "bb": [1, 0, 0, 0],
-    "cb": [0, 1, 0, 0],
-    "lb": [0, 0, 1, 0],
-    "sb": [0, 0, 0, 1],
+    suit: one_hot.astype(int)
+    for suit, one_hot in zip(SUITS_SHORT, np.eye(len(SUITS_SHORT)))
 }
-MAP_INT_TO_SUIT = {v: k for k, v in MAP_SUIT_TO_INT.items()}
+MAP_SUIT_SHORT_LONG = {short: long for short, long in zip(SUITS_SHORT, SUITS_LONG)}
+
+STREETS = ["br", "dd", "ddl", "dg", "mml", "ttc"]
 
 
 def verify_folder_structure():
@@ -103,6 +115,70 @@ def process_images(
                         rename(f, new_path)
             else:
                 print(f"    No XML file found for {img_path}")
+
+
+# TODO Refactor to return a dictionary instead of tuple
+def count_objects(
+    data_dir: str = None, obj_names: list[str] = None
+) -> tuple[dict, dict, dict, dict]:
+    """Count the objects in a data directory or list of object names
+
+    Args:
+        data_dir: Path to a data directory containing processed images
+            Eg. UNSORTED_DIR + "/**/*.png"
+        obj_names: List of object names
+
+    Returns:
+        tuple: (count_all, count_binary, count_suit, count_animal)
+    """
+    assert any(
+        [data_dir is not None, obj_names is not None]
+    ), "Must specify either data_dir or obj_names"
+
+    def create_counters() -> tuple[Counter, Counter, Counter, Counter]:
+        # Create counters
+        count_all = Counter()  # All object names (32 cogs + 11 toons = 43 classes)
+        count_binary = Counter()  # Cog or Toon (2 classes)
+        count_suit = Counter()  # Bossbot, Lawbot, Cashbot, Sellbot (4 classes)
+        count_animal = Counter()  # Toon animals (11 classes)
+        # Initialize all counters to 0
+        count_all.update({key: 0 for key in ALL_LABELS})
+        count_binary.update({key: 0 for key in BINARY})
+        count_suit.update({key: 0 for key in SUITS_LONG})
+        count_animal.update({key: 0 for key in ANIMALS})
+        return (count_all, count_binary, count_suit, count_animal)
+
+    def update_counters(obj_details: dict) -> None:
+        binary = obj_details["binary"]
+        count_binary.update([binary])
+
+        if binary == "cog":
+            suit, name = obj_details["suit"], obj_details["name"]
+            obj_formatted = f"{binary}_{suit}_{name}"
+            count_suit.update([MAP_SUIT_SHORT_LONG.get(suit)])
+        else:
+            animal = obj_details["animal"]
+            obj_formatted = f"{binary}_{animal}"
+            count_animal.update([animal])
+        count_all.update([obj_formatted])
+
+    count_all, count_binary, count_suit, count_animal = create_counters()
+
+    if data_dir:
+        for filepath in glob(data_dir):
+            obj_details = get_obj_details_from_filepath(filepath)
+            update_counters(obj_details)
+    else:
+        for obj_name in obj_names:
+            obj_details = get_obj_details_from_name(obj_name)
+            update_counters(obj_details)
+
+    return {
+        "all": count_all,
+        "binary": count_binary,
+        "suit": count_suit,
+        "animal": count_animal,
+    }
 
 
 def split_data(split_ratio: list[float, float, float], dry_run: bool = False):
@@ -226,15 +302,26 @@ def create_suit_datasets(
     return None
 
 
+def unprocess_data(dry_run: bool = False):
+    img_fps = glob(f"{PROCESSED_DIR}/**/*.png", recursive=True)
+    for fp in img_fps:
+        new_fp = fp.replace("\\", "/").replace(PROCESSED_DIR, SCREENSHOTS_DIR)
+        if dry_run:
+            print(f"Moving {fp} to {new_fp}")
+        else:
+            rename(fp, new_fp)
+            rename(fp.replace(".png", ".xml"), new_fp.replace(".png", ".xml"))
+
+
 def unsort_data(dry_run: bool = False):
     for dir_name in [TRAIN_DIR, VALIDATE_DIR, TEST_DIR]:
-        all_imgs = glob(f"{dir_name}/*/*.png")
-        for img in all_imgs:
-            new_path = img.replace("\\", "/").replace(dir_name, UNSORTED_DIR)
+        img_fps = glob(f"{dir_name}/*/*.png")
+        for fp in img_fps:
+            new_fp = fp.replace("\\", "/").replace(dir_name, UNSORTED_DIR)
             if dry_run:
-                print(f"Moving {img} to {new_path}")
+                print(f"Moving {fp} to {new_fp}")
             else:
-                rename(img, new_path)
+                rename(fp, new_fp)
 
 
 def get_suits_from_dir(directories: list[str] = [DATA_DIR]) -> dict[str, tuple]:
@@ -263,16 +350,16 @@ def suit_to_integer(suits: list[str]) -> list[int]:
     """Get integer labels for all suits in the list.
 
     Returns:
-        dict[str, tuple]: Filepaths and labels for all Cog suits.
+        list[int]: Integer labels for all Cog suits.
     """
     return [MAP_SUIT_TO_INT[suit] for suit in suits]
 
 
 def integer_to_suit(suits: list[int]) -> list[str]:
-    """Get integer labels for all suits in the list.
+    """Get string labels for all integers in the list.
 
     Returns:
-        dict[str, tuple]: Filepaths and labels for all Cog suits.
+        list[str]: String labels for all Cog suits.
     """
     return [MAP_INT_TO_SUIT[suit] for suit in suits]
 

@@ -12,28 +12,23 @@ from matplotlib.patches import Rectangle
 from PIL import Image
 
 from data_processing import (
+    ALL_LABELS,
+    ANIMALS,
+    BINARY,
     PROCESSED_DIR,
-    RAW_DIR,
+    STREETS,
+    SUITS_LONG,
+    SUITS_SHORT,
     TEST_DIR,
     TRAIN_DIR,
     UNSORTED_COG_DIR,
     UNSORTED_TOON_DIR,
     VALIDATE_DIR,
+    count_objects,
 )
-from img_utils import (
-    extract_objects_from_xml,
-    get_obj_details_from_filepath,
-    get_obj_details_from_name,
-)
+from img_utils import extract_objects_from_xml
 
 # %% Global variables
-with open(f"{RAW_DIR}/data/predefined_classes.txt", "r") as f:
-    ALL_LABELS = [line for line in f.read().splitlines() if not line.startswith("=")]
-ANIMALS = [label.split("_")[1] for label in ALL_LABELS if label.startswith("toon_")]
-BINARY = ["cog", "toon"]
-SUITS_LONG = ["bossbot", "lawbot", "cashbot", "sellbot"]
-SUITS_SHORT = ["bb", "lb", "cb", "sb"]
-SUITS_MAP = {short: long for short, long in zip(SUITS_SHORT, SUITS_LONG)}
 COLORS = [
     "#1f77b4",
     "#ff7f0e",
@@ -54,7 +49,6 @@ COLORS_STREETS = [
     "#9b3d7f",  # Minnie's Melodyland
     "#c06635",  # ToonTown Central
 ]
-STREETS = ["br", "dd", "ddl", "dg", "mml", "ttc"]
 # Set default plot style and colors
 plt.style.use("dark_background")
 mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=COLORS)
@@ -241,64 +235,6 @@ def compare_histories(
     if suptitle:
         plt.suptitle(suptitle)
     plt.tight_layout()
-
-
-# TODO Refactor to return a dictionary instead of tuple
-def count_objects(
-    data_dir: str = None, obj_names: list[str] = None
-) -> tuple[dict, dict, dict, dict]:
-    """Count the objects in a data directory or list of object names
-
-    Args:
-        data_dir: Path to a data directory containing processed images
-        obj_names: List of object names
-
-    Returns:
-        tuple: (count_all, count_binary, count_suit, count_animal)
-    """
-    assert any(
-        [data_dir is not None, obj_names is not None]
-    ), "Must specify either data_dir or obj_names"
-
-    def create_counters() -> tuple[Counter, Counter, Counter, Counter]:
-        # Create counters
-        count_all = Counter()  # All object names (32 cogs + 11 toons = 43 classes)
-        count_binary = Counter()  # Cog or Toon (2 classes)
-        count_suit = Counter()  # Bossbot, Lawbot, Cashbot, Sellbot (4 classes)
-        count_animal = Counter()  # Toon animals (11 classes)
-        # Initialize all counters to 0
-        count_all.update({key: 0 for key in ALL_LABELS})
-        count_binary.update({key: 0 for key in BINARY})
-        count_suit.update({key: 0 for key in SUITS_LONG})
-        count_animal.update({key: 0 for key in ANIMALS})
-        return (count_all, count_binary, count_suit, count_animal)
-
-    def update_counters(obj_details: dict) -> None:
-        binary = obj_details["binary"]
-        count_binary.update([binary])
-
-        if binary == "cog":
-            suit, name = obj_details["suit"], obj_details["name"]
-            obj_formatted = f"{binary}_{suit}_{name}"
-            count_suit.update([SUITS_MAP.get(suit)])
-        else:
-            animal = obj_details["animal"]
-            obj_formatted = f"{binary}_{animal}"
-            count_animal.update([animal])
-        count_all.update([obj_formatted])
-
-    count_all, count_binary, count_suit, count_animal = create_counters()
-
-    if data_dir:
-        for filepath in glob(data_dir):
-            obj_details = get_obj_details_from_filepath(filepath)
-            update_counters(obj_details)
-    else:
-        for obj_name in obj_names:
-            obj_details = get_obj_details_from_name(obj_name)
-            update_counters(obj_details)
-
-    return (count_all, count_binary, count_suit, count_animal)
 
 
 def plot_counters(counters: tuple[dict, dict, dict, dict], suptitle: str) -> None:
