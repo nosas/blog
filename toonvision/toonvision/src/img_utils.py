@@ -1,4 +1,8 @@
 # %% Import libraries
+import tensorflow as tf
+import keras
+import numpy as np
+from keras import layers
 import re
 import xml.etree.ElementTree as ET
 from glob import glob
@@ -169,3 +173,33 @@ def save_objects_to_img(
             if verbose:
                 print(f"    Saving {obj_name} to {filepath}")
             cv2.imwrite(filepath, obj_img)
+
+
+def get_img_array_from_filepath(
+    img_path: str, target_size: tuple[int, int, int] = (600, 200, 3)
+) -> np.array:
+    """Return the image array from the image's filepath.
+
+    Args:
+        img_path (str): Absolute filepath to an image
+        target_size (np.array): Eg. (600, 200, 3) for 600h, 200w, 3ch
+
+    Returns:
+        np.array: Array representation of an image
+    """
+    img = tf.keras.utils.load_img(img_path, target_size=target_size)
+    array = tf.keras.utils.img_to_array(img)
+    return array
+
+
+def get_image_augmentations() -> keras.Sequential:
+    return keras.Sequential(
+        [
+            # Apply horizontal flipping to 50% of the images
+            layers.RandomFlip("horizontal"),
+            # Rotate the input image by some factor in range [-7.5%, 7.5%] or [-27, 27] in degrees
+            layers.RandomRotation(0.075),
+            # Zoom in or out by a random factor in range [-20%, 20%]
+            layers.RandomZoom(0.2),
+        ]
+    )
