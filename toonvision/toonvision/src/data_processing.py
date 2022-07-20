@@ -117,10 +117,7 @@ def process_images(
                 print(f"    No XML file found for {img_path}")
 
 
-# TODO Refactor to return a dictionary instead of tuple
-def count_objects(
-    data_dir: str = None, obj_names: list[str] = None
-) -> tuple[dict, dict, dict, dict]:
+def count_objects(data_dir: str = None, obj_names: list[str] = None) -> dict[str, dict]:
     """Count the objects in a data directory or list of object names
 
     Args:
@@ -129,7 +126,15 @@ def count_objects(
         obj_names: List of object names
 
     Returns:
-        tuple: (count_all, count_binary, count_suit, count_animal)
+        dict: Dictionary of counter names and their counts
+
+        :: Example
+            {
+                "all": count_all,
+                "binary": count_binary,
+                "suit": count_suit,
+                "animal": count_animal,
+            }
     """
     assert any(
         [data_dir is not None, obj_names is not None]

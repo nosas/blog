@@ -272,14 +272,14 @@ def plot_counters(counters: tuple[dict, dict, dict, dict], suptitle: str) -> Non
 def plot_datasets_all(text_color: str = "black") -> None:
     plt.figure(figsize=(5, 10), dpi=100)
 
-    c_train = list(count_objects(data_dir=f"{TRAIN_DIR}/*/*.png"))
-    train = c_train[0]
+    c_train = count_objects(data_dir=f"{TRAIN_DIR}/*/*.png")
+    train = c_train['all']
     labels = list(train.keys())
     bars_train = plt.barh(labels, train.values(), label="Train")
     plt.bar_label(bars_train, train.values(), label_type="center", color=text_color)
 
-    c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
-    validate = c_validate[0]
+    c_validate = count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png")
+    validate = c_validate['all']
     bars_validate = plt.barh(
         labels, validate.values(), label="Validate", left=list(train.values())
     )
@@ -287,8 +287,8 @@ def plot_datasets_all(text_color: str = "black") -> None:
         bars_validate, validate.values(), label_type="center", color=text_color
     )
 
-    c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
-    test = c_test[0]
+    c_test = count_objects(data_dir=f"{TEST_DIR}/*/*.png")
+    test = c_test['all']
     bars_test = plt.barh(
         labels,
         test.values(),
@@ -306,14 +306,14 @@ def plot_datasets_all(text_color: str = "black") -> None:
 
 
 def plot_datasets_binary(text_color: str = "black") -> None:
-    c_train = list(count_objects(data_dir=f"{TRAIN_DIR}/*/*.png"))
-    train = c_train[1]
+    c_train = count_objects(data_dir=f"{TRAIN_DIR}/*/*.png")
+    train = c_train['binary']
     labels = list(train.keys())
     bars_train = plt.barh(labels, train.values(), label="Train")
     plt.bar_label(bars_train, train.values(), label_type="center", color=text_color)
 
-    c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
-    validate = c_validate[1]
+    c_validate = count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png")
+    validate = c_validate['binary']
     bars_validate = plt.barh(
         labels, validate.values(), label="Validate", left=list(train.values())
     )
@@ -321,8 +321,8 @@ def plot_datasets_binary(text_color: str = "black") -> None:
         bars_validate, validate.values(), label_type="center", color=text_color
     )
 
-    c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
-    test = c_test[1]
+    c_test = count_objects(data_dir=f"{TEST_DIR}/*/*.png")
+    test = c_test['binary']
     bars_test = plt.barh(
         labels,
         test.values(),
@@ -339,14 +339,14 @@ def plot_datasets_binary(text_color: str = "black") -> None:
 
 
 def plot_datasets_suits(text_color: str = "black"):
-    c_train = list(count_objects(data_dir=f"{TRAIN_DIR}/*/*.png"))
-    train = c_train[2]
+    c_train = count_objects(data_dir=f"{TRAIN_DIR}/*/*.png")
+    train = c_train['suit']
     labels = list(train.keys())
     bars_train = plt.barh(labels, train.values(), label="Train")
     plt.bar_label(bars_train, train.values(), label_type="center", color=text_color)
 
-    c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
-    validate = c_validate[2]
+    c_validate = count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png")
+    validate = c_validate['suit']
     bars_validate = plt.barh(
         labels, validate.values(), label="Validate", left=list(train.values())
     )
@@ -354,8 +354,8 @@ def plot_datasets_suits(text_color: str = "black"):
         bars_validate, validate.values(), label_type="center", color=text_color
     )
 
-    c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
-    test = c_test[2]
+    c_test = count_objects(data_dir=f"{TEST_DIR}/*/*.png")
+    test = c_test['suit']
     bars_test = plt.barh(
         labels,
         test.values(),
@@ -373,14 +373,14 @@ def plot_datasets_suits(text_color: str = "black"):
 
 
 def plot_datasets_animals(text_color: str = "black"):
-    c_train = list(count_objects(data_dir=f"{TRAIN_DIR}/*/*.png"))
-    train = c_train[3]
+    c_train = count_objects(data_dir=f"{TRAIN_DIR}/*/*.png")
+    train = c_train['animal']
     labels = list(train.keys())
     bars_train = plt.barh(labels, train.values(), label="Train")
     plt.bar_label(bars_train, train.values(), label_type="center", color=text_color)
 
-    c_validate = list(count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png"))
-    validate = c_validate[3]
+    c_validate = count_objects(data_dir=f"{VALIDATE_DIR}/*/*.png")
+    validate = c_validate['animal']
     bars_validate = plt.barh(
         labels, validate.values(), label="Validate", left=list(train.values())
     )
@@ -388,8 +388,8 @@ def plot_datasets_animals(text_color: str = "black"):
         bars_validate, validate.values(), label_type="center", color=text_color
     )
 
-    c_test = list(count_objects(data_dir=f"{TEST_DIR}/*/*.png"))
-    test = c_test[3]
+    c_test = count_objects(data_dir=f"{TEST_DIR}/*/*.png")
+    test = c_test['animal']
     bars_test = plt.barh(
         labels,
         test.values(),
@@ -662,8 +662,7 @@ def plot_wrong_predictions_multiclass(
     plt.show()
 
 
-# %%
-def get_street_counters() -> dict[str, tuple[dict, dict, dict, dict]]:
+def get_street_counters() -> dict[str, dict[str, dict]]:
     obj_names = {}
     for street in STREETS:
         obj_names[street] = []
@@ -678,22 +677,32 @@ def get_street_counters() -> dict[str, tuple[dict, dict, dict, dict]]:
     return street_counters
 
 
-# plot_xml_data_per_street()
-# %%
 def _help_plot_streets(
-    ax: plt.Axes, counter_keys: list[str], counter_idx: int, figsize=(6, 4)
+    ax: plt.Axes, counter_labels: list[str], counter_key: str, figsize=(6, 4)
 ):
+    """Helper function to plot counters for each street
+
+    Args:
+        ax (plt.Axes): The axes to plot the counter on
+        counter_labels (list[str]): The labels for the counter
+        counter_key (str): The key for the counter to be plotted.
+            Key must be in ['all', 'binary', 'suit', 'animal']
+        figsize: The size of the figure
+
+    Returns:
+        ax: The axes with the plotted counter
+    """
 
     if ax is None:
         _, ax = plt.subplots(1, 1, figsize=figsize, dpi=100)
 
     counter = Counter()
     # Initialize all counters to 0
-    counter.update({key: 0 for key in counter_keys})
+    counter.update({label: 0 for label in counter_labels})
     street_counters = get_street_counters()
 
     for i, street in enumerate(street_counters):
-        street_counter = street_counters[street][counter_idx]
+        street_counter = street_counters[street][counter_key]
         labels = list(street_counter.keys())
         bars = ax.barh(
             labels,
@@ -705,7 +714,7 @@ def _help_plot_streets(
             bars, list(street_counter.values()), label_type="center"
         )
         # TODO Remove if statement below when dataset is balanced
-        if counter_idx == 1:  # Reduce crowding of labels for COUNTER_BINARY
+        if counter_key == 'binary':  # Reduce crowding of labels for COUNTER_BINARY
             bar_labels = [
                 label.set_text(None)
                 for label in bar_labels
@@ -725,7 +734,7 @@ def _help_plot_streets(
 
 
 def plot_streets_all(ax: plt.Axes = None, show_legend: bool = False) -> None:
-    ax = _help_plot_streets(ax, counter_keys=ALL_LABELS, counter_idx=0, figsize=(4, 8))
+    ax = _help_plot_streets(ax, counter_labels=ALL_LABELS, counter_key='all', figsize=(4, 8))
     ax.set_title("Labels per street")
     if show_legend:
         ax.legend(STREETS)
@@ -733,7 +742,7 @@ def plot_streets_all(ax: plt.Axes = None, show_legend: bool = False) -> None:
 
 
 def plot_streets_binary(ax: plt.Axes = None, show_legend: bool = False) -> None:
-    ax = _help_plot_streets(ax, counter_keys=BINARY, counter_idx=1)
+    ax = _help_plot_streets(ax, counter_labels=BINARY, counter_key='binary')
     ax.set_title("Binary per street")
     if show_legend:
         ax.legend(STREETS)
@@ -741,7 +750,7 @@ def plot_streets_binary(ax: plt.Axes = None, show_legend: bool = False) -> None:
 
 
 def plot_streets_suits(ax: plt.Axes = None, show_legend: bool = False) -> None:
-    ax = _help_plot_streets(ax, counter_keys=SUITS_LONG, counter_idx=2)
+    ax = _help_plot_streets(ax, counter_labels=SUITS_LONG, counter_key='suit')
     ax.set_title("Suits per street")
     if show_legend:
         ax.legend(STREETS)
@@ -749,7 +758,7 @@ def plot_streets_suits(ax: plt.Axes = None, show_legend: bool = False) -> None:
 
 
 def plot_streets_animals(ax: plt.Axes = None, show_legend: bool = False) -> None:
-    ax = _help_plot_streets(ax, counter_keys=ANIMALS, counter_idx=3)
+    ax = _help_plot_streets(ax, counter_labels=ANIMALS, counter_key='animal')
     ax.set_title("Animals per street")
     if show_legend:
         ax.legend(STREETS)
