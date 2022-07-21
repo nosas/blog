@@ -2,7 +2,6 @@
 from collections import Counter
 from glob import glob
 from os import path, rename
-from random import shuffle
 
 import numpy as np
 from tensorflow.keras.utils import image_dataset_from_directory
@@ -186,42 +185,48 @@ def count_objects(data_dir: str = None, obj_names: list[str] = None) -> dict[str
     }
 
 
-def split_data(split_ratio: list[float, float, float], dry_run: bool = False):
-    """Split the data into train(60%)/validate(20%)/test(20%) data sets"""
-    for unsorted_dir in [UNSORTED_COG_DIR, UNSORTED_TOON_DIR]:
-        cog_or_toon = unsorted_dir.split("/")[-1]
-        # Get all images from unsorted_dir
-        unsorted_images = glob(f"{unsorted_dir}/*.png")
-        num_images = len(unsorted_images)
-        print(f"{unsorted_dir.split('toonvision')[-1]} # Unsorted images: ", num_images)
+def split_data(split_ratio: list[float, float, float]):
+    """Split data into train, validate, and test directories
+
+    Samples are split into train, validate, and test directories based on the split_ratio.
+    The split_ratio is a list of ratios for the train, validate, and test directories. The sum of
+    the ratios must be 1.
+
+    Samples are split on a per-label basis, rather than the entire dataset being split. This way,
+    we ensure a representative sample of each label is in each directory.
+
+    Args:
+        split_ratio (list[float, float, float]): Train/validate/test split ratio.
+            Example: [0.6, 0.2, 0.2]
+    """
+    counters_all = count_objects(UNSORTED_DIR + "/**/*.png")["all"]
+    # for label in counters_all:
+    for label in counters_all:
+        label_count = counters_all[label]
+        img_fps = glob(UNSORTED_DIR + f"/**/{label}*.png")
+
+        # Count the number of images per split
+        num_train = int(label_count * split_ratio[0])
+        num_validate = int(label_count * split_ratio[1])
+
+        # Shuffle the images
+        idx_shuffled = np.random.permutation(label_count)
+        idx_train = idx_shuffled[:num_train]
+        idx_validate = idx_shuffled[num_train : num_train + num_validate]
+        idx_test = idx_shuffled[num_train + num_validate :]
 
         # Split images into train/validate/test sets
-        num_train = int(num_images * split_ratio[0])
-        num_validate = int(num_images * split_ratio[1])
-        num_test = num_images - num_train - num_validate
-        print(
-            f"{unsorted_dir.split('toonvision')[-1]} # Train, Val, Test: ",
-            num_train,
-            num_validate,
-            num_test,
-        )
-
-        # # Shuffle filenames to randomize the order of the images
-        shuffle(unsorted_images)
-        train = unsorted_images[:num_train]
-        validate = unsorted_images[num_train:-num_test]
-        test = unsorted_images[-num_test:]
+        train = [img_fps[i] for i in idx_train]
+        validate = [img_fps[i] for i in idx_validate]
+        test = [img_fps[i] for i in idx_test]
 
         # Move images to train/validate/test directories
         for images, dir_name in zip(
             [train, validate, test], [TRAIN_DIR, VALIDATE_DIR, TEST_DIR]
         ):
             for img_path in images:
-                new_path = img_path.replace(unsorted_dir, f"{dir_name}/{cog_or_toon}")
-                if dry_run:
-                    print(f"Moving {img_path} to {new_path}")
-                else:
-                    rename(img_path, new_path)
+                new_path = img_path.replace(UNSORTED_DIR, dir_name)
+                rename(img_path, new_path)
 
 
 def create_datasets(
@@ -242,7 +247,7 @@ def create_datasets(
         tuple[keras.Dataset, keras.Dataset, keras.Dataset]: Train, validate, and test datasets.
     """
     if split_ratio:
-        split_data(split_ratio=split_ratio, dry_run=False)
+        split_data(split_ratio=split_ratio)
 
     ds_train = image_dataset_from_directory(
         TRAIN_DIR,
@@ -283,7 +288,7 @@ def create_suit_datasets(
         tuple[keras.Dataset, keras.Dataset, keras.Dataset]: Train, validate, and test datasets.
     """
     if split_ratio:
-        split_data(split_ratio=split_ratio, dry_run=False)
+        split_data(split_ratio=split_ratio)
 
     # ds_train = image_dataset_from_directory(
     #     TRAIN_DIR + "/cog",
@@ -308,6 +313,7 @@ def create_suit_datasets(
 
 
 def unprocess_data(dry_run: bool = False):
+    """Move images and XML files from img/raw/processed to img/raw/screenshots"""
     img_fps = glob(f"{PROCESSED_DIR}/**/*.png", recursive=True)
     for fp in img_fps:
         new_fp = fp.replace("\\", "/").replace(PROCESSED_DIR, SCREENSHOTS_DIR)
@@ -319,6 +325,7 @@ def unprocess_data(dry_run: bool = False):
 
 
 def unsort_data(dry_run: bool = False):
+    """Move images from img/data/{train|validate|test} to img/data/unsorted"""
     for dir_name in [TRAIN_DIR, VALIDATE_DIR, TEST_DIR]:
         img_fps = glob(f"{dir_name}/*/*.png")
         for fp in img_fps:
@@ -387,12 +394,3 @@ def suit_to_onehot(suits: list[str]) -> list[np.ndarray]:
                [0., 0., 0., 1.]])
     """
     return [MAP_SUIT_TO_ONEHOT[suit] for suit in suits]
-
-
-# # %% Split data
-# split_data(dry_run=True)
-
-# # %% Unsort data
-# unsort_data(dry_run=True)
-
-# %%
