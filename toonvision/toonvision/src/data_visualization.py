@@ -237,7 +237,7 @@ def compare_histories(
     plt.tight_layout()
 
 
-def plot_counters(counters: tuple[dict, dict, dict, dict], suptitle: str) -> None:
+def plot_counters(counters: dict[str, dict], suptitle: str) -> None:
     gridspec_kw = dict(width_ratios=[1, 1.2], height_ratios=[1, 1, 1])
     fig, ax = plt.subplot_mosaic(
         [["left", "upper right"], ["left", "middle right"], ["left", "lower right"]],
@@ -246,12 +246,11 @@ def plot_counters(counters: tuple[dict, dict, dict, dict], suptitle: str) -> Non
         dpi=100,
     )
 
-    count_all, count_binary, count_suit, count_animal = counters
     counts_and_titles = [
-        (count_all, "Objects per label", 30, "left"),
-        (count_binary, "Objects per binary label", 960, "upper right"),
-        (count_suit, "Objects per suit label", 240, "middle right"),
-        (count_animal, "Objects per animal label", 58, "lower right"),
+        (counters['all'], "Objects per label", 30, "left"),
+        (counters['binary'], "Objects per binary label", 960, "upper right"),
+        (counters['suit'], "Objects per suit label", 240, "middle right"),
+        (counters['animal'], "Objects per animal label", 58, "lower right"),
     ]
 
     fig.suptitle(suptitle, fontsize=20)
