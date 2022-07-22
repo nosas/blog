@@ -9,6 +9,7 @@ from tensorflow.keras.utils import image_dataset_from_directory
 from img_utils import (
     extract_objects_from_img,
     extract_objects_from_xml,
+    get_img_array_from_filepath,
     get_obj_details_from_filepath,
     get_obj_details_from_name,
     save_objects_to_img,
@@ -270,45 +271,32 @@ def create_datasets(
 
 
 def create_suit_datasets(
-    image_size: tuple = (600, 200),
-    batch_size: int = 32,
-    shuffle: bool = True,
-    split_ratio: list[float, float, float] = None,
-):
+    split_ratio: list[float, float, float] = None
+) -> tuple[tuple[np.array[float], np.array[float]]]:
     """Create multiclass Cog suit datasets for training, validation, and testing
 
     Args:
-        image_size (tuple, optional): Tuple of height and width. Defaults to (600, 200).
-        batch_size (int, optional): Number of samples per batch. Defaults to 32.
-        shuffle (bool, optional): Shuffle images in dataset. Defaults to True.
         split_ratio (list[float, float, float], optional): Train/val/test split. Defaults to None.
 
     Returns:
-        tuple[keras.Dataset, keras.Dataset, keras.Dataset]: Train, validate, and test datasets.
+        tuple[tuple, tuple, tuple]: Train, validate, and test datasets. Each tuple contains
+                                    a numpy array of images and a numpy array of labels.
     """
     if split_ratio:
         split_data(split_ratio=split_ratio)
 
-    # ds_train = image_dataset_from_directory(
-    #     TRAIN_DIR + "/cog",
-    #     image_size=image_size,
-    #     batch_size=batch_size,
-    #     shuffle=shuffle,
-    # )
-    # ds_validate = image_dataset_from_directory(
-    #     VALIDATE_DIR + "/cog",
-    #     image_size=image_size,
-    #     batch_size=batch_size,
-    #     shuffle=shuffle,
-    # )
-    # ds_test = image_dataset_from_directory(
-    #     TEST_DIR + "/cog",
-    #     image_size=image_size,
-    #     batch_size=batch_size,
-    #     shuffle=shuffle,
-    # )
-    # return (ds_train, ds_validate, ds_test)
-    return None
+    data_dirs = [TRAIN_DIR, VALIDATE_DIR, TEST_DIR]
+    suits = get_suits_from_dir(directories=data_dirs)
+    result = {}
+    for dir_name in data_dirs:
+        filepaths, labels = suits[dir_name]
+        labels = np.asarray(suit_to_integer(labels), dtype=np.float32)
+        images = np.asarray(
+            [get_img_array_from_filepath(fp) for fp in filepaths], dtype=np.float32
+        )
+        result[dir_name] = (images, labels)
+
+    return (result[TRAIN_DIR], result[VALIDATE_DIR], result[TEST_DIR])
 
 
 def unprocess_data(dry_run: bool = False):
