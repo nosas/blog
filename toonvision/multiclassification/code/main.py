@@ -1,34 +1,25 @@
 # %% Imports
-from gc import callbacks
 import keras
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from data_processing import (
-    DATA_DIR,
     TEST_DIR,
-    TRAIN_DIR,
-    VALIDATE_DIR,
-    count_objects,
     create_suit_datasets,
     get_suits_from_dir,
     integer_to_suit,
     process_images,
-    suit_to_integer,
-    suit_to_onehot,
     unsort_data,
-    unprocess_data
 )
 from data_visualization import (
     COLORS,
-    # plot_datasets,
     plot_histories,
     plot_history,
-    plot_streets,
     plot_wrong_predictions_multiclass,
 )
 from img_utils import get_image_augmentations
 from model_utils import make_multiclass_model_original, make_multiclass_model_padding
+from kerastuner import RandomSearch
 
 LR = 0.001
 
@@ -75,7 +66,9 @@ test_images = test_images[p]
 test_labels = test_labels[p]
 # Retrieve filepaths of test images, to be used in plotting of wrong predictions
 test_fps, _ = get_suits_from_dir(directories=[TEST_DIR])[TEST_DIR]
-test_fps = np.array(test_fps)[p]  # Apply permutation to match the order of the test dataset
+test_fps = np.array(test_fps)[
+    p
+]  # Apply permutation to match the order of the test dataset
 
 # %% Display a sample from the validation set
 idx = np.random.randint(len(val_images))
@@ -167,7 +160,7 @@ for opt in [tf.keras.optimizers.Adam(), tf.keras.optimizers.RMSprop()]:
         name="opt_tv_" + opt._name, augmentation=get_image_augmentations(), dropout=0.5
     )
     model.compile(
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         optimizer=opt,
         metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
     )
@@ -214,7 +207,7 @@ for color, (model, hist) in zip(COLORS, histories_all):
         alpha_runs=0.10,
         alpha_mean=0.75,
         multiclass=True,
-        loss_ylim=(0, 1)
+        loss_ylim=(0, 1),
     )
 
 # %% Plot the wrong predictions
@@ -237,8 +230,135 @@ for model in models_all:
 
 # %%
 for model, history in histories_all:
-    plot_history(history=history.history, name=model.name, multiclass=True, loss_ylim=(0, 1))
+    plot_history(
+        history=history.history, name=model.name, multiclass=True, loss_ylim=(0, 1)
+    )
 # %%
-
 model.evaluate(test_images, test_labels, batch_size=batch_size)
 
+# %%
+
+
+def model_builder(hp):
+    model = keras.Sequential(
+        [
+            keras.layers.Rescaling(1.0 / 255),
+            keras.layers.Conv2D(
+                filters=hp.Int("conv_1_filters", min_value=4, max_value=16, step=2),
+                kernel_size=hp.Choice("conv_1_kernel_size", values=[3, 5]),
+                activation="relu",
+                padding="same",
+            ),
+            keras.layers.MaxPooling2D(
+                pool_size=hp.Int("pool_1_size", min_value=1, max_value=4, step=1),
+            ),
+            keras.layers.MaxPooling2D(
+                pool_size=hp.Int("pool_2_size", min_value=1, max_value=4, step=1),
+            ),
+            keras.layers.Dropout(
+                rate=hp.Float("dropout_1_rate", min_value=0.0, max_value=0.8, step=0.1),
+            ),
+            keras.layers.Conv2D(
+                filters=hp.Int("conv_2_filters", min_value=4, max_value=16, step=2),
+                kernel_size=hp.Choice("conv_2_kernel_size", values=[3, 5]),
+                activation="relu",
+                padding="same",
+            ),
+            keras.layers.MaxPooling2D(
+                pool_size=hp.Int("pool_3_size", min_value=1, max_value=4, step=1),
+            ),
+            keras.layers.MaxPooling2D(
+                pool_size=hp.Int("pool_4_size", min_value=1, max_value=4, step=1),
+            ),
+            keras.layers.Flatten(),
+            keras.layers.Dropout(
+                rate=hp.Float("dropout_2_rate", min_value=0.0, max_value=0.8, step=0.1),
+            ),
+            keras.layers.Dense(units=4, activation="softmax"),
+        ]
+    )
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(),
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+        metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
+    )
+    return model
+
+
+# %%
+tuner = RandomSearch(
+    model_builder,
+    objective="val_loss",
+    max_trials=50,
+    executions_per_trial=3,
+    directory="models",
+    project_name="tuner_multiclass_cog",
+    seed=42,
+)
+tuner.search_space_summary()
+
+# %%
+tuner.search(
+    train_images,
+    train_labels,
+    epochs=25,
+    batch_size=batch_size,
+    validation_data=(val_images, val_labels),
+    verbose=1,
+    callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3)]
+)
+# %%
+# model = tuner.get_best_models(num_models=1)[0]
+params = tuner.get_best_hyperparameters(num_trials=1)[0]
+model = tuner.hypermodel.build(params)
+
+# %% Train the best model
+hist = model.fit(
+    np.concatenate([train_images, val_images], axis=0),
+    np.concatenate([train_labels, val_labels], axis=0),
+    epochs=50,
+    batch_size=batch_size,
+    # shuffle=True,
+    verbose=0,
+    callbacks=[
+        tf.keras.callbacks.EarlyStopping(
+            monitor="loss", patience=3, restore_best_weights=True
+        ),
+        tf.keras.callbacks.ModelCheckpoint(
+            f"models/tuned_{model.name}.keras",
+            monitor="loss",
+            save_best_only=True,
+            save_weights_only=True,
+        ),
+    ],
+)
+
+# %%
+model.summary()
+
+# %% Plot all training histories
+plt.figure(figsize=(10, 10), dpi=100)
+plot_history(
+    history=hist.history,
+    name=model.name.replace("tv_", ""),
+    multiclass=True,
+    loss_ylim=(0, 1),
+    includes_validation=False,
+)
+
+# %% Plot the wrong predictions
+predictions = model.predict(test_images)
+preds_int = np.asarray([np.argmax(p) for p in predictions], dtype=np.int32)
+preds_str = integer_to_suit(preds_int)
+
+# %% Get the wrong predictions as a True/False array
+mask = preds_int.astype("int") != test_labels.astype("int")
+wrong_idxs = np.argwhere(mask).transpose().flatten()
+
+wrong_fps = [test_fps[i] for i in wrong_idxs]
+wrong_preds = [preds_str[i] for i in wrong_idxs]
+wrong_actual = integer_to_suit(test_labels[i] for i in wrong_idxs)
+wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
+
+plot_wrong_predictions_multiclass(wrong, model_name=model.name, show_num_wrong=10)
+# %%
