@@ -1,46 +1,36 @@
 # %% Imports
-from glob import glob
-
+from gc import callbacks
 import keras
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from data_processing import (
     DATA_DIR,
-    MAP_INT_TO_SUIT,
-    MAP_SUIT_TO_INT,
     TEST_DIR,
     TRAIN_DIR,
     VALIDATE_DIR,
+    count_objects,
     create_suit_datasets,
     get_suits_from_dir,
     integer_to_suit,
     process_images,
-    split_data,
     suit_to_integer,
     suit_to_onehot,
     unsort_data,
+    unprocess_data
 )
 from data_visualization import (
     COLORS,
-    compare_histories,
-    plot_datasets_all,
-    plot_datasets_animals,
-    plot_datasets_binary,
-    plot_datasets_suits,
+    # plot_datasets,
     plot_histories,
     plot_history,
     plot_streets,
-    plot_suits_as_bar,
-    plot_toons_as_bar,
     plot_wrong_predictions_multiclass,
-    plot_xml_data,
 )
-from img_utils import get_obj_details_from_filepath
-from keras import layers
-from model_utils import make_multiclass_model_original
+from img_utils import get_image_augmentations
+from model_utils import make_multiclass_model_original, make_multiclass_model_padding
 
-LR = 0.0001
+LR = 0.001
 
 # %% Convert all images in screenshots directory to data images
 process_images(move_images=True)
@@ -49,7 +39,8 @@ process_images(move_images=True)
 
 # %% Split unsorted images into train, validate, and test sets
 unsort_data()
-create_suit_datasets(split_ratio=[0.7, 0.2, 0.1])
+ds_train, ds_validate, ds_test = create_suit_datasets(split_ratio=[0.6, 0.2, 0.2])
+batch_size = 64
 
 # %% Plot bar of suits
 # plot_suits_as_bar(img_dir=DATA_DIR)
@@ -60,39 +51,16 @@ create_suit_datasets(split_ratio=[0.7, 0.2, 0.1])
 # # %% Plot xml data
 # plot_xml_data()
 
-# # % Plot street data
+# # % Plot street balance
 # plot_streets()
 
-# %% Plot the balance of the datasets
-# plot_datasets_suits()
-# plot_datasets_animals()
-# plot_datasets_binary()
-# plot_datasets_all()
-
+# # % Plot dataset balance
+# plot_datasets()
 
 # %% Create the dataset
-def img_to_array(img_path, height=600, width=200):
-    """Process an image, given a filepath, and return a numpy array"""
-    img = tf.keras.utils.load_img(img_path, target_size=(height, width))
-    # img = tf.image.decode_png(tf.io.read_file(img_path), channels=3)
-    # img.set_shape(tf.TensorShape([None, None, None]))
-    img = tf.image.resize(img, [height, width])
-    # img = tf.cast(img, tf.float32) / 255.0
-    return img
-
-
-batch_size = 64
-filepaths, labels = get_suits_from_dir(directories=[TRAIN_DIR])[TRAIN_DIR]
-train_fps, train_labels = filepaths, labels
-train_labels = np.asarray(suit_to_integer(labels), dtype=np.float32)
-train_labels_onehot = np.asarray(suit_to_onehot(labels), dtype=np.float32)
-train_images = np.asarray([img_to_array(fp) for fp in train_fps], dtype=np.float32)
-
-filepaths, labels = get_suits_from_dir(directories=[VALIDATE_DIR])[VALIDATE_DIR]
-val_fps, val_labels = filepaths, labels
-val_labels = np.asarray(suit_to_integer(labels), dtype=np.float32)
-val_labels_onehot = np.asarray(suit_to_onehot(labels), dtype=np.float32)
-val_images = np.asarray([img_to_array(fp) for fp in val_fps], dtype=np.float32)
+train_images, train_labels = ds_train
+val_images, val_labels = ds_validate
+test_images, test_labels = ds_test
 
 # %% Shuffle the data
 np.random.seed(42)
@@ -102,16 +70,17 @@ train_labels = train_labels[p]
 p = np.random.permutation(len(val_images))
 val_images = val_images[p]
 val_labels = val_labels[p]
-
-# %% Create validation set and training set
-# val_labels = train_labels[:num_validate]
-# val_images = train_images[:num_validate]
-# train_labels = train_labels[num_validate:]
-# train_images = train_images[num_validate:]
+p = np.random.permutation(len(test_images))
+test_images = test_images[p]
+test_labels = test_labels[p]
+# Retrieve filepaths of test images, to be used in plotting of wrong predictions
+test_fps, _ = get_suits_from_dir(directories=[TEST_DIR])[TEST_DIR]
+test_fps = np.array(test_fps)[p]  # Apply permutation to match the order of the test dataset
 
 # %% Display a sample from the validation set
 idx = np.random.randint(len(val_images))
-plt.title(f"{val_labels[idx]}, {MAP_INT_TO_SUIT[val_labels[idx]]}")
+label_int, label_str = val_labels[idx], integer_to_suit([int(val_labels[idx])])[0]
+plt.title(f"{label_int}, {label_str}")
 plt.imshow(val_images[idx] / 255)
 
 # %% Compile all models
@@ -138,7 +107,7 @@ for opt in optimizers:
 # %% Print model summary
 print(model.summary())
 
-# %% Train all model
+# %% Train all models
 histories_all = []  # List of tuples: tuple[model, history]
 # evaluations_all = []  # List of tuples: tuple[model, evaluation]
 for model in models_all:
@@ -147,7 +116,7 @@ for model in models_all:
         train_images,
         train_labels,
         validation_data=(val_images, val_labels),
-        epochs=20,
+        epochs=25,
         batch_size=batch_size,
         # shuffle=True,
         verbose=0,
@@ -173,47 +142,80 @@ for color, (model, hist) in zip(COLORS, histories_all):
         multiclass=True,
     )
 
+# %% Plot wrong predictions on the test set
+for model in models_all:
+    # %% Predict the test set
+    predictions = model.predict(test_images)
+    preds_int = np.asarray([np.argmax(p) for p in predictions], dtype=np.int32)
+    preds_str = integer_to_suit(preds_int)
 
-# %% Predict an image
-def get_img_array(img_path, target_size):
-    img = tf.keras.utils.load_img(img_path, target_size=target_size)
-    array = tf.keras.utils.img_to_array(img)
-    array = np.expand_dims(array, axis=0)
-    return array
+    # %% Get the wrong predictions as a True/False array
+    mask = preds_int.astype(int) != test_labels.astype(int)
+    wrong_idxs = np.argwhere(mask).transpose().flatten()
+
+    wrong_fps = [test_fps[i] for i in wrong_idxs]
+    wrong_preds = [preds_str[i] for i in wrong_idxs]
+    wrong_actual = integer_to_suit(test_labels[i] for i in wrong_idxs)
+    wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
+
+    plot_wrong_predictions_multiclass(wrong, model_name=model.name, show_num_wrong=10)
+
+# %% Compile the optimized models
+models_all = []
+for opt in [tf.keras.optimizers.Adam(), tf.keras.optimizers.RMSprop()]:
+    model = make_multiclass_model_padding(
+        name="opt_tv_" + opt._name, augmentation=get_image_augmentations(), dropout=0.5
+    )
+    model.compile(
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+        optimizer=opt,
+        metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
+    )
+    models_all.append(model)
+print(model.summary())
 
 
-fp = DATA_DIR + "\\test\\cog\\cog_lb_legaleagle_13.png"
-pred = model.predict(get_img_array(fp, (600, 200, 3)))
-l_actual = get_obj_details_from_filepath(fp)["suit"]
-l_pred = MAP_INT_TO_SUIT[pred.argmax()]  # Given an int, get suit
-l_actual, l_pred
+# %% Train all models
+histories_all = []  # List of tuples: tuple[model, history]
+for model in models_all:
+    print(f"Training model {model.name}")
+    history = model.fit(
+        train_images,
+        train_labels,
+        validation_data=(val_images, val_labels),
+        epochs=100,
+        batch_size=batch_size,
+        # shuffle=True,
+        verbose=0,
+        callbacks=[
+            tf.keras.callbacks.EarlyStopping(
+                monitor="val_loss", patience=10, restore_best_weights=True
+            ),
+            tf.keras.callbacks.ModelCheckpoint(
+                f"models/{model.name}.keras",
+                monitor="val_loss",
+                save_best_only=True,
+                save_weights_only=True,
+            ),
+        ],
+    )
+    histories_all.append((model, history))
+    # evaluations_all.append((model, model.evaluate(ds_test, verbose=0)))
 
-# %% Plot wrong predictions on the TEST_SET
-
-# Get the test set
-filepaths, labels = get_suits_from_dir(directories=[TEST_DIR])[TEST_DIR]
-test_fps, test_labels = filepaths, labels
-test_labels = np.asarray(suit_to_integer(labels), dtype=np.float32)
-test_labels_onehot = np.asarray(suit_to_onehot(labels), dtype=np.float32)
-test_images = np.asarray([img_to_array(fp) for fp in test_fps], dtype=np.float32)
-
-# %% Get the Adamax model
-model = models_all[-1]
-
-# %% Predict the test set
-predictions = model.predict(test_images)
-preds_int = np.asarray([np.argmax(p) for p in predictions], dtype=np.int32)
-preds_str = integer_to_suit(preds_int)
-
-# %% Get the wrong predictions as a True/False array
-mask = preds_int.astype("int") != test_labels.astype("int")
-wrong_idxs = np.argwhere(mask).transpose().flatten()
-
-wrong_fps = [test_fps[i] for i in wrong_idxs]
-wrong_preds = [preds_str[i] for i in wrong_idxs]
-wrong_actual = integer_to_suit(test_labels[i] for i in wrong_idxs)
-wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
-
+# %% Plot all training histories
+plt.figure(figsize=(10, 10), dpi=100)
+fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+for color, (model, hist) in zip(COLORS, histories_all):
+    plot_histories(
+        axes=axes,
+        histories=[hist.history],
+        model_name=model.name.replace("tv_", ""),
+        color=color,
+        alpha_runs=0.10,
+        alpha_mean=0.75,
+        multiclass=True,
+        loss_ylim=(0, 1)
+    )
 
 # %% Plot the wrong predictions
 for model in models_all:
@@ -231,8 +233,12 @@ for model in models_all:
     wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
 
     plot_wrong_predictions_multiclass(wrong, model_name=model.name, show_num_wrong=10)
-# %% Get the wrong predictions
 
-# ! Wrongly-labeled image
-# ttr-screenshot-Sun-May-29-22-18-51-2022-704947.png
-# ttr-screenshot-Sun-May-29-22-18-51-2022-704947.xml
+
+# %%
+for model, history in histories_all:
+    plot_history(history=history.history, name=model.name, multiclass=True, loss_ylim=(0, 1))
+# %%
+
+model.evaluate(test_images, test_labels, batch_size=batch_size)
+
