@@ -149,27 +149,24 @@ def plot_history(
     name: str = "Model",
     multiclass: bool = False,
     loss_ylim: tuple[int, int] = None,
+    includes_validation: bool = True,
 ) -> None:
     """Plot the history (accuracy and loss) of a model"""
     import matplotlib.pyplot as plt
     import numpy as np
 
     accuracy_str = "accuracy" if not multiclass else "sparse_categorical_accuracy"
-    val_accuracy_str = "val_" + accuracy_str
 
     max_accuracy = np.argmax(history[accuracy_str]) + 1
-    max_val_accuracy = np.argmax(history[val_accuracy_str]) + 1
     min_loss = np.argmin(history["loss"]) + 1
-    min_val_loss = np.argmin(history["val_loss"]) + 1
     num_epochs = range(1, len(history["loss"]) + 1)
 
     fig, axes = plt.subplots(1, 2, figsize=(10, 4), dpi=100)
     fig.tight_layout()
 
-    # Plot training & validation accuracy values
+    # Plot training accuracy values
     axes[0].plot(num_epochs, history[accuracy_str], label="Train acc")
-    axes[0].plot(num_epochs, history[val_accuracy_str], label="Val acc")
-    # Plot the maximum training and validation accuracies as vertical and horizontal lines
+    # Plot the maximum training accuracies as vertical and horizontal lines
     axes[0].axvline(
         x=max_accuracy,
         color="#e377c2",
@@ -177,34 +174,16 @@ def plot_history(
         ls="--",
         label="Max acc",
     )
-    axes[0].axvline(x=max_val_accuracy, color="#2ca02c", alpha=0.8, ls="--")
-    axes[0].axhline(
-        y=history[val_accuracy_str][max_val_accuracy - 1],
-        color="#2ca02c",
-        alpha=0.8,
-        ls="--",
-        label="Max val acc",
-    )
     axes[0].set_title(f"{name} accuracy")
     axes[0].set_ylabel("Accuracy")
     axes[0].set_xlabel("Epoch")
     axes[0].legend()
     axes[0].grid(axis="y", alpha=0.5, color="lightgrey")
 
-    # Plot training & validation loss values
+    # Plot training loss values
     axes[1].plot(num_epochs, history["loss"], label="Train loss")
-    axes[1].plot(num_epochs, history["val_loss"], label="Val loss")
-    # Plot the minimum training and validation loss as vertical and horizontal lines
+    # Plot the minimum training loss as vertical and horizontal lines
     axes[1].axvline(x=min_loss, color="#e377c2", alpha=0.5, ls="--", label="Min loss")
-    axes[1].axvline(
-        x=min_val_loss, color="#2ca02c", alpha=0.8, ls="--", label="Min val loss"
-    )
-    axes[1].axhline(
-        y=history["val_loss"][min_val_loss - 1],
-        color="#2ca02c",
-        alpha=0.8,
-        ls="--",
-    )
     axes[1].set_title(f"{name} loss")
     axes[1].set_ylabel("Loss")
     axes[1].set_xlabel("Epoch")
@@ -212,6 +191,36 @@ def plot_history(
     axes[1].grid(axis="y", alpha=0.5, color="lightgrey")
     if loss_ylim:
         axes[1].set_ylim(*loss_ylim)
+
+    if includes_validation:  # Plot validation accuracy values if included in history
+
+        val_accuracy_str = "val_" + accuracy_str
+        max_val_accuracy = np.argmax(history[val_accuracy_str]) + 1
+        min_val_loss = np.argmin(history["val_loss"]) + 1
+
+        # Plot validation accuracy values
+        axes[0].plot(num_epochs, history[val_accuracy_str], label="Val acc")
+        # Plot the maximum validation accuracies as vertical and horizontal lines
+        axes[0].axvline(x=max_val_accuracy, color="#2ca02c", alpha=0.8, ls="--")
+        axes[0].axhline(
+            y=history[val_accuracy_str][max_val_accuracy - 1],
+            color="#2ca02c",
+            alpha=0.8,
+            ls="--",
+            label="Max val acc",
+        )
+        # Plot validation loss values
+        axes[1].plot(num_epochs, history["val_loss"], label="Val loss")
+        # Plot the minimum validation loss as vertical and horizontal lines
+        axes[1].axvline(
+            x=min_val_loss, color="#2ca02c", alpha=0.8, ls="--", label="Min val loss"
+        )
+        axes[1].axhline(
+            y=history["val_loss"][min_val_loss - 1],
+            color="#2ca02c",
+            alpha=0.8,
+            ls="--",
+        )
 
 
 def compare_histories(
@@ -470,6 +479,7 @@ def plot_histories(
     index_slice: tuple = (0, -1),
     loss_ylim: tuple[int, int] = None,
     multiclass: bool = False,
+    includes_validation: bool = False,
 ) -> None:
     """Plot the history (accuracy and loss on the validation set) of a model as a line chart"""
     acc = []
@@ -478,25 +488,15 @@ def plot_histories(
     val_loss = []
     idx_start, idx_end = index_slice
     accuracy_str = "accuracy" if not multiclass else "sparse_categorical_accuracy"
-    val_accuracy_str = "val_" + accuracy_str
 
     for history in histories:
         num_epochs = range(1, len(history["loss"]) + 1)
         acc.append(history[accuracy_str])
-        val_acc.append(history[val_accuracy_str])
         loss.append(history["loss"])
-        val_loss.append(history["val_loss"])
-
         # Plot training & validation accuracy values
         axes[0][0].plot(
             num_epochs[idx_start:idx_end],
             history[accuracy_str][idx_start:idx_end],
-            color=color,
-            alpha=alpha_runs,
-        )
-        axes[0][1].plot(
-            num_epochs[idx_start:idx_end],
-            history[val_accuracy_str][idx_start:idx_end],
             color=color,
             alpha=alpha_runs,
         )
@@ -507,12 +507,6 @@ def plot_histories(
             color=color,
             alpha=alpha_runs,
         )
-        axes[1][1].plot(
-            num_epochs[idx_start:idx_end],
-            history["val_loss"][idx_start:idx_end],
-            color=color,
-            alpha=alpha_runs,
-        )
         if loss_ylim:
             # axes[1][1].set_ylim(0, 1)
             axes[1][1].set_ylim(*loss_ylim)
@@ -520,12 +514,10 @@ def plot_histories(
     # Average of the histories
     avg_history = {
         accuracy_str: np.mean(acc, axis=0),
-        val_accuracy_str: np.mean(val_acc, axis=0),
         "loss": np.mean(loss, axis=0),
-        "val_loss": np.mean(val_loss, axis=0),
     }
 
-    # Plot training & validation accuracy values
+    # Plot average training & validation accuracy values
     axes[0][0].plot(
         num_epochs[idx_start:idx_end],
         avg_history[accuracy_str][idx_start:idx_end],
@@ -533,18 +525,11 @@ def plot_histories(
         alpha=alpha_mean,
         label=model_name,
     )
-    axes[0][1].plot(
-        num_epochs[idx_start:idx_end],
-        avg_history[val_accuracy_str][idx_start:idx_end],
-        color=color,
-        alpha=alpha_mean,
-        label=model_name,
-    )
     axes[0][0].set_title("Accuracy")
-    axes[0][1].set_title("Val Accuracy")
     for a in axes[0]:
         a.set_ylabel("Accuracy")
         a.legend()
+
     # Plot training & validation loss values
     axes[1][0].plot(
         num_epochs[idx_start:idx_end],
@@ -553,19 +538,48 @@ def plot_histories(
         alpha=alpha_mean,
         label=model_name,
     )
-    axes[1][1].plot(
-        num_epochs[idx_start:idx_end],
-        avg_history["val_loss"][idx_start:idx_end],
-        color=color,
-        alpha=alpha_mean,
-        label=model_name,
-    )
     axes[1][0].set_title("Loss")
-    axes[1][1].set_title("Val Loss")
+
     for a in axes[1]:
         a.set_ylabel("Loss")
         a.set_xlabel("Epoch")
         a.legend()
+
+    if includes_validation:
+        val_accuracy_str = "val_" + accuracy_str
+        val_acc.append(history[val_accuracy_str])
+        val_loss.append(history["val_loss"])
+        axes[0][1].plot(
+            num_epochs[idx_start:idx_end],
+            history[val_accuracy_str][idx_start:idx_end],
+            color=color,
+            alpha=alpha_runs,
+        )
+        axes[1][1].plot(
+            num_epochs[idx_start:idx_end],
+            history["val_loss"][idx_start:idx_end],
+            color=color,
+            alpha=alpha_runs,
+        )
+
+        avg_history[val_accuracy_str]: np.mean(val_acc, axis=0)
+        avg_history["val_loss"]: np.mean(val_loss, axis=0)
+        axes[0][1].plot(
+            num_epochs[idx_start:idx_end],
+            avg_history[val_accuracy_str][idx_start:idx_end],
+            color=color,
+            alpha=alpha_mean,
+            label=model_name,
+        )
+        axes[0][1].set_title("Val Accuracy")
+        axes[1][1].plot(
+            num_epochs[idx_start:idx_end],
+            avg_history["val_loss"][idx_start:idx_end],
+            color=color,
+            alpha=alpha_mean,
+            label=model_name,
+        )
+        axes[1][1].set_title("Val Loss")
 
 
 def plot_evaluations_box(
