@@ -46,12 +46,34 @@ def make_multiclass_model_padding(
     x = layers.Conv2D(filters=4, kernel_size=3, activation="relu", padding="same")(x)
     x = layers.MaxPooling2D(pool_size=2)(x)
     x = layers.MaxPooling2D(pool_size=2)(x)
-    x = layers.Conv2D(filters=4, kernel_size=3, activation="relu", padding="same")(x)
     x = layers.Dropout(dropout)(x)
+    x = layers.Conv2D(filters=4, kernel_size=3, activation="relu", padding="same")(x)
     x = layers.MaxPooling2D(pool_size=2)(x)
     x = layers.MaxPooling2D(pool_size=2)(x)
     x = layers.Flatten()(x)
     x = layers.Dropout(dropout)(x)
+    outputs = layers.Dense(units=4, activation="softmax")(x)
+    model = keras.Model(name=name, inputs=inputs, outputs=outputs)
+    return model
+
+
+def make_multiclass_model_padding_tuned(
+    name: str = "",
+    augmentation: keras.Sequential = None,
+) -> keras.Model:
+    inputs = keras.Input(shape=(600, 200, 3))
+    if augmentation:
+        x = augmentation(inputs)
+    x = layers.Rescaling(1.0 / 255)(inputs)
+    x = layers.Conv2D(filters=16, kernel_size=5, activation="relu", padding="same")(x)
+    x = layers.MaxPooling2D(pool_size=1)(x)
+    x = layers.MaxPooling2D(pool_size=4)(x)
+    x = layers.Dropout(0.4)(x)
+    x = layers.Conv2D(filters=14, kernel_size=5, activation="relu", padding="same")(x)
+    x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.Flatten()(x)
+    x = layers.Dropout(0.6)(x)
     outputs = layers.Dense(units=4, activation="softmax")(x)
     model = keras.Model(name=name, inputs=inputs, outputs=outputs)
     return model
@@ -129,19 +151,21 @@ def predict_image(filename: str, model: keras.Model) -> tuple[str, np.array]:
 # %% Create function to repeatedly train models
 def train_model(
     model: keras.Model,
-    datasets: tuple,
     epochs: int,
+    ds_train: tuple = None,
+    ds_validate: tuple = None,
+    ds_test: tuple = None,
     callbacks: list = None,
 ) -> tuple[list[dict], tuple[float, float]]:
     """Train a model on a dataset and return the history and evaluation of the model"""
-    ds_train, ds_validate, ds_test = datasets
     history = model.fit(
-        ds_train,
+        x=ds_train[0],
+        y=ds_train[1],
         epochs=epochs,
-        validation_data=ds_validate,
+        validation_data=(ds_validate[0], ds_validate[1]),
         callbacks=callbacks,
     )
-    evaluation = model.evaluate(ds_test, verbose=False)
+    evaluation = model.evaluate(ds_test[0], ds_test[1], verbose=0)
     return (history.history, evaluation)
 
 
@@ -185,7 +209,7 @@ def make_baseline_comparisons(
     for run in range(num_runs):
         # Reshuffle the dataset before each run to ensure each model is trained on the same dataset
         unsort_data()
-        datasets = create_datasets(split_ratio=split_ratio)
+        ds_train, ds_validate, ds_test = create_datasets(split_ratio=split_ratio)
         # Train each model
         for kw_model, kw_train in zip(model_kwargs, train_kwargs):
             model = make_model(**kw_model)
@@ -197,7 +221,9 @@ def make_baseline_comparisons(
             )
             history, evaluation = train_model(
                 model=model,
-                datasets=datasets,
+                ds_train=ds_train,
+                ds_validate=ds_validate,
+                ds_test=ds_test,
                 epochs=epochs,
                 callbacks=kw_train.get("callbacks", None),
             )
@@ -215,6 +241,78 @@ def make_baseline_comparisons(
             # plot_history(histories, name=model.name)
             histories_all[model.name].append(history)
             evaluations_all[model.name].append(evaluation)
+
+    # Convert dictionaries to tuples of (model_name, histories) and (model_name, evaluations)
+    histories = [
+        (model_name, histories_all[model_name]) for model_name in model_names
+    ]
+    evaluations = [
+        (model_name, evaluations_all[model_name]) for model_name in model_names
+    ]
+    return histories, evaluations
+
+
+def make_multiclass_baseline_comparisons(
+    ds_train: tuple,
+    ds_test: tuple,
+    epochs: int,
+    num_runs: int,
+    model_kwargs: dict,
+    train_kwargs: dict,
+    save_best: bool = True,
+) -> tuple[list[tuple[str, dict]], list[tuple[str, tuple[float, float]]]]:
+
+    def _pad_history(history: dict) -> dict:
+        """Pad the loss/accuracy list with 0s to match the number of epochs"""
+        num_epochs = len(history["loss"])
+        for key in history:
+            history[key] = history[key] + [0] * (epochs - num_epochs)
+            # Replace all 0s with NaN
+            history[key] = [
+                np.nan if x == 0 else x for x in history[key]
+            ]
+        return history
+
+    """Train model(s) for X num_runs and return the histories and evaluations"""
+    model_names = [model['kwargs']['name'] for model in model_kwargs]
+    histories_all = {model_name: [] for model_name in model_names}
+    evaluations_all = {model_name: [] for model_name in model_names}
+    evaluations_best = {model_name: (1, 0) for model_name in model_names}
+    for run in range(num_runs):
+        # Train each model
+        for kw_model, kw_train in zip(model_kwargs, train_kwargs):
+            model = make_model(**kw_model)
+            name = model.name
+            model.compile(
+                loss=keras.losses.SparseCategoricalCrossentropy(),
+                optimizer=kw_train["optimizer"],
+                metrics=[keras.metrics.SparseCategoricalAccuracy()],
+            )
+            history, evaluation = train_model(
+                model=model,
+                ds_train=ds_train,
+                ds_test=ds_test,
+                epochs=epochs,
+                callbacks=kw_train.get("callbacks", None),
+            )
+            history = _pad_history(history)  # Pad history so we can plot it
+            loss, acc = evaluation
+            # TODO Figure out how to retain the dataset of the best model
+            # Possible send a seed to numpy?
+            if save_best:
+                if (loss < evaluations_best[name][0]) and (
+                    acc > evaluations_best[name][1]
+                ):
+                    evaluations_best[name] = (loss, acc)
+                    # Save the model
+                    model.save(f"./models/toonvision_{name}_run{run}.keras")
+
+            # plot_history(histories, name=model.name)
+            histories_all[model.name].append(history)
+            evaluations_all[model.name].append(evaluation)
+
+            # Delete the model to clear up memory
+            del model
 
     # Convert dictionaries to tuples of (model_name, histories) and (model_name, evaluations)
     histories = [

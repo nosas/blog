@@ -272,7 +272,7 @@ def create_datasets(
 
 def create_suit_datasets(
     split_ratio: list[float, float, float] = None
-) -> tuple[tuple[np.array[float], np.array[float]]]:
+) -> tuple[tuple, tuple, tuple]:
     """Create multiclass Cog suit datasets for training, validation, and testing
 
     Args:
