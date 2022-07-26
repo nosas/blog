@@ -30,7 +30,7 @@ In deep learning models, the most common hyperparameters are the number of hidde
 </details>
 
 We can use [KerasTuner](https://keras.io/keras_tuner/) to automate the process of hyperparameter optimization.
-[TensorBoard](https://www.tensorflow.org/tensorboard/) visualizer can be used alongside KerasTune to visualize the optimization progress.
+[TensorBoard](https://www.tensorflow.org/tensorboard/) visualizer can be used alongside KerasTuner to visualize the optimization progress.
 
 This article will cover the basics of hyperparameter optimization in deep learning projects using KerasTuner and TensorBoard.
 The examples will be based on my own [ToonVision](../toonvision/classification) computer vision project.
@@ -109,13 +109,14 @@ We'll focus on tuning the following hyperparameters with KerasTuner:
 - `filters`: The number of convolutional filters in each convolutional layer.
 - `kernel_size`: The size of the convolutional kernel.
 - `pool_size`: The size of the max pooling layers.
-- `dropout`: The probability of dropping a neuron.
+- `dropout_rate`: The probability of dropping a neuron.
 
 ```python
-x = layers.Conv2D(filters=4, kernel_size=3, activation="relu", padding="same")(x)
-x = layers.MaxPooling2D(pool_size=2)(x)
-x = layers.MaxPooling2D(pool_size=2)(x)
-x = layers.Dropout(dropout)(x)rate=hp.Float("dropout_1_rate", min_value=0.0, max_value=0.9, step=0.1),
+x = layers.Conv2D(filters, kernel_size, activation="relu", padding="same")(x)
+x = layers.MaxPooling2D(pool_size)(x)
+x = layers.MaxPooling2D(pool_size)(x)
+x = layers.Dropout(rate)(x)
 ```
 
-Additional hyperparameters tuning could include the number of convolutional/pooling/dropout layers, optimizer, and learning rate, but I will not cover these here.
+Additional hyperparameters tuning could include the number of layers (convolutional/pooling/dropout), optimizer algorithm, and learning rate, but I will not cover these here.
+

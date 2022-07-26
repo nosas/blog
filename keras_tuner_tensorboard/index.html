@@ -55,7 +55,7 @@ The more optimal the hyperparameters, the better the model's performance.</p>
 <p></details></p>
 
 <p>We can use <a href="https://keras.io/keras_tuner/">KerasTuner</a> to automate the process of hyperparameter optimization.
-<a href="https://www.tensorflow.org/tensorboard/">TensorBoard</a> visualizer can be used alongside KerasTune to visualize the optimization progress.</p>
+<a href="https://www.tensorflow.org/tensorboard/">TensorBoard</a> visualizer can be used alongside KerasTuner to visualize the optimization progress.</p>
 
 <p>This article will cover the basics of hyperparameter optimization in deep learning projects using KerasTuner and TensorBoard.
 The examples will be based on my own <a href="../toonvision/classification">ToonVision</a> computer vision project.</p>
@@ -139,16 +139,16 @@ However, I believe that we can find better hyperparameters by tuning the model's
 <li><code>filters</code>: The number of convolutional filters in each convolutional layer.</li>
 <li><code>kernel_size</code>: The size of the convolutional kernel.</li>
 <li><code>pool_size</code>: The size of the max pooling layers.</li>
-<li><code>dropout</code>: The probability of dropping a neuron.</li>
+<li><code>dropout_rate</code>: The probability of dropping a neuron.</li>
 </ul>
 
-<div class="codehilite"><pre><span></span><code><span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span><span class="n">rate</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Float</span><span class="p">(</span><span class="s2">&quot;dropout_1_rate&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+<div class="codehilite"><pre><span></span><code><span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
 
-<p>Additional hyperparameters tuning could include the number of convolutional/pooling/dropout layers, optimizer, and learning rate, but I will not cover these here.</p>
+<p>Additional hyperparameters tuning could include the number of layers (convolutional/pooling/dropout), optimizer algorithm, and learning rate, but I will not cover these here.</p>
 
 </body>
 </html>
