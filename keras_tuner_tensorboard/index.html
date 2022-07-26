@@ -71,6 +71,7 @@ The examples will be based on my own <a href="../toonvision/classification">Toon
 <li><a href="#model-architecture">Model architecture</a></li>
 <li><a href="#hyperparameters">Hyperparameters</a></li>
 </ul></li>
+<li><a href="#kerastuner">KerasTuner</a></li>
 </ul></li>
 </ul>
 
@@ -92,7 +93,7 @@ Our goal is to train a model that can classify Cogs into the four unique suits, 
 <p>We'll create a model from scratch and use my <a href="../toonvision/classification/#the-toonvision-dataset">ToonVision dataset</a> to train and evaluate the model.</p>
 
 <p>The model will be a convolutional neural network (CNN).
-It will have two "blocks", each of which will have a single convolutional layer and two max pooling layers.
+It will have two "blocks", each of which contains a single convolutional layer, two max pooling layers, and a dropout layer.
 The final layer will be a fully-connected layer (Dense) with four output nodes, one for each of the four Cog types.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">make_multiclass_model_padding</span><span class="p">(</span>
@@ -148,7 +149,26 @@ However, I believe that we can find better hyperparameters by tuning the model's
 <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
 
-<p>Additional hyperparameters tuning could include the number of layers (convolutional/pooling/dropout), optimizer algorithm, and learning rate, but I will not cover these here.</p>
+<p>Additional hyperparameter tunings could include the number of layers (convolutional/pooling/dropout), optimizer algorithm, and learning rate, but I will not cover these here.</p>
+
+<p>Before we start tuning the hyperparameters, let's discuss what KerasTuner does and how it helps ML engineers.</p>
+
+<h2 id="kerastuner">KerasTuner</h2>
+
+<p>KerasTuner is a general-purpose hyperparameter tuning library.
+KerasTuner is well integrated with Keras, allowing for hyperparameter tuning with minimal code changes.
+It truly is a powerful, yet simple, library.</p>
+
+<p>We can begin tuning with three easy steps:</p>
+
+<ol>
+<li>Create a function that returns a Keras model with the desired hyperparameters to be tuned</li>
+<li>Define a KerasTuner search instance of <code>Hyperband</code>, <code>BayesianOptimization</code>, or <code>RandomSearch</code></li>
+<li>Execute the search and investigate the results</li>
+</ol>
+
+<p>Pretty simple, right?
+Let's take a look at how can implement the above steps.</p>
 
 </body>
 </html>

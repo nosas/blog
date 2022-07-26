@@ -43,6 +43,7 @@ The examples will be based on my own [ToonVision](../toonvision/classification) 
     - [Project description](#project-description)
         - [Model architecture](#model-architecture)
         - [Hyperparameters](#hyperparameters)
+    - [KerasTuner](#kerastuner)
 
 </details>
 
@@ -62,7 +63,7 @@ Our goal is to train a model that can classify Cogs into the four unique suits, 
 We'll create a model from scratch and use my [ToonVision dataset](../toonvision/classification/#the-toonvision-dataset) to train and evaluate the model.
 
 The model will be a convolutional neural network (CNN).
-It will have two "blocks", each of which will have a single convolutional layer and two max pooling layers.
+It will have two "blocks", each of which contains a single convolutional layer, two max pooling layers, and a dropout layer.
 The final layer will be a fully-connected layer (Dense) with four output nodes, one for each of the four Cog types.
 
 ```python
@@ -118,5 +119,22 @@ x = layers.MaxPooling2D(pool_size)(x)
 x = layers.Dropout(rate)(x)
 ```
 
-Additional hyperparameters tuning could include the number of layers (convolutional/pooling/dropout), optimizer algorithm, and learning rate, but I will not cover these here.
+Additional hyperparameter tunings could include the number of layers (convolutional/pooling/dropout), optimizer algorithm, and learning rate, but I will not cover these here.
+
+Before we start tuning the hyperparameters, let's discuss what KerasTuner does and how it helps ML engineers.
+
+## KerasTuner
+
+KerasTuner is a general-purpose hyperparameter tuning library.
+KerasTuner is well integrated with Keras, allowing for hyperparameter tuning with minimal code changes.
+It truly is a powerful, yet simple, library.
+
+We can begin tuning with three easy steps:
+
+1. Create a function that returns a Keras model with the desired hyperparameters to be tuned
+2. Define a KerasTuner search instance of `Hyperband`, `BayesianOptimization`, or `RandomSearch`
+3. Execute the search and investigate the results
+
+Pretty simple, right?
+Let's take a look at how can implement the above steps.
 
