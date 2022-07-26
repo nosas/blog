@@ -227,4 +227,37 @@ This is how domain expertise - knowing your data's characteristics - helps us de
 
 ### Define a tuner instance
 
+KerasTuner contains multiple tuners: `RandomSearch`, `BayesianOptimization`, and `Hyperband`.
+Each has their own unique tuning algorithm, but all of them share the same search space defined above.
+Here are the three tuners along with their respective algorithms:
+
+- `kerastuner.tuners.randomsearch.RandomSearch`: An inefficient, random search algorithm.
+- `kerastuner.tuners.bayesian.BayesianOptimization`: A Bayesian optimization algorithm that follows a probabilistic search approach by taking previous results into account.
+- `kerastuner.tuners.hyperband.Hyperband`: An optimized variant of the `RandomSearch` algorithm in terms of time and resource usage.
+
+More details above each tuner can be found in [this article](https://neptune.ai/blog/hyperband-and-bohb-understanding-state-of-the-art-hyperparameter-optimization-algorithms).
+Additionally, refer to the [KerasTuner documentation](https://keras.io/api/keras_tuner/tuners/) for API details.
+
+My preferred tuning method is to first perform a `RandomSearch` with a large number of trials (100).
+Each trial samples a random set of hyperparameter values from the search space.
+The goal is to find the best hyperparameter values that minimizes (or maximizes) the objective - in our case, the goal is minimizing the validation loss.
+
+```python
+tuner = RandomSearch(
+    hypermodel=model_builder,
+    objective="val_loss",
+    max_trials=100,
+    executions_per_trial=1,  # Increase to reduce variance of the results
+    directory="models",
+    project_name="tuned_multiclass_randomsearch",
+    seed=42,
+)
+```
+
+`RandomSearch` is the least efficient algorithm, but it provides useful insight into the general whereabouts of optimal hyperparameter values.
+These insights can be used to further constrain and reduce the search space for more effective tuning.
+
+Following the random search, I'll review the highest performing parameters in TensorBoard, tighten my search space, and then launch a more efficient `Hyperband` or `BayesianOptimization` search.
+Let's launch a `RandomSearch` and review the results.
+
 ### Launch the tuning process

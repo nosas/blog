@@ -263,6 +263,40 @@ This is how domain expertise - knowing your data's characteristics - helps us de
 
 <h3 id="define-a-tuner-instance">Define a tuner instance</h3>
 
+<p>KerasTuner contains multiple tuners: <code>RandomSearch</code>, <code>BayesianOptimization</code>, and <code>Hyperband</code>.
+Each has their own unique tuning algorithm, but all of them share the same search space defined above.
+Here are the three tuners along with their respective algorithms:</p>
+
+<ul>
+<li><code>kerastuner.tuners.randomsearch.RandomSearch</code>: An inefficient, random search algorithm.</li>
+<li><code>kerastuner.tuners.bayesian.BayesianOptimization</code>: A Bayesian optimization algorithm that follows a probabilistic search approach by taking previous results into account.</li>
+<li><code>kerastuner.tuners.hyperband.Hyperband</code>: An optimized variant of the <code>RandomSearch</code> algorithm in terms of time and resource usage.</li>
+</ul>
+
+<p>More details above each tuner can be found in <a href="https://neptune.ai/blog/hyperband-and-bohb-understanding-state-of-the-art-hyperparameter-optimization-algorithms">this article</a>.
+Additionally, refer to the <a href="https://keras.io/api/keras_tuner/tuners/">KerasTuner documentation</a> for API details.</p>
+
+<p>My preferred tuning method is to first perform a <code>RandomSearch</code> with a large number of trials (100).
+Each trial samples a random set of hyperparameter values from the search space.
+The goal is to find the best hyperparameter values that minimizes (or maximizes) the objective - in our case, the goal is minimizing the validation loss.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">tuner</span> <span class="o">=</span> <span class="n">RandomSearch</span><span class="p">(</span>
+    <span class="n">hypermodel</span><span class="o">=</span><span class="n">model_builder</span><span class="p">,</span>
+    <span class="n">objective</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span>
+    <span class="n">max_trials</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">executions_per_trial</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Increase to reduce variance of the results</span>
+    <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;models&quot;</span><span class="p">,</span>
+    <span class="n">project_name</span><span class="o">=</span><span class="s2">&quot;tuned_multiclass_randomsearch&quot;</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p><code>RandomSearch</code> is the least efficient algorithm, but it provides useful insight into the general whereabouts of optimal hyperparameter values.
+These insights can be used to further constrain and reduce the search space for more effective tuning.</p>
+
+<p>Following the random search, I'll review the highest performing parameters in TensorBoard, tighten my search space, and then launch a more efficient <code>Hyperband</code> or <code>BayesianOptimization</code> search.
+Let's launch a <code>RandomSearch</code> and review the results.</p>
+
 <h3 id="launch-the-tuning-process">Launch the tuning process</h3>
 
 </body>
