@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 25, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 26, 2022</p>
 
 <p><title>Hyperparameter optimization: KerasTuner &amp; TensorBoard</title></p>
 
@@ -28,8 +28,8 @@
 <p>Finding the optimal model architecture and training configuration is a tedious and time-consuming task.
 The manual process of repeatedly tuning a model's hyperparameters and training configuration often leads to sub-optimal model performance.</p>
 
-<p>Hyperparameters are values that are used to control the model's learning process during training.
-Their values determine the model's performance - specifically, the model's ability ability to correctly map the input data to the desired labels or targets.
+<p><em>Hyperparameters</em> are values that are used to control the model's learning process during training.
+Their values determine the model's performance - specifically, the model's ability to correctly map the input data to the desired labels or targets.
 The more optimal the hyperparameters, the better the model's performance.</p>
 
 <p>In deep learning models, the most common hyperparameters are the number of hidden layers, the number of neurons in each layer, and the activation function used in each layer.</p>
@@ -71,11 +71,21 @@ The examples will be based on my own <a href="../toonvision/classification">Toon
 <li><a href="#model-architecture">Model architecture</a></li>
 <li><a href="#hyperparameters">Hyperparameters</a></li>
 </ul></li>
-<li><a href="#kerastuner">KerasTuner</a></li>
+<li><a href="#kerastuner">KerasTuner</a>
+<ul>
+<li><a href="#create-a-model-building-function-and-search-space">Create a model-building function and search space</a>
+<ul>
+<li><a href="#search-space-considerations">Search space considerations</a></li>
+</ul></li>
+<li><a href="#define-a-tuner-instance">Define a tuner instance</a></li>
+<li><a href="#launch-the-tuning-process">Launch the tuning process</a></li>
+</ul></li>
 </ul></li>
 </ul>
 
 <p></details></p>
+
+<hr />
 
 <h2 id="project-description">Project description</h2>
 
@@ -96,15 +106,10 @@ Our goal is to train a model that can classify Cogs into the four unique suits, 
 It will have two "blocks", each of which contains a single convolutional layer, two max pooling layers, and a dropout layer.
 The final layer will be a fully-connected layer (Dense) with four output nodes, one for each of the four Cog types.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">make_multiclass_model_padding</span><span class="p">(</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="n">augmentation</span><span class="p">:</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">make_multiclass_model</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
     <span class="n">inputs</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">augmentation</span><span class="p">:</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">augmentation</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Rescaling</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">RandomFlip</span><span class="p">(</span><span class="s2">&quot;horizontal&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="c1"># Block 1: Conv2d -&gt; MaxPool2D -&gt; MaxPool2D -&gt; Dropout</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
@@ -153,22 +158,97 @@ However, I believe that we can find better hyperparameters by tuning the model's
 
 <p>Before we start tuning the hyperparameters, let's discuss what KerasTuner does and how it helps ML engineers.</p>
 
+<hr />
+
 <h2 id="kerastuner">KerasTuner</h2>
 
 <p>KerasTuner is a general-purpose hyperparameter tuning library.
-KerasTuner is well integrated with Keras, allowing for hyperparameter tuning with minimal code changes.
+The library is well integrated with Keras, allowing for hyperparameter tuning with minimal code changes.
 It truly is a powerful, yet simple, library.</p>
 
 <p>We can begin tuning with three easy steps:</p>
 
 <ol>
-<li>Create a function that returns a Keras model with the desired hyperparameters to be tuned</li>
-<li>Define a KerasTuner search instance of <code>Hyperband</code>, <code>BayesianOptimization</code>, or <code>RandomSearch</code></li>
-<li>Execute the search and investigate the results</li>
+<li>Create a function that returns a Keras model with the desired hyperparameter search space</li>
+<li>Define a KerasTuner optimization instance (tuner) of <code>Hyperband</code>, <code>BayesianOptimization</code>, or <code>RandomSearch</code></li>
+<li>Launch the tuning process</li>
 </ol>
 
 <p>Pretty simple, right?
-Let's take a look at how can implement the above steps.</p>
+Let's take a look at how we can implement the above steps.</p>
+
+<h3 id="create-a-model-building-function-and-search-space">Create a model-building function and search space</h3>
+
+<p>Defining a search space is as simple as replacing the layers' hyperparameter values with KerasTuner's search space methods: <code>hp.Int</code>, <code>hp.Float</code>, <code>hp.Choice</code>, etc.
+More details about the KerasTuner search space methods can be found <a href="https://keras.io/api/keras_tuner/hyperparameters/">here</a>.</p>
+
+<p>For instance, the follow code block defines a search space for the number of convolutional filters in some convolutional layer.
+When launched, the tuner searches for the most optimal filter count by varying the number of filters in the layer from 4 to 16 and training the model.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span>
+            <span class="n">filters</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="s2">&quot;conv_1_filters&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+            <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">])</span>
+</code></pre></div>
+
+<p>What was once a tedious, manual task is now simple and powerful process for ML engineers.</p>
+
+<p>The following code block is our model-building function with defined search spaces.
+Recall that we're searching for the most optimal filter count, kernel size, pooling sizes, and dropout rate.</p>
+
+<p>Note the use of <code>hp.Int</code>, <code>hp.Float</code>, and <code>hp.Choice</code> methods in each layer.
+Each of these methods defines a search space for the corresponding hyperparameter.
+Integers and floats are used for discrete search spaces (minimum and maximum values with steps), while choices are used for categorical search spaces.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">model_builder</span><span class="p">(</span><span class="n">hp</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="c1"># Input and augmentation layers</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Rescaling</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">RandomFlip</span><span class="p">(</span><span class="s2">&quot;horizontal&quot;</span><span class="p">),</span>
+
+            <span class="c1"># Block 1: Conv2D -&gt; MaxPool2D -&gt; MaxPool2D -&gt; Dropout</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span>
+                <span class="n">filters</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="s2">&quot;conv_1_filters&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+                <span class="n">kernel_size</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Choice</span><span class="p">(</span><span class="s2">&quot;conv_1_kernel_size&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">]),</span>
+                <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
+                <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span>
+                <span class="n">pool_size</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="s2">&quot;pool_1_size&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="c1"># Min value == 1 will void the second pooling layer</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span>
+                <span class="n">pool_size</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="s2">&quot;pool_2_size&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span>
+                <span class="n">rate</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Float</span><span class="p">(</span><span class="s2">&quot;dropout_1_rate&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="o">...</span>  <span class="c1"># Repeat for Block 2 (omitted for brevity)</span>
+
+            <span class="c1"># Output layer</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;softmax&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span>
+        <span class="n">loss</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">SparseCategoricalCrossentropy</span><span class="p">(),</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">SparseCategoricalAccuracy</span><span class="p">()],</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
+</code></pre></div>
+
+<h4 id="search-space-considerations">Search space considerations</h4>
+
+<h3 id="define-a-tuner-instance">Define a tuner instance</h3>
+
+<h3 id="launch-the-tuning-process">Launch the tuning process</h3>
 
 </body>
 </html>
