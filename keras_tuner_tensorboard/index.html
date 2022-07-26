@@ -38,10 +38,91 @@ The examples will be based on my own <a href="../toonvision/classification">Toon
     <summary>Table of Contents</summary></p>
 
 <ul>
-<li><a href="#hyperparameter-optimization">Hyperparameter optimization</a></li>
+<li><a href="#hyperparameter-optimization">Hyperparameter optimization</a>
+<ul>
+<li><a href="#project-description">Project description</a>
+<ul>
+<li><a href="#model-architecture">Model architecture</a></li>
+<li><a href="#hyperparameters">Hyperparameters</a></li>
+</ul></li>
+</ul></li>
 </ul>
 
 <p></details></p>
+
+<h2 id="project-description">Project description</h2>
+
+<p>The ToonVision project is a multiclass classification model for classifying <a href="https://toontownrewritten.fandom.com/wiki/Cogs">Cogs</a> in ToonTown Online.
+There are four unique Cog types - also called <a href="https://toontownrewritten.fandom.com/wiki/Corporate_ladder">corporate ladders</a> or suits.
+Our goal is to train a model that can classify Cogs into the four unique suits, as seen in the image below.</p>
+
+<figure class="center">
+    <img src="img/unique_cogs.png" style="width:100%;"/>
+    <figcaption>Unique Cog types: Bossbot, Lawbot, Cashbot, Sellbot</figcaption>
+</figure>
+
+<h3 id="model-architecture">Model architecture</h3>
+
+<p>We'll create a model from scratch and use my <a href="../toonvision/classification/#the-toonvision-dataset">ToonVision dataset</a> to train and evaluate the model.</p>
+
+<p>The model will be a convolutional neural network (CNN).
+It will have two "blocks", each of which will have a single convolutional layer and two max pooling layers.
+The final layer will be a fully-connected layer (Dense) with four output nodes, one for each of the four Cog types.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">make_multiclass_model_padding</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">augmentation</span><span class="p">:</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">augmentation</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">augmentation</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Rescaling</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)(</span><span class="n">inputs</span><span class="p">)</span>
+
+    <span class="c1"># Block 1: Conv2d -&gt; MaxPool2D -&gt; MaxPool2D -&gt; Dropout</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="c1"># Block 2: Conv2D -&gt; MaxPool2D -&gt; MaxPool2D -&gt; Dropout</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;softmax&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">)</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span>
+        <span class="n">loss</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">SparseCategoricalCrossentropy</span><span class="p">(),</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">SparseCategoricalAccuracy</span><span class="p">()],</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
+</code></pre></div>
+
+<h3 id="hyperparameters">Hyperparameters</h3>
+
+<p>The model's hyperparameters were chosen by intuition and experimentation.
+However, I believe that we can find better hyperparameters by tuning the model's hyperparameters using KerasTuner.</p>
+
+<p>We'll focus on tuning the following hyperparameters with KerasTuner:</p>
+
+<ul>
+<li><code>filters</code>: The number of convolutional filters in each convolutional layer.</li>
+<li><code>kernel_size</code>: The size of the convolutional kernel.</li>
+<li><code>pool_size</code>: The size of the max pooling layers.</li>
+<li><code>dropout</code>: The probability of dropping a neuron.</li>
+</ul>
+
+<div class="codehilite"><pre><span></span><code><span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span><span class="n">rate</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Float</span><span class="p">(</span><span class="s2">&quot;dropout_1_rate&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+</code></pre></div>
+
+<p>Additional hyperparameters tuning could include the number of convolutional/pooling/dropout layers, optimizer, and learning rate, but I will not cover these here.</p>
 
 </body>
 </html>
