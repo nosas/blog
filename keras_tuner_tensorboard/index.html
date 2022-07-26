@@ -246,6 +246,21 @@ Integers and floats are used for discrete search spaces (minimum and maximum val
 
 <h4 id="search-space-considerations">Search space considerations</h4>
 
+<p>Selecting the correct methods and values for the search space is critical to the success of the tuning process.
+We do not want such a large search space that the tuner takes too much time and resources.
+However, we also do not want such a small search space that the tuner does not find any optimal hyperparameters.</p>
+
+<p>Rather, we must consider meaningful values for each hyperparameter.
+This is where intuition, experimentation, and domain expertise comes in to help us define the search space.</p>
+
+<p>For my model, I knew that the number of convolutional filters should remain low (4 to 16).
+This choice was made in part because I wanted to avoid overfitting to the validation data during training.
+However, I also knew from experience that the more filters I have, the lower my model's generalization performance.</p>
+
+<p>Furthermore, I selected two MaxPooling2D layers for each block because I knew the main differentiation between classes is the Cog's suit color.
+My intuition says that more pooling is better, but I'm putting it to the test by defining a search space that also evaluates only a single MaxPooling2D layer.
+This is how domain expertise - knowing your data's characteristics - helps us define meaningful search space.</p>
+
 <h3 id="define-a-tuner-instance">Define a tuner instance</h3>
 
 <h3 id="launch-the-tuning-process">Launch the tuning process</h3>

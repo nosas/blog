@@ -168,7 +168,6 @@ Note the use of `hp.Int`, `hp.Float`, and `hp.Choice` methods in each layer.
 Each of these methods defines a search space for the corresponding hyperparameter.
 Integers and floats are used for discrete search spaces (minimum and maximum values with steps), while choices are used for categorical search spaces.
 
-
 ```python
 def model_builder(hp):
     model = keras.Sequential(
@@ -211,6 +210,20 @@ def model_builder(hp):
 
 #### Search space considerations
 
+Selecting the correct methods and values for the search space is critical to the success of the tuning process.
+We do not want such a large search space that the tuner takes too much time and resources.
+However, we also do not want such a small search space that the tuner does not find any optimal hyperparameters.
+
+Rather, we must consider meaningful values for each hyperparameter.
+This is where intuition, experimentation, and domain expertise comes in to help us define the search space.
+
+For my model, I knew that the number of convolutional filters should remain low (4 to 16).
+This choice was made in part because I wanted to avoid overfitting to the validation data during training.
+However, I also knew from experience that the more filters I have, the lower my model's generalization performance.
+
+Furthermore, I selected two MaxPooling2D layers for each block because I knew the main differentiation between classes is the Cog's suit color.
+My intuition says that more pooling is better, but I'm putting it to the test by defining a search space that also evaluates only a single MaxPooling2D layer.
+This is how domain expertise - knowing your data's characteristics - helps us define meaningful search space.
 
 ### Define a tuner instance
 
