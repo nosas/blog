@@ -28,6 +28,32 @@
 <p>Finding the optimal model architecture and training configuration is a tedious and time-consuming task.
 The manual process of repeatedly tuning a model's hyperparameters and training configuration often leads to sub-optimal model performance.</p>
 
+<p>Hyperparameters are values that are used to control the model's learning process during training.
+Their values determine the model's performance - specifically, the model's ability ability to correctly map the input data to the desired labels or targets.
+The more optimal the hyperparameters, the better the model's performance.</p>
+
+<p>In deep learning models, the most common hyperparameters are the number of hidden layers, the number of neurons in each layer, and the activation function used in each layer.</p>
+
+<p><details>
+<summary>Common hyperparameters</summary></p>
+
+<ul>
+<li>Train-validation-test split ratio</li>
+<li>Optimizer algorithm (e.g., gradient descent, stochastic gradient descent, or Adam optimizer)</li>
+<li>Optimizer's learning-rate</li>
+<li>Convolutional layer's kernel or filter size</li>
+<li>Activation function in a neural network layer (e.g. Sigmoid, ReLU, Tanh)</li>
+<li>Number of hidden layers</li>
+<li>Number of activation units in each layer</li>
+<li>Dropout rate</li>
+<li>Pooling size</li>
+<li>Batch size</li>
+<li>Number of iterations (epochs) during training</li>
+<li>Number of clusters in a clustering task</li>
+</ul>
+
+<p></details></p>
+
 <p>We can use <a href="https://keras.io/keras_tuner/">KerasTuner</a> to automate the process of hyperparameter optimization.
 <a href="https://www.tensorflow.org/tensorboard/">TensorBoard</a> visualizer can be used alongside KerasTune to visualize the optimization progress.</p>
 

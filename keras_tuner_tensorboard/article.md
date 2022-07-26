@@ -5,6 +5,30 @@
 Finding the optimal model architecture and training configuration is a tedious and time-consuming task.
 The manual process of repeatedly tuning a model's hyperparameters and training configuration often leads to sub-optimal model performance.
 
+Hyperparameters are values that are used to control the model's learning process during training.
+Their values determine the model's performance - specifically, the model's ability ability to correctly map the input data to the desired labels or targets.
+The more optimal the hyperparameters, the better the model's performance.
+
+In deep learning models, the most common hyperparameters are the number of hidden layers, the number of neurons in each layer, and the activation function used in each layer.
+
+<details>
+<summary>Common hyperparameters</summary>
+
+- Train-validation-test split ratio
+- Optimizer algorithm (e.g., gradient descent, stochastic gradient descent, or Adam optimizer)
+- Optimizer's learning-rate
+- Convolutional layer's kernel or filter size
+- Activation function in a neural network layer (e.g. Sigmoid, ReLU, Tanh)
+- Number of hidden layers
+- Number of activation units in each layer
+- Dropout rate
+- Pooling size
+- Batch size
+- Number of iterations (epochs) during training
+- Number of clusters in a clustering task
+
+</details>
+
 We can use [KerasTuner](https://keras.io/keras_tuner/) to automate the process of hyperparameter optimization.
 [TensorBoard](https://www.tensorflow.org/tensorboard/) visualizer can be used alongside KerasTune to visualize the optimization progress.
 
