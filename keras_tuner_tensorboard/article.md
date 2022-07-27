@@ -389,6 +389,30 @@ For now, let's learn how to create a model with the best hyperparameter values.
 
 #### Retrieve the best hyperparameter values
 
+The `tuner.best_hyperparameters(N)` method returns the *N* best hyperparameter values as a list of `HyperParameters` objects.
+The following code block shows how to retrieve the top hyperparameter values.
+
+```python
+params = tuner.get_best_hyperparameters(num_trials=1)[0]
+```
+
+We can view the hyperparameters as a python dictionary using the `params.values` attribute.
+
+```python
+>>> params.values
+{'conv_1_filters': 16,
+ 'pool_1_size': 4,
+ 'pool_2_size': 4,
+ 'dropout_1_rate': 0.1,
+ 'conv_2_filters': 12,
+ 'pool_3_size': 3,
+ 'pool_4_size': 1,
+ 'dropout_2_rate': 0.2,
+ 'learning_rate': 0.01}
+```
+
+Now that we have the best hyperparameter values, let's figure out how to create a model with these values.
+
 #### Create a model
 
 #### Retrieve the best model

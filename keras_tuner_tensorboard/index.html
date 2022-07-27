@@ -431,6 +431,28 @@ For now, let's learn how to create a model with the best hyperparameter values.<
 
 <h4 id="retrieve-the-best-hyperparameter-values">Retrieve the best hyperparameter values</h4>
 
+<p>The <code>tuner.best_hyperparameters(N)</code> method returns the <em>N</em> best hyperparameter values as a list of <code>HyperParameters</code> objects.
+The following code block shows how to retrieve the top hyperparameter values.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">params</span> <span class="o">=</span> <span class="n">tuner</span><span class="o">.</span><span class="n">get_best_hyperparameters</span><span class="p">(</span><span class="n">num_trials</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</code></pre></div>
+
+<p>We can view the hyperparameters as a python dictionary using the <code>params.values</code> attribute.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">params</span><span class="o">.</span><span class="n">values</span>
+<span class="p">{</span><span class="s1">&#39;conv_1_filters&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+ <span class="s1">&#39;pool_1_size&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+ <span class="s1">&#39;pool_2_size&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+ <span class="s1">&#39;dropout_1_rate&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+ <span class="s1">&#39;conv_2_filters&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+ <span class="s1">&#39;pool_3_size&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+ <span class="s1">&#39;pool_4_size&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+ <span class="s1">&#39;dropout_2_rate&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+ <span class="s1">&#39;learning_rate&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">}</span>
+</code></pre></div>
+
+<p>Now that we have the best hyperparameter values, let's figure out how to create a model with these values.</p>
+
 <h4 id="create-a-model">Create a model</h4>
 
 <h4 id="retrieve-the-best-model">Retrieve the best model</h4>
