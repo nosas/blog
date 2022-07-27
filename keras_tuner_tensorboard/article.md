@@ -51,7 +51,6 @@ The examples will be based on my own [ToonVision](../toonvision/classification) 
         - [Tuning process results](#tuning-process-results)
             - [Retrieve the best hyperparameter values](#retrieve-the-best-hyperparameter-values)
             - [Create a model](#create-a-model)
-            - [Retrieve the best model](#retrieve-the-best-model)
     - [TensorBoard](#tensorboard)
         - [Hyperparameter values and loss/accuracy metrics](#hyperparameter-values-and-lossaccuracy-metrics)
 
@@ -318,6 +317,7 @@ The summaries do not include trial IDs, so we cannot use this method to retrieve
 Fortunately, TensorBoard provides a way to retrieve the results of specific trials.
 
 ```
+>>> tuner.results_summary(100)
 Results summary
 Results in models\tuned_multiclass_randomsearch
 Showing 100 best trials
@@ -415,10 +415,35 @@ Now that we have the best hyperparameter values, let's figure out how to create 
 
 #### Create a model
 
-#### Retrieve the best model
+Fortunately, KerasTuner makes it easy to create a model with the best hyperparameter values.
+All we have to do is call the `tuner.hypermodel.build()` method.
+This is the same as calling `model_builder(params)`.
 
-We can retrieve the hyperparameters from the top N trials by using the `tuner.get_best_hyperparameters(N)` method.
+```python
+model = tuner.hypermodel.build(params)
+```
 
+Just like that, we have a fresh, untrained model with the best hyperparameter values.
+We can now train this model from scratch and evaluate it.
+We will train the tuned model and compare it to the baseline later in this article.
+
+*What if I want the best model from the trials?*
+
+Using the models from the tuning process is not recommended.
+But, as seen in the code block below, it is possible.
+
+```python
+model = tuner.get_best_models(num_models=1)[0]
+model.build(input_shape=(None, 600, 200, 3))
+```
+
+It's usually a good idea to train a new model from scratch rather than use the pre-trained model from the trials.
+When training from scratch, we concatenate the training and validation data together to create a single training dataset.
+This allows the model to learn from a larger, more representative dataset using the most optimal hyperparameters.
+
+Ultimately, the model trained from scratch will be smarter than the model from the trials.
+
+Enough about the tuning process.
 Let's take a look at the tuning results in TensorBoard.
 
 ---

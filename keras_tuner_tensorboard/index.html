@@ -86,7 +86,6 @@ The examples will be based on my own <a href="../toonvision/classification">Toon
 <ul>
 <li><a href="#retrieve-the-best-hyperparameter-values">Retrieve the best hyperparameter values</a></li>
 <li><a href="#create-a-model">Create a model</a></li>
-<li><a href="#retrieve-the-best-model">Retrieve the best model</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#tensorboard">TensorBoard</a>
@@ -360,7 +359,8 @@ The output is a list of trial summaries including each trial's hyperparameter va
 <p>The summaries do not include trial IDs, so we cannot use this method to retrieve a specific trial.
 Fortunately, TensorBoard provides a way to retrieve the results of specific trials.</p>
 
-<pre><code>Results summary
+<pre><code>&gt;&gt;&gt; tuner.results_summary(100)
+Results summary
 Results in models\tuned_multiclass_randomsearch
 Showing 100 best trials
 &lt;keras_tuner.engine.objective.Objective object at 0x000001F812400F10&gt;
@@ -455,11 +455,34 @@ The following code block shows how to retrieve the top hyperparameter values.</p
 
 <h4 id="create-a-model">Create a model</h4>
 
-<h4 id="retrieve-the-best-model">Retrieve the best model</h4>
+<p>Fortunately, KerasTuner makes it easy to create a model with the best hyperparameter values.
+All we have to do is call the <code>tuner.hypermodel.build()</code> method.
+This is the same as calling <code>model_builder(params)</code>.</p>
 
-<p>We can retrieve the hyperparameters from the top N trials by using the <code>tuner.get_best_hyperparameters(N)</code> method.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">tuner</span><span class="o">.</span><span class="n">hypermodel</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+</code></pre></div>
 
-<p>Let's take a look at the tuning results in TensorBoard.</p>
+<p>Just like that, we have a fresh, untrained model with the best hyperparameter values.
+We can now train this model from scratch and evaluate it.
+We will train the tuned model and compare it to the baseline later in this article.</p>
+
+<p><em>What if I want the best model from the trials?</em></p>
+
+<p>Using the models from the tuning process is not recommended.
+But, as seen in the code block below, it is possible.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">tuner</span><span class="o">.</span><span class="n">get_best_models</span><span class="p">(</span><span class="n">num_models</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">model</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</code></pre></div>
+
+<p>It's usually a good idea to train a new model from scratch rather than use the pre-trained model from the trials.
+When training from scratch, we concatenate the training and validation data together to create a single training dataset.
+This allows the model to learn from a larger, more representative dataset using the most optimal hyperparameters.</p>
+
+<p>Ultimately, the model trained from scratch will be smarter than the model from the trials.</p>
+
+<p>Enough about the tuning process.
+Let's take a look at the tuning results in TensorBoard.</p>
 
 <hr />
 
