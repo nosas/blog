@@ -177,7 +177,7 @@ It truly is a powerful, yet simple, library.</p>
 <p>We can begin tuning with three easy steps:</p>
 
 <ol>
-<li>Define the desired hyperparameter search space</li>
+<li>Define the hyperparameter search space</li>
 <li>Create a KerasTuner tuner object of type <code>Hyperband</code>, <code>BayesianOptimization</code>, or <code>RandomSearch</code></li>
 <li>Launch the tuning process</li>
 </ol>
@@ -376,6 +376,53 @@ As such, we must navigate to away from the <code>SCALARS</code> tab and towards 
 </figure>
 
 <h3 id="hyperparameter-values-and-lossaccuracy-metrics">Hyperparameter values and loss/accuracy metrics</h3>
+
+<p>The raw hyperparameter values from all trials are displayed in the <code>TABLE VIEW</code> tab.
+By default, the table columns are unordered, and some are even hidden, so take a minute to explore the data and reorder the columns.</p>
+
+<p>The green boxes in the image below outline the changes I made to the sorting, ordering, and filtering of the table.
+In summary, the changes are:</p>
+
+<ul>
+<li>Hide training loss and accuracy metrics</li>
+<li>Sort the table by the validation loss metric (the metric we are trying to optimize)</li>
+<li>Reorder table columns to group similar hyperparameters together</li>
+<li>Filter validation loss metrics above a certain threshold (&gt;0.3)</li>
+</ul>
+
+<figure class="center" style="width:98%;">
+    <img src="img/tb_table_view.png" style="width:100%;"/>
+    <figcaption>Filtered and sorted </figcaption>
+</figure>
+
+<p>The resulting table includes only 23 trials (see red square in image's bottom left corner), which is a decent starting point for further constraining the search space.</p>
+
+<p>We can see a few trends in the table data:</p>
+
+<ul>
+<li>The first dropout layer often has a low dropout rate (&lt;0.2)</li>
+<li>The Conv2D layers successively reduce the number of filters (e.g. 16 -> 12, 16 -> 8) instead of increasing</li>
+<li>When the number of filters is reduced, the fourth MaxPooling2D layer is often discarded (set to 1x1 pool size)</li>
+</ul>
+
+<blockquote>
+  <p><strong>NOTE: Download table data into CSV/JSON/LaTeX format</strong></p>
+  
+  <p>If you'd rather perform your own data analysis, you can download the table data into CSV/JSON/LaTeX format.
+  The download link is in the bottom-left corner of the HPARAMS tab.
+  <details>
+      <summary>Download link location</summary>
+   <figure class="center">
+      <img src="img/tb_download_data.png" style="width:100%;"/>
+      <figcaption></figcaption>
+  </figure>
+  </details></p>
+  
+  <p>Alternatively, consider uploading log data to <a href="https://tensorboard.dev/">tensorboard.dev</a> and using <code>pandas</code> to <a href="https://www.tensorflow.org/tensorboard/dataframe_api">access the data as dataframes</a>.</p>
+</blockquote>
+
+<p><em>Table View</em> does not provide concrete, visual information about trends found during the tuning process.
+Let's take a look at the other views available in TensorBoard, starting with <em>Parallel Coordinates View</em>.</p>
 
 </body>
 </html>

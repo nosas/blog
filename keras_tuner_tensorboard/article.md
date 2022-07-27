@@ -35,7 +35,6 @@ We can use [KerasTuner](https://keras.io/keras_tuner/) to automate the process o
 This article will cover the basics of hyperparameter optimization in deep learning projects using KerasTuner and TensorBoard.
 The examples will be based on my own [ToonVision](../toonvision/classification) computer vision project.
 
-
 <details>
     <summary>Table of Contents</summary>
 
@@ -50,6 +49,7 @@ The examples will be based on my own [ToonVision](../toonvision/classification) 
         - [Launch the tuning process](#launch-the-tuning-process)
             - [Tuning process search times](#tuning-process-search-times)
     - [TensorBoard](#tensorboard)
+        - [Hyperparameter values and loss/accuracy metrics](#hyperparameter-values-and-lossaccuracy-metrics)
 
 </details>
 
@@ -135,7 +135,7 @@ It truly is a powerful, yet simple, library.
 
 We can begin tuning with three easy steps:
 
-1. Define the desired hyperparameter search space
+1. Define the hyperparameter search space
 2. Create a KerasTuner tuner object of type `Hyperband`, `BayesianOptimization`, or `RandomSearch`
 3. Launch the tuning process
 
@@ -333,3 +333,46 @@ As such, we must navigate to away from the `SCALARS` tab and towards the `HPARAM
     <img src="img/tb_initial_screen.png" style="width:100%;"/>
     <figcaption>TensorBoard's initial screen</figcaption>
 </figure>
+
+### Hyperparameter values and loss/accuracy metrics
+
+The raw hyperparameter values from all trials are displayed in the `TABLE VIEW` tab.
+By default, the table columns are unordered, and some are even hidden, so take a minute to explore the data and reorder the columns.
+
+The green boxes in the image below outline the changes I made to the sorting, ordering, and filtering of the table.
+In summary, the changes are:
+
+- Hide training loss and accuracy metrics
+- Sort the table by the validation loss metric (the metric we are trying to optimize)
+- Reorder table columns to group similar hyperparameters together
+- Filter validation loss metrics above a certain threshold (>0.3)
+
+<figure class="center" style="width:98%;">
+    <img src="img/tb_table_view.png" style="width:100%;"/>
+    <figcaption>Filtered and sorted </figcaption>
+</figure>
+
+The resulting table includes only 23 trials (see red square in image's bottom left corner), which is a decent starting point for further constraining the search space.
+
+We can see a few trends in the table data:
+
+- The first dropout layer often has a low dropout rate (<0.2)
+- The Conv2D layers successively reduce the number of filters (e.g. 16 -> 12, 16 -> 8) instead of increasing
+- When the number of filters is reduced, the fourth MaxPooling2D layer is often discarded (set to 1x1 pool size)
+
+> **NOTE: Download table data into CSV/JSON/LaTeX format**
+>
+> If you'd rather perform your own data analysis, you can download the table data into CSV/JSON/LaTeX format.
+> The download link is in the bottom-left corner of the HPARAMS tab.
+> <details>
+    <summary>Download link location</summary>
+ <figure class="center">
+    <img src="img/tb_download_data.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
+</details>
+>
+> Alternatively, consider uploading log data to [tensorboard.dev](https://tensorboard.dev/) and using `pandas` to [access the data as dataframes](https://www.tensorflow.org/tensorboard/dataframe_api).
+
+*Table View* does not provide concrete, visual information about trends found during the tuning process.
+Let's take a look at the other views available in TensorBoard, starting with *Parallel Coordinates View*.
