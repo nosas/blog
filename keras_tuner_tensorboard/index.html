@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 26, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 27, 2022</p>
 
 <p><title>Hyperparameter optimization: KerasTuner &amp; TensorBoard</title></p>
 
@@ -73,12 +73,15 @@ The examples will be based on my own <a href="../toonvision/classification">Toon
 </ul></li>
 <li><a href="#kerastuner">KerasTuner</a>
 <ul>
-<li><a href="#create-a-model-building-function-and-search-space">Create a model-building function and search space</a>
+<li><a href="#define-the-hyperparameter-search-space">Define the hyperparameter search space</a>
 <ul>
 <li><a href="#search-space-considerations">Search space considerations</a></li>
 </ul></li>
-<li><a href="#define-a-tuner-instance">Define a tuner instance</a></li>
-<li><a href="#launch-the-tuning-process">Launch the tuning process</a></li>
+<li><a href="#create-a-tuner-object">Create a tuner object</a></li>
+<li><a href="#launch-the-tuning-process">Launch the tuning process</a>
+<ul>
+<li><a href="#tuning-process-search-times">Tuning process search times</a></li>
+</ul></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -117,7 +120,7 @@ The final layer will be a fully-connected layer (Dense) with four output nodes, 
     <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
     <span class="c1"># Block 2: Conv2D -&gt; MaxPool2D -&gt; MaxPool2D -&gt; Dropout</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
@@ -169,15 +172,15 @@ It truly is a powerful, yet simple, library.</p>
 <p>We can begin tuning with three easy steps:</p>
 
 <ol>
-<li>Create a function that returns a Keras model with the desired hyperparameter search space</li>
-<li>Define a KerasTuner optimization instance (tuner) of <code>Hyperband</code>, <code>BayesianOptimization</code>, or <code>RandomSearch</code></li>
+<li>Define the desired hyperparameter search space</li>
+<li>Create a KerasTuner tuner object of type <code>Hyperband</code>, <code>BayesianOptimization</code>, or <code>RandomSearch</code></li>
 <li>Launch the tuning process</li>
 </ol>
 
 <p>Pretty simple, right?
 Let's take a look at how we can implement the above steps.</p>
 
-<h3 id="create-a-model-building-function-and-search-space">Create a model-building function and search space</h3>
+<h3 id="define-the-hyperparameter-search-space">Define the hyperparameter search space</h3>
 
 <p>Defining a search space is as simple as replacing the layers' hyperparameter values with KerasTuner's search space methods: <code>hp.Int</code>, <code>hp.Float</code>, <code>hp.Choice</code>, etc.
 More details about the KerasTuner search space methods can be found <a href="https://keras.io/api/keras_tuner/hyperparameters/">here</a>.</p>
@@ -259,9 +262,9 @@ However, I also knew from experience that the more filters I have, the lower my 
 
 <p>Furthermore, I selected two MaxPooling2D layers for each block because I knew the main differentiation between classes is the Cog's suit color.
 My intuition says that more pooling is better, but I'm putting it to the test by defining a search space that also evaluates only a single MaxPooling2D layer.
-This is how domain expertise - knowing your data's characteristics - helps us define meaningful search space.</p>
+This is how domain expertise - knowing your data's characteristics - helps us define meaningful search spaces.</p>
 
-<h3 id="define-a-tuner-instance">Define a tuner instance</h3>
+<h3 id="create-a-tuner-object">Create a tuner object</h3>
 
 <p>KerasTuner contains multiple tuners: <code>RandomSearch</code>, <code>BayesianOptimization</code>, and <code>Hyperband</code>.
 Each has their own unique tuning algorithm, but all of them share the same search space defined above.
@@ -276,7 +279,7 @@ Here are the three tuners along with their respective algorithms:</p>
 <p>More details above each tuner can be found in <a href="https://neptune.ai/blog/hyperband-and-bohb-understanding-state-of-the-art-hyperparameter-optimization-algorithms">this article</a>.
 Additionally, refer to the <a href="https://keras.io/api/keras_tuner/tuners/">KerasTuner documentation</a> for API details.</p>
 
-<p>My preferred tuning method is to first perform a <code>RandomSearch</code> with a large number of trials (100).
+<p>My preferred tuning method is to first perform a <code>RandomSearch</code> with a large number of trials (100+).
 Each trial samples a random set of hyperparameter values from the search space.
 The goal is to find the best hyperparameter values that minimizes (or maximizes) the objective - in our case, the goal is minimizing the validation loss.</p>
 
@@ -292,12 +295,49 @@ The goal is to find the best hyperparameter values that minimizes (or maximizes)
 </code></pre></div>
 
 <p><code>RandomSearch</code> is the least efficient algorithm, but it provides useful insight into the general whereabouts of optimal hyperparameter values.
-These insights can be used to further constrain and reduce the search space for more effective tuning.</p>
+These insights can be used to further reduce the search space for more effective tuning.</p>
 
 <p>Following the random search, I'll review the highest performing parameters in TensorBoard, tighten my search space, and then launch a more efficient <code>Hyperband</code> or <code>BayesianOptimization</code> search.
 Let's launch a <code>RandomSearch</code> and review the results.</p>
 
 <h3 id="launch-the-tuning-process">Launch the tuning process</h3>
+
+<p>The tuning process uses identical arguments as the <code>keras.Model.fit</code> method.
+Refer to the code block below to see how the <code>RandomSearch</code> is launched.</p>
+
+<p>We will utilize the <code>tf.keras.callbacks.TensorBoard</code> callback to monitor the tuning process' progress.
+This callback will save the logs of all trials to the <code>./tb_logs/randomsearch/</code> directory.
+We can then use TensorBoard to visualize the results of all trials during/after the tuning process.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">tuner</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+    <span class="n">train_images</span><span class="p">,</span>
+    <span class="n">train_labels</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">val_images</span><span class="p">,</span> <span class="n">val_labels</span><span class="p">),</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">EarlyStopping</span><span class="p">(</span>
+            <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">restore_best_weights</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">),</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">TensorBoard</span><span class="p">(</span><span class="s2">&quot;./tb_logs/randomsearch/&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Details about the TensorBoard callback API can be found <a href="https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard">here</a>.
+A Keras guide for visualizing the tuning process can be found <a href="https://keras.io/guides/keras_tuner/visualize_tuning/">here</a>.</p>
+
+<h4 id="tuning-process-search-times">Tuning process search times</h4>
+
+<p>On a GPU, 100 trials of <code>RandomSearch</code> with the search space above takes roughly 45 minutes.
+The search would take even longer if done on a CPU.</p>
+
+<p>We can reduce the search time by constraining the search space, reducing the number of trials, decreasing the number of epochs, and/or reducing the executions per trial.
+Alternatively, we could pick a more efficient algorithm, such as <code>Hyperband</code> or <code>BayesianOptimization</code>.</p>
+
+<p>Search times are also dependent on the size of the model - filters in the Conv2D layers or pooling sizes in MaxPooling2D layers.
+That's why it's important to define the search space with meaningful values; if the values are needlessly large, the search will be inefficient with regards to time and computation.</p>
 
 </body>
 </html>

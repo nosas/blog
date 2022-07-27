@@ -44,10 +44,11 @@ The examples will be based on my own [ToonVision](../toonvision/classification) 
         - [Model architecture](#model-architecture)
         - [Hyperparameters](#hyperparameters)
     - [KerasTuner](#kerastuner)
-        - [Create a model-building function and search space](#create-a-model-building-function-and-search-space)
+        - [Define the hyperparameter search space](#define-the-hyperparameter-search-space)
             - [Search space considerations](#search-space-considerations)
-        - [Define a tuner instance](#define-a-tuner-instance)
+        - [Create a tuner object](#create-a-tuner-object)
         - [Launch the tuning process](#launch-the-tuning-process)
+            - [Tuning process search times](#tuning-process-search-times)
 
 </details>
 
@@ -83,7 +84,7 @@ def make_multiclass_model(name: str = "", dropout: float = 0.0) -> keras.Model:
     x = layers.MaxPooling2D(pool_size=2)(x)
     x = layers.Dropout(dropout)(x)
     # Block 2: Conv2D -> MaxPool2D -> MaxPool2D -> Dropout
-    x = layers.Conv2D(filters=4, kernel_size=3, activation="relu", padding="same")(x)
+    x = layers.Conv2D(filters=8, kernel_size=3, activation="relu", padding="same")(x)
     x = layers.MaxPooling2D(pool_size=2)(x)
     x = layers.MaxPooling2D(pool_size=2)(x)
     x = layers.Dropout(dropout)(x)
@@ -132,14 +133,14 @@ It truly is a powerful, yet simple, library.
 
 We can begin tuning with three easy steps:
 
-1. Create a function that returns a Keras model with the desired hyperparameter search space
-2. Define a KerasTuner optimization instance (tuner) of `Hyperband`, `BayesianOptimization`, or `RandomSearch`
+1. Define the desired hyperparameter search space
+2. Create a KerasTuner tuner object of type `Hyperband`, `BayesianOptimization`, or `RandomSearch`
 3. Launch the tuning process
 
 Pretty simple, right?
 Let's take a look at how we can implement the above steps.
 
-### Create a model-building function and search space
+### Define the hyperparameter search space
 
 Defining a search space is as simple as replacing the layers' hyperparameter values with KerasTuner's search space methods: `hp.Int`, `hp.Float`, `hp.Choice`, etc.
 More details about the KerasTuner search space methods can be found [here](https://keras.io/api/keras_tuner/hyperparameters/).
@@ -223,9 +224,9 @@ However, I also knew from experience that the more filters I have, the lower my 
 
 Furthermore, I selected two MaxPooling2D layers for each block because I knew the main differentiation between classes is the Cog's suit color.
 My intuition says that more pooling is better, but I'm putting it to the test by defining a search space that also evaluates only a single MaxPooling2D layer.
-This is how domain expertise - knowing your data's characteristics - helps us define meaningful search space.
+This is how domain expertise - knowing your data's characteristics - helps us define meaningful search spaces.
 
-### Define a tuner instance
+### Create a tuner object
 
 KerasTuner contains multiple tuners: `RandomSearch`, `BayesianOptimization`, and `Hyperband`.
 Each has their own unique tuning algorithm, but all of them share the same search space defined above.
@@ -238,7 +239,7 @@ Here are the three tuners along with their respective algorithms:
 More details above each tuner can be found in [this article](https://neptune.ai/blog/hyperband-and-bohb-understanding-state-of-the-art-hyperparameter-optimization-algorithms).
 Additionally, refer to the [KerasTuner documentation](https://keras.io/api/keras_tuner/tuners/) for API details.
 
-My preferred tuning method is to first perform a `RandomSearch` with a large number of trials (100).
+My preferred tuning method is to first perform a `RandomSearch` with a large number of trials (100+).
 Each trial samples a random set of hyperparameter values from the search space.
 The goal is to find the best hyperparameter values that minimizes (or maximizes) the objective - in our case, the goal is minimizing the validation loss.
 
@@ -255,9 +256,47 @@ tuner = RandomSearch(
 ```
 
 `RandomSearch` is the least efficient algorithm, but it provides useful insight into the general whereabouts of optimal hyperparameter values.
-These insights can be used to further constrain and reduce the search space for more effective tuning.
+These insights can be used to further reduce the search space for more effective tuning.
 
 Following the random search, I'll review the highest performing parameters in TensorBoard, tighten my search space, and then launch a more efficient `Hyperband` or `BayesianOptimization` search.
 Let's launch a `RandomSearch` and review the results.
 
 ### Launch the tuning process
+
+The tuning process uses identical arguments as the `keras.Model.fit` method.
+Refer to the code block below to see how the `RandomSearch` is launched.
+
+We will utilize the `tf.keras.callbacks.TensorBoard` callback to monitor the tuning process' progress.
+This callback will save the logs of all trials to the `./tb_logs/randomsearch/` directory.
+We can then use TensorBoard to visualize the results of all trials during/after the tuning process.
+
+```python
+tuner.search(
+    train_images,
+    train_labels,
+    epochs=75,
+    batch_size=64,
+    validation_data=(val_images, val_labels),
+    verbose=1,
+    callbacks=[
+        tf.keras.callbacks.EarlyStopping(
+            monitor="val_loss", patience=3, restore_best_weights=True
+        ),
+        tf.keras.callbacks.TensorBoard("./tb_logs/randomsearch/"),
+    ],
+)
+```
+
+Details about the TensorBoard callback API can be found [here](https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard).
+A Keras guide for visualizing the tuning process can be found [here](https://keras.io/guides/keras_tuner/visualize_tuning/).
+
+#### Tuning process search times
+
+On a GPU, 100 trials of `RandomSearch` with the search space above takes roughly 45 minutes.
+The search would take even longer if done on a CPU.
+
+We can reduce the search time by constraining the search space, reducing the number of trials, decreasing the number of epochs, and/or reducing the executions per trial.
+Alternatively, we could pick a more efficient algorithm, such as `Hyperband` or `BayesianOptimization`.
+
+Search times are also dependent on the size of the model - filters in the Conv2D layers or pooling sizes in MaxPooling2D layers.
+That's why it's important to define the search space with meaningful values; if the values are needlessly large, the search will be inefficient with regards to time and computation.
