@@ -83,6 +83,7 @@ The examples will be based on my own <a href="../toonvision/classification">Toon
 <li><a href="#tuning-process-search-times">Tuning process search times</a></li>
 </ul></li>
 </ul></li>
+<li><a href="#tensorboard">TensorBoard</a></li>
 </ul></li>
 </ul>
 
@@ -338,6 +339,35 @@ Alternatively, we could pick a more efficient algorithm, such as <code>Hyperband
 
 <p>Search times are also dependent on the size of the model - filters in the Conv2D layers or pooling sizes in MaxPooling2D layers.
 That's why it's important to define the search space with meaningful values; if the values are needlessly large, the search will be inefficient with regards to time and computation.</p>
+
+<p>Let's take a look at the tuning results in TensorBoard.</p>
+
+<hr />
+
+<h2 id="tensorboard">TensorBoard</h2>
+
+<p>TensorBoard is a web application for monitoring and visualizing the progress of machine learning experiments.
+It can track metrics, visualize model layers and graphs, view histograms of weights/biases/other tensors, and much more.
+Get started with TensorBoard using their <a href="https://www.tensorflow.org/tensorboard/get_started">guide</a>.</p>
+
+<p>We'll launch TensorBoard using the <code>tensorboard</code> command.
+The <code>--logdir</code> flag specifies the directory where the logs are stored.</p>
+
+<div class="codehilite"><pre><span></span><code>$ tensorboard --logdir toonvision/multiclassification/code/tb_logs/randomsearch/
+
+Serving TensorBoard on localhost<span class="p">;</span> to expose to the network, use a proxy or pass --bind_all
+TensorBoard <span class="m">2</span>.9.1 at http://localhost:6006/ <span class="o">(</span>Press CTRL+C to quit<span class="o">)</span>
+</code></pre></div>
+
+<p>Once launched, we can open TensorBoard in a web browser by navigating to <code>http://localhost:6006/</code>.</p>
+
+<p>We will use TensorBoard to view the hyperparameter values and their corresponding loss and accuracy metrics.
+As such, we must navigate to away from the <code>SCALARS</code> tab and towards the <code>HPARAMS</code> tab.</p>
+
+<figure class="center">
+    <img src="img/tb_initial_screen.png" style="width:100%;"/>
+    <figcaption>TensorBoard's initial screen</figcaption>
+</figure>
 
 </body>
 </html>

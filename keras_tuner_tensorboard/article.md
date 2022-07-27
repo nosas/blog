@@ -49,6 +49,7 @@ The examples will be based on my own [ToonVision](../toonvision/classification) 
         - [Create a tuner object](#create-a-tuner-object)
         - [Launch the tuning process](#launch-the-tuning-process)
             - [Tuning process search times](#tuning-process-search-times)
+    - [TensorBoard](#tensorboard)
 
 </details>
 
@@ -300,3 +301,33 @@ Alternatively, we could pick a more efficient algorithm, such as `Hyperband` or 
 
 Search times are also dependent on the size of the model - filters in the Conv2D layers or pooling sizes in MaxPooling2D layers.
 That's why it's important to define the search space with meaningful values; if the values are needlessly large, the search will be inefficient with regards to time and computation.
+
+Let's take a look at the tuning results in TensorBoard.
+
+---
+## TensorBoard
+
+TensorBoard is a web application for monitoring and visualizing the progress of machine learning experiments.
+It can track metrics, visualize model layers and graphs, view histograms of weights/biases/other tensors, and much more.
+Get started with TensorBoard using their [guide](https://www.tensorflow.org/tensorboard/get_started).
+
+We'll launch TensorBoard using the `tensorboard` command.
+The `--logdir` flag specifies the directory where the logs are stored.
+
+```bash
+$ tensorboard --logdir toonvision/multiclassification/code/tb_logs/randomsearch/
+
+Serving TensorBoard on localhost; to expose to the network, use a proxy or pass --bind_all
+TensorBoard 2.9.1 at http://localhost:6006/ (Press CTRL+C to quit)
+```
+
+Once launched, we can open TensorBoard in a web browser by navigating to `http://localhost:6006/`.
+
+We will use TensorBoard to view the hyperparameter values and their corresponding loss and accuracy metrics.
+As such, we must navigate to away from the `SCALARS` tab and towards the `HPARAMS` tab.
+
+<figure class="center">
+    <img src="img/tb_initial_screen.png" style="width:100%;"/>
+    <figcaption>TensorBoard's initial screen</figcaption>
+</figure>
+
