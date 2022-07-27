@@ -48,6 +48,10 @@ The examples will be based on my own [ToonVision](../toonvision/classification) 
         - [Create a tuner object](#create-a-tuner-object)
         - [Launch the tuning process](#launch-the-tuning-process)
             - [Tuning process search times](#tuning-process-search-times)
+        - [Tuning process results](#tuning-process-results)
+            - [Retrieve the best hyperparameter values](#retrieve-the-best-hyperparameter-values)
+            - [Create a model](#create-a-model)
+            - [Retrieve the best model](#retrieve-the-best-model)
     - [TensorBoard](#tensorboard)
         - [Hyperparameter values and loss/accuracy metrics](#hyperparameter-values-and-lossaccuracy-metrics)
 
@@ -304,6 +308,92 @@ Alternatively, we could pick a more efficient algorithm, such as `Hyperband` or 
 
 Search times are also dependent on the size of the model - filters in the Conv2D layers or pooling sizes in MaxPooling2D layers.
 That's why it's important to define the search space with meaningful values; if the values are needlessly large, the search will be inefficient with regards to time and computation.
+
+### Tuning process results
+
+We can review the results of the tuning process using the `tuner.results_summary(N)` method.
+The output is a list of trial summaries including each trial's hyperparameter values, objective value, and other metrics.
+
+The summaries do not include trial IDs, so we cannot use this method to retrieve a specific trial.
+Fortunately, TensorBoard provides a way to retrieve the results of specific trials.
+
+```
+Results summary
+Results in models\tuned_multiclass_randomsearch
+Showing 100 best trials
+<keras_tuner.engine.objective.Objective object at 0x000001F812400F10>
+
+Trial summary
+Hyperparameters:
+conv_1_filters: 16
+pool_1_size: 4
+pool_2_size: 4
+dropout_1_rate: 0.1
+conv_2_filters: 12
+pool_3_size: 3
+pool_4_size: 1
+dropout_2_rate: 0.2
+learning_rate: 0.01
+Score: 0.08702577650547028
+
+Trial summary
+Hyperparameters:
+conv_1_filters: 12
+pool_1_size: 3
+pool_2_size: 4
+dropout_1_rate: 0.4
+conv_2_filters: 16
+pool_3_size: 2
+pool_4_size: 3
+dropout_2_rate: 0.4
+learning_rate: 0.01
+Score: 0.11486983299255371
+
+...
+... omitted 96 entries for brevity
+...
+
+Trial summary
+Hyperparameters:
+conv_1_filters: 8
+pool_1_size: 4
+pool_2_size: 1
+dropout_1_rate: 0.8
+conv_2_filters: 20
+pool_3_size: 4
+pool_4_size: 3
+dropout_2_rate: 0.7000000000000001
+learning_rate: 0.0001
+Score: 1.4036705493927002
+
+Trial summary
+Hyperparameters:
+conv_1_filters: 4
+pool_1_size: 2
+pool_2_size: 4
+dropout_1_rate: 0.8
+conv_2_filters: 16
+pool_3_size: 3
+pool_4_size: 1
+dropout_2_rate: 0.4
+learning_rate: 0.0001
+Score: 1.4044125080108643
+```
+
+The snippet above shows the top and bottom two trials, with 96 trials omitted in between.
+There's a significant difference in the validation loss (Scores) of the top and bottom two trials.
+If I had to speculate, I would say that the performance gap is due to the large `dropout_1_rate` of 0.8.
+
+We'll see if this is the case in the next section.
+For now, let's learn how to create a model with the best hyperparameter values.
+
+#### Retrieve the best hyperparameter values
+
+#### Create a model
+
+#### Retrieve the best model
+
+We can retrieve the hyperparameters from the top N trials by using the `tuner.get_best_hyperparameters(N)` method.
 
 Let's take a look at the tuning results in TensorBoard.
 
