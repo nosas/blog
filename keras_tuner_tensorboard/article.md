@@ -107,12 +107,13 @@ def make_multiclass_model(name: str = "", dropout: float = 0.0) -> keras.Model:
 The model's hyperparameters were chosen by intuition and experimentation.
 However, I believe that we can find better hyperparameters by tuning the model's hyperparameters using KerasTuner.
 
-We'll focus on tuning the following hyperparameters with KerasTuner:
+We'll focus on tuning the following five hyperparameters with KerasTuner:
 
 - `filters`: The number of convolutional filters in each convolutional layer.
 - `kernel_size`: The size of the convolutional kernel.
 - `pool_size`: The size of the max pooling layers.
 - `dropout_rate`: The probability of dropping a neuron.
+- `learning_rate`: The learning rate of the Adam optimizer.
 
 ```python
 x = layers.Conv2D(filters, kernel_size, activation="relu", padding="same")(x)
@@ -121,7 +122,7 @@ x = layers.MaxPooling2D(pool_size)(x)
 x = layers.Dropout(rate)(x)
 ```
 
-Additional hyperparameter tunings could include the number of layers (convolutional/pooling/dropout), optimizer algorithm, and learning rate, but I will not cover these here.
+Additional hyperparameter tunings could include the number of layers (convolutional/pooling/dropout), optimizer algorithm, and/or activation functions, but I will not cover these in this article.
 
 Before we start tuning the hyperparameters, let's discuss what KerasTuner does and how it helps ML engineers.
 
@@ -203,7 +204,9 @@ def model_builder(hp):
         ]
     )
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+        optimizer=tf.keras.optimizers.Adam(
+            learning_rate=hp.Choice("learning_rate", values=[1e-2, 1e-3, 1e-4])
+        ),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
     )
@@ -330,4 +333,3 @@ As such, we must navigate to away from the `SCALARS` tab and towards the `HPARAM
     <img src="img/tb_initial_screen.png" style="width:100%;"/>
     <figcaption>TensorBoard's initial screen</figcaption>
 </figure>
-
