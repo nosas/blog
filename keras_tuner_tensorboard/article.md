@@ -58,6 +58,13 @@ The examples will be based on my own [ToonVision](../toonvision/classification) 
             - [Lower distribution of hyperparameters](#lower-distribution-of-hyperparameters)
             - [Parallel coordinates view findings](#parallel-coordinates-view-findings)
         - [Scatter plots matrix view](#scatter-plots-matrix-view)
+    - [Tuned vs baseline performance](#tuned-vs-baseline-performance)
+        - [Baseline model](#baseline-model)
+        - [Tuned model](#tuned-model)
+        - [Model predictions](#model-predictions)
+        - [Model evaluations](#model-evaluations)
+        - [Model summary comparison](#model-summary-comparison)
+    - [Conclusion](#conclusion)
 
 </details>
 
@@ -256,6 +263,8 @@ Each trial samples a random set of hyperparameter values from the search space.
 The goal is to find the best hyperparameter values that minimizes (or maximizes) the objective - in our case, the goal is minimizing the validation loss.
 
 ```python
+from kerastuner import RandomSearch
+
 tuner = RandomSearch(
     hypermodel=model_builder,
     objective="val_loss",
@@ -283,6 +292,8 @@ This callback will save the logs of all trials to the `./tb_logs/randomsearch/` 
 We can then use TensorBoard to visualize the results of all trials during/after the tuning process.
 
 ```python
+import tensorflow as tf
+
 tuner.search(
     train_images,
     train_labels,
@@ -648,3 +659,125 @@ It's the most complex view of the three, but it provides the most clear informat
 For more information regarding TensorBoard and hyperparameter optimization, please see this [Keras developer guide for visualizing the hyperparameter tuning process](https://keras.io/guides/keras_tuner/visualize_tuning/).
 
 The time has come to train our optimal model and compare it against the baseline model!
+
+---
+## Tuned vs baseline performance
+
+Earlier in the article, we discussed how to retrieve the most optimal hyperparameters and create a tuned model.
+Let's train our tuned model and compare it against the baseline model.
+
+### Baseline model
+
+The baseline model was trained for 100 epochs with a learning rate of 1e-3 and decay of 1e-6, 50% dropout rate, and image augmentations.
+The early stopping callback stopped the training at 59 epochs.
+
+```python
+# Create and compile the baseline model
+baseline_model = make_multiclass_model_padding(name="opt_tv_" + opt._name, dropout=0.5)
+baseline_model.compile(
+    loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+    optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3, decay=1e-6),
+    metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
+)
+
+# Train the baseline model
+print(f"Training model {baseline_model.name}")
+history = baseline_model.fit(
+    np.concatenate((train_images, val_images)),
+    np.concatenate((train_labels, val_labels)),
+    epochs=100,
+    batch_size=64,
+    verbose=0,
+    callbacks=[
+        tf.keras.callbacks.EarlyStopping(
+            monitor="loss", patience=5, restore_best_weights=True
+        ),
+    ],
+)
+```
+
+### Tuned model
+
+Recall earlier in the article when we retrieved the most optimal hyperparameters and [created a tuned model](#create-a-model).
+We'll follow the same steps now and also train the model.
+
+```python
+import numpy as np
+import tensorflow as tf
+
+params = tuner.get_best_hyperparameters(num_trials=1)[0]
+tuned_model = tuner.hypermodel.build(params)
+
+# Train the optimal model
+hist = tuned_model.fit(
+    np.concatenate((train_images, val_images)),
+    np.concatenate((train_labels, val_labels)),
+    epochs=100,
+    batch_size=64,
+    verbose=0,
+    callbacks=[
+        tf.keras.callbacks.EarlyStopping(
+            monitor="loss", patience=5, restore_best_weights=True
+        ),
+    ],
+)
+```
+
+### Model predictions
+
+The baseline model had 12 wrong predictions on the test set of 197 images.
+That's over 6% of the test set incorrectly labeled!
+
+The tuned model, on the other hand, had only 1 wrong prediction on the test set.
+
+<figure class="center" style="width:98%;">
+    <img src="img/preds_baseline.png" style="width:100%;"/>
+    <figcaption>Baseline model's wrong predictions</figcaption>
+</figure>
+
+<figure class="center" style="width:98%;">
+    <img src="img/preds_tuned.png" style="width:100%;"/>
+    <figcaption>Tuned model's wrong predictions</figcaption>
+</figure>
+
+### Model evaluations
+
+When evaluating the two models against the test set, we can see that the tuned model has extraordinarily low loss and high accuracy.
+To be fair to the baseline model, its performance is not terrible; the tuned model is just way better.
+
+```python
+>>> baseline_model.evaluate(test_images, test_labels)
+loss: 0.2405 - sparse_categorical_accuracy: 0.9391
+
+>>> tuned_model.evaluate(test_images, test_labels)
+loss: 0.0315 - sparse_categorical_accuracy: 0.9949
+```
+
+### Model summary comparison
+
+The tuned model significantly improved over the baseline model in regards to test set predictions and evaluation.
+However, the tuned model is over 4x the size of the baseline model!
+
+Comparing the model summaries below, we can see that the tuned model has significantly more parameters than the baseline model.
+
+```python
+>>> baseline_model.summary()
+Model: "baseline_tv_Adam"
+Total params: 14,620
+Trainable params: 14,620
+Non-trainable params: 0
+
+>>> tuned_model.summary()
+Model: "tuned_random_tv_Adam"
+Total params: 60,812
+Trainable params: 60,812
+Non-trainable params: 0
+```
+
+I would much prefer to see the tuned model be smaller, while also performing better, than the baseline model.
+We can improve the tuned model by reducing the hyperparameter search space, performing additional optimization trials, comparing to the baseline, and repeating the process.
+
+
+
+---
+## Conclusion

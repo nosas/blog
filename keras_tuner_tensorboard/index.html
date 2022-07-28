@@ -99,6 +99,15 @@ The examples will be based on my own <a href="../toonvision/classification">Toon
 </ul></li>
 <li><a href="#scatter-plots-matrix-view">Scatter plots matrix view</a></li>
 </ul></li>
+<li><a href="#tuned-vs-baseline-performance">Tuned vs baseline performance</a>
+<ul>
+<li><a href="#baseline-model">Baseline model</a></li>
+<li><a href="#tuned-model">Tuned model</a></li>
+<li><a href="#model-predictions">Model predictions</a></li>
+<li><a href="#model-evaluations">Model evaluations</a></li>
+<li><a href="#model-summary-comparison">Model summary comparison</a></li>
+</ul></li>
+<li><a href="#conclusion">Conclusion</a></li>
 </ul></li>
 </ul>
 
@@ -302,7 +311,9 @@ Additionally, refer to the <a href="https://keras.io/api/keras_tuner/tuners/">Ke
 Each trial samples a random set of hyperparameter values from the search space.
 The goal is to find the best hyperparameter values that minimizes (or maximizes) the objective - in our case, the goal is minimizing the validation loss.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">tuner</span> <span class="o">=</span> <span class="n">RandomSearch</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">kerastuner</span> <span class="kn">import</span> <span class="n">RandomSearch</span>
+
+<span class="n">tuner</span> <span class="o">=</span> <span class="n">RandomSearch</span><span class="p">(</span>
     <span class="n">hypermodel</span><span class="o">=</span><span class="n">model_builder</span><span class="p">,</span>
     <span class="n">objective</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span>
     <span class="n">max_trials</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
@@ -328,7 +339,9 @@ Refer to the code block below to see how the <code>RandomSearch</code> is launch
 This callback will save the logs of all trials to the <code>./tb_logs/randomsearch/</code> directory.
 We can then use TensorBoard to visualize the results of all trials during/after the tuning process.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">tuner</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+
+<span class="n">tuner</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
     <span class="n">train_images</span><span class="p">,</span>
     <span class="n">train_labels</span><span class="p">,</span>
     <span class="n">epochs</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span>
@@ -698,6 +711,124 @@ It's the most complex view of the three, but it provides the most clear informat
 <p>For more information regarding TensorBoard and hyperparameter optimization, please see this <a href="https://keras.io/guides/keras_tuner/visualize_tuning/">Keras developer guide for visualizing the hyperparameter tuning process</a>.</p>
 
 <p>The time has come to train our optimal model and compare it against the baseline model!</p>
+
+<hr />
+
+<h2 id="tuned-vs-baseline-performance">Tuned vs baseline performance</h2>
+
+<p>Earlier in the article, we discussed how to retrieve the most optimal hyperparameters and create a tuned model.
+Let's train our tuned model and compare it against the baseline model.</p>
+
+<h3 id="baseline-model">Baseline model</h3>
+
+<p>The baseline model was trained for 100 epochs with a learning rate of 1e-3 and decay of 1e-6, 50% dropout rate, and image augmentations.
+The early stopping callback stopped the training at 59 epochs.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="c1"># Create and compile the baseline model</span>
+<span class="n">baseline_model</span> <span class="o">=</span> <span class="n">make_multiclass_model_padding</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;opt_tv_&quot;</span> <span class="o">+</span> <span class="n">opt</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">baseline_model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="n">loss</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">SparseCategoricalCrossentropy</span><span class="p">(),</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">decay</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">),</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">SparseCategoricalAccuracy</span><span class="p">()],</span>
+<span class="p">)</span>
+
+<span class="c1"># Train the baseline model</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training model </span><span class="si">{</span><span class="n">baseline_model</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">baseline_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">train_images</span><span class="p">,</span> <span class="n">val_images</span><span class="p">)),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">train_labels</span><span class="p">,</span> <span class="n">val_labels</span><span class="p">)),</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">EarlyStopping</span><span class="p">(</span>
+            <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;loss&quot;</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">restore_best_weights</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h3 id="tuned-model">Tuned model</h3>
+
+<p>Recall earlier in the article when we retrieved the most optimal hyperparameters and <a href="#create-a-model">created a tuned model</a>.
+We'll follow the same steps now and also train the model.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="n">tuner</span><span class="o">.</span><span class="n">get_best_hyperparameters</span><span class="p">(</span><span class="n">num_trials</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">tuned_model</span> <span class="o">=</span> <span class="n">tuner</span><span class="o">.</span><span class="n">hypermodel</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+<span class="c1"># Train the optimal model</span>
+<span class="n">hist</span> <span class="o">=</span> <span class="n">tuned_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">train_images</span><span class="p">,</span> <span class="n">val_images</span><span class="p">)),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">train_labels</span><span class="p">,</span> <span class="n">val_labels</span><span class="p">)),</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">EarlyStopping</span><span class="p">(</span>
+            <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;loss&quot;</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">restore_best_weights</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h3 id="model-predictions">Model predictions</h3>
+
+<p>The baseline model had 12 wrong predictions on the test set of 197 images.
+That's over 6% of the test set incorrectly labeled!</p>
+
+<p>The tuned model, on the other hand, had only 1 wrong prediction on the test set.</p>
+
+<figure class="center" style="width:98%;">
+    <img src="img/preds_baseline.png" style="width:100%;"/>
+    <figcaption>Baseline model's wrong predictions</figcaption>
+</figure>
+
+<figure class="center" style="width:98%;">
+    <img src="img/preds_tuned.png" style="width:100%;"/>
+    <figcaption>Tuned model's wrong predictions</figcaption>
+</figure>
+
+<h3 id="model-evaluations">Model evaluations</h3>
+
+<p>When evaluating the two models against the test set, we can see that the tuned model has extraordinarily low loss and high accuracy.
+To be fair to the baseline model, its performance is not terrible; the tuned model is just way better.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">baseline_model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_images</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
+<span class="n">loss</span><span class="p">:</span> <span class="mf">0.2405</span> <span class="o">-</span> <span class="n">sparse_categorical_accuracy</span><span class="p">:</span> <span class="mf">0.9391</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">tuned_model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_images</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
+<span class="n">loss</span><span class="p">:</span> <span class="mf">0.0315</span> <span class="o">-</span> <span class="n">sparse_categorical_accuracy</span><span class="p">:</span> <span class="mf">0.9949</span>
+</code></pre></div>
+
+<h3 id="model-summary-comparison">Model summary comparison</h3>
+
+<p>The tuned model significantly improved over the baseline model in regards to test set predictions and evaluation.
+However, the tuned model is over 4x the size of the baseline model!</p>
+
+<p>Comparing the model summaries below, we can see that the tuned model has significantly more parameters than the baseline model.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">baseline_model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+<span class="n">Model</span><span class="p">:</span> <span class="s2">&quot;baseline_tv_Adam&quot;</span>
+<span class="n">Total</span> <span class="n">params</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span><span class="mi">620</span>
+<span class="n">Trainable</span> <span class="n">params</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span><span class="mi">620</span>
+<span class="n">Non</span><span class="o">-</span><span class="n">trainable</span> <span class="n">params</span><span class="p">:</span> <span class="mi">0</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">tuned_model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+<span class="n">Model</span><span class="p">:</span> <span class="s2">&quot;tuned_random_tv_Adam&quot;</span>
+<span class="n">Total</span> <span class="n">params</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span><span class="mi">812</span>
+<span class="n">Trainable</span> <span class="n">params</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span><span class="mi">812</span>
+<span class="n">Non</span><span class="o">-</span><span class="n">trainable</span> <span class="n">params</span><span class="p">:</span> <span class="mi">0</span>
+</code></pre></div>
+
+<p>I would much prefer to see the tuned model be smaller, while also performing better, than the baseline model.
+We can improve the tuned model by reducing the hyperparameter search space, performing additional optimization trials, comparing to the baseline, and repeating the process.</p>
+
+<hr />
+
+<h2 id="conclusion">Conclusion</h2>
 
 </body>
 </html>
