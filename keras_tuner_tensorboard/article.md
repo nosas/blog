@@ -777,7 +777,19 @@ Non-trainable params: 0
 I would much prefer to see the tuned model be smaller, while also performing better, than the baseline model.
 We can improve the tuned model by reducing the hyperparameter search space, performing additional optimization trials, comparing to the baseline, and repeating the process.
 
-
-
 ---
 ## Conclusion
+
+We can clearly see the benefits of hyperparameter tuning.
+Not only does the engineer save time and effort, but they can greatly improve model performance while gaining invaluable insights about *why* the model performs well.
+
+Surprisingly, `RandomSearch` did an excellent job of exploring the hyperparameter space and finding the best hyperparameters.
+Although it wasn't the most efficient way to do hyperparameter tuning, it was a good way to get a sense of what the best hyperparameters are.
+
+Future work will include more hyperparameter tuning with the new, constrained search space.
+Hopefully, the additional tuning will lead to a model that performs better than the baseline and tuned model.
+
+In fact, additional tuning resulted in a model that's half the size of the baseline model, but same performance as the tuned model!
+
+KerasTuner is a great tool for hyperparameter tuning, and I hope it's useful for other engineers.
+Huge kudos to the KerasTuner team for creating such a simple and powerful tool.
