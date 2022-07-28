@@ -3,10 +3,10 @@
 # Hyperparameter optimization
 
 Finding the optimal model architecture and training configuration is a tedious and time-consuming task.
-The manual process of repeatedly tuning a model's hyperparameters and training configuration often leads to sub-optimal model performance.
+The manual process of repeatedly tuning a model's hyperparameters and training configuration often leads to suboptimal model performance.
 
 *Hyperparameters* are values that are used to control the model's learning process during training.
-Their values determine the model's performance - specifically, the model's ability to correctly map the input data to the desired labels or targets.
+Their values determine the model's performance – specifically, the model's ability to correctly map the input data to the desired labels or targets.
 The more optimal the hyperparameters, the better the model's performance.
 
 In deep learning models, the most common hyperparameters are the number of hidden layers, the number of neurons in each layer, and the activation function used in each layer.
@@ -18,7 +18,7 @@ In deep learning models, the most common hyperparameters are the number of hidde
 - Optimizer algorithm (e.g., gradient descent, stochastic gradient descent, or Adam optimizer)
 - Optimizer's learning-rate
 - Convolutional layer's kernel or filter size
-- Activation function in a neural network layer (e.g. Sigmoid, ReLU, Tanh)
+- Activation function in a neural network layer (e.g., Sigmoid, ReLU, Tanh)
 - Number of hidden layers
 - Number of activation units in each layer
 - Dropout rate
@@ -137,7 +137,7 @@ x = layers.MaxPooling2D(pool_size)(x)
 x = layers.Dropout(rate)(x)
 ```
 
-Additional hyperparameter tunings could include the number of layers (convolutional/pooling/dropout), optimizer algorithm, and/or activation functions, but I will not cover these in this article.
+Additional hyperparameter tuning could include the number of layers (convolutional/pooling/dropout), optimizer algorithm, and/or activation functions, but I will not cover these in this article.
 
 Before we start tuning the hyperparameters, let's discuss what KerasTuner does and how it helps ML engineers.
 
@@ -243,7 +243,7 @@ However, I also knew from experience that the more filters I have, the lower my 
 
 Furthermore, I selected two MaxPooling2D layers for each block because I knew the main differentiation between classes is the Cog's suit color.
 My intuition says that more pooling is better, but I'm putting it to the test by defining a search space that also evaluates only a single MaxPooling2D layer.
-This is how domain expertise - knowing your data's characteristics - helps us define meaningful search spaces.
+This is how domain expertise – knowing your data's characteristics – helps us define meaningful search spaces.
 
 ### Create a tuner object
 
@@ -258,9 +258,9 @@ Here are the three tuners along with their respective algorithms:
 More details on each tuner can be found in [this article](https://neptune.ai/blog/hyperband-and-bohb-understanding-state-of-the-art-hyperparameter-optimization-algorithms).
 Additionally, refer to the [KerasTuner documentation](https://keras.io/api/keras_tuner/tuners/) for API details.
 
-My preferred tuning method is to first perform a `RandomSearch` with a large number of trials (100+).
+My preferred tuning method is to first perform a `RandomSearch` with numerous trials (100+).
 Each trial samples a random set of hyperparameter values from the search space.
-The goal is to find the best hyperparameter values that minimize (or maximize) the objective - in our case, the goal is to minimize the validation loss.
+The goal is to find the best hyperparameter values that minimize (or maximize) the objective – in our case, the goal is to minimize the validation loss.
 
 ```python
 from kerastuner import RandomSearch
@@ -512,7 +512,7 @@ The resulting table includes only 23 trials (see the red square in the image's b
 We can see a few trends in the table data:
 
 - The first dropout layer often has a low dropout rate (<0.2)
-- The Conv2D layers successively reduce the number of filters (e.g. 16 -> 12, 16 -> 8) instead of increasing
+- The Conv2D layers successively reduce the number of filters (e.g., 16 -> 12, 16 -> 8) instead of increasing
 - When the number of filters is reduced, the fourth MaxPooling2D (`pool_4_size`) layer is often discarded (set to 1x1 pool size)
 
 > **NOTE: Download table data into CSV/JSON/LaTeX format**
@@ -546,9 +546,9 @@ In our case, we will use it to visualize the relationship between different hype
 </figure>
 
 The figure above shows the initial parallel coordinates view for all 99 trials.
-The bluer the line, the lower the validation loss metric - the more optimal the hyperparameters.
+The bluer the line, the lower the validation loss metric – the more optimal the hyperparameters.
 
-The initial unfiltered visualization is convoluted but we can make out some trends.
+The initial unfiltered visualization is convoluted, but we can make out some trends.
 For instance, we can see a handful of purple/blue lines in the lower values of `dropout_1_rate` and upper values of `dropout_2_rate`.
 Let's filter the data and see what trends we can find.
 
@@ -573,7 +573,7 @@ After constraining the view to trials with 95% validation accuracy or above, we'
 The remaining three trials show two trends that I touched on before:
 
 1. The first dropout layer has a low dropout rate (<0.2)
-2. The Conv2D layers successively reduce the number of filters (e.g. 16 -> 12, 16 -> 8)
+2. The Conv2D layers successively reduce the number of filters (e.g., 16 -> 12, 16 -> 8)
 
 We'll keep these trends in mind when we reduce our hyperparameter space and launch additional tuning trials.
 
@@ -587,7 +587,7 @@ Now, let's see what hyperparameters are associated with the lowest performers.
 
 #### Lower distribution of hyperparameters
 
-Recall that the redder the line, the higher the validation loss metric - the less optimal the hyperparameters.
+Recall that the redder the line, the higher the validation loss metric – the less optimal the hyperparameters.
 In the figure below, we can see the worst-performing hyperparameters.
 
 It should be no surprise to see that the lowest performing models contain large `dropout_1_rate` values.
@@ -627,7 +627,7 @@ It provides less clear information about the relationships between hyperparamete
 However, it excels at showing distributions of hyperparameter values with respect to their validation loss and accuracy.
 
 Below is a scatter plots matrix view for all 99 trials.
-Same as before, the bluer the dot, the lower the validation loss metric - the more optimal the hyperparameters.
+Same as before, the bluer the dot, the lower the validation loss metric – the more optimal the hyperparameters.
 Unfortunately, the columns in this view are unordered and cannot be moved.
 
 <figure class="center" style="width:98%;">
@@ -635,7 +635,7 @@ Unfortunately, the columns in this view are unordered and cannot be moved.
     <figcaption>Initial, unfiltered scatter plots matrix view, colored by validation loss</figcaption>
 </figure>
 
-We can filter the data based on the validation loss metrics or we can highlight a subset of trials.
+We can filter the data based on the validation loss metrics, or we can highlight a subset of trials.
 For instance, the figure below highlights trials with validation loss lower than 0.5.
 
 <figure class="center" style="width:98%;">
@@ -755,7 +755,7 @@ loss: 0.0315 - sparse_categorical_accuracy: 0.9949
 
 ### Model summary comparison
 
-The tuned model significantly improved over the baseline model in regards to test set predictions and evaluation.
+The tuned model significantly improved over the baseline model with regard to test set predictions and evaluation.
 However, the tuned model is over 4x the size of the baseline model!
 
 Comparing the model summaries below, we can see that the tuned model has significantly more parameters than the baseline model.
@@ -789,7 +789,7 @@ Although it wasn't the most efficient way to do hyperparameter tuning, it was a 
 Future work will include more hyperparameter tuning with the new, constrained search space.
 Hopefully, the additional tuning will lead to a model that performs better than the baseline and tuned model.
 
-In fact, additional tuning resulted in a model that's half the size of the baseline model, but same performance as the tuned model!
+In fact, additional tuning resulted in a model that's half the size of the baseline model, but the same performance as the tuned model!
 
 KerasTuner is a great tool for hyperparameter tuning, and I hope it's useful for other engineers.
 Huge kudos to the KerasTuner team for creating such a simple and powerful tool.
