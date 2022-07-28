@@ -91,6 +91,13 @@ The examples will be based on my own <a href="../toonvision/classification">Toon
 <li><a href="#tensorboard">TensorBoard</a>
 <ul>
 <li><a href="#hyperparameter-values-and-lossaccuracy-metrics">Hyperparameter values and loss/accuracy metrics</a></li>
+<li><a href="#parallel-coordinates-view">Parallel coordinates view</a>
+<ul>
+<li><a href="#upper-distribution-of-hyperparameters">Upper distribution of hyperparameters</a></li>
+<li><a href="#lower-distribution-of-hyperparameters">Lower distribution of hyperparameters</a></li>
+<li><a href="#parallel-coordinates-view-findings">Parallel coordinates view findings</a></li>
+</ul></li>
+<li><a href="#scatter-plots-matrix-view">Scatter plots matrix view</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -538,7 +545,7 @@ In summary, the changes are:</p>
 <ul>
 <li>The first dropout layer often has a low dropout rate (&lt;0.2)</li>
 <li>The Conv2D layers successively reduce the number of filters (e.g. 16 -> 12, 16 -> 8) instead of increasing</li>
-<li>When the number of filters is reduced, the fourth MaxPooling2D layer is often discarded (set to 1x1 pool size)</li>
+<li>When the number of filters is reduced, the fourth MaxPooling2D (<code>pool_4_size</code>) layer is often discarded (set to 1x1 pool size)</li>
 </ul>
 
 <blockquote>
@@ -559,6 +566,138 @@ In summary, the changes are:</p>
 
 <p><em>Table View</em> does not provide concrete, visual information about trends found during the tuning process.
 Let's take a look at the other views available in TensorBoard, starting with <em>Parallel Coordinates View</em>.</p>
+
+<h3 id="parallel-coordinates-view">Parallel coordinates view</h3>
+
+<p>Parallel coordinates is a visualization technique used to plot individual data points across vertical axes.
+The result is a series of connected points along each axis.</p>
+
+<p>This view is useful for visualizing the relationships between multiple variables.
+In our case, we will use it to visualize the relationship between different hyperparameters and their effect on the validation loss metric.</p>
+
+<figure class="center" style="width:98%;">
+    <img src="img/tb_parallel_coords.png" style="width:100%;"/>
+    <figcaption>Initial, unfiltered parallel coordinates view, colored by validation loss</figcaption>
+</figure>
+
+<p>The figure above shows the initial parallel coordinates view for all 99 trials.
+The more blue the line, the lower the validation loss metric - the more optimal the hyperparameters.</p>
+
+<p>The initial unfiltered visualization is convoluted but we can make out some trends.
+For instance, we can see a handful of purple/blue lines in the lower values of <code>dropout_1_rate</code> and upper values of <code>dropout_2_rate</code>.
+Let's filter the data and see what trends we can find.</p>
+
+<h4 id="upper-distribution-of-hyperparameters">Upper distribution of hyperparameters</h4>
+
+<p>Filtering the data and dropping a few columns can help remove the clutter and clarify the trends.
+The light green box in the image below highlights parallel coordinates by the validation loss metric.
+The only colored lines we should see are the ones with a validation loss below 0.75.</p>
+
+<p>Of the 99 trials, the bluest lines are most commonly seen stemming from <code>dropout_1_rate</code> values of &lt;0.2.
+This strengthens my idea that higher model performance is directly correlated to lower dropout rates for the first dropout layer.</p>
+
+<figure class="center" style="width:98%;">
+    <img src="img/tb_parallel_coords_upper.png" style="width:100%;"/>
+    <figcaption>Highlighted trials with upper 50% validation values (0.1 -> 0.75)</figcaption>
+</figure>
+
+<p>Next, let's only include trials with a validation loss below 0.3 - the highest performers.
+Now there are only 23 trials visible in the parallel coordinates view.
+After constraining the view to trials with 95% validation accuracy or above, we're left with three trials.</p>
+
+<p>The remaining three trials show two trends that I touched on before:</p>
+
+<ol>
+<li>The first dropout layer has a low dropout rate (&lt;0.2)</li>
+<li>The Conv2D layers successively reduce the number of filters (e.g. 16 -> 12, 16 -> 8)</li>
+</ol>
+
+<p>We'll keep these trends in mind when we reduce our hyperparameter space and launch additional tuning trials.</p>
+
+<figure class="center" style="width:98%;">
+    <img src="img/tb_parallel_coords_upper_23_trials.png" style="width:100%;"/>
+    <figcaption>Filtered trials highlighted with >=95% validation accuracy</figcaption>
+</figure>
+
+<p>We've narrowed down the search space that correlates to the highest performers.
+Now, let's see what hyperparameters are associated with the lowest performers.</p>
+
+<h4 id="lower-distribution-of-hyperparameters">Lower distribution of hyperparameters</h4>
+
+<p>Recall that the redder the line, the higher the validation loss metric - the less optimal the hyperparameters.
+In the figure below, we can see the worst performing hyperparameters.</p>
+
+<p>It should be no surprise to see that the lowest performing models contain large <code>dropout_1_rate</code> values.</p>
+
+<figure class="center" style="width:98%;">
+    <img src="img/tb_parallel_coords_lower.png" style="width:100%;"/>
+    <figcaption>Highlighted trials with lower 50% validation values (0.75 -> 1.4)</figcaption>
+</figure>
+
+<p>There aren't any obvious trends in the lower performing models, so let's wrap up our findings and move on.</p>
+
+<h4 id="parallel-coordinates-view-findings">Parallel coordinates view findings</h4>
+
+<p>Before we move on to the next view, let's discuss our findings from the parallel coordinates view.</p>
+
+<p>The following figure shows the parallel coordinates view for trials with &lt;0.2 validation loss.
+I believe these hyperparameter values are the best starting points for the next tuning process.</p>
+
+<figure class="center" style="width:98%;">
+    <img src="img/tb_parallel_coords_upper_final.png" style="width:100%;"/>
+    <figcaption>Highlighted trials with <=0.2 validation loss</figcaption>
+</figure>
+
+<p>The next tuning process will reduce the following hyperparameter search spaces:</p>
+
+<ol>
+<li>The first dropout layer must have a low dropout rate (we'll try &lt;=0.4)</li>
+<li>The second dropout layer can have a high dropout rate (&lt;=0.8)</li>
+<li>The second Conv2D layer must have at least 8, but no more than 20, filters</li>
+<li>The fourth MaxPooling2D layer must have a pool size &lt;=3</li>
+</ol>
+
+<p>Now, let's take a look at how the findings above look in <em>Scatter Plots Matrix View</em>.</p>
+
+<h3 id="scatter-plots-matrix-view">Scatter plots matrix view</h3>
+
+<p>Scatter plots matrix view is more pleasing to the eye than the parallel coordinates view.
+It provides less clear information about the relationships between hyperparameters compared to the parallel coordinates view.
+However, it excels at showing distributions of hyperparameter values with respect to their validation loss and accuracy.</p>
+
+<p>Below is a scatter plots matrix view for all 99 trials.
+Same as before, the bluer the dot, the lower the validation loss metric - the more optimal the hyperparameters.
+Unfortunately the columns in this view are unordered and cannot be moved.</p>
+
+<figure class="center" style="width:98%;">
+    <img src="img/tb_scatter_matrix.png" style="width:100%;"/>
+    <figcaption>Initial, unfiltered scatter plots matrix view, colored by validation loss</figcaption>
+</figure>
+
+<p>We can filter the data based on the validation loss metrics or we can highlight a subset of trials.
+For instance, the figure below highlights trials with validation loss lower than 0.5.</p>
+
+<figure class="center" style="width:98%;">
+    <img src="img/tb_scatter_matrix_5_loss.png" style="width:100%;"/>
+    <figcaption>Highlighted trials with validation loss <=0.5</figcaption>
+</figure>
+
+<p>If we filter the data to include only trials with validation loss lower than 0.5, we can see that the blue dots are more evenly distributed.
+We can also highlight the trials with validation loss lower than 0.2.</p>
+
+<p>From the figure below, we can see clearly that higher model performance is dependent on lower initial dropout rates.</p>
+
+<figure class="center" style="width:98%;">
+    <img src="img/tb_scatter_matrix_5_loss_dropout.png" style="width:100%;"/>
+    <figcaption>Filtered trials highlighted with validation loss <=0.2</figcaption>
+</figure>
+
+<p>That's about it for scatter plots matrix view.
+It's the most complex view of the three, but it provides the most clear information about hyperparameter distributions.</p>
+
+<p>For more information regarding TensorBoard and hyperparameter optimization, please see this <a href="https://keras.io/guides/keras_tuner/visualize_tuning/">Keras developer guide for visualizing the hyperparameter tuning process</a>.</p>
+
+<p>The time has come to train our optimal model and compare it against the baseline model!</p>
 
 </body>
 </html>

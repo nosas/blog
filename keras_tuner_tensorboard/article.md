@@ -57,6 +57,7 @@ The examples will be based on my own [ToonVision](../toonvision/classification) 
             - [Upper distribution of hyperparameters](#upper-distribution-of-hyperparameters)
             - [Lower distribution of hyperparameters](#lower-distribution-of-hyperparameters)
             - [Parallel coordinates view findings](#parallel-coordinates-view-findings)
+        - [Scatter plots matrix view](#scatter-plots-matrix-view)
 
 </details>
 
@@ -530,7 +531,7 @@ In our case, we will use it to visualize the relationship between different hype
 
 <figure class="center" style="width:98%;">
     <img src="img/tb_parallel_coords.png" style="width:100%;"/>
-    <figcaption>Initial, unfiltered parallel coordinates view</figcaption>
+    <figcaption>Initial, unfiltered parallel coordinates view, colored by validation loss</figcaption>
 </figure>
 
 The figure above shows the initial parallel coordinates view for all 99 trials.
@@ -543,7 +544,7 @@ Let's filter the data and see what trends we can find.
 #### Upper distribution of hyperparameters
 
 Filtering the data and dropping a few columns can help remove the clutter and clarify the trends.
-The light green box in the image below shows parallel coordinates filtered by the validation loss metric.
+The light green box in the image below highlights parallel coordinates by the validation loss metric.
 The only colored lines we should see are the ones with a validation loss below 0.75.
 
 Of the 99 trials, the bluest lines are most commonly seen stemming from `dropout_1_rate` values of <0.2.
@@ -551,7 +552,7 @@ This strengthens my idea that higher model performance is directly correlated to
 
 <figure class="center" style="width:98%;">
     <img src="img/tb_parallel_coords_upper.png" style="width:100%;"/>
-    <figcaption>Upper 50% validation values (0.1 -> 0.75)</figcaption>
+    <figcaption>Highlighted trials with upper 50% validation values (0.1 -> 0.75)</figcaption>
 </figure>
 
 Next, let's only include trials with a validation loss below 0.3 - the highest performers.
@@ -566,8 +567,8 @@ The remaining three trials show two trends that I touched on before:
 We'll keep these trends in mind when we reduce our hyperparameter space and launch additional tuning trials.
 
 <figure class="center" style="width:98%;">
-    <img src="img/tb_parallel_coords_upper_23.png" style="width:100%;"/>
-    <figcaption>Trials with >95% validation accuracy</figcaption>
+    <img src="img/tb_parallel_coords_upper_23_trials.png" style="width:100%;"/>
+    <figcaption>Filtered trials highlighted with >=95% validation accuracy</figcaption>
 </figure>
 
 We've narrowed down the search space that correlates to the highest performers.
@@ -582,7 +583,7 @@ It should be no surprise to see that the lowest performing models contain large 
 
 <figure class="center" style="width:98%;">
     <img src="img/tb_parallel_coords_lower.png" style="width:100%;"/>
-    <figcaption>Lower 50% validation values (0.75 -> 1.4)</figcaption>
+    <figcaption>Highlighted trials with lower 50% validation values (0.75 -> 1.4)</figcaption>
 </figure>
 
 There aren't any obvious trends in the lower performing models, so let's wrap up our findings and move on.
@@ -596,7 +597,7 @@ I believe these hyperparameter values are the best starting points for the next 
 
 <figure class="center" style="width:98%;">
     <img src="img/tb_parallel_coords_upper_final.png" style="width:100%;"/>
-    <figcaption>Trials with <=0.2 validation loss</figcaption>
+    <figcaption>Highlighted trials with <=0.2 validation loss</figcaption>
 </figure>
 
 The next tuning process will reduce the following hyperparameter search spaces:
@@ -607,3 +608,43 @@ The next tuning process will reduce the following hyperparameter search spaces:
 4. The fourth MaxPooling2D layer must have a pool size <=3
 
 Now, let's take a look at how the findings above look in *Scatter Plots Matrix View*.
+
+### Scatter plots matrix view
+
+Scatter plots matrix view is more pleasing to the eye than the parallel coordinates view.
+It provides less clear information about the relationships between hyperparameters compared to the parallel coordinates view.
+However, it excels at showing distributions of hyperparameter values with respect to their validation loss and accuracy.
+
+Below is a scatter plots matrix view for all 99 trials.
+Same as before, the bluer the dot, the lower the validation loss metric - the more optimal the hyperparameters.
+Unfortunately the columns in this view are unordered and cannot be moved.
+
+<figure class="center" style="width:98%;">
+    <img src="img/tb_scatter_matrix.png" style="width:100%;"/>
+    <figcaption>Initial, unfiltered scatter plots matrix view, colored by validation loss</figcaption>
+</figure>
+
+We can filter the data based on the validation loss metrics or we can highlight a subset of trials.
+For instance, the figure below highlights trials with validation loss lower than 0.5.
+
+<figure class="center" style="width:98%;">
+    <img src="img/tb_scatter_matrix_5_loss.png" style="width:100%;"/>
+    <figcaption>Highlighted trials with validation loss <=0.5</figcaption>
+</figure>
+
+If we filter the data to include only trials with validation loss lower than 0.5, we can see that the blue dots are more evenly distributed.
+We can also highlight the trials with validation loss lower than 0.2.
+
+From the figure below, we can see clearly that higher model performance is dependent on lower initial dropout rates.
+
+<figure class="center" style="width:98%;">
+    <img src="img/tb_scatter_matrix_5_loss_dropout.png" style="width:100%;"/>
+    <figcaption>Filtered trials highlighted with validation loss <=0.2</figcaption>
+</figure>
+
+That's about it for scatter plots matrix view.
+It's the most complex view of the three, but it provides the most clear information about hyperparameter distributions.
+
+For more information regarding TensorBoard and hyperparameter optimization, please see this [Keras developer guide for visualizing the hyperparameter tuning process](https://keras.io/guides/keras_tuner/visualize_tuning/).
+
+The time has come to train our optimal model and compare it against the baseline model!
