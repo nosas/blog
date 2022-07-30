@@ -177,7 +177,6 @@ def plot_history(
     axes[0].set_title(f"{name} accuracy")
     axes[0].set_ylabel("Accuracy")
     axes[0].set_xlabel("Epoch")
-    axes[0].legend()
     axes[0].grid(axis="y", alpha=0.5, color="lightgrey")
 
     # Plot training loss values
@@ -187,7 +186,6 @@ def plot_history(
     axes[1].set_title(f"{name} loss")
     axes[1].set_ylabel("Loss")
     axes[1].set_xlabel("Epoch")
-    axes[1].legend()
     axes[1].grid(axis="y", alpha=0.5, color="lightgrey")
     if loss_ylim:
         axes[1].set_ylim(*loss_ylim)
@@ -221,6 +219,9 @@ def plot_history(
             alpha=0.8,
             ls="--",
         )
+
+    axes[0].legend()
+    axes[1].legend()
 
 
 def compare_histories(
@@ -526,9 +527,6 @@ def plot_histories(
         label=model_name,
     )
     axes[0][0].set_title("Accuracy")
-    for a in axes[0]:
-        a.set_ylabel("Accuracy")
-        a.legend()
 
     # Plot training & validation loss values
     axes[1][0].plot(
@@ -539,11 +537,6 @@ def plot_histories(
         label=model_name,
     )
     axes[1][0].set_title("Loss")
-
-    for a in axes[1]:
-        a.set_ylabel("Loss")
-        a.set_xlabel("Epoch")
-        a.legend()
 
     if includes_validation:
         val_accuracy_str = "val_" + accuracy_str
@@ -562,8 +555,8 @@ def plot_histories(
             alpha=alpha_runs,
         )
 
-        avg_history[val_accuracy_str]: np.mean(val_acc, axis=0)
-        avg_history["val_loss"]: np.mean(val_loss, axis=0)
+        avg_history[val_accuracy_str] = np.mean(val_acc, axis=0)
+        avg_history["val_loss"] = np.mean(val_loss, axis=0)
         axes[0][1].plot(
             num_epochs[idx_start:idx_end],
             avg_history[val_accuracy_str][idx_start:idx_end],
@@ -580,6 +573,14 @@ def plot_histories(
             label=model_name,
         )
         axes[1][1].set_title("Val Loss")
+
+    for a in axes[0]:
+        a.set_ylabel("Accuracy")
+        a.legend()
+    for a in axes[1]:
+        a.set_ylabel("Loss")
+        a.set_xlabel("Epoch")
+        a.legend()
 
 
 def plot_evaluations_box(
