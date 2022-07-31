@@ -218,10 +218,10 @@ def model_builder(hp):
 tuner = RandomSearch(
     model_builder,
     objective="val_loss",
-    max_trials=100,
-    executions_per_trial=1,
+    max_trials=200,
+    executions_per_trial=2,
     directory="models",
-    project_name="tuned_multiclass_randomsearch",
+    project_name="tuned_multiclass_randomsearch_final",
     seed=SEED,
     # overwrite=False,  # Set to False to load previous trials
 )
@@ -234,64 +234,71 @@ tuner.search(
     epochs=75,
     batch_size=BATCH_SIZE,
     validation_data=(val_images, val_labels),
-    verbose=1,
+    verbose=0,
     callbacks=[
         tf.keras.callbacks.EarlyStopping(
             monitor="val_loss", patience=3, restore_best_weights=True
         ),
-        tf.keras.callbacks.TensorBoard("./tb_logs/randomsearch/"),
+        tf.keras.callbacks.TensorBoard("./tb_logs/randomsearch_final/"),
     ],
 )
 # %%
 # model = tuner.get_best_models(num_models=1)[0]
 # model.build(input_shape=(None, 600, 200, 3))
-params = tuner.get_best_hyperparameters(num_trials=1)[0]
-model = tuner.hypermodel.build(params)
-params.values
+# 1, 4, 7
+# 10, 13, 14, 14, 17, 18
+best_hps = tuner.get_best_hyperparameters(num_trials=20)[:10]
+for hp_id, hp in enumerate(best_hps):
+    model = tuner.hypermodel.build(hp)
+    # hp.values
 
-# %% Train the best model
-hist = model.fit(
-    np.concatenate((train_images, val_images)),
-    np.concatenate((train_labels, val_labels)),
-    epochs=100,
-    batch_size=BATCH_SIZE,
-    # shuffle=True,
-    verbose=0,
-    callbacks=[
-        tf.keras.callbacks.EarlyStopping(
-            monitor="loss", patience=5, restore_best_weights=True
-        ),
-    ],
-)
+    # %% Train the best model
+    hist = model.fit(
+        np.concatenate((train_images, val_images)),
+        np.concatenate((train_labels, val_labels)),
+        epochs=100,
+        batch_size=BATCH_SIZE,
+        # shuffle=True,
+        verbose=0,
+        callbacks=[
+            tf.keras.callbacks.EarlyStopping(
+                monitor="loss", patience=5, restore_best_weights=True
+            ),
+        ],
+    )
 
-# Print the tuned model's summary
-model.summary()
+    # # Plot all training histories
+    # plt.figure(figsize=(10, 10), dpi=100)
+    # plot_history(
+    #     history=hist.history,
+    #     name=model.name.replace("tv_", ""),
+    #     multiclass=True,
+    #     loss_ylim=(0, 1),
+    #     includes_validation=False,
+    # )
 
-# Plot all training histories
-plt.figure(figsize=(10, 10), dpi=100)
-plot_history(
-    history=hist.history,
-    name=model.name.replace("tv_", ""),
-    multiclass=True,
-    loss_ylim=(0, 1),
-    includes_validation=False,
-)
+    # Plot the wrong predictions
+    predictions = model.predict(test_images)
+    preds_int = np.asarray([np.argmax(p) for p in predictions], dtype=np.int32)
+    preds_str = integer_to_suit(preds_int)
 
-# Plot the wrong predictions
-predictions = model.predict(test_images)
-preds_int = np.asarray([np.argmax(p) for p in predictions], dtype=np.int32)
-preds_str = integer_to_suit(preds_int)
+    # Get the wrong predictions as a True/False array
+    mask = preds_int.astype("int") != test_labels.astype("int")
+    wrong_idxs = np.argwhere(mask).transpose().flatten()
+    num_wrong = len(wrong_idxs)
+    if num_wrong < 5:
+        # Print the tuned model's summary
+        model.summary()
 
-# Get the wrong predictions as a True/False array
-mask = preds_int.astype("int") != test_labels.astype("int")
-wrong_idxs = np.argwhere(mask).transpose().flatten()
+        print(hp_id, ":", num_wrong, "wrong predictions")
 
-wrong_fps = [test_fps[i] for i in wrong_idxs]
-wrong_preds = [preds_str[i] for i in wrong_idxs]
-wrong_actual = integer_to_suit(test_labels[i] for i in wrong_idxs)
-wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
+        wrong_fps = [test_fps[i] for i in wrong_idxs]
+        wrong_preds = [preds_str[i] for i in wrong_idxs]
+        wrong_actual = integer_to_suit(test_labels[i] for i in wrong_idxs)
+        wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
 
-plot_wrong_predictions_multiclass(wrong, model_name=model.name, show_num_wrong=10)
+        plot_wrong_predictions_multiclass(wrong, model_name=f"random_final_{hp_id}", show_num_wrong=5)
+    del model
 
 # %%
 model.save("./models/tuned_randomsearch_tv_Adam_3.keras")
@@ -304,24 +311,21 @@ def model_builder_bayesian(hp):
             keras.layers.Rescaling(1.0 / 255),
             keras.layers.Conv2D(
                 filters=hp.Int("conv_1_filters", min_value=8, max_value=16, step=4),
-                kernel_size=3,
+                kernel_size=hp.Int("conv_1_kernel", min_value=3, max_value=5, step=2),
                 activation="relu",
-                padding="same",
+                padding="valid",
             ),
             keras.layers.MaxPooling2D(
                 pool_size=hp.Int("pool_1_size", min_value=2, max_value=4, step=1),
             ),
-            keras.layers.MaxPooling2D(
-                pool_size=hp.Int("pool_2_size", min_value=1, max_value=4, step=1),
-            ),
             keras.layers.Dropout(
-                rate=hp.Float("dropout_1_rate", min_value=0.0, max_value=0.5, step=0.1),
+                rate=hp.Float("dropout_1_rate", min_value=0.0, max_value=0.2, step=0.1),
             ),
             keras.layers.Conv2D(
                 filters=hp.Int("conv_2_filters", min_value=4, max_value=16, step=4),
-                kernel_size=3,
+                kernel_size=hp.Int("conv_2_kernel", min_value=3, max_value=5, step=2),
                 activation="relu",
-                padding="same",
+                padding="valid",
             ),
             keras.layers.MaxPooling2D(
                 pool_size=hp.Int("pool_3_size", min_value=2, max_value=4, step=1),
@@ -331,14 +335,14 @@ def model_builder_bayesian(hp):
             ),
             keras.layers.Flatten(),
             keras.layers.Dropout(
-                rate=hp.Float("dropout_2_rate", min_value=0.2, max_value=0.7, step=0.1),
+                rate=hp.Float("dropout_2_rate", min_value=0.0, max_value=0.7, step=0.1),
             ),
             keras.layers.Dense(units=4, activation="softmax"),
         ]
     )
     model.compile(
         optimizer=tf.keras.optimizers.Adam(
-            learning_rate=hp.Choice("learning_rate", values=[1e-2, 1e-3])
+            learning_rate=hp.Choice("learning_rate", values=[1e-3, 1e-4])
         ),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
@@ -350,10 +354,10 @@ def model_builder_bayesian(hp):
 tuner = BayesianOptimization(
     hypermodel=model_builder_bayesian,
     objective="val_loss",
-    max_trials=50,
+    max_trials=500,
     executions_per_trial=3,
     directory="models",
-    project_name="tuned_multiclass_bayesian2",
+    project_name="tuned_multiclass_bayesian_final",
     seed=SEED,
 )
 tuner.search_space_summary()
@@ -362,7 +366,7 @@ tuner.search_space_summary()
 tuner.search(
     train_images,
     train_labels,
-    epochs=75,
+    epochs=100,
     batch_size=BATCH_SIZE,
     validation_data=(val_images, val_labels),
     verbose=1,
@@ -370,7 +374,7 @@ tuner.search(
         tf.keras.callbacks.EarlyStopping(
             monitor="val_loss", patience=3, restore_best_weights=True
         ),
-        tf.keras.callbacks.TensorBoard("./tb_logs/bayesian2/"),
+        tf.keras.callbacks.TensorBoard("./tb_logs/bayesian_final/"),
     ],
 )
 # %%
@@ -626,7 +630,7 @@ tuner.search(
 # %%
 # model = tuner.get_best_models(num_models=1)[0]
 # model.build(input_shape=(None, 600, 200, 3))
-params = tuner.get_best_hyperparameters(num_trials=7)[0]
+params = tuner.get_best_hyperparameters(num_trials=7)[4]
 model = tuner.hypermodel.build(params)
 params.values
 
