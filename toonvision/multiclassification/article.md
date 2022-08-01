@@ -33,7 +33,6 @@ For now, let's focus on multiclass classification.
         - [Creating the dataset objects](#creating-the-dataset-objects)
             - [Splitting the images into train, validate, and test](#splitting-the-images-into-train-validate-and-test)
     - [Compiling the model](#compiling-the-model)
-        - [Keras Tuner](#keras-tuner)
         - [Loss function](#loss-function)
         - [Optimizer](#optimizer)
         - [Metrics](#metrics)
@@ -43,6 +42,7 @@ For now, let's focus on multiclass classification.
         - [Baseline loss and accuracy plots](#baseline-loss-and-accuracy-plots)
         - [Baseline wrong predictions](#baseline-wrong-predictions)
     - [Training the optimized model](#training-the-optimized-model)
+        - [Keras Tuner](#keras-tuner)
         - [Preventing overfitting](#preventing-overfitting)
         - [Wrong predictions](#wrong-predictions)
         - [Baseline comparison: Training](#baseline-comparison-training)
@@ -137,16 +137,54 @@ Moving forward, we'll be more conscious of street imbalance and take screenshots
 
 ### Creating the dataset objects
 
+We'll create simple tuples of images and labels instead of `Keras.dataset` objects.
+
+```python
+def create_suit_datasets(
+    split_ratio: list[float, float, float] = None
+) -> tuple[tuple[np.array[float], np.array[float]]]:
+    """Create multiclass Cog suit datasets for training, validation, and testing
+
+    Args:
+        split_ratio (list[float, float, float], optional): Train/val/test split. Defaults to None.
+
+    Returns:
+        tuple[tuple, tuple, tuple]: Train, validate, and test datasets. Each tuple contains
+                                    a numpy array of images and a numpy array of labels.
+    """
+    if split_ratio:
+        split_data(split_ratio=split_ratio)
+
+    data_dirs = [TRAIN_DIR, VALIDATE_DIR, TEST_DIR]
+    suits = get_suits_from_dir(directories=data_dirs)
+    result = {}
+    for dir_name in data_dirs:
+        filepaths, labels = suits[dir_name]
+        labels = np.asarray(suit_to_integer(labels), dtype=np.float32)
+        images = np.asarray(
+            [get_img_array_from_filepath(fp) for fp in filepaths], dtype=np.float32
+        )
+        result[dir_name] = (images, labels)
+
+    return (result[TRAIN_DIR], result[VALIDATE_DIR], result[TEST_DIR])
+```
+
+The datasets are now ready to be used by the model.
+We can retrieve the datasets, and separate the images and labels, as follows:
+
+```python
+# Split unsorted images into train, validate, and test sets
+ds_train, ds_validate, ds_test = create_suit_datasets(split_ratio=[0.6, 0.2, 0.2])
+# Create the dataset
+train_images, train_labels = ds_train
+val_images, val_labels = ds_validate
+test_images, test_labels = ds_test
+```
+
 #### Splitting the images into train, validate, and test
 
 ---
 ## Compiling the model
-
-### Keras Tuner
-
-`KerasTuner` is a tool for fine-tuning a model's hyperparameters.
-Hyperparameters include the model's layers, layer sizes, and optimizer.
-We can leverage this tool to find the best hyperparameters for our model instead of manually tuning the model and comparing the results.
 
 ### Loss function
 
@@ -167,6 +205,12 @@ We can leverage this tool to find the best hyperparameters for our model instead
 
 ---
 ## Training the optimized model
+
+### Keras Tuner
+
+`KerasTuner` is a tool for fine-tuning a model's hyperparameters.
+Hyperparameters include the model's layers, layer sizes, and optimizer.
+We can leverage this tool to find the best hyperparameters for our model instead of manually tuning the model and comparing the results.
 
 ### Preventing overfitting
 
