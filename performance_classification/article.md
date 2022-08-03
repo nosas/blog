@@ -6,6 +6,7 @@ This article will explain the most common performance measures for classificatio
 These measures apply to both binary and multi-class classification problems.
 
 We will explain model performance metrics such as confusion matrix, accuracy, precision, recall, F1-score, and ROC curve.
+The code blocks in this article will utilize python3.7, tensorflow, and keras.
 
 - [Classification Performance Measures](#classification-performance-measures)
     - [Why are performance measures important?](#why-are-performance-measures-important)
@@ -33,7 +34,7 @@ But does that mean that the model is the best?
 
 The loss and accuracy metrics give us a rough idea of the model's performance on the training data, but no indication of the model's general performance.
 In order to gain a better understanding of the model's performance, we must use more specific metrics.
-The metrics and techniques shown later in the article are designed to help us evaluate the true performance of our models.
+The metrics shown later in the article are designed to evaluate the true performance of our classification models.
 
 ---
 ## Confusion Matrix
