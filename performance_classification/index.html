@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 02, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 03, 2022</p>
 
 <p><title>Performance Measures for Classification Problems</title></p>
 
@@ -29,7 +29,7 @@
 These measures apply to both binary and multi-class classification problems.</p>
 
 <p>We will explain model performance metrics such as confusion matrix, accuracy, precision, recall, F1-score, and ROC curve.
-The code blocks in this article will utilize python3.7, tensorflow, and keras.</p>
+The code in this article utilizes python3.7, tensorflow, and keras.</p>
 
 <ul>
 <li><a href="#classification-performance-measures">Classification Performance Measures</a>
@@ -67,6 +67,27 @@ The metrics shown later in the article are designed to evaluate the true perform
 <hr />
 
 <h2 id="confusion-matrix">Confusion Matrix</h2>
+
+<p>A confusion matrix is a technique for visualizing a classification model's performance.
+As the name suggests, a confusion matrix is a 2-dimensional table.
+The confusion matrix is a core part of evaluating a classification model.</p>
+
+<p>The table below shows the confusion matrix for a binary classification problem.
+The rows represent the true labels and the columns represent the predicted labels.</p>
+
+<p><font style="color:red">TODO: Insert binary confusion matrix</font></p>
+
+<p>We can expand the confusion matrix to include multi-class classification problems.
+For example, the table below shows the confusion matrix for a multi-class classification problem.</p>
+
+<p><font style="color:red">TODO: Insert multiclass confusion matrix</font></p>
+
+<p>From the confusion matrix, we can calculate the accuracy of the model - the number of correct predictions divided by the total number of predictions.
+Furthermore, we can determine the number of true positives, true negatives, false positives, and false negatives.
+We'll shorten the names to TP, TN, FP, and FN, respectively.
+Using TP, TN, FP, and FN, we can calculate the precision, recall, and F1-score of the model.</p>
+
+<p>Later in this article, we'll use a confusion matrix to derive the accuracy, precision, recall, and F1-score of our classification models.</p>
 
 <hr />
 
