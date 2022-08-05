@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 03, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 04, 2022</p>
 
 <p><title>Performance Measures for Classification Problems</title></p>
 
@@ -35,7 +35,10 @@ The code in this article utilizes python3.7, tensorflow, and keras.</p>
 <li><a href="#classification-performance-measures">Classification Performance Measures</a>
 <ul>
 <li><a href="#why-are-performance-measures-important">Why are performance measures important?</a></li>
-<li><a href="#confusion-matrix">Confusion Matrix</a></li>
+<li><a href="#confusion-matrix">Confusion Matrix</a>
+<ul>
+<li><a href="#generate-confusion-matrix-for-tensorflow-model">Generate confusion matrix for TensorFlow model</a></li>
+</ul></li>
 <li><a href="#accuracy">Accuracy</a></li>
 <li><a href="#precision">Precision</a></li>
 <li><a href="#recall">Recall</a></li>
@@ -89,9 +92,28 @@ Using TP, TN, FP, and FN, we can calculate the precision, recall, and F1-score o
 
 <p>Later in this article, we'll use a confusion matrix to derive the accuracy, precision, recall, and F1-score of our classification models.</p>
 
+<h3 id="generate-confusion-matrix-for-tensorflow-model">Generate confusion matrix for TensorFlow model</h3>
+
+<p><font style="color:red">TODO: Insert code to generate confusion matrix for TensorFlow model</font></p>
+
 <hr />
 
 <h2 id="accuracy">Accuracy</h2>
+
+<p>Accuracy is a metric that measures the percentage of correct predictions across all classes.
+It's calculated by dividing the number of correct predictions by the total number of predictions.</p>
+
+<p>We can calculate the accuracy as follows: (TP + TN) / (TP + TN + FP + FN), where TP, TN, FP, and FN are the true positives, true negatives, false positives, and false negatives, respectively.</p>
+
+<p><font style="color:red">TODO: Insert code snippet to calculate accuracy</font></p>
+
+<p>During training, we can use Keras' built-in accuracy metrics.
+For binary classification models, we user the <code>binary_accuracy</code> metric.
+For multi-class classification models, we use the <code>[sparse_]categorical_accuracy</code> metric.</p>
+
+<p><font style="color:red">TODO: Insert code snippet using Keras' built-tin accuracy metrics</font></p>
+
+<!-- ? Given wrong_preds and target_labels, can we use the metric methods by themselves? -->
 
 <hr />
 

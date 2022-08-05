@@ -11,6 +11,7 @@ The code in this article utilizes python3.7, tensorflow, and keras.
 - [Classification Performance Measures](#classification-performance-measures)
     - [Why are performance measures important?](#why-are-performance-measures-important)
     - [Confusion Matrix](#confusion-matrix)
+        - [Generate confusion matrix for TensorFlow model](#generate-confusion-matrix-for-tensorflow-model)
     - [Accuracy](#accuracy)
     - [Precision](#precision)
     - [Recall](#recall)
@@ -60,8 +61,27 @@ Using TP, TN, FP, and FN, we can calculate the precision, recall, and F1-score o
 
 Later in this article, we'll use a confusion matrix to derive the accuracy, precision, recall, and F1-score of our classification models.
 
+### Generate confusion matrix for TensorFlow model
+
+<font style="color:red">TODO: Insert code to generate confusion matrix for TensorFlow model</font>
+
 ---
 ## Accuracy
+
+Accuracy is a metric that measures the percentage of correct predictions across all classes.
+It's calculated by dividing the number of correct predictions by the total number of predictions.
+
+We can calculate the accuracy as follows: (TP + TN) / (TP + TN + FP + FN), where TP, TN, FP, and FN are the true positives, true negatives, false positives, and false negatives, respectively.
+
+<font style="color:red">TODO: Insert code snippet to calculate accuracy</font>
+
+During training, we can use Keras' built-in accuracy metrics.
+For binary classification models, we user the `binary_accuracy` metric.
+For multi-class classification models, we use the `[sparse_]categorical_accuracy` metric.
+
+<font style="color:red">TODO: Insert code snippet using Keras' built-tin accuracy metrics</font>
+
+<!-- ? Given wrong_preds and target_labels, can we use the metric methods by themselves? -->
 
 ---
 ## Precision
