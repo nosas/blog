@@ -11,9 +11,11 @@ The code in this article utilizes python3.7, tensorflow, and keras.
 - [Classification Performance Measures](#classification-performance-measures)
     - [Why are performance measures important?](#why-are-performance-measures-important)
     - [Confusion Matrix](#confusion-matrix)
+        - [TP, TN, FP, and FN](#tp-tn-fp-and-fn)
         - [Generate confusion matrix for TensorFlow model](#generate-confusion-matrix-for-tensorflow-model)
     - [Accuracy](#accuracy)
     - [Precision](#precision)
+    - [Accuracy vs Precision](#accuracy-vs-precision)
     - [Recall](#recall)
     - [F1-score](#f1-score)
     - [ROC Curve](#roc-curve)
@@ -59,6 +61,9 @@ Furthermore, we can determine the number of true positives, true negatives, fals
 We'll shorten the names to TP, TN, FP, and FN, respectively.
 Using TP, TN, FP, and FN, we can calculate the precision, recall, and F1-score of the model.
 
+### TP, TN, FP, and FN
+
+
 Later in this article, we'll use a confusion matrix to derive the accuracy, precision, recall, and F1-score of our classification models.
 
 ### Generate confusion matrix for TensorFlow model
@@ -69,9 +74,16 @@ Later in this article, we'll use a confusion matrix to derive the accuracy, prec
 ## Accuracy
 
 Accuracy is a metric that measures the percentage of correct predictions across all classes.
-It's calculated by dividing the number of correct predictions by the total number of predictions.
+In other words, accuracy is how close the model comes to the correct result.
 
-We can calculate the accuracy as follows: (TP + TN) / (TP + TN + FP + FN), where TP, TN, FP, and FN are the true positives, true negatives, false positives, and false negatives, respectively.
+For example, imagine the goal is to shoot an arrow and hit an apple.
+If we shoot and hit 10 arrows, we would be accurate or have high *accuracy*.
+Now imagine a cluster of arrows around an apple - the arrows were close to hitting the apple, but had no guarantee of hitting the apple.
+This remains a case of high accuracy, but with low *precision*.
+We'll talk about *precision* in the next section.
+
+It's calculated by dividing the number of correct predictions by the total number of predictions.
+We calculate accuracy as follows: (TP + TN) / (TP + TN + FP + FN), where TP, TN, FP, and FN are the true positives, true negatives, false positives, and false negatives, respectively.
 
 <font style="color:red">TODO: Insert code snippet to calculate accuracy</font>
 
@@ -85,6 +97,9 @@ For multi-class classification models, we use the `[sparse_]categorical_accuracy
 
 ---
 ## Precision
+
+---
+## Accuracy vs Precision
 
 ---
 ## Recall
