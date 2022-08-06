@@ -40,13 +40,21 @@ The code in this article utilizes python3.7, tensorflow, and keras.</p>
 <li><a href="#tp-tn-fp-and-fn">TP, TN, FP, and FN</a></li>
 <li><a href="#generate-confusion-matrix-for-tensorflow-model">Generate confusion matrix for TensorFlow model</a></li>
 </ul></li>
-<li><a href="#accuracy">Accuracy</a></li>
-<li><a href="#precision">Precision</a></li>
+<li><a href="#accuracy">Accuracy</a>
+<ul>
+<li><a href="#training-accuracy-in-keras">Training accuracy in Keras</a></li>
+<li><a href="#accuracy-in-keras">Accuracy in Keras</a></li>
+</ul></li>
+<li><a href="#precision">Precision</a>
+<ul>
+<li><a href="#training-precision-in-keras">Training precision in Keras</a></li>
+</ul></li>
 <li><a href="#accuracy-vs-precision">Accuracy vs Precision</a></li>
 <li><a href="#recall">Recall</a></li>
 <li><a href="#f1-score">F1-score</a></li>
 <li><a href="#roc-curve">ROC Curve</a></li>
 <li><a href="#conclusion">Conclusion</a></li>
+<li><a href="#references">References</a></li>
 </ul></li>
 </ul>
 
@@ -94,6 +102,8 @@ Using TP, TN, FP, and FN, we can calculate the precision, recall, and F1-score o
 
 <h3 id="tp-tn-fp-and-fn">TP, TN, FP, and FN</h3>
 
+<p><font style="color:red">TODO: Write about these</font></p>
+
 <p>Later in this article, we'll use a confusion matrix to derive the accuracy, precision, recall, and F1-score of our classification models.</p>
 
 <h3 id="generate-confusion-matrix-for-tensorflow-model">Generate confusion matrix for TensorFlow model</h3>
@@ -105,34 +115,63 @@ Using TP, TN, FP, and FN, we can calculate the precision, recall, and F1-score o
 <h2 id="accuracy">Accuracy</h2>
 
 <p>Accuracy is a metric that measures the percentage of correct predictions across all classes.
-In other words, accuracy is how close the model comes to the correct result.</p>
+In other words, accuracy is <strong>how close the model comes to the correct result</strong>.</p>
 
-<p>For example, imagine the goal is to shoot an arrow and hit an apple.
+<p>For example, imagine the goal is to shoot an arrow and hit the apple.
 If we shoot and hit 10 arrows, we would be accurate or have high <em>accuracy</em>.
-Now imagine a cluster of arrows around an apple - the arrows were close to hitting the apple, but had no guarantee of hitting the apple.
+Now imagine a cluster of arrows around the apple - the arrows were <em>close</em> to hitting the apple, but had <em>no guarantee</em> of hitting the apple.
 This remains a case of high accuracy, but with low <em>precision</em>.
-We'll talk about <em>precision</em> in the next section.</p>
+We'll talk about precision in the next section.</p>
 
-<p>It's calculated by dividing the number of correct predictions by the total number of predictions.
+<p>Accuracy is calculated by dividing the number of correct predictions by the total number of predictions.
 We calculate accuracy as follows: (TP + TN) / (TP + TN + FP + FN), where TP, TN, FP, and FN are the true positives, true negatives, false positives, and false negatives, respectively.</p>
 
 <p><font style="color:red">TODO: Insert code snippet to calculate accuracy</font></p>
 
-<p>During training, we can use Keras' built-in accuracy metrics.
-For binary classification models, we user the <code>binary_accuracy</code> metric.
+<h3 id="training-accuracy-in-keras">Training accuracy in Keras</h3>
+
+<p>During training, we can use Keras' built-in accuracy <code>Metric</code> classes: <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/BinaryAccuracy">binary_accuracy</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/CategoricalAccuracy">categorical_accuracy</a>, and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/SparseCategoricalAccuracy">sparse_categorical_accuracy</a>.
+For binary classification models, we use the <code>binary_accuracy</code> metric.
 For multi-class classification models, we use the <code>[sparse_]categorical_accuracy</code> metric.</p>
 
-<p><font style="color:red">TODO: Insert code snippet using Keras' built-tin accuracy metrics</font></p>
+<p>Utilizing the <code>Metric</code> classes allows us to use TensorBoard and visualize metrics during training.</p>
 
-<!-- ? Given wrong_preds and target_labels, can we use the metric methods by themselves? -->
+<p><font style="color:red">TODO: Insert code snippet using Keras' built-in accuracy metrics</font></p>
+
+<p><font style="color:red">TODO: Image of TensorBoard metrics</font></p>
+
+<h3 id="accuracy-in-keras">Accuracy in Keras</h3>
+
+<p>Alternatively, if we have a pre-trained model, we can use Keras' built-in accuracy methods to calculate the model's prediction accuracy: <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/binary_accuracy">binary</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/categorical_accuracy">categorical</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/sparse_categorical_accuracy">sparse_categorical</a>.</p>
+
+<p>Where the <code>Metric</code> classes allow us to utilize TensorBoard, the accuracy methods allows us to directly calculate the model's prediction accuracy.</p>
+
+<p><font style="color:red">TODO: Insert code snippet using Keras' built-in accuracy methods</font></p>
 
 <hr />
 
 <h2 id="precision">Precision</h2>
 
+<p>Precision is the ratio of correctly predicted <em>positive</em> labels to the total number of <em>positive</em> labels predicted.
+It's calculated as follows: TP / (TP + FP).
+In other words, precision is <strong>how consistently the model reaches the correct result</strong>.</p>
+
+<p><font style="color:red">TODO: Insert code snippet to calculate precision</font></p>
+
+<p>Imagine the goal is now to shoot an arrow at the apple's center.
+We would have high <em>precision</em> if there were a cluster of arrows directly at the apple's center.
+On the other hand, if we shot a cluster of arrows directly above the apple - the arrows were consistently above the apple, but had no guarantee of hitting the apple's center - we would still have high precision but low <em>accuracy</em>.</p>
+
+<h3 id="training-precision-in-keras">Training precision in Keras</h3>
+
+<p>During training, we can use Keras' <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision">built-in precision metric</a>.</p>
+
 <hr />
 
 <h2 id="accuracy-vs-precision">Accuracy vs Precision</h2>
+
+<p>Accuracy and precision are closely related.
+The distinction between the two is crucial for engineers and scientists.</p>
 
 <hr />
 
@@ -149,6 +188,13 @@ For multi-class classification models, we use the <code>[sparse_]categorical_acc
 <hr />
 
 <h2 id="conclusion">Conclusion</h2>
+
+<hr />
+
+<h2 id="references">References</h2>
+
+<p><!-- Keras built-in training metrics -->
+<!-- Keras built-in accuracy methods--></p>
 
 </body>
 </html>
