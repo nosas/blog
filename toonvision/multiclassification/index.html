@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 31, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 06, 2022</p>
 
 <p><title>ToonVision: Multiclass Classification</title></p>
 
@@ -230,6 +230,13 @@ We can retrieve the datasets, and separate the images and labels, as follows:</p
 </code></pre></div>
 
 <h4 id="splitting-the-images-into-train-validate-and-test">Splitting the images into train, validate, and test</h4>
+
+<p>Previously, we split the entire dataset into 60%/20%/20% train/validate/test sets.
+This resulted in unbalanced suit samples in each set.
+For instance, the Bossbot suit samples would contained a disproportionate number of sample from Flunkies.</p>
+
+<p>Now, in order to maintain balanced datasets for each Cog suit, we split each individual Cog entity using the 60/20/20 split.
+This ensures a representative sample of each Cog entity.</p>
 
 <hr />
 

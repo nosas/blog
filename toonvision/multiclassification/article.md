@@ -183,6 +183,13 @@ test_images, test_labels = ds_test
 
 #### Splitting the images into train, validate, and test
 
+Previously, we split the entire dataset into 60%/20%/20% train/validate/test sets.
+This resulted in unbalanced suit samples in each set.
+For instance, the Bossbot suit samples would contained a disproportionate number of sample from Flunkies.
+
+Now, in order to maintain balanced datasets for each Cog suit, we split each individual Cog entity using the 60/20/20 split.
+This ensures a representative sample of each Cog entity.
+
 ---
 ## Compiling the model
 
