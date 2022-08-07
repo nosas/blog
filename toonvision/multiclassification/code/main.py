@@ -1,18 +1,25 @@
 # %% Imports
+from glob import glob
+
 import keras
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from data_processing import (
+    SUITS_SHORT,
     TEST_DIR,
+    TRAIN_DIR,
+    VALIDATE_DIR,
     create_suit_datasets,
     get_suits_from_dir,
     integer_to_suit,
     process_images,
+    suit_to_integer,
     unsort_data,
 )
 from data_visualization import (
     COLORS,
+    plot_confusion_matrix,
     plot_histories,
     plot_history,
     plot_streets,
@@ -21,7 +28,6 @@ from data_visualization import (
 from img_utils import get_image_augmentations
 from kerastuner import BayesianOptimization, Hyperband, RandomSearch
 from model_utils import make_multiclass_model_original, make_multiclass_model_padding
-
 from tensorflow.compat.v1 import ConfigProto, InteractiveSession
 
 config = ConfigProto()
@@ -66,9 +72,17 @@ test_images, test_labels = ds_test
 p = np.random.permutation(len(train_images))
 train_images = train_images[p]
 train_labels = train_labels[p]
+# Retrieve filepaths of test images, to be used in plotting of wrong predictions
+train_fps, _ = get_suits_from_dir(directories=[TRAIN_DIR])[TRAIN_DIR]
+train_fps = np.array(train_fps)[p]  # Apply permutation to match ds_train's ordering
+
 p = np.random.permutation(len(val_images))
 val_images = val_images[p]
 val_labels = val_labels[p]
+# Retrieve filepaths of test images, to be used in plotting of wrong predictions
+val_fps, _ = get_suits_from_dir(directories=[VALIDATE_DIR])[VALIDATE_DIR]
+val_fps = np.array(val_fps)[p]  # Apply permutation to match ds_val's ordering
+
 p = np.random.permutation(len(test_images))
 test_images = test_images[p]
 test_labels = test_labels[p]
@@ -77,6 +91,7 @@ test_fps, _ = get_suits_from_dir(directories=[TEST_DIR])[TEST_DIR]
 test_fps = np.array(test_fps)[p]  # Apply permutation to match ds_test's ordering
 
 # %% Display a sample from the validation set
+# Should be a walking Cashbot-MoneyBags
 idx = np.random.randint(len(val_images))
 label_int, label_str = val_labels[idx], integer_to_suit([int(val_labels[idx])])[0]
 plt.title(f"{label_int}, {label_str}")
@@ -148,7 +163,7 @@ for model in models_all:
     wrong_actual = integer_to_suit(test_labels[i] for i in wrong_idxs)
     wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
 
-    plot_wrong_predictions_multiclass(wrong, model_name=model.name, show_num_wrong=10)
+    plot_wrong_predictions_multiclass(wrong, model_name=model.name, show_num_wrong=13)
 
 
 # %% Plot the training history of all models
@@ -297,7 +312,9 @@ for hp_id, hp in enumerate(best_hps):
         wrong_actual = integer_to_suit(test_labels[i] for i in wrong_idxs)
         wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
 
-        plot_wrong_predictions_multiclass(wrong, model_name=f"random_final_{hp_id}", show_num_wrong=5)
+        plot_wrong_predictions_multiclass(
+            wrong, model_name=f"random_final_{hp_id}", show_num_wrong=5
+        )
     del model
 
 # %%
@@ -662,7 +679,9 @@ plot_history(
     includes_validation=False,
 )
 
-#  Plot the wrong predictions
+# %% Plot the wrong predictions
+model = keras.models.load_model("./models/tuned_hyperband2_tv_Adam.keras")
+
 predictions = model.predict(test_images)
 preds_int = np.asarray([np.argmax(p) for p in predictions], dtype=np.int32)
 preds_str = integer_to_suit(preds_int)
@@ -682,11 +701,10 @@ plot_wrong_predictions_multiclass(wrong, model_name=model.name, show_num_wrong=1
 model.save("./models/tuned_hyperband_final_tv_Adam.keras")
 
 # %% Plot the wrong predictions
-from glob import glob
 
 for model_fp in glob("./models/*.keras"):
     model = tf.keras.models.load_model(model_fp)
-    model.summary()
+    # model.summary()
     predictions = model.predict(test_images)
     preds_int = np.asarray([np.argmax(p) for p in predictions], dtype=np.int32)
     preds_str = integer_to_suit(preds_int)
@@ -701,4 +719,16 @@ for model_fp in glob("./models/*.keras"):
     wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
     model_name = model_fp.split("\\")[-1].replace(".keras", "")
     plot_wrong_predictions_multiclass(wrong, model_name=model_name, show_num_wrong=10)
+    plot_confusion_matrix(
+        predictions=wrong_preds,
+        targets=wrong_actual,
+        display_labels=SUITS_SHORT,
+        title=f"Wrong Predictions: {model.name}",
+    )
+    plot_confusion_matrix(
+        predictions=preds_str,
+        targets=integer_to_suit(test_labels),
+        display_labels=SUITS_SHORT,
+        title=f"All Predictions: {model.name}",
+    )
 # %%

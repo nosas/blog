@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Rectangle
 from PIL import Image
+from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 
 from data_processing import (
     ALL_LABELS,
@@ -789,7 +790,6 @@ def plot_streets_animals(ax: plt.Axes = None, show_legend: bool = False) -> None
     return ax
 
 
-# %%
 def plot_streets() -> None:
     gridspec_kw = dict(width_ratios=[1, 1.2], height_ratios=[1, 1, 1])
     fig, ax = plt.subplot_mosaic(
@@ -813,6 +813,29 @@ def plot_streets() -> None:
     fig.tight_layout()
     fig.legend(STREETS, loc="lower left")
     fig.show()
+
+
+def plot_confusion_matrix(
+    predictions: list[str],
+    targets: list[str],
+    display_labels: list[str],
+    title: str = "",
+) -> None:
+    """Plot the confusion matrix for a list of predictions and targets"""
+
+    matrix = confusion_matrix(y_pred=predictions, y_true=targets, labels=display_labels)
+    display = ConfusionMatrixDisplay(
+        confusion_matrix=matrix, display_labels=display_labels
+    )
+
+    display.plot(include_values=True)
+    display.ax_.set_title(title)
+
+    fig = display.ax_.get_figure()
+    fig.set_figwidth(8)
+    fig.set_figheight(8)
+
+    plt.show()
 
 
 # %% Plot data
