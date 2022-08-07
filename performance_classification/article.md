@@ -20,6 +20,7 @@ The code in this article utilizes python3.7, tensorflow, and keras.
         - [Training precision in Keras](#training-precision-in-keras)
     - [Accuracy vs Precision](#accuracy-vs-precision)
     - [Recall](#recall)
+    - [When to use Accuracy, Precision, or Recall](#when-to-use-accuracy-precision-or-recall)
     - [F1-score](#f1-score)
     - [ROC Curve](#roc-curve)
     - [Conclusion](#conclusion)
@@ -28,42 +29,50 @@ The code in this article utilizes python3.7, tensorflow, and keras.
 ---
 ## Why are performance measures important?
 
-During training, we monitor how well the model performs on the training data using the loss and accuracy metrics.
-While these metrics are useful for monitoring the progress of the model, they are not very useful for evaluating the *performance*, or *quality*, of the model.
+During training, we monitor how well the model performs on the training data using model loss and accuracy metrics.
+While these metrics are useful for monitoring the model's training progress, they are not very useful for evaluating the *performance*, or *quality*, of the model.
 
 For example, imagine we've trained 100 models for the same classification problem, each with a different set of hyperparameters.
 How do we know which model is the best?
-Do we pick the model with the lowest loss or highest accuracy model?
+Do we pick the model with the lowest loss, highest accuracy, or maybe a combination of the two metrics?
 
 We could pick the model with the lowest loss, or highest accuracy, but that does not guarantee that the model is the best.
 Alternatively, we could pick the model with the least amount of wrong predictions on the test data.
-But does that mean that the model is the best?
+But does that guarantee we've picked the best model?
 
 The loss and accuracy metrics give us a rough idea of the model's performance on the training data, but no indication of the model's general performance.
 In order to gain a better understanding of the model's performance, we must use more specific metrics.
-The metrics shown later in the article are designed to evaluate the true performance of our classification models.
+The metrics shown in this article are designed to evaluate the true performance of our classification models.
 
 ---
 ## Confusion Matrix
 
-A confusion matrix is a technique for visualizing a classification model's performance.
+A confusion matrix is a core computer vision technique for visualizing and evaluating a classification model's performance.
 As the name suggests, a confusion matrix is a 2-dimensional table.
-The confusion matrix is a core part of evaluating a classification model.
+
+From the confusion matrix, we can determine the number of true positives, true negatives, false positives, and false negatives.
+We'll shorten the names to TP, TN, FP, and FN, respectively.
+Using TP, TN, FP, and FN, we can calculate the model's accuracy, precision, recall, and F1-score.
 
 The table below shows the confusion matrix for a binary classification problem.
 The rows represent the true labels and the columns represent the predicted labels.
+The diagonal represents correct predictions and all other cells represent incorrect predictions.
 
-<font style="color:red">TODO: Insert binary confusion matrix</font>
+<figure class="center">
+    <img src="img/confusion_matrix.png" style="width:100%;"/>
+    <figcaption>Confusion matrix for a binary classification problem</figcaption>
+</figure>
 
 We can expand the confusion matrix to include multi-class classification problems.
-For example, the table below shows the confusion matrix for a multi-class classification problem.
+For instance, the table below shows the confusion matrix for a multi-class classification problem with four classes.
 
-<font style="color:red">TODO: Insert multiclass confusion matrix</font>
+The more classes in a multi-class classification problem, the more convoluted the confusion matrix will be.
+This should not stop us from using the confusion matrix to evaluate model performance, however.
 
-From the confusion matrix, we can calculate the accuracy of the model - the number of correct predictions divided by the total number of predictions.
-Furthermore, we can determine the number of true positives, true negatives, false positives, and false negatives.
-We'll shorten the names to TP, TN, FP, and FN, respectively.
-Using TP, TN, FP, and FN, we can calculate the precision, recall, and F1-score of the model.
+<figure class="center">
+    <img src="img/confusion_matrix_multiclass.png" style="width:100%;"/>
+    <figcaption>Confusion matrix for a multiclass classification problem</figcaption>
+</figure>
 
 ### TP, TN, FP, and FN
 
@@ -106,12 +115,11 @@ Utilizing the `Metric` classes allows us to use TensorBoard and visualize metric
 
 ### Accuracy in Keras
 
-Alternatively, if we have a pre-trained model, we can use Keras' built-in accuracy methods to calculate the model's prediction accuracy: [binary][binary], [categorical][categorical], [sparse_categorical][sparse_categorical].
+Alternatively, given a pre-trained model, we can use Keras' built-in accuracy methods to calculate the model's prediction accuracy: [binary][binary], [categorical][categorical], [sparse_categorical][sparse_categorical].
 
 Where the `Metric` classes allow us to utilize TensorBoard, the accuracy methods allows us to directly calculate the model's prediction accuracy.
 
 <font style="color:red">TODO: Insert code snippet using Keras' built-in accuracy methods</font>
-
 
 ---
 ## Precision
@@ -123,21 +131,37 @@ In other words, precision is **how consistently the model reaches the correct re
 <font style="color:red">TODO: Insert code snippet to calculate precision</font>
 
 Imagine the goal is now to shoot an arrow at the apple's center.
+Note how the previous goal was more vague - just to hit the apple.
+Now we're aiming for a more specific goal - to hit the apple's center.
+
 We would have high *precision* if there were a cluster of arrows directly at the apple's center.
-On the other hand, if we shot a cluster of arrows directly above the apple - the arrows were consistently above the apple, but had no guarantee of hitting the apple's center - we would still have high precision but low *accuracy*.
+On the other hand, if we shot a cluster of arrows directly above the apple - the arrows were consistently above the apple, but had no guarantee of hitting the apple's center - we would still have high precision due to the consistency, but low precision relative to our desired goal.
 
 ### Training precision in Keras
 
 During training, we can use Keras' [built-in precision metric](https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision).
 
+<font style="color:red">TODO: Insert code snippet using Keras' built-in precision metric</font>
+
 ---
 ## Accuracy vs Precision
 
 Accuracy and precision are closely related.
-The distinction between the two is crucial for engineers and scientists.
+The two metrics are often used interchangeably in day-to-day work.
+However, the distinction between accuracy and precision is crucial for engineers and scientists.
+
+Earlier, we explained how accuracy is how *close* the model is to the correct result whereas precision is how *consistently* the model reaches the correct result.
+We can imagine accuracy as how close the arrows land near the apple, and precision as how consistently the arrows land near one another.
+
+One can have high accuracy and low precision - such as when the arrows land everywhere around the apple.
+High precision and low accuracy is also possible - such as when the arrows consistently cluster at some point except for the apple.
+
 
 ---
 ## Recall
+
+---
+## When to use Accuracy, Precision, or Recall
 
 ---
 ## F1-score
