@@ -37,7 +37,7 @@ The code in this article utilizes python3.7, tensorflow, and keras.</p>
 <li><a href="#why-are-performance-measures-important">Why are performance measures important?</a></li>
 <li><a href="#confusion-matrix">Confusion Matrix</a>
 <ul>
-<li><a href="#generate-confusion-matrix-for-tensorflow-model">Generate confusion matrix for TensorFlow model</a></li>
+<li><a href="#generate-confusion-matrix">Generate confusion matrix</a></li>
 </ul></li>
 <li><a href="#accuracy">Accuracy</a>
 <ul>
@@ -111,7 +111,7 @@ This should not stop us from using the confusion matrix to evaluate model perfor
 
 <p>Later in this article, we'll use a confusion matrix to derive the accuracy, precision, recall, and F1-score of our classification models.</p>
 
-<h3 id="generate-confusion-matrix-for-tensorflow-model">Generate confusion matrix for TensorFlow model</h3>
+<h3 id="generate-confusion-matrix">Generate confusion matrix</h3>
 
 <p>Given a list of predictions and a list of targets (true labels), we can generate a confusion matrix.
 We'll utilize two libraries to display the matrix: <code>matplotlib</code> and <code>sklearn</code>.</p>
@@ -168,19 +168,35 @@ It outputs a 2-dimensional numpy array that represents the confusion matrix.</p>
 
 <h2 id="accuracy">Accuracy</h2>
 
+<figure class="right" style="width:30%;">
+    <img src="img/confusion_matrix_accuracy.png" style="width:100%;"/>
+    <figcaption>Accuracy is the confusion matrix's diagonal</figcaption>
+</figure>
+
 <p>Accuracy is a metric that measures the percentage of correct predictions across all classes.
 In other words, accuracy is <strong>how close the model comes to the correct result</strong>.</p>
 
 <p>For example, imagine the goal is to shoot an arrow and hit the apple.
 If we shoot and hit 10 arrows, we would be accurate or have high <em>accuracy</em>.
 Now imagine a cluster of arrows around the apple - the arrows were <em>close</em> to hitting the apple, but had <em>no guarantee</em> of hitting the apple.
-This remains a case of high accuracy, but with low <em>precision</em>.
+Because the arrows land close to the target this remains a case of high accuracy, but with low <em>precision</em>.
 We'll talk about precision in the next section.</p>
 
-<p>Accuracy is calculated by dividing the number of correct predictions by the total number of predictions.
-We calculate accuracy as follows: (TP + TN) / (TP + TN + FP + FN), where TP, TN, FP, and FN are the true positives, true negatives, false positives, and false negatives, respectively.</p>
+<p>Using the initial confusion matrix, we can visualize accuracy as the confusion matrix's diagonal.</p>
 
-<p><font style="color:red">TODO: Insert code snippet to calculate accuracy</font></p>
+<p>Accuracy is calculated by dividing the number of correct predictions by the total number of predictions.
+We calculate accuracy as follows: <code>(TP + TN) / (TP + TN + FP + FN)</code>.
+<code>(TP + TN)</code> is the number of correct predictions - the diagonal of the confusion matrix.
+<code>(TP + TN + FP + FN)</code> is the total number of predictions - the sum of all cells in the confusion matrix.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_images</span><span class="p">)</span>
+<span class="c1"># Get the wrong predictions as a True/False array, where True == wrong prediction</span>
+<span class="n">wrong_preds</span> <span class="o">=</span> <span class="n">preds</span> <span class="o">!=</span> <span class="n">test_labels</span>
+<span class="c1"># Count the number of wrong predictions (number of True values in the array)</span>
+<span class="n">num_wrong_preds</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">wrong_preds</span><span class="p">))</span>
+<span class="c1"># Calculate the accuracy</span>
+<span class="n">accuracy</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span> <span class="o">-</span> <span class="n">num_wrong_preds</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span>
+</code></pre></div>
 
 <h3 id="training-accuracy-in-keras">Training accuracy in Keras</h3>
 

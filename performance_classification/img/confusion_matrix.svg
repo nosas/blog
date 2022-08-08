@@ -25,14 +25,14 @@
      inkscape:document-units="mm"
      showgrid="true"
      inkscape:zoom="1.1893044"
-     inkscape:cx="399.81354"
+     inkscape:cx="369.54374"
      inkscape:cy="443.11616"
      inkscape:window-width="3378"
      inkscape:window-height="1417"
      inkscape:window-x="54"
      inkscape:window-y="224"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer2">
+     inkscape:current-layer="layer1">
     <inkscape:grid
        type="xygrid"
        id="grid903" />
@@ -172,5 +172,74 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583;fill:#ffffff"
          x="80.565598"
          y="201.08333">Predicted</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="Metrics">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#ff00ff;stroke-width:0.264583"
+       x="181.91757"
+       y="88.69606"
+       id="text1856-7-9"
+       inkscape:label="recall"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ff00ff;stroke-width:0.264583"
+         x="181.91757"
+         y="88.69606"
+         id="tspan1345-4">Recall</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#ff6600;stroke-width:0.264583"
+       x="46.222145"
+       y="41.104122"
+       id="text1856-7"
+       inkscape:label="precision"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ff6600;stroke-width:0.264583"
+         x="46.222145"
+         y="41.104122"
+         id="tspan1345">Precision</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#ffcc00;stroke-width:0.264583"
+       x="182.87669"
+       y="169.33333"
+       id="text1856-7-8"
+       inkscape:label="accuracy"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffcc00;stroke-width:0.264583"
+         x="182.87669"
+         y="169.33333"
+         id="tspan1345-2">Accuracy</tspan></text>
+    <ellipse
+       style="opacity:0.99;fill:none;stroke:#ff00ff;stroke-width:1.09253"
+       id="path315-3-5"
+       cx="28.301994"
+       cy="115.05946"
+       rx="62.028149"
+       ry="33.619404"
+       transform="matrix(0.99021322,-0.13956281,0.65752003,0.75343707,0,0)"
+       inkscape:label="Recall" />
+    <ellipse
+       style="display:inline;opacity:0.99;fill:none;stroke:#ff6600;stroke-width:1.09253"
+       id="path315-3"
+       cx="161.43239"
+       cy="-62.898331"
+       rx="62.028149"
+       ry="33.619404"
+       transform="matrix(0.13956281,0.99021323,-0.75343708,0.65752004,0,0)"
+       inkscape:label="Precision" />
+    <ellipse
+       style="display:inline;opacity:0.99;fill:none;stroke:#ffcc00;stroke-width:1.00018"
+       id="path315"
+       cx="157.95409"
+       cy="7.0077105"
+       rx="81.35318"
+       ry="30.808792"
+       transform="matrix(0.70835324,0.70585814,-0.72389071,0.68991467,0,0)"
+       inkscape:label="Accuracy"
+       sodipodi:insensitive="true" />
   </g>
 </svg>

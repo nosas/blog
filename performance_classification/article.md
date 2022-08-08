@@ -11,7 +11,7 @@ The code in this article utilizes python3.7, tensorflow, and keras.
 - [Classification Performance Measures](#classification-performance-measures)
     - [Why are performance measures important?](#why-are-performance-measures-important)
     - [Confusion Matrix](#confusion-matrix)
-        - [Generate confusion matrix for TensorFlow model](#generate-confusion-matrix-for-tensorflow-model)
+        - [Generate confusion matrix](#generate-confusion-matrix)
     - [Accuracy](#accuracy)
         - [Training accuracy in Keras](#training-accuracy-in-keras)
         - [Accuracy in Keras](#accuracy-in-keras)
@@ -76,7 +76,7 @@ This should not stop us from using the confusion matrix to evaluate model perfor
 
 Later in this article, we'll use a confusion matrix to derive the accuracy, precision, recall, and F1-score of our classification models.
 
-### Generate confusion matrix for TensorFlow model
+### Generate confusion matrix
 
 Given a list of predictions and a list of targets (true labels), we can generate a confusion matrix.
 We'll utilize two libraries to display the matrix: `matplotlib` and `sklearn`.
@@ -134,19 +134,36 @@ It may be important to note that the ordering of the `labels` parameter determin
 ---
 ## Accuracy
 
+<figure class="right" style="width:30%;">
+    <img src="img/confusion_matrix_accuracy.png" style="width:100%;"/>
+    <figcaption>Accuracy is the confusion matrix's diagonal</figcaption>
+</figure>
+
 Accuracy is a metric that measures the percentage of correct predictions across all classes.
 In other words, accuracy is **how close the model comes to the correct result**.
 
 For example, imagine the goal is to shoot an arrow and hit the apple.
 If we shoot and hit 10 arrows, we would be accurate or have high *accuracy*.
 Now imagine a cluster of arrows around the apple - the arrows were *close* to hitting the apple, but had *no guarantee* of hitting the apple.
-This remains a case of high accuracy, but with low *precision*.
+Because the arrows land close to the target this remains a case of high accuracy, but with low *precision*.
 We'll talk about precision in the next section.
 
-Accuracy is calculated by dividing the number of correct predictions by the total number of predictions.
-We calculate accuracy as follows: (TP + TN) / (TP + TN + FP + FN), where TP, TN, FP, and FN are the true positives, true negatives, false positives, and false negatives, respectively.
+Using the initial confusion matrix, we can visualize accuracy as the confusion matrix's diagonal.
 
-<font style="color:red">TODO: Insert code snippet to calculate accuracy</font>
+Accuracy is calculated by dividing the number of correct predictions by the total number of predictions.
+We calculate accuracy as follows: `(TP + TN) / (TP + TN + FP + FN)`.
+`(TP + TN)` is the number of correct predictions - the diagonal of the confusion matrix.
+`(TP + TN + FP + FN)` is the total number of predictions - the sum of all cells in the confusion matrix.
+
+```python
+predictions = model.predict(test_images)
+# Get the wrong predictions as a True/False array, where True == wrong prediction
+wrong_preds = preds != test_labels
+# Count the number of wrong predictions (number of True values in the array)
+num_wrong_preds = len(np.argwhere(wrong_preds))
+# Calculate the accuracy
+accuracy = (len(preds) - num_wrong_preds) / len(preds)
+```
 
 ### Training accuracy in Keras
 
