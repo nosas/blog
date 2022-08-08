@@ -13,9 +13,12 @@ The code in this article utilizes python3.7, tensorflow, and keras.
     - [Confusion Matrix](#confusion-matrix)
         - [Generate confusion matrix](#generate-confusion-matrix)
     - [Accuracy](#accuracy)
+        - [Conceptualizing accuracy](#conceptualizing-accuracy)
+        - [Accuracy in classification problems](#accuracy-in-classification-problems)
         - [Training accuracy in Keras](#training-accuracy-in-keras)
         - [Accuracy in Keras](#accuracy-in-keras)
     - [Precision](#precision)
+        - [Conceptualizing precision](#conceptualizing-precision)
         - [Training precision in Keras](#training-precision-in-keras)
     - [Accuracy vs Precision](#accuracy-vs-precision)
     - [Recall](#recall)
@@ -46,6 +49,11 @@ The metrics shown in this article are designed to evaluate the true performance 
 ---
 ## Confusion Matrix
 
+<figure class="right" style="width:30%">
+    <img src="img/confusion_matrix.png" style="width:100%;"/>
+    <figcaption>Confusion matrix for a binary classification problem</figcaption>
+</figure>
+
 A confusion matrix is a core computer vision technique for visualizing and evaluating a classification model's performance.
 As the name suggests, a confusion matrix is a 2-dimensional table.
 
@@ -57,11 +65,6 @@ The table below shows the confusion matrix for a binary classification problem.
 The rows represent the true labels and the columns represent the predicted labels.
 The diagonal represents correct predictions and all other cells represent incorrect predictions.
 Ideally, our confusion matrix should diagonal contain values - no incorrect predictions.
-
-<figure class="center">
-    <img src="img/confusion_matrix.png" style="width:100%;"/>
-    <figcaption>Confusion matrix for a binary classification problem</figcaption>
-</figure>
 
 We can expand the confusion matrix to include multi-class classification problems.
 For instance, the table below shows the confusion matrix for a multi-class classification problem with four classes.
@@ -142,12 +145,6 @@ It may be important to note that the ordering of the `labels` parameter determin
 Accuracy is a metric that measures the percentage of correct predictions across all classes.
 In other words, accuracy is **how close the model comes to the correct result**.
 
-For example, imagine the goal is to shoot an arrow and hit the apple.
-If we shoot and hit 10 arrows, we would be accurate or have high *accuracy*.
-Now imagine a cluster of arrows around the apple - the arrows were *close* to hitting the apple, but had *no guarantee* of hitting the apple.
-Because the arrows land close to the target this remains a case of high accuracy, but with low *precision*.
-We'll talk about precision in the next section.
-
 Using the initial confusion matrix, we can visualize accuracy as the confusion matrix's diagonal.
 
 Accuracy is calculated by dividing the number of correct predictions by the total number of predictions.
@@ -164,6 +161,21 @@ num_wrong_preds = len(np.argwhere(wrong_preds))
 # Calculate the accuracy
 accuracy = (len(preds) - num_wrong_preds) / len(preds)
 ```
+
+### Conceptualizing accuracy
+
+For example, imagine the goal is to shoot an arrow and hit the apple.
+If we shoot and hit 10 arrows, we would be accurate or have high *accuracy*.
+
+Now imagine a cluster of arrows around the apple - the arrows were *close* to hitting the apple but had *no guarantee* of hitting the apple.
+Because the arrows landed close to the target this remains a case of high accuracy, but with low *precision*.
+We'll talk about precision in the next section.
+
+### Accuracy in classification problems
+
+Imagine we had a binary classifier that predicted whether an image was a cat or dog.
+
+
 
 ### Training accuracy in Keras
 
@@ -188,18 +200,24 @@ Where the `Metric` classes allow us to utilize TensorBoard, the accuracy methods
 ---
 ## Precision
 
+<figure class="right" style="width:30%;">
+    <img src="img/confusion_matrix_precision.png" style="width:100%;"/>
+    <figcaption>Precision is the confusion matrix's positives</figcaption>
+</figure>
+
 Precision is the ratio of correctly predicted *positive* labels to the total number of *positive* labels predicted.
 It's calculated as follows: TP / (TP + FP).
 In other words, precision is **how consistently the model reaches the correct result**.
 
 <font style="color:red">TODO: Insert code snippet to calculate precision</font>
 
+### Conceptualizing precision
+
 Imagine the goal is now to shoot an arrow at the apple's center.
-Note how the previous goal was more vague - just to hit the apple.
 Now we're aiming for a more specific goal - to hit the apple's center.
 
-We would have high *precision* if there were a cluster of arrows directly at the apple's center.
-On the other hand, if we shot a cluster of arrows directly above the apple - the arrows were consistently above the apple, but had no guarantee of hitting the apple's center - we would still have high precision due to the consistency, but low precision relative to our desired goal.
+We would have high precision if there were a cluster of arrows directly at the apple's center.
+On the other hand, if we shot a cluster of arrows directly above the apple - the arrows consistently landed above the apple, but had no guarantee of hitting the apple's center - we would still have high precision due to the consistency, but low accuracy.
 
 ### Training precision in Keras
 
@@ -216,6 +234,11 @@ However, the distinction between accuracy and precision is crucial for engineers
 
 Earlier, we explained how accuracy is how *close* the model is to the correct result whereas precision is how *consistently* the model reaches the correct result.
 We can imagine accuracy as how close the arrows land near the apple, and precision as how consistently the arrows land near one another.
+
+<figure class="center" style="width:100%;">
+    <img src="img/accuracy_precision.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
 
 One can have high accuracy and low precision - such as when the arrows land everywhere around the apple.
 High precision and low accuracy is also possible - such as when the arrows consistently cluster at some point except for the apple.

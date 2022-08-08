@@ -25,14 +25,14 @@
      inkscape:document-units="mm"
      showgrid="true"
      inkscape:zoom="1.1893044"
-     inkscape:cx="369.54374"
+     inkscape:cx="269.48526"
      inkscape:cy="443.11616"
      inkscape:window-width="3378"
      inkscape:window-height="1417"
      inkscape:window-x="54"
      inkscape:window-y="224"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1">
+     inkscape:current-layer="layer2">
     <inkscape:grid
        type="xygrid"
        id="grid903" />
@@ -64,10 +64,9 @@
      id="layer2"
      inkscape:label="Text">
     <g
-       id="g2216"
-       inkscape:label="Matrix">
+       id="g4208">
       <rect
-         style="display:inline;fill:none;stroke:#00ff00;stroke-width:1;stroke-dasharray:none"
+         style="display:inline;fill:none;stroke:#adff2f;stroke-width:1;stroke-dasharray:none;stroke-opacity:1"
          id="rect2026"
          width="70.908333"
          height="70.908333"
@@ -75,7 +74,7 @@
          y="117.475"
          inkscape:label="rect_tn" />
       <rect
-         style="display:inline;fill:none;stroke:#00ff00;stroke-width:1;stroke-dasharray:none"
+         style="display:inline;fill:none;stroke:#adff2f;stroke-width:1;stroke-dasharray:none;stroke-opacity:1"
          id="rect2024"
          width="70.908333"
          height="70.908333"
@@ -83,7 +82,7 @@
          y="117.475"
          inkscape:label="rect_fp" />
       <rect
-         style="display:inline;fill:none;stroke:#00ff00;stroke-width:1;stroke-dasharray:none"
+         style="display:inline;fill:none;stroke:#adff2f;stroke-width:1;stroke-dasharray:none;stroke-opacity:1"
          id="rect2018"
          width="70.908333"
          height="70.908333"
@@ -91,7 +90,7 @@
          y="46.566666"
          inkscape:label="rect_fn" />
       <rect
-         style="display:inline;fill:none;stroke:#00ff00;stroke-width:1;stroke-dasharray:none"
+         style="display:inline;fill:none;stroke:#adff2f;stroke-width:1;stroke-dasharray:none;stroke-opacity:1"
          id="rect2014"
          width="70.908333"
          height="70.908333"
