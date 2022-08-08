@@ -11,7 +11,6 @@ The code in this article utilizes python3.7, tensorflow, and keras.
 - [Classification Performance Measures](#classification-performance-measures)
     - [Why are performance measures important?](#why-are-performance-measures-important)
     - [Confusion Matrix](#confusion-matrix)
-        - [TP, TN, FP, and FN](#tp-tn-fp-and-fn)
         - [Generate confusion matrix for TensorFlow model](#generate-confusion-matrix-for-tensorflow-model)
     - [Accuracy](#accuracy)
         - [Training accuracy in Keras](#training-accuracy-in-keras)
@@ -57,6 +56,7 @@ Using TP, TN, FP, and FN, we can calculate the model's accuracy, precision, reca
 The table below shows the confusion matrix for a binary classification problem.
 The rows represent the true labels and the columns represent the predicted labels.
 The diagonal represents correct predictions and all other cells represent incorrect predictions.
+Ideally, our confusion matrix should diagonal contain values - no incorrect predictions.
 
 <figure class="center">
     <img src="img/confusion_matrix.png" style="width:100%;"/>
@@ -74,15 +74,62 @@ This should not stop us from using the confusion matrix to evaluate model perfor
     <figcaption>Confusion matrix for a multiclass classification problem</figcaption>
 </figure>
 
-### TP, TN, FP, and FN
-
-<font style="color:red">TODO: Write about these</font>
-
 Later in this article, we'll use a confusion matrix to derive the accuracy, precision, recall, and F1-score of our classification models.
 
 ### Generate confusion matrix for TensorFlow model
 
-<font style="color:red">TODO: Insert code to generate confusion matrix for TensorFlow model</font>
+Given a list of predictions and a list of targets (true labels), we can generate a confusion matrix.
+We'll utilize two libraries to display the matrix: `matplotlib` and `sklearn`.
+
+The code block below was used to generate the multiclass confusion matrix in the earlier section.
+
+```python
+import matplotlib.pyplot as plt
+from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
+
+
+def plot_confusion_matrix(
+    predictions: list[str],
+    targets: list[str],
+    display_labels: list[str],
+    title: str = "",
+) -> None:
+    """Plot the confusion matrix for a list of predictions and targets"""
+
+    # Generate the confusion matrix
+    matrix = confusion_matrix(
+        y_pred=predictions, y_true=targets, labels=display_labels
+        )
+    # Generate the figure
+    display = ConfusionMatrixDisplay(
+        confusion_matrix=matrix, display_labels=display_labels
+    )
+    # Plot the figure, add title, and resize
+    display.plot(include_values=True)
+    display.ax_.set_title(title)
+    fig = display.ax_.get_figure()
+    fig.set_figwidth(8)
+    fig.set_figheight(8)
+    # Show the confusion matrix
+    plt.show()
+```
+
+The `confusion_matrix()` method from `sklearn.metrics` takes in a list of predictions and a list of targets (true labels).
+It outputs a 2-dimensional numpy array that represents the confusion matrix.
+
+```python
+>>> confusion_matrix(
+        y_pred=preds_str,
+        y_true=integer_to_suit(test_labels),
+        labels=['bb', 'lb', 'cb', 'sb']
+    )
+array([[36,  0,  1,  4],
+       [ 0, 60,  0,  0],
+       [ 4,  2, 35,  0],
+       [10,  0,  0, 45]], dtype=int64)
+```
+
+It may be important to note that the ordering of the `labels` parameter determines the order of the rows and columns in the confusion matrix.
 
 ---
 ## Accuracy

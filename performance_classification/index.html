@@ -37,7 +37,6 @@ The code in this article utilizes python3.7, tensorflow, and keras.</p>
 <li><a href="#why-are-performance-measures-important">Why are performance measures important?</a></li>
 <li><a href="#confusion-matrix">Confusion Matrix</a>
 <ul>
-<li><a href="#tp-tn-fp-and-fn">TP, TN, FP, and FN</a></li>
 <li><a href="#generate-confusion-matrix-for-tensorflow-model">Generate confusion matrix for TensorFlow model</a></li>
 </ul></li>
 <li><a href="#accuracy">Accuracy</a>
@@ -91,7 +90,8 @@ Using TP, TN, FP, and FN, we can calculate the model's accuracy, precision, reca
 
 <p>The table below shows the confusion matrix for a binary classification problem.
 The rows represent the true labels and the columns represent the predicted labels.
-The diagonal represents correct predictions and all other cells represent incorrect predictions.</p>
+The diagonal represents correct predictions and all other cells represent incorrect predictions.
+Ideally, our confusion matrix should diagonal contain values - no incorrect predictions.</p>
 
 <figure class="center">
     <img src="img/confusion_matrix.png" style="width:100%;"/>
@@ -109,15 +109,60 @@ This should not stop us from using the confusion matrix to evaluate model perfor
     <figcaption>Confusion matrix for a multiclass classification problem</figcaption>
 </figure>
 
-<h3 id="tp-tn-fp-and-fn">TP, TN, FP, and FN</h3>
-
-<p><font style="color:red">TODO: Write about these</font></p>
-
 <p>Later in this article, we'll use a confusion matrix to derive the accuracy, precision, recall, and F1-score of our classification models.</p>
 
 <h3 id="generate-confusion-matrix-for-tensorflow-model">Generate confusion matrix for TensorFlow model</h3>
 
-<p><font style="color:red">TODO: Insert code to generate confusion matrix for TensorFlow model</font></p>
+<p>Given a list of predictions and a list of targets (true labels), we can generate a confusion matrix.
+We'll utilize two libraries to display the matrix: <code>matplotlib</code> and <code>sklearn</code>.</p>
+
+<p>The code block below was used to generate the multiclass confusion matrix in the earlier section.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">ConfusionMatrixDisplay</span><span class="p">,</span> <span class="n">confusion_matrix</span>
+
+
+<span class="k">def</span> <span class="nf">plot_confusion_matrix</span><span class="p">(</span>
+    <span class="n">predictions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">targets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">display_labels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Plot the confusion matrix for a list of predictions and targets&quot;&quot;&quot;</span>
+
+    <span class="c1"># Generate the confusion matrix</span>
+    <span class="n">matrix</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span>
+        <span class="n">y_pred</span><span class="o">=</span><span class="n">predictions</span><span class="p">,</span> <span class="n">y_true</span><span class="o">=</span><span class="n">targets</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">display_labels</span>
+        <span class="p">)</span>
+    <span class="c1"># Generate the figure</span>
+    <span class="n">display</span> <span class="o">=</span> <span class="n">ConfusionMatrixDisplay</span><span class="p">(</span>
+        <span class="n">confusion_matrix</span><span class="o">=</span><span class="n">matrix</span><span class="p">,</span> <span class="n">display_labels</span><span class="o">=</span><span class="n">display_labels</span>
+    <span class="p">)</span>
+    <span class="c1"># Plot the figure, add title, and resize</span>
+    <span class="n">display</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">include_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">display</span><span class="o">.</span><span class="n">ax_</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">display</span><span class="o">.</span><span class="n">ax_</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">set_figwidth</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">set_figheight</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+    <span class="c1"># Show the confusion matrix</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+
+<p>The <code>confusion_matrix()</code> method from <code>sklearn.metrics</code> takes in a list of predictions and a list of targets (true labels).
+It outputs a 2-dimensional numpy array that represents the confusion matrix.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">confusion_matrix</span><span class="p">(</span>
+        <span class="n">y_pred</span><span class="o">=</span><span class="n">preds_str</span><span class="p">,</span>
+        <span class="n">y_true</span><span class="o">=</span><span class="n">integer_to_suit</span><span class="p">(</span><span class="n">test_labels</span><span class="p">),</span>
+        <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;bb&#39;</span><span class="p">,</span> <span class="s1">&#39;lb&#39;</span><span class="p">,</span> <span class="s1">&#39;cb&#39;</span><span class="p">,</span> <span class="s1">&#39;sb&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">36</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span>  <span class="mi">4</span><span class="p">],</span>
+       <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
+       <span class="p">[</span> <span class="mi">4</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">10</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int64</span><span class="p">)</span>
+</code></pre></div>
+
+<p>It may be important to note that the ordering of the <code>labels</code> parameter determines the order of the rows and columns in the confusion matrix.</p>
 
 <hr />
 
