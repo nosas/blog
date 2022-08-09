@@ -21,6 +21,7 @@ The code in this article utilizes python3.7, tensorflow, and keras.
         - [Conceptualizing precision](#conceptualizing-precision)
         - [Training precision in Keras](#training-precision-in-keras)
     - [Accuracy vs Precision](#accuracy-vs-precision)
+        - [When to use accuracy vs precision](#when-to-use-accuracy-vs-precision)
     - [Recall](#recall)
     - [When to use Accuracy, Precision, or Recall](#when-to-use-accuracy-precision-or-recall)
     - [F1-score](#f1-score)
@@ -164,18 +165,31 @@ accuracy = (len(preds) - num_wrong_preds) / len(preds)
 
 ### Conceptualizing accuracy
 
-For example, imagine the goal is to shoot an arrow and hit the apple.
-If we shoot and hit 10 arrows, we would be accurate or have high *accuracy*.
+For example, imagine the goal is to shoot an arrow and hit the apple from 10 yards away.
+If we shoot and hit 10 arrows, we would have high *accuracy*.
 
-Now imagine a cluster of arrows around the apple - the arrows were *close* to hitting the apple but had *no guarantee* of hitting the apple.
+Now imagine we're 100 yards away from the apple.
+If a cluster of arrows land around the apple - the arrows were *close* to hitting the apple but had *no guarantee* of hitting the apple.
 Because the arrows landed close to the target this remains a case of high accuracy, but with low *precision*.
 We'll talk about precision in the next section.
 
 ### Accuracy in classification problems
 
-Imagine we had a binary classifier that predicted whether an image was a cat or dog.
+Understand that accuracy may be deceptive in unbalanced classification datasets and tasks.
 
+Imagine we had a binary classifier that predicts whether an image was a cat or dog.
+Our dataset consists of 1000 pictures: 950 cats pictures and 50 dog pictures.
 
+After training, the model correctly predicted 925/950 cats and 5/50 dogs for a total of 950/1000 correct predictions.
+We would say the model has an accuracy of 93%.
+
+We might think that the model has high accuracy regardless of the class.
+For instance, given a dataset with 950 dogs and 50 cats we might assume the model retains its 93% accuracy.
+This is not the case.
+The model will incorrectly predict dog samples as cats, likely resulting in a significantly lower accuracy.
+
+We can agree that the model has high accuracy on unbalanced datasets - specifically those that favor cat samples - but it will perform poorly on balanced datasets.
+This is where precision comes in.
 
 ### Training accuracy in Keras
 
@@ -207,7 +221,7 @@ Where the `Metric` classes allow us to utilize TensorBoard, the accuracy methods
 
 Precision is the ratio of correctly predicted *positive* labels to the total number of *positive* labels predicted.
 It's calculated as follows: TP / (TP + FP).
-In other words, precision is **how consistently the model reaches the correct result**.
+In other words, precision is **how reliably the model reaches the correct result**.
 
 <font style="color:red">TODO: Insert code snippet to calculate precision</font>
 
@@ -217,7 +231,9 @@ Imagine the goal is now to shoot an arrow at the apple's center.
 Now we're aiming for a more specific goal - to hit the apple's center.
 
 We would have high precision if there were a cluster of arrows directly at the apple's center.
-On the other hand, if we shot a cluster of arrows directly above the apple - the arrows consistently landed above the apple, but had no guarantee of hitting the apple's center - we would still have high precision due to the consistency, but low accuracy.
+On the other hand, if we shot a cluster of arrows directly above the apple - the arrows reliably landed above the apple, but had no guarantee of hitting the apple's center - we would still have high precision due to the consistency, but low accuracy.
+
+High precision allows us to trust the arrow to land directly at the apple's center.
 
 ### Training precision in Keras
 
@@ -232,8 +248,8 @@ Accuracy and precision are closely related.
 The two metrics are often used interchangeably in day-to-day work.
 However, the distinction between accuracy and precision is crucial for engineers and scientists.
 
-Earlier, we explained how accuracy is how *close* the model is to the correct result whereas precision is how *consistently* the model reaches the correct result.
-We can imagine accuracy as how close the arrows land near the apple, and precision as how consistently the arrows land near one another.
+Earlier, we explained how accuracy is how *close* the model is to the correct result whereas precision is how *reliably* the model reaches the correct result.
+We can imagine accuracy as how close the arrows land near the apple, and precision as how reliably the arrows land near one another.
 
 <figure class="center" style="width:100%;">
     <img src="img/accuracy_precision.png" style="width:100%;"/>
@@ -241,7 +257,15 @@ We can imagine accuracy as how close the arrows land near the apple, and precisi
 </figure>
 
 One can have high accuracy and low precision - such as when the arrows land everywhere around the apple.
-High precision and low accuracy is also possible - such as when the arrows consistently cluster at some point except for the apple.
+High precision and low accuracy is also possible - such as when the arrows reliably cluster at some point except for the apple.
+
+### When to use accuracy vs precision
+
+The decision whether to use accuracy or precision measures is based on the goal of the model - the type of task it is trying to solve.
+
+Precision is appropriate in highly unbalanced classification tasks.
+For instance, a model classifying cancer in medical x-rays must perform with high precision.
+Doctors
 
 
 ---
@@ -261,6 +285,8 @@ High precision and low accuracy is also possible - such as when the arrows consi
 
 ---
 ## References
+
+1. Skicit Learn's *Model Evaluation Metrics and Scoring* [API](https://scikit-learn.org/stable/modules/model_evaluation.html#metrics-and-scoring-quantifying-the-quality-of-predictions)
 
 <!-- Keras built-in training metrics -->
 [binary_accuracy]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/BinaryAccuracy

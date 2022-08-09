@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 07, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 08, 2022</p>
 
 <p><title>Performance Measures for Classification Problems</title></p>
 
@@ -51,7 +51,10 @@ The code in this article utilizes python3.7, tensorflow, and keras.</p>
 <li><a href="#conceptualizing-precision">Conceptualizing precision</a></li>
 <li><a href="#training-precision-in-keras">Training precision in Keras</a></li>
 </ul></li>
-<li><a href="#accuracy-vs-precision">Accuracy vs Precision</a></li>
+<li><a href="#accuracy-vs-precision">Accuracy vs Precision</a>
+<ul>
+<li><a href="#when-to-use-accuracy-vs-precision">When to use accuracy vs precision</a></li>
+</ul></li>
 <li><a href="#recall">Recall</a></li>
 <li><a href="#when-to-use-accuracy-precision-or-recall">When to use Accuracy, Precision, or Recall</a></li>
 <li><a href="#f1-score">F1-score</a></li>
@@ -197,16 +200,31 @@ We calculate accuracy as follows: <code>(TP + TN) / (TP + TN + FP + FN)</code>.
 
 <h3 id="conceptualizing-accuracy">Conceptualizing accuracy</h3>
 
-<p>For example, imagine the goal is to shoot an arrow and hit the apple.
-If we shoot and hit 10 arrows, we would be accurate or have high <em>accuracy</em>.</p>
+<p>For example, imagine the goal is to shoot an arrow and hit the apple from 10 yards away.
+If we shoot and hit 10 arrows, we would have high <em>accuracy</em>.</p>
 
-<p>Now imagine a cluster of arrows around the apple - the arrows were <em>close</em> to hitting the apple but had <em>no guarantee</em> of hitting the apple.
+<p>Now imagine we're 100 yards away from the apple.
+If a cluster of arrows land around the apple - the arrows were <em>close</em> to hitting the apple but had <em>no guarantee</em> of hitting the apple.
 Because the arrows landed close to the target this remains a case of high accuracy, but with low <em>precision</em>.
 We'll talk about precision in the next section.</p>
 
 <h3 id="accuracy-in-classification-problems">Accuracy in classification problems</h3>
 
-<p>Imagine we had a binary classifier that predicted whether an image was a cat or dog.</p>
+<p>Understand that accuracy may be deceptive in unbalanced classification datasets and tasks.</p>
+
+<p>Imagine we had a binary classifier that predicts whether an image was a cat or dog.
+Our dataset consists of 1000 pictures: 950 cats pictures and 50 dog pictures.</p>
+
+<p>After training, the model correctly predicted 925/950 cats and 5/50 dogs for a total of 950/1000 correct predictions.
+We would say the model has an accuracy of 93%.</p>
+
+<p>We might think that the model has high accuracy regardless of the class.
+For instance, given a dataset with 950 dogs and 50 cats we might assume the model retains its 93% accuracy.
+This is not the case.
+The model will incorrectly predict dog samples as cats, likely resulting in a significantly lower accuracy.</p>
+
+<p>We can agree that the model has high accuracy on unbalanced datasets - specifically those that favor cat samples - but it will perform poorly on balanced datasets.
+This is where precision comes in.</p>
 
 <h3 id="training-accuracy-in-keras">Training accuracy in Keras</h3>
 
@@ -239,7 +257,7 @@ For multi-class classification models, we use the <code>[sparse_]categorical_acc
 
 <p>Precision is the ratio of correctly predicted <em>positive</em> labels to the total number of <em>positive</em> labels predicted.
 It's calculated as follows: TP / (TP + FP).
-In other words, precision is <strong>how consistently the model reaches the correct result</strong>.</p>
+In other words, precision is <strong>how reliably the model reaches the correct result</strong>.</p>
 
 <p><font style="color:red">TODO: Insert code snippet to calculate precision</font></p>
 
@@ -249,7 +267,9 @@ In other words, precision is <strong>how consistently the model reaches the corr
 Now we're aiming for a more specific goal - to hit the apple's center.</p>
 
 <p>We would have high precision if there were a cluster of arrows directly at the apple's center.
-On the other hand, if we shot a cluster of arrows directly above the apple - the arrows consistently landed above the apple, but had no guarantee of hitting the apple's center - we would still have high precision due to the consistency, but low accuracy.</p>
+On the other hand, if we shot a cluster of arrows directly above the apple - the arrows reliably landed above the apple, but had no guarantee of hitting the apple's center - we would still have high precision due to the consistency, but low accuracy.</p>
+
+<p>High precision allows us to trust the arrow to land directly at the apple's center.</p>
 
 <h3 id="training-precision-in-keras">Training precision in Keras</h3>
 
@@ -265,8 +285,8 @@ On the other hand, if we shot a cluster of arrows directly above the apple - the
 The two metrics are often used interchangeably in day-to-day work.
 However, the distinction between accuracy and precision is crucial for engineers and scientists.</p>
 
-<p>Earlier, we explained how accuracy is how <em>close</em> the model is to the correct result whereas precision is how <em>consistently</em> the model reaches the correct result.
-We can imagine accuracy as how close the arrows land near the apple, and precision as how consistently the arrows land near one another.</p>
+<p>Earlier, we explained how accuracy is how <em>close</em> the model is to the correct result whereas precision is how <em>reliably</em> the model reaches the correct result.
+We can imagine accuracy as how close the arrows land near the apple, and precision as how reliably the arrows land near one another.</p>
 
 <figure class="center" style="width:100%;">
     <img src="img/accuracy_precision.png" style="width:100%;"/>
@@ -274,7 +294,15 @@ We can imagine accuracy as how close the arrows land near the apple, and precisi
 </figure>
 
 <p>One can have high accuracy and low precision - such as when the arrows land everywhere around the apple.
-High precision and low accuracy is also possible - such as when the arrows consistently cluster at some point except for the apple.</p>
+High precision and low accuracy is also possible - such as when the arrows reliably cluster at some point except for the apple.</p>
+
+<h3 id="when-to-use-accuracy-vs-precision">When to use accuracy vs precision</h3>
+
+<p>The decision whether to use accuracy or precision measures is based on the goal of the model - the type of task it is trying to solve.</p>
+
+<p>Precision is appropriate in highly unbalanced classification tasks.
+For instance, a model classifying cancer in medical x-rays must perform with high precision.
+Doctors</p>
 
 <hr />
 
@@ -299,6 +327,10 @@ High precision and low accuracy is also possible - such as when the arrows consi
 <hr />
 
 <h2 id="references">References</h2>
+
+<ol>
+<li>Skicit Learn's <em>Model Evaluation Metrics and Scoring</em> <a href="https://scikit-learn.org/stable/modules/model_evaluation.html#metrics-and-scoring-quantifying-the-quality-of-predictions">API</a></li>
+</ol>
 
 <p><!-- Keras built-in training metrics -->
 <!-- Keras built-in accuracy methods--></p>
