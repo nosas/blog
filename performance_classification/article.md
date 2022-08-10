@@ -13,19 +13,19 @@ The code in this article utilizes python3.7, tensorflow, and keras.
     - [Confusion Matrix](#confusion-matrix)
         - [Generate confusion matrix](#generate-confusion-matrix)
     - [Accuracy](#accuracy)
-        - [Conceptualizing accuracy](#conceptualizing-accuracy)
         - [Accuracy in classification problems](#accuracy-in-classification-problems)
-        - [Training accuracy in Keras](#training-accuracy-in-keras)
-        - [Accuracy in Keras](#accuracy-in-keras)
     - [Precision](#precision)
         - [Conceptualizing precision](#conceptualizing-precision)
-        - [Training precision in Keras](#training-precision-in-keras)
     - [Accuracy vs Precision](#accuracy-vs-precision)
         - [When to use accuracy vs precision](#when-to-use-accuracy-vs-precision)
     - [Recall](#recall)
     - [When to use Accuracy, Precision, or Recall](#when-to-use-accuracy-precision-or-recall)
     - [F1-score](#f1-score)
     - [ROC Curve](#roc-curve)
+    - [Keras](#keras)
+        - [Training accuracy in Keras](#training-accuracy-in-keras)
+        - [Accuracy in Keras](#accuracy-in-keras)
+        - [Training precision in Keras](#training-precision-in-keras)
     - [Conclusion](#conclusion)
     - [References](#references)
 
@@ -163,24 +163,16 @@ num_wrong_preds = len(np.argwhere(wrong_preds))
 accuracy = (len(preds) - num_wrong_preds) / len(preds)
 ```
 
-### Conceptualizing accuracy
-
-For example, imagine the goal is to shoot an arrow and hit the apple from 10 yards away.
-If we shoot and hit 10 arrows, we would have high *accuracy*.
-
-Now imagine we're 100 yards away from the apple.
-If a cluster of arrows land around the apple - the arrows were *close* to hitting the apple but had *no guarantee* of hitting the apple.
-Because the arrows landed close to the target this remains a case of high accuracy, but with low *precision*.
-We'll talk about precision in the next section.
-
 ### Accuracy in classification problems
 
-Understand that accuracy may be deceptive in unbalanced classification datasets and tasks.
+Balanced datasets are the key to successful classification models.
+Real-world problems, however, do not always have balanced datasets.
+We must understand how accuracy may be deceptive in unbalanced classification datasets and tasks.
 
 Imagine we had a binary classifier that predicts whether an image was a cat or dog.
 Our dataset consists of 1000 pictures: 950 cats pictures and 50 dog pictures.
 
-After training, the model correctly predicted 925/950 cats and 5/50 dogs for a total of 950/1000 correct predictions.
+After training, the model correctly predicts 925/950 cats and 5/50 dogs for a total of 950/1000 correct predictions.
 We would say the model has an accuracy of 93%.
 
 We might think that the model has high accuracy regardless of the class.
@@ -188,28 +180,9 @@ For instance, given a dataset with 950 dogs and 50 cats we might assume the mode
 This is not the case.
 The model will incorrectly predict dog samples as cats, likely resulting in a significantly lower accuracy.
 
-We can agree that the model has high accuracy on unbalanced datasets - specifically those that favor cat samples - but it will perform poorly on balanced datasets.
+We can agree that the model has high accuracy on unbalanced tasks - specifically those that favor cat samples - but it will perform poorly on balanced tasks where there's an equal number of dog and cat samples.
+Measuring model performance should be straightforward, not deceptive.
 This is where precision comes in.
-
-### Training accuracy in Keras
-
-During training, we can use Keras' built-in accuracy `Metric` classes: [binary_accuracy][binary_accuracy], [categorical_accuracy][categorical_accuracy], and [sparse_categorical_accuracy][sparse_categorical_accuracy].
-For binary classification models, we use the `binary_accuracy` metric.
-For multi-class classification models, we use the `[sparse_]categorical_accuracy` metric.
-
-Utilizing the `Metric` classes allows us to use TensorBoard and visualize metrics during training.
-
-<font style="color:red">TODO: Insert code snippet using Keras' built-in accuracy metrics</font>
-
-<font style="color:red">TODO: Image of TensorBoard metrics</font>
-
-### Accuracy in Keras
-
-Alternatively, given a pre-trained model, we can use Keras' built-in accuracy methods to calculate the model's prediction accuracy: [binary][binary], [categorical][categorical], [sparse_categorical][sparse_categorical].
-
-Where the `Metric` classes allow us to utilize TensorBoard, the accuracy methods allows us to directly calculate the model's prediction accuracy.
-
-<font style="color:red">TODO: Insert code snippet using Keras' built-in accuracy methods</font>
 
 ---
 ## Precision
@@ -234,12 +207,6 @@ We would have high precision if there were a cluster of arrows directly at the a
 On the other hand, if we shot a cluster of arrows directly above the apple - the arrows reliably landed above the apple, but had no guarantee of hitting the apple's center - we would still have high precision due to the consistency, but low accuracy.
 
 High precision allows us to trust the arrow to land directly at the apple's center.
-
-### Training precision in Keras
-
-During training, we can use Keras' [built-in precision metric](https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision).
-
-<font style="color:red">TODO: Insert code snippet using Keras' built-in precision metric</font>
 
 ---
 ## Accuracy vs Precision
@@ -267,7 +234,6 @@ Precision is appropriate in highly unbalanced classification tasks.
 For instance, a model classifying cancer in medical x-rays must perform with high precision.
 Doctors
 
-
 ---
 ## Recall
 
@@ -279,6 +245,35 @@ Doctors
 
 ---
 ## ROC Curve
+
+---
+## Keras
+
+### Training accuracy in Keras
+
+During training, we can use Keras' built-in accuracy `Metric` classes: [binary_accuracy][binary_accuracy], [categorical_accuracy][categorical_accuracy], and [sparse_categorical_accuracy][sparse_categorical_accuracy].
+For binary classification models, we use the `binary_accuracy` metric.
+For multi-class classification models, we use the `[sparse_]categorical_accuracy` metric.
+
+Utilizing the `Metric` classes allows us to use TensorBoard and visualize metrics during training.
+
+<font style="color:red">TODO: Insert code snippet using Keras' built-in accuracy metrics</font>
+
+<font style="color:red">TODO: Image of TensorBoard metrics</font>
+
+### Accuracy in Keras
+
+Alternatively, given a pre-trained model, we can use Keras' built-in accuracy methods to calculate the model's prediction accuracy: [binary][binary], [categorical][categorical], [sparse_categorical][sparse_categorical].
+
+Where the `Metric` classes allow us to utilize TensorBoard, the accuracy methods allows us to directly calculate the model's prediction accuracy.
+
+<font style="color:red">TODO: Insert code snippet using Keras' built-in accuracy methods</font>
+
+### Training precision in Keras
+
+During training, we can use Keras' [built-in precision metric](https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision).
+
+<font style="color:red">TODO: Insert code snippet using Keras' built-in precision metric</font>
 
 ---
 ## Conclusion
