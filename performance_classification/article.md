@@ -185,7 +185,7 @@ This is not the case.
 The model will incorrectly predict dog samples as cats, likely resulting in a significantly lower accuracy.
 
 We can agree that the model has high accuracy on unbalanced tasks - specifically those that favor cat samples - but it will perform poorly on balanced tasks where there's an equal number of dog and cat samples.
-Additionally, the accuracy does not provide insight to the model's performance.
+Additionally, accuracy does not provide insight to the model's general performance, but rather the model's performance on a specific dataset.
 
 Measuring model performance should be straightforward, not deceptive.
 This is where precision and recall come in.
@@ -201,16 +201,19 @@ This is where precision and recall come in.
 Precision is the ratio of correctly predicted *positive* labels to the total number of *positive* labels predicted.
 It's calculated as follows: `TP / (TP + FP)`.
 In other words, precision is **how reliably the model reaches the correct result**.
+It answers the question of "what proportion of positive labels are actually positive?"
 
 <font style="color:red">TODO: Insert code snippet to calculate precision</font>
 
+In short, we should optimize our model's precision when we want to decrease the number of false positives.
+
 ### What are positive labels?
 
-Positive labels are the labels that the model is expected to predict correctly.
+Positive labels are labels that the model is expected to predict correctly.
 They are chosen by the model author and represent the class that the model is expected to predict.
 
 Suppose that we chose "cat" as the positive label in the cat vs dog classification problem above.
-We could then calculate the model's precision by asking, **"Given that the model predicted a cat, how many cats did it correctly predict?"**
+We could then calculate the model's precision by asking, **"what proportion of cat predictions were actually cats?"**
 For instance, if the model incorrectly predicted 2 dog samples as cats (FP = 2), and correctly predicted 3 cat samples as cats (TP = 3), then precision = 3/5 = 60%.
 
 Positive labels are used to frame the model's performance given a specific task - such as precisely predicting cats.
@@ -229,8 +232,7 @@ The key takeaway is that high precision means high reliability, but that doesn't
 ---
 ## Accuracy vs Precision
 
-Accuracy and precision are closely related.
-The two metrics are often used interchangeably in day-to-day work.
+Accuracy and precision are closely related and often used interchangeably in day-to-day work.
 However, the distinction between accuracy and precision is crucial for engineers and scientists.
 
 Earlier, we explained how accuracy is how *close* the model is to the correct result whereas precision is how *reliably* the model reaches the correct result.
@@ -238,7 +240,7 @@ We can visualize accuracy as how close the arrows land near the apple's center, 
 
 <figure class="center" style="width:100%;">
     <img src="img/accuracy_precision.png" style="width:100%;"/>
-    <figcaption></figcaption>
+    <figcaption>Accuracy and precision</figcaption>
 </figure>
 
 One can have high accuracy and low precision - such as when the arrows land everywhere around the apple's center.
@@ -247,8 +249,22 @@ High precision and low accuracy is also possible - such as when the arrows relia
 ---
 ## Recall
 
+Recall answers the question of "what proportion of actual positive are correctly classified?"
+We calculate recall as follows: `TP / (TP + FN)`.
+
+<figure class="right" style="width:30%;">
+    <img src="img/confusion_matrix_recall.png" style="width:100%;"/>
+    <figcaption>Precision is the confusion matrix's positives</figcaption>
+</figure>
+
+We should optimize our model's recall when we want to decrease the number of false negatives - identify rare but important classes.
+
 ---
 ## When to use Precision vs Recall
+
+If we are trying to detect cancer in x-rays, but the majority of x-rays in our dataset do not contain cancer, we should optimize our model's **recall**.
+This optimization will strengthen the model's ability to recognize rare classes.
+We wouldn't want to unknowingly classify a cancerous patient as cancer-free; that would ruin our credibility.
 
 ---
 ## F1-score
