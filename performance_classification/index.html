@@ -45,6 +45,7 @@ The code in this article utilizes python3.7, tensorflow, and keras.</p>
 </ul></li>
 <li><a href="#precision">Precision</a>
 <ul>
+<li><a href="#what-are-positive-labels">What are positive labels?</a></li>
 <li><a href="#conceptualizing-precision">Conceptualizing precision</a></li>
 </ul></li>
 <li><a href="#accuracy-vs-precision">Accuracy vs Precision</a>
@@ -231,10 +232,21 @@ This is where precision comes in.</p>
 </figure>
 
 <p>Precision is the ratio of correctly predicted <em>positive</em> labels to the total number of <em>positive</em> labels predicted.
-It's calculated as follows: TP / (TP + FP).
+It's calculated as follows: <code>TP / (TP + FP)</code>.
 In other words, precision is <strong>how reliably the model reaches the correct result</strong>.</p>
 
 <p><font style="color:red">TODO: Insert code snippet to calculate precision</font></p>
+
+<h3 id="what-are-positive-labels">What are positive labels?</h3>
+
+<p>Positive labels are the labels that the model is expected to predict correctly.
+They are arbitrary and chosen by the model author.</p>
+
+<p>Suppose that we chose "cat" as the positive label in the cat vs dog classification problem above.
+We could then calculate precision by asking, "Given that the model predicted a cat, how many cats did it correctly predict?"
+If the model incorrectly predicted 2 dog samples as cats (FP = 2), and correctly predicted 3 cat samples as cats (TP = 3), then precision = 3/5 = 60%.</p>
+
+<p>Positive labels are used to frame the model's performance given a specific task - such as precisely predicting cats.</p>
 
 <h3 id="conceptualizing-precision">Conceptualizing precision</h3>
 
