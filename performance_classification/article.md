@@ -8,6 +8,9 @@ These measures apply to both binary and multi-class classification problems.
 We will explain model performance metrics such as confusion matrix, accuracy, precision, recall, F1-score, and ROC curve.
 The code in this article utilizes python3.7, tensorflow, and keras.
 
+<details>
+    <summary>Table of Contents</summary>
+
 - [Classification Performance Measures](#classification-performance-measures)
     - [Why are performance measures important?](#why-are-performance-measures-important)
     - [Confusion Matrix](#confusion-matrix)
@@ -29,6 +32,7 @@ The code in this article utilizes python3.7, tensorflow, and keras.
         - [Training precision in Keras](#training-precision-in-keras)
     - [Conclusion](#conclusion)
     - [References](#references)
+</details>
 
 ---
 ## Why are performance measures important?
