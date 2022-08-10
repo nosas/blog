@@ -202,23 +202,24 @@ In other words, precision is **how reliably the model reaches the correct result
 ### What are positive labels?
 
 Positive labels are the labels that the model is expected to predict correctly.
-They are arbitrary and chosen by the model author.
+They are chosen by the model author and represent the class that the model is expected to predict.
 
 Suppose that we chose "cat" as the positive label in the cat vs dog classification problem above.
-We could then calculate precision by asking, "Given that the model predicted a cat, how many cats did it correctly predict?"
+We could then calculate the model's precision by asking, "Given that the model predicted a cat, how many cats did it correctly predict?"
 If the model incorrectly predicted 2 dog samples as cats (FP = 2), and correctly predicted 3 cat samples as cats (TP = 3), then precision = 3/5 = 60%.
 
 Positive labels are used to frame the model's performance given a specific task - such as precisely predicting cats.
 
 ### Conceptualizing precision
 
-Imagine the goal is now to shoot an arrow at the apple's center.
-Now we're aiming for a more specific goal - to hit the apple's center.
+Imagine the goal is to shoot an arrow at the apple's center.
+Obviously, we would have high precision if there were a cluster of arrows directly at the apple's center.
 
-We would have high precision if there were a cluster of arrows directly at the apple's center.
-On the other hand, if we shot a cluster of arrows directly above the apple - the arrows reliably landed above the apple, but had no guarantee of hitting the apple's center - we would still have high precision due to the consistency, but low accuracy.
+Not so obviously, however, if we shot a cluster of arrows directly above the apple - the arrows reliably landed above the apple, but had no guarantee of hitting the apple's center - we would still have high precision due to the arrows' consistency.
+This is a case of high precision (consistent arrow location) with low accuracy (missing the apple's center).
 
 High precision allows us to trust the arrow to land directly at the apple's center.
+The key takeaway is that high precision means high reliability, but that doesn't guarantee it's reliably correct!
 
 ---
 ## Accuracy vs Precision
@@ -228,7 +229,7 @@ The two metrics are often used interchangeably in day-to-day work.
 However, the distinction between accuracy and precision is crucial for engineers and scientists.
 
 Earlier, we explained how accuracy is how *close* the model is to the correct result whereas precision is how *reliably* the model reaches the correct result.
-We can imagine accuracy as how close the arrows land near the apple, and precision as how reliably the arrows land near one another.
+We can visualize accuracy as how close the arrows land near the apple's center, and precision as how reliably the arrows land near one another.
 
 <figure class="center" style="width:100%;">
     <img src="img/accuracy_precision.png" style="width:100%;"/>
