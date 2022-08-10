@@ -21,9 +21,8 @@ The code in this article utilizes python3.7, tensorflow, and keras.
         - [What are positive labels?](#what-are-positive-labels)
         - [Conceptualizing precision](#conceptualizing-precision)
     - [Accuracy vs Precision](#accuracy-vs-precision)
-        - [When to use accuracy vs precision](#when-to-use-accuracy-vs-precision)
     - [Recall](#recall)
-    - [When to use Accuracy, Precision, or Recall](#when-to-use-accuracy-precision-or-recall)
+    - [When to use Precision vs Recall](#when-to-use-precision-vs-recall)
     - [F1-score](#f1-score)
     - [ROC Curve](#roc-curve)
     - [Keras](#keras)
@@ -186,8 +185,10 @@ This is not the case.
 The model will incorrectly predict dog samples as cats, likely resulting in a significantly lower accuracy.
 
 We can agree that the model has high accuracy on unbalanced tasks - specifically those that favor cat samples - but it will perform poorly on balanced tasks where there's an equal number of dog and cat samples.
+Additionally, the accuracy does not provide insight to the model's performance.
+
 Measuring model performance should be straightforward, not deceptive.
-This is where precision comes in.
+This is where precision and recall come in.
 
 ---
 ## Precision
@@ -209,8 +210,8 @@ Positive labels are the labels that the model is expected to predict correctly.
 They are chosen by the model author and represent the class that the model is expected to predict.
 
 Suppose that we chose "cat" as the positive label in the cat vs dog classification problem above.
-We could then calculate the model's precision by asking, "Given that the model predicted a cat, how many cats did it correctly predict?"
-If the model incorrectly predicted 2 dog samples as cats (FP = 2), and correctly predicted 3 cat samples as cats (TP = 3), then precision = 3/5 = 60%.
+We could then calculate the model's precision by asking, **"Given that the model predicted a cat, how many cats did it correctly predict?"**
+For instance, if the model incorrectly predicted 2 dog samples as cats (FP = 2), and correctly predicted 3 cat samples as cats (TP = 3), then precision = 3/5 = 60%.
 
 Positive labels are used to frame the model's performance given a specific task - such as precisely predicting cats.
 
@@ -240,22 +241,14 @@ We can visualize accuracy as how close the arrows land near the apple's center, 
     <figcaption></figcaption>
 </figure>
 
-One can have high accuracy and low precision - such as when the arrows land everywhere around the apple.
-High precision and low accuracy is also possible - such as when the arrows reliably cluster at some point except for the apple.
-
-### When to use accuracy vs precision
-
-The decision whether to use accuracy or precision measures is based on the goal of the model - the type of task it is trying to solve.
-
-Precision is appropriate in highly unbalanced classification tasks.
-For instance, a model classifying cancer in medical x-rays must perform with high precision.
-Doctors
+One can have high accuracy and low precision - such as when the arrows land everywhere around the apple's center.
+High precision and low accuracy is also possible - such as when the arrows reliably cluster, but miss the apple's center.
 
 ---
 ## Recall
 
 ---
-## When to use Accuracy, Precision, or Recall
+## When to use Precision vs Recall
 
 ---
 ## F1-score
