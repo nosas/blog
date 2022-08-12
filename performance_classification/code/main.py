@@ -3,6 +3,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+# %% Set matplotlib to dark mode
+plt.style.use('dark_background')
 
 # %% Functions
 def calc_mean_arithmetic(x, y) -> float:
@@ -58,12 +60,15 @@ plt.show()
 fig = plt.figure(figsize=(5, 5))
 ax = fig.add_subplot(111)
 
+# Add horizontal grid lines to the plot
+ax.grid(True, which="major", axis="y", linestyle="-", color="white", alpha=0.4)
+
 # Set [p, r] as the x-axis
 ax.set_xticks([1, 2])
 ax.set_xticklabels(["precision", "recall"])
 
 # Set the y-axis to 5
-ax.set_ylim(0, 5)
+ax.set_ylim(0, 3.5)
 # Set the x-axis to 2
 ax.set_xlim(0.5, 2.5)
 
@@ -74,22 +79,37 @@ ax.plot(2, recalls[0], "ro", label="Recall", markersize=20)
 
 # Plot the arithmetic mean
 # Plot a line from (1, precisions[0]) to (2, recalls[0])
-ax.plot([1, 2], [precisions[0], recalls[0]], "g--", linewidth=2.5, alpha=0.7, zorder=0)
+ax.plot([1, 2], [precisions[0], recalls[0]], "--", linewidth=2.5, alpha=0.7, zorder=0, color="green")
 # Plot a dot in the middle of the line
-ax.plot(1.5, scores_mean[0], "go", label="Arithmetic", markersize=10)
+ax.plot(1.5, scores_mean[0], "o", label="Arithmetic", markersize=10, color="green")
 # Plot a vertical line from 1.5 to scores_mean[0]
-ax.plot([1.5, 1.5], [0, scores_mean[0]], "g--", linewidth=2.5, alpha=0.7, zorder=0)
+ax.plot([1.5, 1.5], [0, scores_mean[0]], "--", linewidth=2.5, alpha=0.5, color="green")
 
 # Plot the harmonic mean
+# Declare the x, y coordinates for each lines' start and end points
+l1_x = [1, 2]
+l1_y = [0, recalls[0]]
+l2_x = [2, 1]
+l2_y = [0, precisions[0]]
+# Derive the slope and intercept of the lines
+l1_m = (l1_y[1] - l1_y[0]) / (l1_x[1] - l1_x[0])
+l1_b = l1_y[0] - l1_m * l1_x[0]
+l2_m = (l2_y[1] - l2_y[0]) / (l2_x[1] - l2_x[0])
+l2_b = l2_y[0] - l2_m * l2_x[0]
+# Derive the intersection point of the lines
+int_x = (l2_b - l1_b) / (l1_m - l2_m)
+int_y = scores_f1[0] / 2  # int_y = l1_m * int_x + l1_b
 # Plot a line from the bottom of the precision bar to the top of the recall bar
-ax.plot([1, 2], [0, recalls[0]], "-", linewidth=5, alpha=0.7, zorder=0, color="yellow")
+ax.plot(l1_x, l1_y, "-", linewidth=2.5, alpha=0.5, zorder=0, color="white")
 # Plot a line from the bottom of the precision bar to the top of the recall bar
-ax.plot([2, 1], [0, precisions[0]], "-", linewidth=5, alpha=0.7, zorder=0, color="black")
+ax.plot(l2_x, l2_y, "-", linewidth=2.5, alpha=0.5, zorder=0, color="white")
 # Plot a dot at the intersection of the two lines
+ax.plot(int_x, int_y, "o", label="Harmonic", markersize=10, color="white")
+# Plot a vertical line from the intersection point to the x-axis
+ax.plot([int_x, int_x], [0, int_y], "--", linewidth=2.5, alpha=0.5, zorder=0, color="white")
 
-
-# Draw a horizontal line at the harmonic mean
-ax.plot([0, scores_f1[0]], [scores_f1[0], scores_f1[0]], "r--", linewidth=2.5, alpha=0.7, zorder=0)
+# Add a legend
+ax.legend()
 
 # %%
 # %%
