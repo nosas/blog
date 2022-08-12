@@ -50,6 +50,15 @@ But does that guarantee we've picked the best model?
 The loss and accuracy metrics give us a rough idea of the model's performance on the training data, but no indication of the model's general performance.
 In order to gain a better understanding of the model's performance, we must use more specific metrics.
 The metrics shown in this article are designed to evaluate the true performance of our classification models.
+We'll discuss and compare the following metrics:
+
+* *Accuracy*: The percentage of correct predictions
+* *Precision*: The percentage of correct positive predictions
+* *Recall*: The percentage of positive predictions that are correct
+* *F1-score*: The harmonic mean of precision and recall
+* *ROC Curve*: A plot of the true positive rate against the false positive rate
+
+But first, we must familiarize ourselves with the confusion matrix.
 
 ---
 ## Confusion Matrix
@@ -144,7 +153,7 @@ It may be important to note that the ordering of the `labels` parameter determin
 
 <figure class="right" style="width:40%;">
     <img src="img/confusion_matrix_accuracy.png" style="width:100%;"/>
-    <figcaption>Accuracy is the confusion matrix's diagonal</figcaption>
+    <figcaption>Ratio of correct predictions</figcaption>
 </figure>
 
 Accuracy is a metric that measures the percentage of correct predictions across all classes.
@@ -196,7 +205,7 @@ This is where precision and recall come in.
 
 <figure class="right" style="width:30%;">
     <img src="img/confusion_matrix_precision.png" style="width:100%;"/>
-    <figcaption>Precision is the confusion matrix's positives</figcaption>
+    <figcaption>Ratio of correctly predicted positive labels</figcaption>
 </figure>
 
 Precision is the ratio of correctly predicted *positive* labels to the total number of *positive* labels predicted.
@@ -257,7 +266,7 @@ We calculate recall as follows: `TP / (TP + FN)`.
 
 <figure class="right" style="width:40%;">
     <img src="img/confusion_matrix_recall.png" style="width:100%;"/>
-    <figcaption>Precision is the confusion matrix's positives</figcaption>
+    <figcaption>Proportion of correct positives</figcaption>
 </figure>
 
 We should optimize our model's recall when we want to decrease the number of false negatives - identify rare but important classes.
