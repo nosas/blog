@@ -85,7 +85,6 @@ But does that guarantee we've picked the best model?</p>
 
 <p>The loss and accuracy metrics give us a rough idea of the model's performance on the training data, but no indication of the model's general performance.
 In order to gain a better understanding of the model's performance, we must use more specific metrics.
-The metrics shown in this article are designed to evaluate the true performance of our classification models.
 We'll discuss and compare the following metrics:</p>
 
 <ul>
@@ -96,7 +95,8 @@ We'll discuss and compare the following metrics:</p>
 <li><em>ROC Curve</em>: A plot of the true positive rate against the false positive rate</li>
 </ul>
 
-<p>But first, we must familiarize ourselves with the confusion matrix.</p>
+<p>We'll examine these metrics in examples such as dog vs cat classification, cancer detection, and shooting arrows at a target.
+But first we must familiarize ourselves with the confusion matrix.</p>
 
 <hr />
 
@@ -241,19 +241,23 @@ This is where precision and recall come in.</p>
 
 <h2 id="precision">Precision</h2>
 
-<figure class="right" style="width:30%;">
+<p>We know now that accuracy is simply the ratio of correct predictions to total predictions.
+Let's expand this to include precision.</p>
+
+<p>Precision answers the question of "what proportion of positive labels are actually positive?"
+It's calculated as follows: <code>TP / (TP + FP)</code>.</p>
+
+<figure class="center" style="width:40%;">
     <img src="img/confusion_matrix_precision.png" style="width:100%;"/>
     <figcaption>Ratio of correctly predicted positive labels</figcaption>
 </figure>
 
-<p>Precision is the ratio of correctly predicted <em>positive</em> labels to the total number of <em>positive</em> labels predicted.
-It's calculated as follows: <code>TP / (TP + FP)</code>.
-In other words, precision is <strong>how reliably the model reaches the correct result</strong>.
-It answers the question of "what proportion of positive labels are actually positive?"</p>
+<p>It is the ratio of correctly predicted <em>positive</em> labels to the total number of <em>positive</em> labels predicted.
+In other words, precision is <strong>how reliably the model reaches the correct result</strong>.</p>
 
 <p><font style="color:red">TODO: Insert code snippet to calculate precision</font></p>
 
-<p>In short, we should optimize our model's precision when we want to decrease the number of false positives.</p>
+<p>We should optimize our model's precision when we want to decrease the number of false positives or when having false negatives is not a concern.</p>
 
 <h3 id="what-are-positive-labels">What are positive labels?</h3>
 
@@ -299,12 +303,13 @@ High precision and low accuracy is also possible - such as when the arrows relia
 
 <h2 id="recall">Recall</h2>
 
-<p>Now we understand how many times the model correctly predicted labels (accuracy) and how many times it correctly predicted a specific label (precision), let's move on to the next metric: recall.</p>
+<p>Now we understand how many times the model correctly predicted labels (accuracy) and how many times it correctly predicted a specific label (precision).
+Let's move on to the next metric: recall.</p>
 
 <p>Recall answers the question of "what proportion of positives are correctly classified?"
 We calculate recall as follows: <code>TP / (TP + FN)</code>.</p>
 
-<figure class="right" style="width:40%;">
+<figure class="center" style="width:40%;">
     <img src="img/confusion_matrix_recall.png" style="width:100%;"/>
     <figcaption>Proportion of correct positives</figcaption>
 </figure>
@@ -320,18 +325,18 @@ When precision is high, we trust the model when it says positive.
 When recall is high, we can trust the model to not mislabel positive classes as negative.</p>
 
 <p>If our goal is identifying an object in a scene, and the false negatives are not a concern, then we should optimize for precision.
-For example, counting the number of cars on a busy street or trees in forest photos or fish in aquarium photos is a good example of precision.
-Missing an object or two, is not detrimental to our goal of identifying the objects.</p>
+For example, counting the number of cars on a busy street or trees in forest photos or fish in aquarium photos.
+Missing an object or two is not detrimental to our goal of identifying the objects.</p>
 
 <p>Now, imagine our model's task is to identify cancer in x-rays.
-We're provided a realistic dataset with 1000 x-rays, where the vast majority of the x-rays do <em>not</em> contain cancer.
+We're provided a realistic dataset with 1000 x-rays where the vast majority of the x-rays do <em>not</em> contain cancer.
 Therefore, we can consider cancer in x-rays to be a rare class.
 Our goal is to guarantee correct identification of all cancer samples in the dataset.
 Mistakenly classifying a cancerous x-ray as cancer-free is a serious mistake that would ruin our credibility.</p>
 
 <p>Optimizing for recall will decrease the number of false negatives and ensure no x-rays containing cancer fly under our radar.
-This optimization will strengthen the model's ability to recognize rare classes and reach our goal to identify all cancer samples.
-Alternatively, if we optimize our model's precision, then we decrease the chances of misclassifying cancer-free x-rays as cancerous.
+This optimization will both strengthen the model's ability to recognize rare classes and reach our goal to correctly identify all cancer samples.
+Alternatively, if we optimize our model's precision, then we decrease the number of false positives - misclassifying cancer-free x-rays as cancerous.
 This neither improves our model's ability to classify cancer nor reaches our goal of identifying all cancer samples.</p>
 
 <p>There are cases where we should optimize for either precision or recall but, realistically, we should optimize both.
