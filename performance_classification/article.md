@@ -24,7 +24,6 @@ The code in this article utilizes python3.7, tensorflow, and keras.
     - [Recall](#recall)
     - [When to use Precision vs Recall](#when-to-use-precision-vs-recall)
     - [F1-score](#f1-score)
-    - [ROC Curve](#roc-curve)
     - [Keras](#keras)
         - [Training accuracy in Keras](#training-accuracy-in-keras)
         - [Accuracy in Keras](#accuracy-in-keras)
@@ -58,6 +57,7 @@ We'll discuss and compare the following metrics:
 * *ROC Curve*: A plot of the true positive rate against the false positive rate
 
 We'll examine these metrics in examples such as dog vs cat classification, cancer detection, and shooting arrows at a target.
+Afterwards, with the help of Keras and scikit-learn, we'll write code to calculate the metrics.
 But first we must familiarize ourselves with the confusion matrix.
 
 ---
@@ -298,14 +298,31 @@ This optimization will both strengthen the model's ability to recognize rare cla
 Alternatively, if we optimize our model's precision, then we decrease the number of false positives - misclassifying cancer-free x-rays as cancerous.
 This neither improves our model's ability to classify cancer nor reaches our goal of identifying all cancer samples.
 
+Precision and recall are in trade-off relationship where optimizing for one comes at a cost for the other.
 There are cases where we should optimize for either precision or recall but, realistically, we should optimize both.
 We can do this by utilizing the F1-score.
 
 ---
 ## F1-score
 
----
-## ROC Curve
+The F1-score combines precision and recall to make for a good metric for imbalanced datasets.
+It's designed to be a good metric for classification when other metrics may be deceptive or misleading.
+
+Formally, the F1-score is: `(2 * precision * recall) / (precision + recall)`.
+We calculate the F1-score by taking the harmonic mean of precision and recall.
+We take the harmonic mean because it penalizes extreme value discrepancies more than the arithmetic mean.
+Take the following three figures, for example.
+
+<figure class="center">
+    <font style="color:red">TODO: Add three figures: similar pr, different pr, same pr</font>
+    <img src="img/" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
+
+Figure 1 derives the F1-score when precision and recall are slightly different.
+Note how similar the F1-score is to the arithmetic mean.
+The larger the difference between precision and recall, the larger the difference between the harmonic and arithmetic means.
+Figures 2 and 3 show how the F1-score moves when the precision and recall values are vastly different and exactly the same, respectively.
 
 ---
 ## Keras
