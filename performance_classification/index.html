@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 09, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 11, 2022</p>
 
 <p><title>Performance Measures for Classification Problems</title></p>
 
@@ -178,7 +178,7 @@ It outputs a 2-dimensional numpy array that represents the confusion matrix.</p>
 
 <h2 id="accuracy">Accuracy</h2>
 
-<figure class="right" style="width:30%;">
+<figure class="right" style="width:40%;">
     <img src="img/confusion_matrix_accuracy.png" style="width:100%;"/>
     <figcaption>Accuracy is the confusion matrix's diagonal</figcaption>
 </figure>
@@ -186,12 +186,13 @@ It outputs a 2-dimensional numpy array that represents the confusion matrix.</p>
 <p>Accuracy is a metric that measures the percentage of correct predictions across all classes.
 In other words, accuracy is <strong>how close the model comes to the correct result</strong>.</p>
 
-<p>Using the initial confusion matrix, we can visualize accuracy as the confusion matrix's diagonal.</p>
+<p>Using the confusion matrix on the right, we can visualize accuracy as the confusion matrix's diagonal.</p>
 
-<p>Accuracy is calculated by dividing the number of correct predictions by the total number of predictions.
-We calculate accuracy as follows: <code>(TP + TN) / (TP + TN + FP + FN)</code>.
+<p>Accuracy is calculated by dividing the number of correct predictions by the total number of predictions: <code>(TP + TN) / (TP + TN + FP + FN)</code>.
 <code>(TP + TN)</code> is the number of correct predictions - the diagonal of the confusion matrix.
 <code>(TP + TN + FP + FN)</code> is the total number of predictions - the sum of all cells in the confusion matrix.</p>
+
+<p><br></p>
 
 <div class="codehilite"><pre><span></span><code><span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_images</span><span class="p">)</span>
 <span class="c1"># Get the wrong predictions as a True/False array, where True == wrong prediction</span>
@@ -211,13 +212,13 @@ We must understand how accuracy may be deceptive in unbalanced classification da
 <p>Imagine we had a binary classifier that predicts whether an image was a cat or dog.
 Our dataset consists of 1000 pictures: 950 cats pictures and 50 dog pictures.</p>
 
-<p>After training, the model correctly predicts 925/950 cats and 5/50 dogs for a total of 950/1000 correct predictions.
+<p>After training, the model correctly predicts 925/950 cats and 5/50 dogs for a total of 930/1000 correct predictions.
 We would say the model has an accuracy of 93%.</p>
 
 <p>We might think that the model has high accuracy regardless of the class.
 For instance, given a dataset with 950 dogs and 50 cats we might assume the model retains its 93% accuracy.
 This is not the case.
-The model will incorrectly predict dog samples as cats, likely resulting in a significantly lower accuracy.</p>
+The model will incorrectly predict dog samples as cats, likely resulting in significantly lower accuracy.</p>
 
 <p>We can agree that the model has high accuracy on unbalanced tasks - specifically those that favor cat samples - but it will perform poorly on balanced tasks where there's an equal number of dog and cat samples.
 Additionally, accuracy does not provide insight to the model's general performance, but rather the model's performance on a specific dataset.</p>
@@ -249,8 +250,8 @@ It answers the question of "what proportion of positive labels are actually posi
 They are chosen by the model author and represent the class that the model is expected to predict.</p>
 
 <p>Suppose that we chose "cat" as the positive label in the cat vs dog classification problem above.
-We could then calculate the model's precision by asking, <strong>"what proportion of cat predictions were actually cats?"</strong>
-For instance, if the model incorrectly predicted 2 dog samples as cats (FP = 2), and correctly predicted 3 cat samples as cats (TP = 3), then precision = 3/5 = 60%.</p>
+We could then calculate the model's precision by asking <strong>"what proportion of cat predictions were actually cats?"</strong>
+For instance, if the model correctly predicted 3 cat samples as cats (TP = 3), but incorrectly predicted 2 dog samples as cats (FP = 2), then precision = 3/5 = 60%.</p>
 
 <p>Positive labels are used to frame the model's performance given a specific task - such as precisely predicting cats.</p>
 
@@ -259,10 +260,10 @@ For instance, if the model incorrectly predicted 2 dog samples as cats (FP = 2),
 <p>Imagine the goal is to shoot an arrow at the apple's center.
 Obviously, we would have high precision if there were a cluster of arrows directly at the apple's center.</p>
 
-<p>Not so obviously, however, if we shot a cluster of arrows directly above the apple - the arrows reliably landed above the apple, but had no guarantee of hitting the apple's center - we would still have high precision due to the arrows' consistency.
+<p>If we shot a cluster of arrows directly above the apple - the arrows reliably landed above the apple, but had no guarantee of hitting the apple's center - we would still have high precision due to the arrows' consistent clustering.
 This is a case of high precision (consistent arrow location) with low accuracy (missing the apple's center).</p>
 
-<p>High precision allows us to trust the arrow to land directly at the apple's center.
+<p>High precision allows us to trust the arrow to reliably hit near the previous arrows' locations.
 The key takeaway is that high precision means high reliability, but that doesn't guarantee it's reliably correct!</p>
 
 <hr />
@@ -272,7 +273,7 @@ The key takeaway is that high precision means high reliability, but that doesn't
 <p>Accuracy and precision are closely related and often used interchangeably in day-to-day work.
 However, the distinction between accuracy and precision is crucial for engineers and scientists.</p>
 
-<p>Earlier, we explained how accuracy is how <em>close</em> the model is to the correct result whereas precision is how <em>reliably</em> the model reaches the correct result.
+<p>Earlier we explained accuracy as how <em>close</em> the model is to the correct result and precision as how <em>reliably</em> the model reaches the correct result.
 We can visualize accuracy as how close the arrows land near the apple's center, and precision as how reliably the arrows land near one another.</p>
 
 <figure class="center" style="width:100%;">
@@ -287,10 +288,12 @@ High precision and low accuracy is also possible - such as when the arrows relia
 
 <h2 id="recall">Recall</h2>
 
-<p>Recall answers the question of "what proportion of actual positive are correctly classified?"
+<p>Now we understand how many times the model correctly predicted labels (accuracy) and how many times it correctly predicted a specific label (precision), let's move on to the next metric: recall.</p>
+
+<p>Recall answers the question of "what proportion of positives are correctly classified?"
 We calculate recall as follows: <code>TP / (TP + FN)</code>.</p>
 
-<figure class="right" style="width:30%;">
+<figure class="right" style="width:40%;">
     <img src="img/confusion_matrix_recall.png" style="width:100%;"/>
     <figcaption>Precision is the confusion matrix's positives</figcaption>
 </figure>
@@ -301,9 +304,27 @@ We calculate recall as follows: <code>TP / (TP + FN)</code>.</p>
 
 <h2 id="when-to-use-precision-vs-recall">When to use Precision vs Recall</h2>
 
-<p>If we are trying to detect cancer in x-rays, but the majority of x-rays in our dataset do not contain cancer, we should optimize our model's <strong>recall</strong>.
-This optimization will strengthen the model's ability to recognize rare classes.
-We wouldn't want to unknowingly classify a cancerous patient as cancer-free; that would ruin our credibility.</p>
+<p>Remember that precision minimizes false positives and recall minimizes false negatives.
+When precision is high, we trust the model when it says positive.
+When recall is high, we can trust the model to not mislabel positive classes as negative.</p>
+
+<p>If our goal is identifying an object in a scene, and the false negatives are not a concern, then we should optimize for precision.
+For example, counting the number of cars on a busy street or trees in forest photos or fish in aquarium photos is a good example of precision.
+Missing an object or two, is not detrimental to our goal of identifying the objects.</p>
+
+<p>Now, imagine our model's task is to identify cancer in x-rays.
+We're provided a realistic dataset with 1000 x-rays, where the vast majority of the x-rays do <em>not</em> contain cancer.
+Therefore, we can consider cancer in x-rays to be a rare class.
+Our goal is to guarantee correct identification of all cancer samples in the dataset.
+Mistakenly classifying a cancerous x-ray as cancer-free is a serious mistake that would ruin our credibility.</p>
+
+<p>Optimizing for recall will decrease the number of false negatives and ensure no x-rays containing cancer fly under our radar.
+This optimization will strengthen the model's ability to recognize rare classes and reach our goal to identify all cancer samples.
+Alternatively, if we optimize our model's precision, then we decrease the chances of misclassifying cancer-free x-rays as cancerous.
+This neither improves our model's ability to classify cancer nor reaches our goal of identifying all cancer samples.</p>
+
+<p>There are cases where we should optimize for either precision or recall but, realistically, we should optimize both.
+We can do this by utilizing the F1-score.</p>
 
 <hr />
 
