@@ -2,11 +2,11 @@
 
 # Classification Performance Measures
 
-This article will explain the most common performance measures for classifications problems.
+This article will explain the most common performance measures for classification problems.
 These measures apply to both binary and multi-class classification problems.
 
 We will explain model performance metrics such as confusion matrix, accuracy, precision, recall, and F1-score.
-The code in this article utilizes python3.7, tensorflow, and keras.
+The code in this article utilizes python3.7, TensorFlow, keras, and scikit-learn.
 
 <details>
     <summary>Table of Contents</summary>
@@ -20,9 +20,9 @@ The code in this article utilizes python3.7, tensorflow, and keras.
     - [Precision](#precision)
         - [What are positive labels?](#what-are-positive-labels)
         - [Conceptualizing precision](#conceptualizing-precision)
-    - [Accuracy vs Precision](#accuracy-vs-precision)
+    - [Accuracy vs. Precision](#accuracy-vs-precision)
     - [Recall](#recall)
-    - [When to use Precision vs Recall](#when-to-use-precision-vs-recall)
+    - [When to use Precision vs. Recall](#when-to-use-precision-vs-recall)
     - [F1-score](#f1-score)
     - [Performance measures in code](#performance-measures-in-code)
         - [Training accuracy](#training-accuracy)
@@ -48,7 +48,7 @@ Alternatively, we could pick the model with the least amount of wrong prediction
 But does that guarantee we've picked the best model?
 
 The loss and accuracy metrics give us a rough idea of the model's performance on the training data, but no indication of the model's general performance.
-In order to gain a better understanding of the model's performance, we must use more specific metrics.
+To gain a better understanding of the model's performance, we must use more specific metrics.
 We'll discuss and compare the following metrics:
 
 * *Accuracy*: The percentage of correct predictions
@@ -57,8 +57,8 @@ We'll discuss and compare the following metrics:
 * *F1-score*: The harmonic mean of precision and recall
 
 We'll examine these metrics in examples such as dog vs cat classification, cancer detection, and shooting arrows at a target.
-Afterwards, with the help of Keras and scikit-learn, we'll write code to calculate the metrics.
-But first we must familiarize ourselves with the confusion matrix.
+Afterward, with the help of Keras and scikit-learn, we'll write code to calculate the metrics.
+But first, we must familiarize ourselves with the confusion matrix.
 
 ---
 ## Confusion Matrix
@@ -71,14 +71,14 @@ But first we must familiarize ourselves with the confusion matrix.
 A confusion matrix is a core computer vision technique for visualizing and evaluating a classification model's performance.
 As the name suggests, a confusion matrix is a 2-dimensional table.
 
-From the confusion matrix we can determine the number of true positives, true negatives, false positives, and false negatives.
+From the confusion matrix, we can determine the number of true positives, true negatives, false positives, and false negatives.
 We'll shorten the names to TP, TN, FP, and FN, respectively.
 Using TP, TN, FP, and FN, we can calculate the model's accuracy, precision, recall, and F1-score.
 
 The table below shows the confusion matrix for a binary classification problem.
 The rows represent the true labels and the columns represent the predicted labels.
-The diagonal represents correct predictions and all other cells represent incorrect predictions.
-Ideally, our confusion matrix should diagonal contain values - no incorrect predictions.
+The diagonal represents correct predictions, and all other cells represent incorrect predictions.
+Ideally, our confusion matrix should only contain diagonal values - no incorrect predictions.
 
 We can expand the confusion matrix to include multi-class classification problems.
 For instance, the table below shows the confusion matrix for a multi-class classification problem with four classes.
@@ -186,21 +186,21 @@ Real-world problems, however, do not always have balanced datasets.
 We must understand how accuracy may be misleading in imbalanced classification datasets and tasks.
 
 Imagine we had a binary classifier that predicts whether an image was a cat or dog.
-Our dataset consists of 1000 pictures: 950 cats pictures and 50 dog pictures.
+Our dataset consists of 1000 pictures: 950 cat pictures and 50 dog pictures.
 
-After training, the model correctly predicts 925/950 cats and 5/50 dogs for a total of 930/1000 correct predictions.
+After training, the model correctly predicts 925/950 cats and 5/50 dogs, for a total of 930/1000 correct predictions.
 We would say the model has an accuracy of 93%.
 
 We might think that the model has high accuracy regardless of the class.
-For instance, given a dataset with 950 dogs and 50 cats we might assume the model retains its 93% accuracy.
+For instance, given a dataset with 950 dogs and 50 cats, we might assume the model retains its 93% accuracy.
 This is not the case.
 The model will incorrectly predict dog samples as cats as a result of its imbalanced training, resulting in significantly lower accuracy.
 We can agree that the model has high accuracy on imbalanced tasks - specifically those that favor cat samples - but it will perform poorly on balanced tasks where there's an equal number of dog and cat samples.
 
-Accuracy does not provide insight to the model's general performance, but rather the model's performance on a specific dataset.
-Furthermore, accuracy does not take into account the subtleties of class imbalances, or differing costs of false negatives and false positives.
+Accuracy does not provide insight into the model's general performance, but rather the model's performance on a specific dataset.
+Furthermore, accuracy does not consider the subtleties of class imbalances or differing costs of false negatives and false positives.
 Measuring model performance should be straightforward, not misleading.
-We can use precision and recall to properly measure model performance when facing class imbalances of differing costs of incorrect predictions.
+We can use precision and recall to measure model performance properly when facing class imbalances of differing costs of incorrect predictions.
 
 ---
 ## Precision
@@ -226,8 +226,8 @@ We should optimize our model's precision when we want to decrease the number of 
 Positive labels are labels that the model is expected to predict correctly.
 They are chosen by the model author and represent the class that the model is expected to predict.
 
-Suppose that we chose "cat" as the positive label in the cat vs dog classification problem above.
-We could then calculate the model's precision by asking **"what proportion of cat predictions were actually cats?"**
+Suppose that we selected "cat" as the positive label in the cat vs. dog classification problem above.
+We could then calculate the model's precision by asking, **"what proportion of cat predictions were actually cats?"**
 For instance, if the model correctly predicted 3 cat samples as cats (TP = 3), but incorrectly predicted 2 dog samples as cats (FP = 2), then precision = 3/5 = 60%.
 
 Positive labels are used to frame the model's performance given a specific task - such as precisely predicting cats.
@@ -235,7 +235,7 @@ Positive labels are used to frame the model's performance given a specific task 
 ### Conceptualizing precision
 
 Imagine the goal is to shoot an arrow at the apple's center.
-Obviously, we would have high precision if there were a cluster of arrows directly at the apple's center.
+We would have high precision if there were a cluster of arrows directly at the apple's center.
 
 If we shot a cluster of arrows directly above the apple - the arrows reliably landed above the apple, but had no guarantee of hitting the apple's center - we would still have high precision due to the arrows' consistent clustering.
 This is a case of high precision (consistent arrow location) with low accuracy (missing the apple's center).
@@ -244,7 +244,7 @@ High precision allows us to trust the arrow to reliably hit near the previous ar
 The key takeaway is that high precision means high reliability, but that doesn't guarantee it's reliably correct!
 
 ---
-## Accuracy vs Precision
+## Accuracy vs. Precision
 
 Accuracy and precision are closely related and often used interchangeably in day-to-day work.
 However, the distinction between accuracy and precision is crucial for engineers and scientists.
@@ -258,7 +258,7 @@ We can visualize accuracy as how close the arrows land near the apple's center, 
 </figure>
 
 One can have high accuracy and low precision - such as when the arrows land everywhere around the apple's center.
-High precision and low accuracy is also possible - such as when the arrows reliably cluster, but miss the apple's center.
+High precision and low accuracy are also possible - such as when the arrows reliably cluster, but miss the apple's center.
 
 ---
 ## Recall
@@ -266,7 +266,7 @@ High precision and low accuracy is also possible - such as when the arrows relia
 Now we understand how many times the model correctly predicted labels (accuracy) and how many times it correctly predicted a specific label (precision).
 Let's move on to the next metric: recall.
 
-Recall answers the question of "what proportion of actual positives are correctly classified?"
+Recall answers the question "what proportion of actual positives are correctly classified?"
 We calculate recall as follows: `TP / (TP + FN)`.
 
 <figure class="center" style="width:40%;">
@@ -277,28 +277,28 @@ We calculate recall as follows: `TP / (TP + FN)`.
 We should optimize our model's recall when we want to decrease the number of false negatives - identify rare but important classes.
 
 ---
-## When to use Precision vs Recall
+## When to use Precision vs. Recall
 
 Remember that precision minimizes false positives and recall minimizes false negatives.
 When precision is high, we trust the model when it says positive.
 When recall is high, we can trust the model to not mislabel positive classes as negative.
 
 If our goal is identifying an object in a scene, and the false negatives are not a concern, then we should optimize for precision.
-For example, counting the number of cars on a busy street or trees in forest photos or fish in aquarium photos.
+For example, counting the number of cars on a busy street or trees in forest photos, or fish in aquarium photos.
 Missing an object or two is not detrimental to our goal of identifying the objects.
 
 Now, imagine our model's task is to identify cancer in x-rays.
 We're provided a realistic dataset with 1000 x-rays where the vast majority of the x-rays do *not* contain cancer.
 Therefore, we can consider cancer in x-rays to be a rare class.
-Our goal is to guarantee correct identification of all cancer samples in the dataset.
+Our goal is to guarantee the correct identification of all cancer samples in the dataset.
 Mistakenly classifying a cancerous x-ray as cancer-free is a serious mistake that would ruin our credibility.
 
 Optimizing for recall will decrease the number of false negatives and ensure no x-rays containing cancer fly under our radar.
-This optimization will both strengthen the model's ability to recognize rare classes and reach our goal to correctly identify all cancer samples.
+This optimization will both strengthen the model's ability to recognize rare classes and reach our goal of correctly identifying all cancer samples.
 Alternatively, if we optimize our model's precision, then we decrease the number of false positives - misclassifying cancer-free x-rays as cancerous.
 This neither improves our model's ability to classify cancer nor reaches our goal of identifying all cancer samples.
 
-Precision and recall are in trade-off relationship where optimizing for one comes at a cost for the other.
+Precision and recall are in a trade-off relationship, where optimizing for one comes at a cost of the other.
 There are cases where we should optimize for either precision or recall but, realistically, we should optimize both.
 We can do this by utilizing the F1-score.
 
@@ -322,18 +322,18 @@ The following figure demonstrates how the F1-score compares against the arithmet
 Figure 1 derives the F1-score when precision and recall are slightly different.
 Note how close the F1-score is to the arithmetic mean.
 The larger the difference between precision and recall, the larger the difference between the harmonic and arithmetic means.
-Figures 2 and 3 show how the F1-score moves when the precision and recall values are vastly different and exactly the same, respectively.
+Figures 2 and 3 show how the F1-score moves when the precision and recall values are vastly different and the same, respectively.
 
 If our goal is to have strong precision *and* recall, we should optimize our model's F1-score.
 This is especially true when working with imbalanced datasets or tasks - such as the cancer classification problem.
 
-The following section shows how to implement the accuracy, precision, recall and F1-score metrics using python.
-It's not a detailed how-to, but a reference guide for future projects.
+The following section shows how to implement the accuracy, precision, recall, and F1-score metrics using python.
+It's not a detailed how-to, but a resource for future projects.
 
 ---
 ## Performance measures in code
 
-The following section is for future references.
+The following section is for future reference.
 We'll implement and visualize the performance measures with the help of Keras, Tensorflow, and scikit-learn.
 
 ### Training accuracy
@@ -463,15 +463,15 @@ weighted avg       0.95      0.95      0.95       19
 ---
 ## Conclusion
 
-After reading this article, we should have a deeper understanding of the three most common classification performance measures: precision, recall, and F1-score.
+After reading this article, we should have a more profound understanding of the three most common classification performance measures: precision, recall, and F1-score.
 We learned how accuracy is a misleading metric for evaluating model performance - especially in imbalanced classification tasks.
 Using precision, recall, and F1-score, we can properly evaluate and fine-tune our model for high performance on imbalanced datasets.
 
 Here's the final summary of the performance measures:
 
-* **Accuracy**: The percentage of correct predictions. A misleading metric that provides minimal insight into model's true performance.
+* **Accuracy**: The percentage of correct predictions. A misleading metric that provides minimal insight into the model's true performance.
 * **Precision**: The proportion of positive labels that are actually positive: model's reliability score. Useful for minimizing false positives.
-* **Recall**: The proportion of positive predictions that were correctly identified. Useful for minimizing false negatives.
+* **Recall**: The proportion of positive labels that were correctly identified. Useful for minimizing false negatives.
 * **F1-score**: The harmonic mean of precision and recall. Useful for finding a balance of high precision and recall - minimizing false positives and false negatives - in imbalanced datasets.
 
 ---
