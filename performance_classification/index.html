@@ -89,8 +89,8 @@ We'll discuss and compare the following metrics:</p>
 
 <ul>
 <li><em>Accuracy</em>: The percentage of correct predictions</li>
-<li><em>Precision</em>: The percentage of correct positive predictions</li>
-<li><em>Recall</em>: The percentage of positive labels that were identified</li>
+<li><em>Precision</em>: The proportion of correct positive predictions</li>
+<li><em>Recall</em>: The proportion of positive labels that were correctly identified</li>
 <li><em>F1-score</em>: The harmonic mean of precision and recall</li>
 </ul>
 
@@ -366,7 +366,7 @@ Note how close the F1-score is to the arithmetic mean.
 The larger the difference between precision and recall, the larger the difference between the harmonic and arithmetic means.
 Figures 2 and 3 show how the F1-score moves when the precision and recall values are vastly different and the same, respectively.</p>
 
-<p>If our goal is to have strong precision <em>and</em> recall, we should optimize our model's F1-score.
+<p>If our goal is to have strong precision and recall, we should optimize our model's F1-score.
 This is especially true when working with imbalanced datasets or tasks - such as the cancer classification problem.</p>
 
 <p>The following section shows how to implement the accuracy, precision, recall, and F1-score metrics using python.
@@ -429,8 +429,8 @@ For multiclass classification models, we use the <code>[sparse_]categorical_accu
        <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
 </code></pre></div>
 
-<p>The function outputs are binary array where <code>0</code> represents wrong predictions and <code>1</code> correct predictions.
-This is the equivalent of the example in the <a href="#accuracy">accuracy</a> section earlier in the article:</p>
+<p>The function outputs a binary array where <code>0</code> represents wrong predictions and <code>1</code> represents correct predictions.
+This is the equivalent of the code example seen earlier in the <a href="#accuracy">accuracy section</a>:</p>
 
 <div class="codehilite"><pre><span></span><code><span class="c1"># Get the wrong predictions as a True/False array, where True == wrong prediction</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">wrong_preds</span> <span class="o">=</span> <span class="n">preds</span> <span class="o">!=</span> <span class="n">test_labels</span>
@@ -461,7 +461,7 @@ This is the equivalent of the example in the <a href="#accuracy">accuracy</a> se
 <p>We can use these measures to manually derive the F1-score.
 Alternatively, we can use TensorFlow Addons' <a href="https://www.tensorflow.org/addons/api_docs/python/tfa/metrics/F1Score">F1Score metric</a>.</p>
 
-<p>The simplest way to derive precision, recall, and F1-score, however, is using scikit-learn's <code>classification_report</code> and <code>f1_score</code> methods.</p>
+<p>The simplest way to derive precision, recall, and F1-score, however, is to use scikit-learn's <code>classification_report</code> and <code>f1_score</code> methods.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="p">(</span>
 <span class="o">&gt;&gt;&gt;</span>     <span class="n">classification_report</span><span class="p">,</span>
@@ -470,22 +470,22 @@ Alternatively, we can use TensorFlow Addons' <a href="https://www.tensorflow.org
 <span class="o">&gt;&gt;&gt;</span>     <span class="n">recall_score</span><span class="p">,</span>
 <span class="o">&gt;&gt;&gt;</span>     <span class="n">confusion_matrix</span><span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">label_decoder</span><span class="p">(</span><span class="n">test_labels</span><span class="p">),</span> <span class="n">preds_str</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">test_labels</span><span class="p">,</span> <span class="n">predictions</span><span class="p">)</span>
 <span class="p">[[</span><span class="mi">38</span>  <span class="mi">1</span>  <span class="mi">1</span>  <span class="mi">1</span><span class="p">]</span>
  <span class="p">[</span> <span class="mi">0</span> <span class="mi">41</span>  <span class="mi">0</span>  <span class="mi">0</span><span class="p">]</span>
  <span class="p">[</span> <span class="mi">0</span>  <span class="mi">4</span> <span class="mi">56</span>  <span class="mi">0</span><span class="p">]</span>
  <span class="p">[</span> <span class="mi">1</span>  <span class="mi">1</span>  <span class="mi">1</span> <span class="mi">52</span><span class="p">]]</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">label_decoder</span><span class="p">(</span><span class="n">test_labels</span><span class="p">),</span> <span class="n">preds_str</span> <span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;macro&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">test_labels</span><span class="p">,</span> <span class="n">predictions</span> <span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;macro&quot;</span><span class="p">)</span>
 <span class="mf">0.9483371791854744</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">recall_score</span><span class="p">(</span><span class="n">label_decoder</span><span class="p">(</span><span class="n">test_labels</span><span class="p">),</span> <span class="n">preds_str</span> <span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;macro&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">recall_score</span><span class="p">(</span><span class="n">test_labels</span><span class="p">,</span> <span class="n">predictions</span> <span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;macro&quot;</span><span class="p">)</span>
 <span class="mf">0.9514042867701404</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">label_decoder</span><span class="p">(</span><span class="n">test_labels</span><span class="p">),</span> <span class="n">preds_str</span> <span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;macro&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">test_labels</span><span class="p">,</span> <span class="n">predictions</span> <span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;macro&quot;</span><span class="p">)</span>
 <span class="mf">0.9484834217885065</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">classification_report</span><span class="p">(</span><span class="n">label_decoder</span><span class="p">(</span><span class="n">test_labels</span><span class="p">),</span> <span class="n">preds_str</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">classification_report</span><span class="p">(</span><span class="n">test_labels</span><span class="p">,</span> <span class="n">predictions</span><span class="p">)</span>
               <span class="n">precision</span>    <span class="n">recall</span>  <span class="n">f1</span><span class="o">-</span><span class="n">score</span>   <span class="n">support</span>
 
           <span class="n">bb</span>       <span class="mf">0.97</span>      <span class="mf">0.93</span>      <span class="mf">0.95</span>        <span class="mi">41</span>
@@ -511,7 +511,7 @@ Using precision, recall, and F1-score, we can properly evaluate and fine-tune ou
 <ul>
 <li><strong>Accuracy</strong>: The percentage of correct predictions. A misleading metric that provides minimal insight into the model's true performance.</li>
 <li><strong>Precision</strong>: The proportion of positive labels that are actually positive: model's reliability score. Useful for minimizing false positives.</li>
-<li><strong>Recall</strong>: The proportion of positive labels that were correctly identified. Useful for minimizing false negatives.</li>
+<li><strong>Recall</strong>: The proportion of actual positive labels that were correctly identified. Useful for minimizing false negatives.</li>
 <li><strong>F1-score</strong>: The harmonic mean of precision and recall. Useful for finding a balance of high precision and recall - minimizing false positives and false negatives - in imbalanced datasets.</li>
 </ul>
 

@@ -52,8 +52,8 @@ To gain a better understanding of the model's performance, we must use more spec
 We'll discuss and compare the following metrics:
 
 * *Accuracy*: The percentage of correct predictions
-* *Precision*: The percentage of correct positive predictions
-* *Recall*: The percentage of positive labels that were identified
+* *Precision*: The proportion of correct positive predictions
+* *Recall*: The proportion of positive labels that were correctly identified
 * *F1-score*: The harmonic mean of precision and recall
 
 We'll examine these metrics in examples such as dog vs cat classification, cancer detection, and shooting arrows at a target.
@@ -324,7 +324,7 @@ Note how close the F1-score is to the arithmetic mean.
 The larger the difference between precision and recall, the larger the difference between the harmonic and arithmetic means.
 Figures 2 and 3 show how the F1-score moves when the precision and recall values are vastly different and the same, respectively.
 
-If our goal is to have strong precision *and* recall, we should optimize our model's F1-score.
+If our goal is to have strong precision and recall, we should optimize our model's F1-score.
 This is especially true when working with imbalanced datasets or tasks - such as the cancer classification problem.
 
 The following section shows how to implement the accuracy, precision, recall, and F1-score metrics using python.
@@ -388,8 +388,8 @@ array([0., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 0., 1.,
        1., 1., 0., 1., 1., 1., 1., 1., 1., 1.], dtype=float32)>
 ```
 
-The function outputs are binary array where `0` represents wrong predictions and `1` correct predictions.
-This is the equivalent of the example in the [accuracy](#accuracy) section earlier in the article:
+The function outputs a binary array where `0` represents wrong predictions and `1` represents correct predictions.
+This is the equivalent of the code example seen earlier in the [accuracy section](#accuracy):
 
 ```python
 # Get the wrong predictions as a True/False array, where True == wrong prediction
@@ -422,7 +422,7 @@ model.compile(
 We can use these measures to manually derive the F1-score.
 Alternatively, we can use TensorFlow Addons' [F1Score metric](https://www.tensorflow.org/addons/api_docs/python/tfa/metrics/F1Score).
 
-The simplest way to derive precision, recall, and F1-score, however, is using scikit-learn's `classification_report` and `f1_score` methods.
+The simplest way to derive precision, recall, and F1-score, however, is to use scikit-learn's `classification_report` and `f1_score` methods.
 
 ```python
 >>> from sklearn.metrics import (
@@ -432,22 +432,22 @@ The simplest way to derive precision, recall, and F1-score, however, is using sc
 >>>     recall_score,
 >>>     confusion_matrix)
 
->>> confusion_matrix(label_decoder(test_labels), preds_str)
+>>> confusion_matrix(test_labels, predictions)
 [[38  1  1  1]
  [ 0 41  0  0]
  [ 0  4 56  0]
  [ 1  1  1 52]]
 
->>> precision_score(label_decoder(test_labels), preds_str , average="macro")
+>>> precision_score(test_labels, predictions , average="macro")
 0.9483371791854744
 
->>> recall_score(label_decoder(test_labels), preds_str , average="macro")
+>>> recall_score(test_labels, predictions , average="macro")
 0.9514042867701404
 
->>> f1_score(label_decoder(test_labels), preds_str , average="macro")
+>>> f1_score(test_labels, predictions , average="macro")
 0.9484834217885065
 
->>> classification_report(label_decoder(test_labels), preds_str)
+>>> classification_report(test_labels, predictions)
               precision    recall  f1-score   support
 
           bb       0.97      0.93      0.95        41
@@ -471,7 +471,7 @@ Here's the final summary of the performance measures:
 
 * **Accuracy**: The percentage of correct predictions. A misleading metric that provides minimal insight into the model's true performance.
 * **Precision**: The proportion of positive labels that are actually positive: model's reliability score. Useful for minimizing false positives.
-* **Recall**: The proportion of positive labels that were correctly identified. Useful for minimizing false negatives.
+* **Recall**: The proportion of actual positive labels that were correctly identified. Useful for minimizing false negatives.
 * **F1-score**: The harmonic mean of precision and recall. Useful for finding a balance of high precision and recall - minimizing false positives and false negatives - in imbalanced datasets.
 
 ---
