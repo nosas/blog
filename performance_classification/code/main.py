@@ -149,7 +149,7 @@ def plot_means(
 # %% Initialize variables
 precisions = [3, 1, 2]
 recalls = [2, 4.5, 2]
-titles = ["Mild variance", "High variance", "Equal scores"]
+titles = ["Fig. 1: Mild variance", "Fig. 2: High variance", "Fig. 3: Equal scores"]
 
 # %% Plot the figures
 fig, ax = plt.subplots(1, 3, figsize=(12, 5), dpi=100, sharey=True)
@@ -161,7 +161,7 @@ for axis in ax[:2]:
     # Remove the legend
     axis.legend_.remove()
 
-fig.tight_layout()
+# fig.tight_layout()
 
 # %% Calculate means
 scores_mean = np.array(
