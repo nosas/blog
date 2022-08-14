@@ -53,7 +53,7 @@ We'll discuss and compare the following metrics:
 
 * *Accuracy*: The percentage of correct predictions
 * *Precision*: The percentage of correct positive predictions
-* *Recall*: The percentage of positive predictions that are correct
+* *Recall*: The percentage of positive labels that were identified
 * *F1-score*: The harmonic mean of precision and recall
 
 We'll examine these metrics in examples such as dog vs cat classification, cancer detection, and shooting arrows at a target.
