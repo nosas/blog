@@ -28,7 +28,7 @@
 <p>This article will explain the most common performance measures for classifications problems.
 These measures apply to both binary and multi-class classification problems.</p>
 
-<p>We will explain model performance metrics such as confusion matrix, accuracy, precision, recall, F1-score, and ROC curve.
+<p>We will explain model performance metrics such as confusion matrix, accuracy, precision, recall, and F1-score.
 The code in this article utilizes python3.7, tensorflow, and keras.</p>
 
 <p><details>
@@ -55,7 +55,7 @@ The code in this article utilizes python3.7, tensorflow, and keras.</p>
 <li><a href="#recall">Recall</a></li>
 <li><a href="#when-to-use-precision-vs-recall">When to use Precision vs Recall</a></li>
 <li><a href="#f1-score">F1-score</a></li>
-<li><a href="#performance-measures-in-keras-tensorflow-and-scikit-learn">Performance measures in Keras, Tensorflow, and scikit-learn</a>
+<li><a href="#performance-measures-in-code">Performance measures in code</a>
 <ul>
 <li><a href="#training-accuracy">Training accuracy</a></li>
 <li><a href="#keras-built-in-accuracy-function">Keras built-in accuracy function</a></li>
@@ -92,7 +92,6 @@ We'll discuss and compare the following metrics:</p>
 <li><em>Precision</em>: The percentage of correct positive predictions</li>
 <li><em>Recall</em>: The percentage of positive predictions that are correct</li>
 <li><em>F1-score</em>: The harmonic mean of precision and recall</li>
-<li><em>ROC Curve</em>: A plot of the true positive rate against the false positive rate</li>
 </ul>
 
 <p>We'll examine these metrics in examples such as dog vs cat classification, cancer detection, and shooting arrows at a target.
@@ -221,7 +220,7 @@ In other words, accuracy is <strong>how close the model comes to the correct res
 
 <p>Balanced datasets are the key to successful classification models.
 Real-world problems, however, do not always have balanced datasets.
-We must understand how accuracy may be misleading in unbalanced classification datasets and tasks.</p>
+We must understand how accuracy may be misleading in imbalanced classification datasets and tasks.</p>
 
 <p>Imagine we had a binary classifier that predicts whether an image was a cat or dog.
 Our dataset consists of 1000 pictures: 950 cats pictures and 50 dog pictures.</p>
@@ -233,7 +232,7 @@ We would say the model has an accuracy of 93%.</p>
 For instance, given a dataset with 950 dogs and 50 cats we might assume the model retains its 93% accuracy.
 This is not the case.
 The model will incorrectly predict dog samples as cats as a result of its imbalanced training, resulting in significantly lower accuracy.
-We can agree that the model has high accuracy on unbalanced tasks - specifically those that favor cat samples - but it will perform poorly on balanced tasks where there's an equal number of dog and cat samples.</p>
+We can agree that the model has high accuracy on imbalanced tasks - specifically those that favor cat samples - but it will perform poorly on balanced tasks where there's an equal number of dog and cat samples.</p>
 
 <p>Accuracy does not provide insight to the model's general performance, but rather the model's performance on a specific dataset.
 Furthermore, accuracy does not take into account the subtleties of class imbalances, or differing costs of false negatives and false positives.
@@ -307,7 +306,7 @@ High precision and low accuracy is also possible - such as when the arrows relia
 <p>Now we understand how many times the model correctly predicted labels (accuracy) and how many times it correctly predicted a specific label (precision).
 Let's move on to the next metric: recall.</p>
 
-<p>Recall answers the question of "what proportion of positives are correctly classified?"
+<p>Recall answers the question of "what proportion of actual positives are correctly classified?"
 We calculate recall as follows: <code>TP / (TP + FN)</code>.</p>
 
 <figure class="center" style="width:40%;">
@@ -368,14 +367,14 @@ The larger the difference between precision and recall, the larger the differenc
 Figures 2 and 3 show how the F1-score moves when the precision and recall values are vastly different and exactly the same, respectively.</p>
 
 <p>If our goal is to have strong precision <em>and</em> recall, we should optimize our model's F1-score.
-This is especially true when working with unbalanced datasets or tasks - such as the cancer classification problem.</p>
+This is especially true when working with imbalanced datasets or tasks - such as the cancer classification problem.</p>
 
 <p>The following section shows how to implement the accuracy, precision, recall and F1-score metrics using python.
 It's not a detailed how-to, but a reference guide for future projects.</p>
 
 <hr />
 
-<h2 id="performance-measures-in-keras-tensorflow-and-scikit-learn">Performance measures in Keras, Tensorflow, and scikit-learn</h2>
+<h2 id="performance-measures-in-code">Performance measures in code</h2>
 
 <p>The following section is for future references.
 We'll implement and visualize the performance measures with the help of Keras, Tensorflow, and scikit-learn.</p>
@@ -502,6 +501,19 @@ Alternatively, we can use TensorFlow Addons' <a href="https://www.tensorflow.org
 <hr />
 
 <h2 id="conclusion">Conclusion</h2>
+
+<p>After reading this article, we should have a deeper understanding of the three most common classification performance measures: precision, recall, and F1-score.
+We learned how accuracy is a misleading metric for evaluating model performance - especially in imbalanced classification tasks.
+Using precision, recall, and F1-score, we can properly evaluate and fine-tune our model for high performance on imbalanced datasets.</p>
+
+<p>Here's the final summary of the performance measures:</p>
+
+<ul>
+<li><strong>Accuracy</strong>: The percentage of correct predictions. A misleading metric that provides minimal insight into model's true performance.</li>
+<li><strong>Precision</strong>: The proportion of positive labels that are actually positive: model's reliability score. Useful for minimizing false positives.</li>
+<li><strong>Recall</strong>: The proportion of positive predictions that were correctly identified. Useful for minimizing false negatives.</li>
+<li><strong>F1-score</strong>: The harmonic mean of precision and recall. Useful for finding a balance of high precision and recall - minimizing false positives and false negatives - in imbalanced datasets.</li>
+</ul>
 
 <hr />
 

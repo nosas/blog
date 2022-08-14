@@ -5,7 +5,7 @@
 This article will explain the most common performance measures for classifications problems.
 These measures apply to both binary and multi-class classification problems.
 
-We will explain model performance metrics such as confusion matrix, accuracy, precision, recall, F1-score, and ROC curve.
+We will explain model performance metrics such as confusion matrix, accuracy, precision, recall, and F1-score.
 The code in this article utilizes python3.7, tensorflow, and keras.
 
 <details>
@@ -24,7 +24,7 @@ The code in this article utilizes python3.7, tensorflow, and keras.
     - [Recall](#recall)
     - [When to use Precision vs Recall](#when-to-use-precision-vs-recall)
     - [F1-score](#f1-score)
-    - [Performance measures in Keras, Tensorflow, and scikit-learn](#performance-measures-in-keras-tensorflow-and-scikit-learn)
+    - [Performance measures in code](#performance-measures-in-code)
         - [Training accuracy](#training-accuracy)
         - [Keras built-in accuracy function](#keras-built-in-accuracy-function)
         - [Training precision, recall, and F1-score](#training-precision-recall-and-f1-score)
@@ -55,7 +55,6 @@ We'll discuss and compare the following metrics:
 * *Precision*: The percentage of correct positive predictions
 * *Recall*: The percentage of positive predictions that are correct
 * *F1-score*: The harmonic mean of precision and recall
-* *ROC Curve*: A plot of the true positive rate against the false positive rate
 
 We'll examine these metrics in examples such as dog vs cat classification, cancer detection, and shooting arrows at a target.
 Afterwards, with the help of Keras and scikit-learn, we'll write code to calculate the metrics.
@@ -184,7 +183,7 @@ accuracy = (len(preds) - num_wrong_preds) / len(preds)
 
 Balanced datasets are the key to successful classification models.
 Real-world problems, however, do not always have balanced datasets.
-We must understand how accuracy may be misleading in unbalanced classification datasets and tasks.
+We must understand how accuracy may be misleading in imbalanced classification datasets and tasks.
 
 Imagine we had a binary classifier that predicts whether an image was a cat or dog.
 Our dataset consists of 1000 pictures: 950 cats pictures and 50 dog pictures.
@@ -196,7 +195,7 @@ We might think that the model has high accuracy regardless of the class.
 For instance, given a dataset with 950 dogs and 50 cats we might assume the model retains its 93% accuracy.
 This is not the case.
 The model will incorrectly predict dog samples as cats as a result of its imbalanced training, resulting in significantly lower accuracy.
-We can agree that the model has high accuracy on unbalanced tasks - specifically those that favor cat samples - but it will perform poorly on balanced tasks where there's an equal number of dog and cat samples.
+We can agree that the model has high accuracy on imbalanced tasks - specifically those that favor cat samples - but it will perform poorly on balanced tasks where there's an equal number of dog and cat samples.
 
 Accuracy does not provide insight to the model's general performance, but rather the model's performance on a specific dataset.
 Furthermore, accuracy does not take into account the subtleties of class imbalances, or differing costs of false negatives and false positives.
@@ -267,7 +266,7 @@ High precision and low accuracy is also possible - such as when the arrows relia
 Now we understand how many times the model correctly predicted labels (accuracy) and how many times it correctly predicted a specific label (precision).
 Let's move on to the next metric: recall.
 
-Recall answers the question of "what proportion of positives are correctly classified?"
+Recall answers the question of "what proportion of actual positives are correctly classified?"
 We calculate recall as follows: `TP / (TP + FN)`.
 
 <figure class="center" style="width:40%;">
@@ -326,13 +325,13 @@ The larger the difference between precision and recall, the larger the differenc
 Figures 2 and 3 show how the F1-score moves when the precision and recall values are vastly different and exactly the same, respectively.
 
 If our goal is to have strong precision *and* recall, we should optimize our model's F1-score.
-This is especially true when working with unbalanced datasets or tasks - such as the cancer classification problem.
+This is especially true when working with imbalanced datasets or tasks - such as the cancer classification problem.
 
 The following section shows how to implement the accuracy, precision, recall and F1-score metrics using python.
 It's not a detailed how-to, but a reference guide for future projects.
 
 ---
-## Performance measures in Keras, Tensorflow, and scikit-learn
+## Performance measures in code
 
 The following section is for future references.
 We'll implement and visualize the performance measures with the help of Keras, Tensorflow, and scikit-learn.
@@ -463,6 +462,17 @@ weighted avg       0.95      0.95      0.95       19
 
 ---
 ## Conclusion
+
+After reading this article, we should have a deeper understanding of the three most common classification performance measures: precision, recall, and F1-score.
+We learned how accuracy is a misleading metric for evaluating model performance - especially in imbalanced classification tasks.
+Using precision, recall, and F1-score, we can properly evaluate and fine-tune our model for high performance on imbalanced datasets.
+
+Here's the final summary of the performance measures:
+
+* **Accuracy**: The percentage of correct predictions. A misleading metric that provides minimal insight into model's true performance.
+* **Precision**: The proportion of positive labels that are actually positive: model's reliability score. Useful for minimizing false positives.
+* **Recall**: The proportion of positive predictions that were correctly identified. Useful for minimizing false negatives.
+* **F1-score**: The harmonic mean of precision and recall. Useful for finding a balance of high precision and recall - minimizing false positives and false negatives - in imbalanced datasets.
 
 ---
 ## Further reading
