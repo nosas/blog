@@ -13,6 +13,7 @@ from data_processing import (
     create_suit_datasets,
     get_suits_from_dir,
     integer_to_suit,
+    onehot_to_suit,
     process_images,
     suit_to_integer,
     unsort_data,
@@ -28,6 +29,7 @@ from data_visualization import (
 from img_utils import get_image_augmentations
 from kerastuner import BayesianOptimization, Hyperband, RandomSearch
 from model_utils import make_multiclass_model_original, make_multiclass_model_padding
+from sklearn.metrics import classification_report
 from tensorflow.compat.v1 import ConfigProto, InteractiveSession
 
 config = ConfigProto()
@@ -39,6 +41,21 @@ LR = 0.001
 SEED = 42
 np.random.seed(SEED)
 
+ONEHOT = True
+label_decoder = integer_to_suit if not ONEHOT else onehot_to_suit
+LOSS = (
+    tf.keras.losses.SparseCategoricalCrossentropy()
+    if not ONEHOT
+    else tf.keras.losses.CategoricalCrossentropy()
+)
+METRICS = [
+    tf.keras.metrics.SparseCategoricalAccuracy()
+    if not ONEHOT
+    else tf.keras.metrics.CategoricalAccuracy(),
+    tf.keras.metrics.Recall(),
+    tf.keras.metrics.Precision(),
+]
+
 # %% Convert all images in screenshots directory to data images
 process_images(move_images=True)
 # process_images(raw_images_dir=SCREENSHOTS_DIR, move_images=False, filename_filter="Fri-Jun-10")
@@ -46,7 +63,9 @@ process_images(move_images=True)
 
 # %% Split unsorted images into train, validate, and test sets
 unsort_data()
-ds_train, ds_validate, ds_test = create_suit_datasets(split_ratio=[0.6, 0.2, 0.2])
+ds_train, ds_validate, ds_test = create_suit_datasets(
+    split_ratio=[0.6, 0.2, 0.2], onehot=ONEHOT
+)
 
 # %% Plot bar of suits
 # plot_suits_as_bar(img_dir=DATA_DIR)
@@ -93,20 +112,22 @@ test_fps = np.array(test_fps)[p]  # Apply permutation to match ds_test's orderin
 # %% Display a sample from the validation set
 # Should be a walking Cashbot-MoneyBags
 idx = np.random.randint(len(val_images))
-label_int, label_str = val_labels[idx], integer_to_suit([int(val_labels[idx])])[0]
-plt.title(f"{label_int}, {label_str}")
+label_enc, label_str = val_labels[idx], label_decoder([val_labels[idx]])[0]
+plt.title(f"{label_enc}, {label_str}")
 plt.imshow(val_images[idx] / 255)
 
 # %% Compile the optimized models
 models_all = []
+
+
 for opt in [tf.keras.optimizers.Adam(learning_rate=1e-3, decay=1e-6)]:
     model = make_multiclass_model_padding(
         name="opt_tv_" + opt._name, augmentation=get_image_augmentations(), dropout=0.5
     )
     model.compile(
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+        loss=LOSS,
         optimizer=opt,
-        metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
+        metrics=METRICS,
     )
     models_all.append(model)
 print(model.summary())
@@ -145,26 +166,8 @@ for color, (model, hist) in zip(COLORS, histories_all):
         alpha_mean=0.75,
         multiclass=True,
         loss_ylim=(0, 1),
-        includes_validation=True,
+        onehot=ONEHOT,
     )
-
-# %% Plot the wrong predictions
-for model in models_all:
-    predictions = model.predict(test_images)
-    preds_int = np.asarray([np.argmax(p) for p in predictions], dtype=np.int32)
-    preds_str = integer_to_suit(preds_int)
-
-    # %% Get the wrong predictions as a True/False array
-    mask = preds_int.astype("int") != test_labels.astype("int")
-    wrong_idxs = np.argwhere(mask).transpose().flatten()
-
-    wrong_fps = [test_fps[i] for i in wrong_idxs]
-    wrong_preds = [preds_str[i] for i in wrong_idxs]
-    wrong_actual = integer_to_suit(test_labels[i] for i in wrong_idxs)
-    wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
-
-    plot_wrong_predictions_multiclass(wrong, model_name=model.name, show_num_wrong=13)
-
 
 # %% Plot the training history of all models
 for model, history in histories_all:
@@ -173,10 +176,50 @@ for model, history in histories_all:
         name=model.name,
         multiclass=True,
         loss_ylim=(0, 1),
-        includes_validation=True,
+        onehot=ONEHOT,
     )
-    # %% Evaluate the model against the test set
+    # Evaluate the model against the test set
     print(model.evaluate(test_images, test_labels, batch_size=BATCH_SIZE))
+
+# %% Plot the wrong predictions
+for model in models_all:
+    predictions = model.predict(test_images)
+    preds_int = np.asarray([np.argmax(p) for p in predictions], dtype=np.int32)
+    preds_str = integer_to_suit(preds_int)
+
+    # Get the wrong predictions as a True/False array
+    mask = preds_str != label_decoder(test_labels)
+    wrong_idxs = np.argwhere(mask).transpose().flatten()
+
+    wrong_fps = [test_fps[i] for i in wrong_idxs]
+    wrong_preds = [preds_str[i] for i in wrong_idxs]
+    wrong_actual = label_decoder(test_labels[i] for i in wrong_idxs)
+    wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
+
+    plot_wrong_predictions_multiclass(wrong, model_name=model.name, show_num_wrong=10)
+
+# %% Plot the precision, recall and F1-score
+from sklearn.metrics import f1_score, precision_score, recall_score, confusion_matrix
+
+# Print f1, precision, and recall scores
+print(precision_score(label_decoder(test_labels), preds_str , average="macro"))
+print(recall_score(label_decoder(test_labels), preds_str , average="macro"))
+print(f1_score(label_decoder(test_labels), preds_str , average="macro"))
+print(classification_report(label_decoder(test_labels), preds_str))
+# Print confusion matrix
+print(confusion_matrix(label_decoder(test_labels), preds_str))
+plot_confusion_matrix(
+    predictions=wrong_preds,
+    targets=wrong_actual,
+    display_labels=SUITS_SHORT,
+    title=f"Wrong Predictions: {model.name}",
+)
+plot_confusion_matrix(
+    predictions=preds_str,
+    targets=label_decoder(test_labels),
+    display_labels=SUITS_SHORT,
+    title=f"All Predictions: {model.name}",
+)
 
 
 # %% Create a model builder to tune the hyperparameters
@@ -198,7 +241,7 @@ def model_builder(hp):
                 pool_size=hp.Int("pool_2_size", min_value=1, max_value=4, step=1),
             ),
             keras.layers.Dropout(
-                rate=hp.Float("dropout_1_rate", min_value=0.0, max_value=0.9, step=0.1),
+                rate=hp.Float("dropout_1_rate", min_value=0.0, max_value=0.5, step=0.1),
             ),
             keras.layers.Conv2D(
                 filters=hp.Int("conv_2_filters", min_value=4, max_value=20, step=4),
@@ -220,11 +263,9 @@ def model_builder(hp):
         ]
     )
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(
-            learning_rate=hp.Choice("learning_rate", values=[1e-2, 1e-3, 1e-4])
-        ),
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-        metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
+        optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+        loss=LOSS,
+        metrics=METRICS,
     )
     return model
 
@@ -233,10 +274,10 @@ def model_builder(hp):
 tuner = RandomSearch(
     model_builder,
     objective="val_loss",
-    max_trials=200,
-    executions_per_trial=2,
+    max_trials=25,
+    executions_per_trial=1,
     directory="models",
-    project_name="tuned_multiclass_randomsearch_final",
+    project_name="multiclass_performance",
     seed=SEED,
     # overwrite=False,  # Set to False to load previous trials
 )
@@ -254,7 +295,7 @@ tuner.search(
         tf.keras.callbacks.EarlyStopping(
             monitor="val_loss", patience=3, restore_best_weights=True
         ),
-        tf.keras.callbacks.TensorBoard("./tb_logs/randomsearch_final/"),
+        tf.keras.callbacks.TensorBoard("./tb_logs/multiclass_performance/"),
     ],
 )
 # %%
@@ -262,7 +303,7 @@ tuner.search(
 # model.build(input_shape=(None, 600, 200, 3))
 # 1, 4, 7
 # 10, 13, 14, 14, 17, 18
-best_hps = tuner.get_best_hyperparameters(num_trials=20)[:10]
+best_hps = tuner.get_best_hyperparameters(num_trials=10)[:1]
 for hp_id, hp in enumerate(best_hps):
     model = tuner.hypermodel.build(hp)
     # hp.values
@@ -298,24 +339,43 @@ for hp_id, hp in enumerate(best_hps):
     preds_str = integer_to_suit(preds_int)
 
     # Get the wrong predictions as a True/False array
-    mask = preds_int.astype("int") != test_labels.astype("int")
+    mask = preds_str != label_decoder(test_labels)
     wrong_idxs = np.argwhere(mask).transpose().flatten()
     num_wrong = len(wrong_idxs)
-    if num_wrong < 5:
-        # Print the tuned model's summary
-        model.summary()
+    # if num_wrong < 5:
+    # Print the tuned model's summary
+    model.summary()
 
-        print(hp_id, ":", num_wrong, "wrong predictions")
+    print(hp_id, ":", num_wrong, "wrong predictions")
 
-        wrong_fps = [test_fps[i] for i in wrong_idxs]
-        wrong_preds = [preds_str[i] for i in wrong_idxs]
-        wrong_actual = integer_to_suit(test_labels[i] for i in wrong_idxs)
-        wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
+    wrong_fps = [test_fps[i] for i in wrong_idxs]
+    wrong_preds = [preds_str[i] for i in wrong_idxs]
+    wrong_actual = label_decoder(test_labels[i] for i in wrong_idxs)
+    wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
+    plot_wrong_predictions_multiclass(
+        wrong, model_name=f"random_final_{hp_id}", show_num_wrong=5
+    )
 
-        plot_wrong_predictions_multiclass(
-            wrong, model_name=f"random_final_{hp_id}", show_num_wrong=5
-        )
-    del model
+    # Print f1, precision, and recall scores
+    print(precision_score(label_decoder(test_labels), preds_str , average="macro"))
+    print(recall_score(label_decoder(test_labels), preds_str , average="macro"))
+    print(f1_score(label_decoder(test_labels), preds_str , average="macro"))
+    print(classification_report(label_decoder(test_labels), preds_str))
+    # Print confusion matrix
+    print(confusion_matrix(label_decoder(test_labels), preds_str))
+    plot_confusion_matrix(
+        predictions=wrong_preds,
+        targets=wrong_actual,
+        display_labels=SUITS_SHORT,
+        title=f"Wrong Predictions: {model.name}",
+    )
+    plot_confusion_matrix(
+        predictions=preds_str,
+        targets=label_decoder(test_labels),
+        display_labels=SUITS_SHORT,
+        title=f"All Predictions: {model.name}",
+)
+    # del model
 
 # %%
 model.save("./models/tuned_randomsearch_tv_Adam_3.keras")
@@ -432,7 +492,7 @@ plot_history(
 # Plot the wrong predictions
 predictions = model.predict(test_images)
 preds_int = np.asarray([np.argmax(p) for p in predictions], dtype=np.int32)
-preds_str = integer_to_suit(preds_int)
+preds_str = label_decoder(preds_int)
 
 # Get the wrong predictions as a True/False array
 mask = preds_int.astype("int") != test_labels.astype("int")
@@ -440,7 +500,7 @@ wrong_idxs = np.argwhere(mask).transpose().flatten()
 
 wrong_fps = [test_fps[i] for i in wrong_idxs]
 wrong_preds = [preds_str[i] for i in wrong_idxs]
-wrong_actual = integer_to_suit(test_labels[i] for i in wrong_idxs)
+wrong_actual = label_decoder(test_labels[i] for i in wrong_idxs)
 wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
 
 plot_wrong_predictions_multiclass(wrong, model_name=model.name, show_num_wrong=10)
@@ -558,7 +618,7 @@ plot_history(
 #  Plot the wrong predictions
 predictions = model.predict(test_images)
 preds_int = np.asarray([np.argmax(p) for p in predictions], dtype=np.int32)
-preds_str = integer_to_suit(preds_int)
+preds_str = label_decoder(preds_int)
 
 # Get the wrong predictions as a True/False array
 mask = preds_int.astype("int") != test_labels.astype("int")
@@ -566,7 +626,7 @@ wrong_idxs = np.argwhere(mask).transpose().flatten()
 
 wrong_fps = [test_fps[i] for i in wrong_idxs]
 wrong_preds = [preds_str[i] for i in wrong_idxs]
-wrong_actual = integer_to_suit(test_labels[i] for i in wrong_idxs)
+wrong_actual = label_decoder(test_labels[i] for i in wrong_idxs)
 wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
 
 plot_wrong_predictions_multiclass(wrong, model_name=model.name, show_num_wrong=10)
@@ -684,7 +744,7 @@ model = keras.models.load_model("./models/tuned_hyperband2_tv_Adam.keras")
 
 predictions = model.predict(test_images)
 preds_int = np.asarray([np.argmax(p) for p in predictions], dtype=np.int32)
-preds_str = integer_to_suit(preds_int)
+preds_str = label_decoder(preds_int)
 
 # Get the wrong predictions as a True/False array
 mask = preds_int.astype("int") != test_labels.astype("int")
@@ -692,7 +752,7 @@ wrong_idxs = np.argwhere(mask).transpose().flatten()
 
 wrong_fps = [test_fps[i] for i in wrong_idxs]
 wrong_preds = [preds_str[i] for i in wrong_idxs]
-wrong_actual = integer_to_suit(test_labels[i] for i in wrong_idxs)
+wrong_actual = label_decoder(test_labels[i] for i in wrong_idxs)
 wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
 
 plot_wrong_predictions_multiclass(wrong, model_name=model.name, show_num_wrong=10)
@@ -707,7 +767,7 @@ for model_fp in glob("./models/*.keras"):
     # model.summary()
     predictions = model.predict(test_images)
     preds_int = np.asarray([np.argmax(p) for p in predictions], dtype=np.int32)
-    preds_str = integer_to_suit(preds_int)
+    preds_str = label_decoder(preds_int)
 
     # Get the wrong predictions as a True/False array
     mask = preds_int.astype("int") != test_labels.astype("int")
@@ -715,10 +775,15 @@ for model_fp in glob("./models/*.keras"):
 
     wrong_fps = [test_fps[i] for i in wrong_idxs]
     wrong_preds = [preds_str[i] for i in wrong_idxs]
-    wrong_actual = integer_to_suit(test_labels[i] for i in wrong_idxs)
+    wrong_actual = label_decoder(test_labels[i] for i in wrong_idxs)
     wrong = list(zip(wrong_fps, wrong_preds, wrong_actual))
     model_name = model_fp.split("\\")[-1].replace(".keras", "")
     plot_wrong_predictions_multiclass(wrong, model_name=model_name, show_num_wrong=10)
+    print(
+        classification_report(
+            y_true=label_decoder(test_labels), y_pred=preds_str, labels=SUITS_SHORT
+        )
+    )
     plot_confusion_matrix(
         predictions=wrong_preds,
         targets=wrong_actual,
@@ -727,8 +792,7 @@ for model_fp in glob("./models/*.keras"):
     )
     plot_confusion_matrix(
         predictions=preds_str,
-        targets=integer_to_suit(test_labels),
+        targets=label_decoder(test_labels),
         display_labels=SUITS_SHORT,
         title=f"All Predictions: {model.name}",
     )
-# %%

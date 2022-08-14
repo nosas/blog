@@ -151,12 +151,14 @@ def plot_history(
     multiclass: bool = False,
     loss_ylim: tuple[int, int] = None,
     includes_validation: bool = True,
+    onehot: bool = False,
 ) -> None:
     """Plot the history (accuracy and loss) of a model"""
     import matplotlib.pyplot as plt
     import numpy as np
 
     accuracy_str = "accuracy" if not multiclass else "sparse_categorical_accuracy"
+    accuracy_str = accuracy_str if not onehot else "categorical_accuracy"
 
     max_accuracy = np.argmax(history[accuracy_str]) + 1
     min_loss = np.argmin(history["loss"]) + 1
@@ -482,6 +484,7 @@ def plot_histories(
     loss_ylim: tuple[int, int] = None,
     multiclass: bool = False,
     includes_validation: bool = False,
+    onehot: bool = False,
 ) -> None:
     """Plot the history (accuracy and loss on the validation set) of a model as a line chart"""
     acc = []
@@ -490,6 +493,7 @@ def plot_histories(
     val_loss = []
     idx_start, idx_end = index_slice
     accuracy_str = "accuracy" if not multiclass else "sparse_categorical_accuracy"
+    accuracy_str = accuracy_str if not onehot else "categorical_accuracy"
 
     for history in histories:
         num_epochs = range(1, len(history["loss"]) + 1)

@@ -271,7 +271,8 @@ def create_datasets(
 
 
 def create_suit_datasets(
-    split_ratio: list[float, float, float] = None
+    split_ratio: list[float, float, float] = None,
+    onehot: bool = False,
 ) -> tuple[tuple, tuple, tuple]:
     """Create multiclass Cog suit datasets for training, validation, and testing
 
@@ -288,9 +289,10 @@ def create_suit_datasets(
     data_dirs = [TRAIN_DIR, VALIDATE_DIR, TEST_DIR]
     suits = get_suits_from_dir(directories=data_dirs)
     result = {}
+    encoder = suit_to_integer if not onehot else suit_to_onehot
     for dir_name in data_dirs:
         filepaths, labels = suits[dir_name]
-        labels = np.asarray(suit_to_integer(labels), dtype=np.float32)
+        labels = np.asarray(encoder(labels), dtype=np.float32)
         images = np.asarray(
             [get_img_array_from_filepath(fp) for fp in filepaths], dtype=np.float32
         )
@@ -351,7 +353,7 @@ def suit_to_integer(suits: list[str]) -> list[int]:
     Returns:
         list[int]: Integer labels for all Cog suits.
     """
-    return [MAP_SUIT_TO_INT[suit] for suit in suits]
+    return np.array([MAP_SUIT_TO_INT[suit] for suit in suits])
 
 
 def integer_to_suit(suits: list[int]) -> list[str]:
@@ -360,7 +362,7 @@ def integer_to_suit(suits: list[int]) -> list[str]:
     Returns:
         list[str]: String labels for all Cog suits.
     """
-    return [MAP_INT_TO_SUIT[suit] for suit in suits]
+    return np.array([MAP_INT_TO_SUIT[suit] for suit in suits])
 
 
 def suit_to_onehot(suits: list[str]) -> list[np.ndarray]:
@@ -380,4 +382,16 @@ def suit_to_onehot(suits: list[str]) -> list[np.ndarray]:
                [0., 0., 1., 0.],
                [0., 0., 0., 1.]])
     """
-    return [MAP_SUIT_TO_ONEHOT[suit] for suit in suits]
+    return np.array([MAP_SUIT_TO_ONEHOT[suit] for suit in suits])
+
+
+def onehot_to_suit(onehots: list[np.ndarray]) -> list[str]:
+    """Get string labels for all one-hot labels in the list.
+
+    Args:
+        onehots (list[np.ndarray]): List of one-hot labels.
+
+    Returns:
+        list[str]: String labels for all Cog suits.
+    """
+    return np.array([MAP_INT_TO_SUIT[onehot.argmax()] for onehot in onehots])
