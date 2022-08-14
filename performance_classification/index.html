@@ -26,7 +26,7 @@
 <h1 id="classification-performance-measures">Classification Performance Measures</h1>
 
 <p>This article will explain the most common performance measures for classification problems.
-These measures apply to both binary and multi-class classification problems.</p>
+These measures apply to both binary and multiclass classification problems.</p>
 
 <p>We will explain model performance metrics such as confusion matrix, accuracy, precision, recall, and F1-score.
 The code in this article utilizes python3.7, TensorFlow, keras, and scikit-learn.</p>
@@ -114,17 +114,17 @@ As the name suggests, a confusion matrix is a 2-dimensional table.</p>
 We'll shorten the names to TP, TN, FP, and FN, respectively.
 Using TP, TN, FP, and FN, we can calculate the model's accuracy, precision, recall, and F1-score.</p>
 
-<p>The table below shows the confusion matrix for a binary classification problem.
+<p>The table on the right shows a confusion matrix for a binary classification problem.
 The rows represent the true labels and the columns represent the predicted labels.
 The diagonal represents correct predictions, and all other cells represent incorrect predictions.
 Ideally, our confusion matrix should only contain diagonal values - no incorrect predictions.</p>
 
-<p>We can expand the confusion matrix to include multi-class classification problems.
-For instance, the table below shows the confusion matrix for a multi-class classification problem with four classes.</p>
+<p>We can expand the confusion matrix to include multiclass classification problems.
+For instance, the table below shows the confusion matrix for a multiclass classification problem with four classes.</p>
 
-<p>The more classes in a multi-class classification problem, the more convoluted the confusion matrix will be.
+<p>The more classes in a multiclass classification problem, the more convoluted the confusion matrix will be.
 This should not stop us from using the confusion matrix to evaluate model performance, however.
-We can turn the multi-class matrix into a binary matrix using one-vs-all, but I will not demonstrate that here.
+We can turn the multiclass matrix into a binary matrix using one-vs-all, but I will not demonstrate that here.
 Instead, I'll point you to this <a href="https://www.youtube.com/watch?v=6kzvrq-MIO0">video</a> and this <a href="https://www.youtube.com/watch?v=ZvaELFv5IpM">video by Andrew Ng</a>.</p>
 
 <figure class="center">
@@ -383,7 +383,7 @@ We'll implement and visualize the performance measures with the help of Keras, T
 
 <p>During training, we can use Keras' built-in accuracy <code>Metric</code> classes: <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/BinaryAccuracy">binary_accuracy</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/CategoricalAccuracy">categorical_accuracy</a>, and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/SparseCategoricalAccuracy">sparse_categorical_accuracy</a>.
 For binary classification models, we use the <code>binary_accuracy</code> metric.
-For multi-class classification models, we use the <code>[sparse_]categorical_accuracy</code> metric.</p>
+For multiclass classification models, we use the <code>[sparse_]categorical_accuracy</code> metric.</p>
 
 <p>The <code>Metric</code> classes allow us to use TensorBoard and visualize training metrics.</p>
 
