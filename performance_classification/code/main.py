@@ -79,22 +79,22 @@ def plot_f1(
     # Derive the intersection point of the lines
     int_x = (l2_b - l1_b) / (l1_m - l2_m)
     int_y = f1 / 2  # int_y = l1_m * int_x + l1_b
-    # Plot a line from the bottom of the precision bar to the top of the recall bar
-    ax.plot(l1_x, l1_y, "-", linewidth=2.5, alpha=0.25, zorder=0, color=COLORS[3])
-    # Plot a line from the bottom of the precision bar to the top of the recall bar
-    ax.plot(l2_x, l2_y, "-", linewidth=2.5, alpha=0.25, zorder=0, color=COLORS[3])
-    # Plot a dot at the intersection of the two lines
-    ax.plot(int_x, int_y, "*", label="Harmonic", markersize=10, color=COLORS[3])
+    # # Plot a line from the bottom of the precision bar to the top of the recall bar
+    # ax.plot(l1_x, l1_y, "-", linewidth=2.5, alpha=0.25, zorder=0, color=COLORS[3])
+    # # Plot a line from the bottom of the precision bar to the top of the recall bar
+    # ax.plot(l2_x, l2_y, "-", linewidth=2.5, alpha=0.25, zorder=0, color=COLORS[3])
+    # # Plot a dot at the intersection of the two lines
+    # ax.plot(int_x, int_y, "*", label="1/2 Harmonic", markersize=10, color=COLORS[3])
     ax.plot(int_x, int_y * 2, "*", label="F1", markersize=10, color=COLORS[6])
-    # Add annotations to the harmonic mean and F1-score
-    ax.annotate(
-        f"{harmonic:.2f}",
-        xy=(int_x, int_y),
-        xytext=(int_x + 0.2, int_y - 0.1),
-        ha="center",
-        size=12,
-        color=COLORS[3],
-    )
+    # # Add annotations to the harmonic mean and F1-score
+    # ax.annotate(
+    #     f"{harmonic:.2f}",
+    #     xy=(int_x, int_y),
+    #     xytext=(int_x + 0.2, int_y - 0.1),
+    #     ha="center",
+    #     size=12,
+    #     color=COLORS[3],
+    # )
     if f1 != arithmetic:  # Prevent duplicate annotation
         ax.annotate(
             f"{f1:.2f}",
