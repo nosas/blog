@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 13, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 14, 2022</p>
 
 <p><title>Performance Measures for Classification Problems</title></p>
 
@@ -55,11 +55,11 @@ The code in this article utilizes python3.7, tensorflow, and keras.</p>
 <li><a href="#recall">Recall</a></li>
 <li><a href="#when-to-use-precision-vs-recall">When to use Precision vs Recall</a></li>
 <li><a href="#f1-score">F1-score</a></li>
-<li><a href="#keras">Keras</a>
+<li><a href="#performance-measures-in-keras-tensorflow-and-scikit-learn">Performance measures in Keras, Tensorflow, and scikit-learn</a>
 <ul>
-<li><a href="#training-accuracy-in-keras">Training accuracy in Keras</a></li>
-<li><a href="#accuracy-in-keras">Accuracy in Keras</a></li>
-<li><a href="#training-precision-in-keras">Training precision in Keras</a></li>
+<li><a href="#training-accuracy">Training accuracy</a></li>
+<li><a href="#keras-built-in-accuracy-function">Keras built-in accuracy function</a></li>
+<li><a href="#training-precision-recall-and-f1-score">Training precision, recall, and F1-score</a></li>
 </ul></li>
 <li><a href="#conclusion">Conclusion</a></li>
 <li><a href="#further-reading">Further reading</a></li>
@@ -367,35 +367,137 @@ Note how close the F1-score is to the arithmetic mean.
 The larger the difference between precision and recall, the larger the difference between the harmonic and arithmetic means.
 Figures 2 and 3 show how the F1-score moves when the precision and recall values are vastly different and exactly the same, respectively.</p>
 
+<p>If our goal is to have strong precision <em>and</em> recall, we should optimize our model's F1-score.
+This is especially true when working with unbalanced datasets or tasks - such as the cancer classification problem.</p>
+
+<p>The following section shows how to implement the accuracy, precision, recall and F1-score metrics using python.
+It's not a detailed how-to, but a reference guide for future projects.</p>
+
 <hr />
 
-<h2 id="keras">Keras</h2>
+<h2 id="performance-measures-in-keras-tensorflow-and-scikit-learn">Performance measures in Keras, Tensorflow, and scikit-learn</h2>
 
-<h3 id="training-accuracy-in-keras">Training accuracy in Keras</h3>
+<p>The following section is for future references.
+We'll implement and visualize the performance measures with the help of Keras, Tensorflow, and scikit-learn.</p>
+
+<h3 id="training-accuracy">Training accuracy</h3>
 
 <p>During training, we can use Keras' built-in accuracy <code>Metric</code> classes: <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/BinaryAccuracy">binary_accuracy</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/CategoricalAccuracy">categorical_accuracy</a>, and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/SparseCategoricalAccuracy">sparse_categorical_accuracy</a>.
 For binary classification models, we use the <code>binary_accuracy</code> metric.
 For multi-class classification models, we use the <code>[sparse_]categorical_accuracy</code> metric.</p>
 
-<p>Utilizing the <code>Metric</code> classes allows us to use TensorBoard and visualize metrics during training.</p>
+<p>The <code>Metric</code> classes allow us to use TensorBoard and visualize training metrics.</p>
 
-<p><font style="color:red">TODO: Insert code snippet using Keras' built-in accuracy metrics</font></p>
+<div class="codehilite"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">make_multiclass_model</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;convnet_example&quot;</span><span class="p">,</span> <span class="n">augmentation</span><span class="o">=</span><span class="n">get_image_augmentations</span><span class="p">(),</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="n">loss</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">SparseCategoricalCrossentropy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ONEHOT</span>
+        <span class="k">else</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">CategoricalCrossentropy</span><span class="p">()</span>
+    <span class="p">),</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span>
+    <span class="n">metrics</span><span class="o">=</span> <span class="p">[</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">SparseCategoricalAccuracy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ONEHOT</span>
+        <span class="k">else</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">CategoricalAccuracy</span><span class="p">(),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div>
 
-<p><font style="color:red">TODO: Image of TensorBoard metrics</font></p>
+<h3 id="keras-built-in-accuracy-function">Keras built-in accuracy function</h3>
 
-<h3 id="accuracy-in-keras">Accuracy in Keras</h3>
+<p>Alternatively, given a pre-trained model, we can use Keras' built-in accuracy function to calculate the model's prediction accuracy: <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/binary_accuracy">binary</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/categorical_accuracy">categorical</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/sparse_categorical_accuracy">sparse_categorical</a>.</p>
 
-<p>Alternatively, given a pre-trained model, we can use Keras' built-in accuracy methods to calculate the model's prediction accuracy: <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/binary_accuracy">binary</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/categorical_accuracy">categorical</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/sparse_categorical_accuracy">sparse_categorical</a>.</p>
+<p>Where the <code>Metric</code> classes allow us to utilize TensorBoard, the accuracy function allows us to directly calculate the model's prediction accuracy.</p>
 
-<p>Where the <code>Metric</code> classes allow us to utilize TensorBoard, the accuracy methods allows us to directly calculate the model's prediction accuracy.</p>
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_images</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ca</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">categorical_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">test_labels</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">predictions</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ca</span>
+<span class="o">&lt;</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">197</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">,</span> <span class="n">numpy</span><span class="o">=</span>
+<span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
+       <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
+       <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
+       <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
+       <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
+       <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
+       <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
+       <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
+       <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
+       <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
+       <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
+       <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
+</code></pre></div>
 
-<p><font style="color:red">TODO: Insert code snippet using Keras' built-in accuracy methods</font></p>
+<p>The function outputs are binary array where <code>0</code> represents wrong predictions and <code>1</code> correct predictions.
+This is the equivalent of the example in the <a href="#accuracy">accuracy</a> section earlier in the article:</p>
 
-<h3 id="training-precision-in-keras">Training precision in Keras</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Get the wrong predictions as a True/False array, where True == wrong prediction</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">wrong_preds</span> <span class="o">=</span> <span class="n">preds</span> <span class="o">!=</span> <span class="n">test_labels</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ca</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">categorical_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">test_labels</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">predictions</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ca</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">ca</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Create the True/False array</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ca</span> <span class="o">==</span> <span class="n">wrong_preds</span>
+<span class="kc">True</span>
+</code></pre></div>
 
-<p>During training, we can use Keras' <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision">built-in precision metric</a>.</p>
+<h3 id="training-precision-recall-and-f1-score">Training precision, recall, and F1-score</h3>
 
-<p><font style="color:red">TODO: Insert code snippet using Keras' built-in precision metric</font></p>
+<p>During training, we can use Keras' built-in <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision">precision</a> and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall">recall</a> metrics.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">make_multiclass_model</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;convnet_example&quot;</span><span class="p">,</span> <span class="n">augmentation</span><span class="o">=</span><span class="n">get_image_augmentations</span><span class="p">(),</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="n">loss</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">SparseCategoricalCrossentropy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ONEHOT</span>
+        <span class="k">else</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">CategoricalCrossentropy</span><span class="p">()</span>
+    <span class="p">),</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span>
+    <span class="n">metrics</span><span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">Precision</span><span class="p">(),</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">Recall</span><span class="p">()]</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>We can use these measures to manually derive the F1-score.
+Alternatively, we can use TensorFlow Addons' <a href="https://www.tensorflow.org/addons/api_docs/python/tfa/metrics/F1Score">F1Score metric</a>.</p>
+
+<p>The simplest way to derive precision, recall, and F1-score, however, is using scikit-learn's <code>classification_report</code> and <code>f1_score</code> methods.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="o">&gt;&gt;&gt;</span>     <span class="n">classification_report</span><span class="p">,</span>
+<span class="o">&gt;&gt;&gt;</span>     <span class="n">f1_score</span><span class="p">,</span>
+<span class="o">&gt;&gt;&gt;</span>     <span class="n">precision_score</span><span class="p">,</span>
+<span class="o">&gt;&gt;&gt;</span>     <span class="n">recall_score</span><span class="p">,</span>
+<span class="o">&gt;&gt;&gt;</span>     <span class="n">confusion_matrix</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">label_decoder</span><span class="p">(</span><span class="n">test_labels</span><span class="p">),</span> <span class="n">preds_str</span><span class="p">)</span>
+<span class="p">[[</span><span class="mi">38</span>  <span class="mi">1</span>  <span class="mi">1</span>  <span class="mi">1</span><span class="p">]</span>
+ <span class="p">[</span> <span class="mi">0</span> <span class="mi">41</span>  <span class="mi">0</span>  <span class="mi">0</span><span class="p">]</span>
+ <span class="p">[</span> <span class="mi">0</span>  <span class="mi">4</span> <span class="mi">56</span>  <span class="mi">0</span><span class="p">]</span>
+ <span class="p">[</span> <span class="mi">1</span>  <span class="mi">1</span>  <span class="mi">1</span> <span class="mi">52</span><span class="p">]]</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">label_decoder</span><span class="p">(</span><span class="n">test_labels</span><span class="p">),</span> <span class="n">preds_str</span> <span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;macro&quot;</span><span class="p">)</span>
+<span class="mf">0.9483371791854744</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">recall_score</span><span class="p">(</span><span class="n">label_decoder</span><span class="p">(</span><span class="n">test_labels</span><span class="p">),</span> <span class="n">preds_str</span> <span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;macro&quot;</span><span class="p">)</span>
+<span class="mf">0.9514042867701404</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">label_decoder</span><span class="p">(</span><span class="n">test_labels</span><span class="p">),</span> <span class="n">preds_str</span> <span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;macro&quot;</span><span class="p">)</span>
+<span class="mf">0.9484834217885065</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">classification_report</span><span class="p">(</span><span class="n">label_decoder</span><span class="p">(</span><span class="n">test_labels</span><span class="p">),</span> <span class="n">preds_str</span><span class="p">)</span>
+              <span class="n">precision</span>    <span class="n">recall</span>  <span class="n">f1</span><span class="o">-</span><span class="n">score</span>   <span class="n">support</span>
+
+          <span class="n">bb</span>       <span class="mf">0.97</span>      <span class="mf">0.93</span>      <span class="mf">0.95</span>        <span class="mi">41</span>
+          <span class="n">cb</span>       <span class="mf">0.87</span>      <span class="mf">1.00</span>      <span class="mf">0.93</span>        <span class="mi">41</span>
+          <span class="n">lb</span>       <span class="mf">0.97</span>      <span class="mf">0.93</span>      <span class="mf">0.95</span>        <span class="mi">60</span>
+          <span class="n">sb</span>       <span class="mf">0.98</span>      <span class="mf">0.95</span>      <span class="mf">0.96</span>        <span class="mi">55</span>
+
+    <span class="n">accuracy</span>                           <span class="mf">0.95</span>       <span class="mi">197</span>
+   <span class="n">macro</span> <span class="n">avg</span>       <span class="mf">0.95</span>      <span class="mf">0.95</span>      <span class="mf">0.95</span>       <span class="mi">197</span>
+<span class="n">weighted</span> <span class="n">avg</span>       <span class="mf">0.95</span>      <span class="mf">0.95</span>      <span class="mf">0.95</span>       <span class="mi">19</span>
+</code></pre></div>
 
 <hr />
 

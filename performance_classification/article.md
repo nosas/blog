@@ -24,10 +24,10 @@ The code in this article utilizes python3.7, tensorflow, and keras.
     - [Recall](#recall)
     - [When to use Precision vs Recall](#when-to-use-precision-vs-recall)
     - [F1-score](#f1-score)
-    - [Keras](#keras)
-        - [Training accuracy in Keras](#training-accuracy-in-keras)
-        - [Accuracy in Keras](#accuracy-in-keras)
-        - [Training precision in Keras](#training-precision-in-keras)
+    - [Performance measures in Keras, Tensorflow, and scikit-learn](#performance-measures-in-keras-tensorflow-and-scikit-learn)
+        - [Training accuracy](#training-accuracy)
+        - [Keras built-in accuracy function](#keras-built-in-accuracy-function)
+        - [Training precision, recall, and F1-score](#training-precision-recall-and-f1-score)
     - [Conclusion](#conclusion)
     - [Further reading](#further-reading)
     - [References](#references)
@@ -325,34 +325,141 @@ Note how close the F1-score is to the arithmetic mean.
 The larger the difference between precision and recall, the larger the difference between the harmonic and arithmetic means.
 Figures 2 and 3 show how the F1-score moves when the precision and recall values are vastly different and exactly the same, respectively.
 
----
-## Keras
+If our goal is to have strong precision *and* recall, we should optimize our model's F1-score.
+This is especially true when working with unbalanced datasets or tasks - such as the cancer classification problem.
 
-### Training accuracy in Keras
+The following section shows how to implement the accuracy, precision, recall and F1-score metrics using python.
+It's not a detailed how-to, but a reference guide for future projects.
+
+---
+## Performance measures in Keras, Tensorflow, and scikit-learn
+
+The following section is for future references.
+We'll implement and visualize the performance measures with the help of Keras, Tensorflow, and scikit-learn.
+
+### Training accuracy
 
 During training, we can use Keras' built-in accuracy `Metric` classes: [binary_accuracy][binary_accuracy], [categorical_accuracy][categorical_accuracy], and [sparse_categorical_accuracy][sparse_categorical_accuracy].
 For binary classification models, we use the `binary_accuracy` metric.
 For multi-class classification models, we use the `[sparse_]categorical_accuracy` metric.
 
-Utilizing the `Metric` classes allows us to use TensorBoard and visualize metrics during training.
+The `Metric` classes allow us to use TensorBoard and visualize training metrics.
 
-<font style="color:red">TODO: Insert code snippet using Keras' built-in accuracy metrics</font>
+```python
+model = make_multiclass_model(
+    name="convnet_example", augmentation=get_image_augmentations(), dropout=0.5
+)
+model.compile(
+    loss=(
+        tf.keras.losses.SparseCategoricalCrossentropy()
+        if not ONEHOT
+        else tf.keras.losses.CategoricalCrossentropy()
+    ),
+    optimizer=opt,
+    metrics= [
+        tf.keras.metrics.SparseCategoricalAccuracy()
+        if not ONEHOT
+        else tf.keras.metrics.CategoricalAccuracy(),
+    ]
+)
+```
 
-<font style="color:red">TODO: Image of TensorBoard metrics</font>
+### Keras built-in accuracy function
 
-### Accuracy in Keras
+Alternatively, given a pre-trained model, we can use Keras' built-in accuracy function to calculate the model's prediction accuracy: [binary][binary], [categorical][categorical], [sparse_categorical][sparse_categorical].
 
-Alternatively, given a pre-trained model, we can use Keras' built-in accuracy methods to calculate the model's prediction accuracy: [binary][binary], [categorical][categorical], [sparse_categorical][sparse_categorical].
+Where the `Metric` classes allow us to utilize TensorBoard, the accuracy function allows us to directly calculate the model's prediction accuracy.
 
-Where the `Metric` classes allow us to utilize TensorBoard, the accuracy methods allows us to directly calculate the model's prediction accuracy.
+```python
+>>> predictions = model.predict(test_images)
+>>> ca = tf.keras.metrics.categorical_accuracy(y_true=test_labels, y_pred=predictions)
+>>> ca
+<tf.Tensor: shape=(197,), dtype=float32, numpy=
+array([0., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 0., 1.,
+       1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.,
+       1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 0., 1., 1., 1., 1., 1., 1.,
+       1., 1., 1., 0., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.,
+       1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.,
+       1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.,
+       0., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.,
+       0., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 0., 1., 1., 1., 1.,
+       1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.,
+       1., 1., 1., 1., 1., 1., 1., 0., 1., 1., 1., 1., 1., 1., 1., 0., 1.,
+       1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.,
+       1., 1., 0., 1., 1., 1., 1., 1., 1., 1.], dtype=float32)>
+```
 
-<font style="color:red">TODO: Insert code snippet using Keras' built-in accuracy methods</font>
+The function outputs are binary array where `0` represents wrong predictions and `1` correct predictions.
+This is the equivalent of the example in the [accuracy](#accuracy) section earlier in the article:
 
-### Training precision in Keras
+```python
+# Get the wrong predictions as a True/False array, where True == wrong prediction
+>>> wrong_preds = preds != test_labels
+>>> ca = tf.keras.metrics.categorical_accuracy(y_true=test_labels, y_pred=predictions)
+>>> ca = np.argwhere(ca == 0)  # Create the True/False array
+>>> ca == wrong_preds
+True
+```
 
-During training, we can use Keras' [built-in precision metric](https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision).
+### Training precision, recall, and F1-score
 
-<font style="color:red">TODO: Insert code snippet using Keras' built-in precision metric</font>
+During training, we can use Keras' built-in [precision](https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision) and [recall](https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall) metrics.
+
+```python
+model = make_multiclass_model(
+    name="convnet_example", augmentation=get_image_augmentations(), dropout=0.5
+)
+model.compile(
+    loss=(
+        tf.keras.losses.SparseCategoricalCrossentropy()
+        if not ONEHOT
+        else tf.keras.losses.CategoricalCrossentropy()
+    ),
+    optimizer=opt,
+    metrics= [tf.keras.metrics.Precision(), tf.keras.metrics.Recall()]
+)
+```
+
+We can use these measures to manually derive the F1-score.
+Alternatively, we can use TensorFlow Addons' [F1Score metric](https://www.tensorflow.org/addons/api_docs/python/tfa/metrics/F1Score).
+
+The simplest way to derive precision, recall, and F1-score, however, is using scikit-learn's `classification_report` and `f1_score` methods.
+
+```python
+>>> from sklearn.metrics import (
+>>>     classification_report,
+>>>     f1_score,
+>>>     precision_score,
+>>>     recall_score,
+>>>     confusion_matrix)
+
+>>> confusion_matrix(label_decoder(test_labels), preds_str)
+[[38  1  1  1]
+ [ 0 41  0  0]
+ [ 0  4 56  0]
+ [ 1  1  1 52]]
+
+>>> precision_score(label_decoder(test_labels), preds_str , average="macro")
+0.9483371791854744
+
+>>> recall_score(label_decoder(test_labels), preds_str , average="macro")
+0.9514042867701404
+
+>>> f1_score(label_decoder(test_labels), preds_str , average="macro")
+0.9484834217885065
+
+>>> classification_report(label_decoder(test_labels), preds_str)
+              precision    recall  f1-score   support
+
+          bb       0.97      0.93      0.95        41
+          cb       0.87      1.00      0.93        41
+          lb       0.97      0.93      0.95        60
+          sb       0.98      0.95      0.96        55
+
+    accuracy                           0.95       197
+   macro avg       0.95      0.95      0.95       197
+weighted avg       0.95      0.95      0.95       19
+```
 
 ---
 ## Conclusion
