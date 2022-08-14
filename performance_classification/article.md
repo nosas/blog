@@ -29,6 +29,7 @@ The code in this article utilizes python3.7, tensorflow, and keras.
         - [Accuracy in Keras](#accuracy-in-keras)
         - [Training precision in Keras](#training-precision-in-keras)
     - [Conclusion](#conclusion)
+    - [Further reading](#further-reading)
     - [References](#references)
 </details>
 
@@ -85,6 +86,8 @@ For instance, the table below shows the confusion matrix for a multi-class class
 
 The more classes in a multi-class classification problem, the more convoluted the confusion matrix will be.
 This should not stop us from using the confusion matrix to evaluate model performance, however.
+We can turn the multi-class matrix into a binary matrix using one-vs-all, but I will not demonstrate that here.
+Instead, I'll point you to this [video](https://www.youtube.com/watch?v=6kzvrq-MIO0) and this [video by Andrew Ng](https://www.youtube.com/watch?v=ZvaELFv5IpM).
 
 <figure class="center">
     <img src="img/confusion_matrix_multiclass.png" style="width:100%;"/>
@@ -181,7 +184,7 @@ accuracy = (len(preds) - num_wrong_preds) / len(preds)
 
 Balanced datasets are the key to successful classification models.
 Real-world problems, however, do not always have balanced datasets.
-We must understand how accuracy may be deceptive in unbalanced classification datasets and tasks.
+We must understand how accuracy may be misleading in unbalanced classification datasets and tasks.
 
 Imagine we had a binary classifier that predicts whether an image was a cat or dog.
 Our dataset consists of 1000 pictures: 950 cats pictures and 50 dog pictures.
@@ -192,13 +195,13 @@ We would say the model has an accuracy of 93%.
 We might think that the model has high accuracy regardless of the class.
 For instance, given a dataset with 950 dogs and 50 cats we might assume the model retains its 93% accuracy.
 This is not the case.
-The model will incorrectly predict dog samples as cats, likely resulting in significantly lower accuracy.
-
+The model will incorrectly predict dog samples as cats as a result of its imbalanced training, resulting in significantly lower accuracy.
 We can agree that the model has high accuracy on unbalanced tasks - specifically those that favor cat samples - but it will perform poorly on balanced tasks where there's an equal number of dog and cat samples.
-Additionally, accuracy does not provide insight to the model's general performance, but rather the model's performance on a specific dataset.
 
-Measuring model performance should be straightforward, not deceptive.
-This is where precision and recall come in.
+Accuracy does not provide insight to the model's general performance, but rather the model's performance on a specific dataset.
+Furthermore, accuracy does not take into account the subtleties of class imbalances, or differing costs of false negatives and false positives.
+Measuring model performance should be straightforward, not misleading.
+We can use precision and recall to properly measure model performance when facing class imbalances of differing costs of incorrect predictions.
 
 ---
 ## Precision
@@ -217,9 +220,7 @@ It's calculated as follows: `TP / (TP + FP)`.
 It is the ratio of correctly predicted *positive* labels to the total number of *positive* labels predicted.
 In other words, precision is **how reliably the model reaches the correct result**.
 
-<font style="color:red">TODO: Insert code snippet to calculate precision</font>
-
-We should optimize our model's precision when we want to decrease the number of false positives or when having false negatives is not a concern.
+We should optimize our model's precision when we want to decrease the number of false positives or when having false negatives is not costly.
 
 ### What are positive labels?
 
@@ -305,22 +306,22 @@ We can do this by utilizing the F1-score.
 ---
 ## F1-score
 
-The F1-score combines precision and recall to make for a good metric for imbalanced datasets.
-It's designed to be a good metric for classification when other metrics may be deceptive or misleading.
+The F1-score combines precision and recall to effectively measure the model's accuracy on imbalanced classification datasets.
+It's designed to be used when other metrics may be deceptive or misleading.
 
 Formally, the F1-score is: `(2 * precision * recall) / (precision + recall)`.
 We calculate the F1-score by taking the harmonic mean of precision and recall.
 We take the harmonic mean because it penalizes extreme value discrepancies more than the arithmetic mean.
-Take the following three figures, for example.
+Penalization ensures we find a balance of precision and recall in our model's performance.
+The following figure demonstrates how the F1-score compares against the arithmetic mean with varying precision and recall values.
 
-<figure class="center">
-    <font style="color:red">TODO: Add three figures: similar pr, different pr, same pr</font>
-    <img src="img/" style="width:100%;"/>
+<figure class="center" style="width:98%;">
+    <img src="img/f1_score.png" style="width:100%;"/>
     <figcaption></figcaption>
 </figure>
 
 Figure 1 derives the F1-score when precision and recall are slightly different.
-Note how similar the F1-score is to the arithmetic mean.
+Note how close the F1-score is to the arithmetic mean.
 The larger the difference between precision and recall, the larger the difference between the harmonic and arithmetic means.
 Figures 2 and 3 show how the F1-score moves when the precision and recall values are vastly different and exactly the same, respectively.
 
@@ -357,20 +358,29 @@ During training, we can use Keras' [built-in precision metric](https://www.tenso
 ## Conclusion
 
 ---
+## Further reading
+
+My explanations merely scratch the surface of classification performance measures.
+This article was not intended to deep dive into the measures.
+Rather, it was to demonstrate my current working knowledge on the subject of performance measures.
+
+The following articles go in-depth into additional measures such as ROC-AUC curves, Cohen Kappa score, Matthew’s correlation coefficient, and log loss.
+I highly recommend giving them a read/skim to gain a deeper understanding, or varying perspective, of the measures mentioned above.
+
+* [F-Score](https://deepai.org/machine-learning-glossary-and-terms/f-score)
+* [Guide to accuracy, precision, and recall](https://www.mage.ai/blog/definitive-guide-to-accuracy-precision-recall-for-product-developers)
+* [Comprehensive Guide to Multiclass Classification Metrics](https://towardsdatascience.com/comprehensive-guide-on-multiclass-classification-metrics-af94cfb83fbd)
+* [Comprehensive Guide to Multiclass Classification With Sklearn](https://towardsdatascience.com/comprehensive-guide-to-multiclass-classification-with-sklearn-127cc500f362)
+* (VIDEO) [Introduction to Precision, Recall, and F1](https://www.youtube.com/watch?v=jJ7ff7Gcq34)
+
+---
 ## References
 
-1. Skicit Learn's *Model Evaluation Metrics and Scoring* [API](https://scikit-learn.org/stable/modules/model_evaluation.html#metrics-and-scoring-quantifying-the-quality-of-predictions)
+* Scikit-learn's *Model Evaluation Metrics and Scoring* [API](https://scikit-learn.org/stable/modules/model_evaluation.html#metrics-and-scoring-quantifying-the-quality-of-predictions)
 
-<!-- Keras built-in training metrics -->
 [binary_accuracy]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/BinaryAccuracy
-
 [categorical_accuracy]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/CategoricalAccuracy
-
 [sparse_categorical_accuracy]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/SparseCategoricalAccuracy
-
-<!-- Keras built-in accuracy methods-->
 [binary]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/binary_accuracy
-
 [categorical]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/categorical_accuracy
-
 [sparse_categorical]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/sparse_categorical_accuracy
