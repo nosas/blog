@@ -11,7 +11,9 @@ After reading this article, we'll have a better understanding of how to
 - deal with a model overfitting to a small, imbalanced dataset
 - utilize image augmentation and dropout to improve the model's generalization capability
 - compare different models, optimizers, and hyperparameters
-- interpret and visualize what the model is learning
+- automatically optimize hyperparameter values with Keras-tuner
+- use classification performance measures such as precision, recall and f1-score
+- interpret and visualize what the model is learning with confusion matrices
 
 The following article will cover image segmentation of ToonTown's streets, roads, Cogs, and Cog buildings.
 Afterwards, we'll implement real-time object detection and, if possible, image segmentation.
@@ -30,8 +32,8 @@ For now, let's focus on multiclass classification.
         - [Dataset balance](#dataset-balance)
             - [Why does The Brrrgh have the most Bossbot samples?](#why-does-the-brrrgh-have-the-most-bossbot-samples)
             - [Why are there so many Lawbot and Sellbot samples in Daisy's Garden?](#why-are-there-so-many-lawbot-and-sellbot-samples-in-daisys-garden)
-        - [Creating the dataset objects](#creating-the-dataset-objects)
-            - [Splitting the images into train, validate, and test](#splitting-the-images-into-train-validate-and-test)
+        - [Creating the datasets](#creating-the-datasets)
+            - [Splitting images into train, validate, and test sets](#splitting-images-into-train-validate-and-test-sets)
     - [Compiling the model](#compiling-the-model)
         - [Loss function](#loss-function)
         - [Optimizer](#optimizer)
@@ -134,8 +136,7 @@ As a result, the majority of Sellbot Cogs reside in the [streets of DG](https://
 I would not have noticed either of these imbalances without charting the samples per street.
 Moving forward, we'll be more conscious of street imbalance and take screenshots of Cogs from other streets.
 
-
-### Creating the dataset objects
+### Creating the datasets
 
 We'll create simple tuples of images and labels instead of `Keras.dataset` objects.
 
@@ -181,19 +182,29 @@ val_images, val_labels = ds_validate
 test_images, test_labels = ds_test
 ```
 
-#### Splitting the images into train, validate, and test
+#### Splitting images into train, validate, and test sets
 
 Previously, we split the entire dataset into 60%/20%/20% train/validate/test sets.
 This resulted in unbalanced suit samples in each set.
-For instance, the Bossbot suit samples would contained a disproportionate number of sample from Flunkies.
+For instance, the Bossbot suit samples would contain a disproportionate number of sample from Flunkies relative to other Bossbots.
 
-Now, in order to maintain balanced datasets for each Cog suit, we split each individual Cog entity using the 60/20/20 split.
+To maintain balanced datasets for each Cog suit, we split each individual Cog entity using the 60/20/20 split.
 This ensures a representative sample of each Cog entity.
 
 ---
 ## Compiling the model
 
+Now that we've created the datasets, we can compile the model.
+Compiling the model requires choosing a loss function, optimizer, and metrics to monitor the model's performance during training.
+
 ### Loss function
+
+Our model is classifying multiple classes, so we'll have to choose between `categorical_crossentropy` or `sparse_categorical_crossentropy`.
+There's one small, but important difference between the two loss functions: `categorical_crossentropy` requires one-hot encoded labels whereas `sparse_categorical_crossentropy` requires integer labels.
+
+Given that our labels are one-hot encoded, we'll utilize the `categorical_crossentropy` loss function during our model's training.
+The decision one-hot encoding our labels stemmed from the desire to utilize [precision](https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision) and [recall](https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall) metrics.
+More on these metrics in the following [metrics](#metrics) section.
 
 ### Optimizer
 
