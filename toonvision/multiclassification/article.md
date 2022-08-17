@@ -203,10 +203,28 @@ This ensures a representative sample of each Cog entity.
 Now that we've created the datasets, we can compile the model.
 Compiling the model requires choosing a loss function, optimizer, and metrics to monitor the model's performance during training.
 
+```python
+ONEHOT = True
+
+model.compile(
+    loss=LOSS,
+    optimizer=OPTIMIZER,
+    metrics=METRICS,
+)
+```
+
 ### Loss function
 
 Our model is classifying multiple classes, so we'll have to choose between `categorical_crossentropy` or `sparse_categorical_crossentropy`.
 There's one small, but important difference between the two loss functions: `categorical_crossentropy` requires one-hot encoded labels whereas `sparse_categorical_crossentropy` requires integer labels.
+
+```python
+LOSS = (
+    tf.keras.losses.SparseCategoricalCrossentropy()
+    if not ONEHOT
+    else tf.keras.losses.CategoricalCrossentropy()
+)
+```
 
 Given that our labels are one-hot encoded, we'll utilize the `categorical_crossentropy` loss function during our model's training.
 The decision to one-hot encode our labels stemmed from the desire to utilize [precision][precision] and [recall][recall] metrics.
@@ -216,7 +234,21 @@ More on these metrics in the following section.
 
 We'll track three metrics during training: [categorical_accuracy][categorical_accuracy], [precision][precision], and [recall][recall].
 These metrics measure the model's correctness and quality.
-The differences between each metric is crucial to understanding model performance - especially on imbalanced datasets like the ToonVision dataset.
+
+```python
+METRICS = [
+    tf.keras.metrics.SparseCategoricalAccuracy()
+    if not ONEHOT
+    else tf.keras.metrics.CategoricalAccuracy(),
+]
+if ONEHOT:
+    METRICS += [
+        tf.keras.metrics.Precision(),
+        tf.keras.metrics.Recall()
+    ]
+```
+
+The difference between each metric is crucial to understanding model performance - especially on imbalanced datasets like the ToonVision dataset.
 To read more about the differences and benefits of each metric, please read my previous article about [performance measures in classification problems](https://fars.io/performance_classification/).
 
 #### Accuracy

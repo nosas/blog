@@ -257,10 +257,26 @@ This ensures a representative sample of each Cog entity.</p>
 <p>Now that we've created the datasets, we can compile the model.
 Compiling the model requires choosing a loss function, optimizer, and metrics to monitor the model's performance during training.</p>
 
+<div class="codehilite"><pre><span></span><code><span class="n">ONEHOT</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="n">loss</span><span class="o">=</span><span class="n">LOSS</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">OPTIMIZER</span><span class="p">,</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="n">METRICS</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
 <h3 id="loss-function">Loss function</h3>
 
 <p>Our model is classifying multiple classes, so we'll have to choose between <code>categorical_crossentropy</code> or <code>sparse_categorical_crossentropy</code>.
 There's one small, but important difference between the two loss functions: <code>categorical_crossentropy</code> requires one-hot encoded labels whereas <code>sparse_categorical_crossentropy</code> requires integer labels.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">LOSS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">SparseCategoricalCrossentropy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ONEHOT</span>
+    <span class="k">else</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">CategoricalCrossentropy</span><span class="p">()</span>
+<span class="p">)</span>
+</code></pre></div>
 
 <p>Given that our labels are one-hot encoded, we'll utilize the <code>categorical_crossentropy</code> loss function during our model's training.
 The decision to one-hot encode our labels stemmed from the desire to utilize <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision">precision</a> and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall">recall</a> metrics.
@@ -269,8 +285,21 @@ More on these metrics in the following section.</p>
 <h3 id="metrics">Metrics</h3>
 
 <p>We'll track three metrics during training: <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/CategoricalAccuracy">categorical_accuracy</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision">precision</a>, and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall">recall</a>.
-These metrics measure the model's correctness and quality.
-The differences between each metric is crucial to understanding model performance - especially on imbalanced datasets like the ToonVision dataset.
+These metrics measure the model's correctness and quality.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">METRICS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">SparseCategoricalAccuracy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ONEHOT</span>
+    <span class="k">else</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">CategoricalAccuracy</span><span class="p">(),</span>
+<span class="p">]</span>
+<span class="k">if</span> <span class="n">ONEHOT</span><span class="p">:</span>
+    <span class="n">METRICS</span> <span class="o">+=</span> <span class="p">[</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">Precision</span><span class="p">(),</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">Recall</span><span class="p">()</span>
+    <span class="p">]</span>
+</code></pre></div>
+
+<p>The difference between each metric is crucial to understanding model performance - especially on imbalanced datasets like the ToonVision dataset.
 To read more about the differences and benefits of each metric, please read my previous article about <a href="https://fars.io/performance_classification/">performance measures in classification problems</a>.</p>
 
 <h4 id="accuracy">Accuracy</h4>
