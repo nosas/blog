@@ -228,6 +228,12 @@ Unfortunately for us, the ToonVision dataset is imbalanced, so we must find othe
 
 #### Precision
 
+Precision answers the question of "what proportion of predicted class labels actually belong to the predicted class?".
+To make the question more relevant to our problem, "what proportion of predicted Bossbot labels actually belong to the Bossbot class?".
+
+We often refer to precision as the model's reliability.
+When precision is high, we can trust the model to correctly classify a class.
+
 #### Recall
 
 ### Optimizer
