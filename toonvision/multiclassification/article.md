@@ -36,8 +36,11 @@ For now, let's focus on multiclass classification.
             - [Splitting images into train, validate, and test sets](#splitting-images-into-train-validate-and-test-sets)
     - [Compiling the model](#compiling-the-model)
         - [Loss function](#loss-function)
-        - [Optimizer](#optimizer)
         - [Metrics](#metrics)
+            - [Accuracy](#accuracy)
+            - [Precision](#precision)
+            - [Recall](#recall)
+        - [Optimizer](#optimizer)
         - [Callbacks](#callbacks)
         - [Defining the model](#defining-the-model)
     - [Training the baseline model](#training-the-baseline-model)
@@ -53,6 +56,7 @@ For now, let's focus on multiclass classification.
         - [Intermediate convnet outputs (intermediate activations)](#intermediate-convnet-outputs-intermediate-activations)
         - [Convnet filters](#convnet-filters)
         - [Class activation heatmaps](#class-activation-heatmaps)
+    - [References](#references)
 </details>
 
 ## ToonVision
@@ -203,12 +207,30 @@ Our model is classifying multiple classes, so we'll have to choose between `cate
 There's one small, but important difference between the two loss functions: `categorical_crossentropy` requires one-hot encoded labels whereas `sparse_categorical_crossentropy` requires integer labels.
 
 Given that our labels are one-hot encoded, we'll utilize the `categorical_crossentropy` loss function during our model's training.
-The decision one-hot encoding our labels stemmed from the desire to utilize [precision](https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision) and [recall](https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall) metrics.
-More on these metrics in the following [metrics](#metrics) section.
-
-### Optimizer
+The decision to one-hot encode our labels stemmed from the desire to utilize [precision][precision] and [recall][recall] metrics.
+More on these metrics in the following section.
 
 ### Metrics
+
+We'll track three metrics during training: [categorical_accuracy][categorical_accuracy], [precision][precision], and [recall][recall].
+These metrics measure the model's correctness and quality.
+The differences between each metric is crucial to understanding model performance - especially on imbalanced datasets like the ToonVision dataset.
+To read more about the differences and benefits of each metric, please read my previous article about [performance measures in classification problems](https://fars.io/performance_classification/).
+
+#### Accuracy
+
+Accuracy is the percentage of correct predictions.
+Keras contains two built-in metrics for multiclass classification tasks: `categorical_accuracy` for categorical labels (one-hot encoded) and `sparse_categorical_accuracy` for integer labels.
+
+`categorical_accuracy` is best used as a performance measure when working with balanced datasets.
+It's a misleading metric when used with imbalanced datasets because it cannot account for class imbalances.
+Unfortunately for us, the ToonVision dataset is imbalanced, so we must find other metrics to work with.
+
+#### Precision
+
+#### Recall
+
+### Optimizer
 
 ### Callbacks
 
@@ -246,3 +268,10 @@ We can leverage this tool to find the best hyperparameters for our model instead
 ### Convnet filters
 
 ### Class activation heatmaps
+
+---
+## References
+
+[categorical_accuracy]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/CategoricalAccuracy
+[precision]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision
+[recall]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall

@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 15, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 16, 2022</p>
 
 <p><title>ToonVision: Multiclass Classification</title></p>
 
@@ -72,8 +72,13 @@ For now, let's focus on multiclass classification.</p>
 <li><a href="#compiling-the-model">Compiling the model</a>
 <ul>
 <li><a href="#loss-function">Loss function</a></li>
+<li><a href="#metrics">Metrics</a>
+<ul>
+<li><a href="#accuracy">Accuracy</a></li>
+<li><a href="#precision">Precision</a></li>
+<li><a href="#recall">Recall</a></li>
+</ul></li>
 <li><a href="#optimizer">Optimizer</a></li>
-<li><a href="#metrics">Metrics</a></li>
 <li><a href="#callbacks">Callbacks</a></li>
 <li><a href="#defining-the-model">Defining the model</a></li>
 </ul></li>
@@ -94,9 +99,10 @@ For now, let's focus on multiclass classification.</p>
 <ul>
 <li><a href="#intermediate-convnet-outputs-intermediate-activations">Intermediate convnet outputs (intermediate activations)</a></li>
 <li><a href="#convnet-filters">Convnet filters</a></li>
-<li><a href="#class-activation-heatmaps">Class activation heatmaps</a>
-</details></li>
+<li><a href="#class-activation-heatmaps">Class activation heatmaps</a></li>
 </ul></li>
+<li><a href="#references">References</a>
+</details></li>
 </ul></li>
 </ul>
 
@@ -253,12 +259,30 @@ Compiling the model requires choosing a loss function, optimizer, and metrics to
 There's one small, but important difference between the two loss functions: <code>categorical_crossentropy</code> requires one-hot encoded labels whereas <code>sparse_categorical_crossentropy</code> requires integer labels.</p>
 
 <p>Given that our labels are one-hot encoded, we'll utilize the <code>categorical_crossentropy</code> loss function during our model's training.
-The decision one-hot encoding our labels stemmed from the desire to utilize <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision">precision</a> and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall">recall</a> metrics.
-More on these metrics in the following <a href="#metrics">metrics</a> section.</p>
-
-<h3 id="optimizer">Optimizer</h3>
+The decision to one-hot encode our labels stemmed from the desire to utilize <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision">precision</a> and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall">recall</a> metrics.
+More on these metrics in the following section.</p>
 
 <h3 id="metrics">Metrics</h3>
+
+<p>We'll track three metrics during training: <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/CategoricalAccuracy">categorical_accuracy</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision">precision</a>, and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall">recall</a>.
+These metrics measure the model's correctness and quality.
+The differences between each metric is crucial to understanding model performance - especially on imbalanced datasets like the ToonVision dataset.
+To read more about the differences and benefits of each metric, please read my previous article about <a href="https://fars.io/performance_classification/">performance measures in classification problems</a>.</p>
+
+<h4 id="accuracy">Accuracy</h4>
+
+<p>Accuracy is the percentage of correct predictions.
+Keras contains two built-in metrics for multiclass classification tasks: <code>categorical_accuracy</code> for categorical labels (one-hot encoded) and <code>sparse_categorical_accuracy</code> for integer labels.</p>
+
+<p><code>categorical_accuracy</code> is best used as a performance measure when working with balanced datasets.
+It's a misleading metric when used with imbalanced datasets because it cannot account for class imbalances.
+Unfortunately for us, the ToonVision dataset is imbalanced, so we must find other metrics to work with.</p>
+
+<h4 id="precision">Precision</h4>
+
+<h4 id="recall">Recall</h4>
+
+<h3 id="optimizer">Optimizer</h3>
 
 <h3 id="callbacks">Callbacks</h3>
 
@@ -299,6 +323,10 @@ We can leverage this tool to find the best hyperparameters for our model instead
 <h3 id="convnet-filters">Convnet filters</h3>
 
 <h3 id="class-activation-heatmaps">Class activation heatmaps</h3>
+
+<hr />
+
+<h2 id="references">References</h2>
 
 </body>
 </html>
