@@ -79,7 +79,11 @@ For now, let's focus on multiclass classification.</p>
 <li><a href="#recall">Recall</a></li>
 </ul></li>
 <li><a href="#optimizer">Optimizer</a></li>
-<li><a href="#callbacks">Callbacks</a></li>
+<li><a href="#callbacks">Callbacks</a>
+<ul>
+<li><a href="#earlystopping-callback">EarlyStopping callback</a></li>
+<li><a href="#tensorboard-callback">Tensorboard callback</a></li>
+</ul></li>
 <li><a href="#defining-the-model">Defining the model</a></li>
 </ul></li>
 <li><a href="#training-the-baseline-model">Training the baseline model</a>
@@ -306,6 +310,45 @@ It's an effective optimizer with strong performance on the ToonVision dataset.
 Realistically, however, the optimizer should not significantly influence training results - only training time.</p>
 
 <h3 id="callbacks">Callbacks</h3>
+
+<p>We're using only two callbacks: <a href="https://keras.io/api/callbacks/early_stopping/">EarlyStopping</a> and <a href="https://keras.io/api/callbacks/tensorboard/">TensorBoard</a>.
+The code block below demonstrates how to initialize each callback.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">EarlyStopping</span><span class="p">(</span>
+        <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;min&quot;</span><span class="p">,</span>
+        <span class="n">patience</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">restore_best_weights</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">),</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">TensorBoard</span><span class="p">(</span><span class="s2">&quot;./tb_logs/toonvision_multiclass/&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<h4 id="earlystopping-callback">EarlyStopping callback</h4>
+
+<p><code>EarlyStopping</code> stops training when a monitored metric has stopped improving.
+We're training our model to minimize the validation loss, therefore we monitor <code>val_loss</code> and set the mode to <code>min</code>.
+If desired, we could even monitor accuracy, precision, or recall metrics - but we would set the mode to <code>max</code>.</p>
+
+<p>The <code>restore_best_weights</code> argument ensures that the weights from the best epoch are restored upon training termination.
+If False, the model weights are obtained form the last step and epoch of training.</p>
+
+<p>Training is terminated when no improvement is seen after 5 epochs; this value can be adjusted in the <code>patience</code> argument.</p>
+
+<h4 id="tensorboard-callback">Tensorboard callback</h4>
+
+<p>The <code>TensorBoard</code> callback allows us to utilize TensorBoard to visualize our model's training progress.
+This callback logs events for TensorBoard, including:</p>
+
+<ul>
+<li>Metrics summary plots</li>
+<li>Training graph visualization</li>
+<li>Weight histograms</li>
+<li>Sampled profiling</li>
+</ul>
+
+<p>Please refer to my <a href="https://fars.io/keras_tuner_tensorboard/#tensorboard">Keras-Tuner and TensorBoard article</a> to learn more about the benefits of TensorBoard and see how it's used to evaluate model performance.</p>
 
 <h3 id="defining-the-model">Defining the model</h3>
 

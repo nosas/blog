@@ -42,6 +42,8 @@ For now, let's focus on multiclass classification.
             - [Recall](#recall)
         - [Optimizer](#optimizer)
         - [Callbacks](#callbacks)
+            - [EarlyStopping callback](#earlystopping-callback)
+            - [Tensorboard callback](#tensorboard-callback)
         - [Defining the model](#defining-the-model)
     - [Training the baseline model](#training-the-baseline-model)
         - [Baseline loss and accuracy plots](#baseline-loss-and-accuracy-plots)
@@ -254,6 +256,44 @@ It's an effective optimizer with strong performance on the ToonVision dataset.
 Realistically, however, the optimizer should not significantly influence training results - only training time.
 
 ### Callbacks
+
+We're using only two callbacks: [EarlyStopping](https://keras.io/api/callbacks/early_stopping/) and [TensorBoard](https://keras.io/api/callbacks/tensorboard/).
+The code block below demonstrates how to initialize each callback.
+
+```python
+callbacks = [
+    tf.keras.callbacks.EarlyStopping(
+        monitor="val_loss",
+        mode="min",
+        patience=5,
+        restore_best_weights=True
+    ),
+    tf.keras.callbacks.TensorBoard("./tb_logs/toonvision_multiclass/"),
+]
+```
+
+#### EarlyStopping callback
+
+`EarlyStopping` stops training when a monitored metric has stopped improving.
+We're training our model to minimize the validation loss, therefore we monitor `val_loss` and set the mode to `min`.
+If desired, we could even monitor accuracy, precision, or recall metrics - but we would set the mode to `max`.
+
+The `restore_best_weights` argument ensures that the weights from the best epoch are restored upon training termination.
+If False, the model weights are obtained form the last step and epoch of training.
+
+Training is terminated when no improvement is seen after 5 epochs; this value can be adjusted in the `patience` argument.
+
+#### Tensorboard callback
+
+The `TensorBoard` callback allows us to utilize TensorBoard to visualize our model's training progress.
+This callback logs events for TensorBoard, including:
+
+- Metrics summary plots
+- Training graph visualization
+- Weight histograms
+- Sampled profiling
+
+Please refer to my [Keras-Tuner and TensorBoard article](https://fars.io/keras_tuner_tensorboard/#tensorboard) to learn more about the benefits of TensorBoard and see how it's used to evaluate model performance.
 
 ### Defining the model
 
