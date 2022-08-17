@@ -298,6 +298,13 @@ Optimizing our model's Sellbot recall would ensure that Sellbot samples do not g
 
 <h3 id="optimizer">Optimizer</h3>
 
+<p>Just like the binary classifier, we'll be using the <code>Adam</code> optimizer.
+Please refer to the <a href="https://fars.io/toonvision/classification/#optimizer">previous article</a> for detailed information about this decision.</p>
+
+<p>Reasoning tl;dr: The <code>Adam</code> optimizer is an adaptive variant of the stochastic gradient descent (<code>SGD</code>) algorithm.
+It's an effective optimizer with strong performance on the ToonVision dataset.
+Realistically, however, the optimizer should not significantly influence training results - only training time.</p>
+
 <h3 id="callbacks">Callbacks</h3>
 
 <h3 id="defining-the-model">Defining the model</h3>
