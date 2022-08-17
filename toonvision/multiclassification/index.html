@@ -288,6 +288,14 @@ When precision is high, we can trust the model to correctly classify a class.</p
 
 <h4 id="recall">Recall</h4>
 
+<p>Recall answers the question of "what proportion of a specific label was correctly identified?".
+Relating to our ToonVision dataset, "what proportion of Bossbot labels were correctly identified?".</p>
+
+<p>Recall is a powerful performance measure when working with highly imbalanced datasets.
+It shines at identifying rare classes.
+For instance, imagine if our ToonVision dataset contained 400 Bossbot samples and only 40 Sellbot samples.
+Optimizing our model's Sellbot recall would ensure that Sellbot samples do not get incorrectly labeled as something else.</p>
+
 <h3 id="optimizer">Optimizer</h3>
 
 <h3 id="callbacks">Callbacks</h3>
