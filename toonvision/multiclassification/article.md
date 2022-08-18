@@ -47,6 +47,7 @@ For now, let's focus on multiclass classification.
         - [Defining the model](#defining-the-model)
     - [Training the baseline model](#training-the-baseline-model)
         - [Baseline loss and accuracy plots](#baseline-loss-and-accuracy-plots)
+        - [Baseline confusion matrix](#baseline-confusion-matrix)
         - [Baseline wrong predictions](#baseline-wrong-predictions)
     - [Training the optimized model](#training-the-optimized-model)
         - [Keras Tuner](#keras-tuner)
@@ -392,7 +393,7 @@ def make_multiclass(
     _________________________________________________________________
 </details>
 
-Notably, the multiclassification model has less layers than the previous binary classification model.
+Notably, the multiclassification model has less parameters than the previous binary classification model.
 My goal is to learn how to intuitively produce small, yet, effective, models.
 I believe this model size can be reduced while still improving performance.
 
@@ -403,9 +404,45 @@ We'll put my theory to the test as we proceed!
 ---
 ## Training the baseline model
 
+Before we draw conclusions and fine-tune our model architecture, we must develop a simple baseline.
+After training the baseline model, we can tweak hyperparameters such as number of layers, layer sizes, learning rates, batch sizes, etc.
+First, see what our baseline can do!
 
+The code block below first initializes our baseline model as `model_baseline` and then trains it for 100 epochs.
+Note how the model does not utilize optimizations such image augmentations or dropout.
+
+```python
+model_baseline = make_multiclass_model(
+    name="toonvision_multiclass_baseline",
+    augmentation=None,
+    dropout=0.5
+)
+history = model_baseline.fit(
+    train_images,
+    train_labels,
+    validation_data=(val_images, val_labels),
+    epochs=100,
+    batch_size=BATCH_SIZE,
+    verbose=0,
+    callbacks = [
+        tf.keras.callbacks.EarlyStopping(
+            monitor="val_loss",
+            mode="min",
+            patience=5,
+            restore_best_weights=True
+        ),
+        tf.keras.callbacks.TensorBoard("./tb_logs/toonvision_multiclass/"),
+    ],
+)
+```
+
+Remember how we're using the `EarlyStopping` callback to terminate training early when no more performance improvements are shown?
+No improvement was shown in the `validation_loss` metric over 5 epochs.
+Therefore, the baseline model's training stopped after 35 epochs.
 
 ### Baseline loss and accuracy plots
+
+### Baseline confusion matrix
 
 ### Baseline wrong predictions
 

@@ -89,6 +89,7 @@ For now, let's focus on multiclass classification.</p>
 <li><a href="#training-the-baseline-model">Training the baseline model</a>
 <ul>
 <li><a href="#baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</a></li>
+<li><a href="#baseline-confusion-matrix">Baseline confusion matrix</a></li>
 <li><a href="#baseline-wrong-predictions">Baseline wrong predictions</a></li>
 </ul></li>
 <li><a href="#training-the-optimized-model">Training the optimized model</a>
@@ -445,7 +446,7 @@ _________________________________________________________________
 
 <p></details></p>
 
-<p>Notably, the multiclassification model has less layers than the previous binary classification model.
+<p>Notably, the multiclassification model has less parameters than the previous binary classification model.
 My goal is to learn how to intuitively produce small, yet, effective, models.
 I believe this model size can be reduced while still improving performance.</p>
 
@@ -457,7 +458,44 @@ We'll put my theory to the test as we proceed!</p>
 
 <h2 id="training-the-baseline-model">Training the baseline model</h2>
 
+<p>Before we draw conclusions and fine-tune our model architecture, we must develop a simple baseline.
+After training the baseline model, we can tweak hyperparameters such as number of layers, layer sizes, learning rates, batch sizes, etc.
+First, see what our baseline can do!</p>
+
+<p>The code block below first initializes our baseline model as <code>model_baseline</code> and then trains it for 100 epochs.
+Note how the model does not utilize optimizations such image augmentations or dropout.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">model_baseline</span> <span class="o">=</span> <span class="n">make_multiclass_model</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;toonvision_multiclass_baseline&quot;</span><span class="p">,</span>
+    <span class="n">augmentation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dropout</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="p">)</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">model_baseline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">train_images</span><span class="p">,</span>
+    <span class="n">train_labels</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">val_images</span><span class="p">,</span> <span class="n">val_labels</span><span class="p">),</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">BATCH_SIZE</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">EarlyStopping</span><span class="p">(</span>
+            <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;min&quot;</span><span class="p">,</span>
+            <span class="n">patience</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">restore_best_weights</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">),</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">TensorBoard</span><span class="p">(</span><span class="s2">&quot;./tb_logs/toonvision_multiclass/&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Remember how we're using the <code>EarlyStopping</code> callback to terminate training early when no more performance improvements are shown?
+No improvement was shown in the <code>validation_loss</code> metric over 5 epochs.
+Therefore, the baseline model's training stopped after 35 epochs.</p>
+
 <h3 id="baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</h3>
+
+<h3 id="baseline-confusion-matrix">Baseline confusion matrix</h3>
 
 <h3 id="baseline-wrong-predictions">Baseline wrong predictions</h3>
 
