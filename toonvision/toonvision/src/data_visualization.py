@@ -160,9 +160,9 @@ def plot_history(
     accuracy_str = "accuracy" if not multiclass else "sparse_categorical_accuracy"
     accuracy_str = accuracy_str if not onehot else "categorical_accuracy"
 
-    max_accuracy = np.argmax(history[accuracy_str]) + 1
-    min_loss = np.argmin(history["loss"]) + 1
-    num_epochs = range(1, len(history["loss"]) + 1)
+    max_accuracy = np.argmax(history[accuracy_str])
+    min_loss = np.argmin(history["loss"])
+    num_epochs = range(0, len(history["loss"]))
 
     fig, axes = plt.subplots(1, 2, figsize=(10, 4), dpi=100)
     fig.tight_layout()
@@ -196,8 +196,8 @@ def plot_history(
     if includes_validation:  # Plot validation accuracy values if included in history
 
         val_accuracy_str = "val_" + accuracy_str
-        max_val_accuracy = np.argmax(history[val_accuracy_str]) + 1
-        min_val_loss = np.argmin(history["val_loss"]) + 1
+        max_val_accuracy = np.argmax(history[val_accuracy_str])
+        min_val_loss = np.argmin(history["val_loss"])
 
         # Plot validation accuracy values
         axes[0].plot(num_epochs, history[val_accuracy_str], label="Val acc")
