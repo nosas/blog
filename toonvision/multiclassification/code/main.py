@@ -129,7 +129,7 @@ models_all = []
 
 for opt in [tf.keras.optimizers.Adam()]:
     model = make_multiclass_model_padding(
-        name="opt_tv_" + opt._name, augmentation=get_image_augmentations(), dropout=0.5
+        name="toonvision_multiclass_baseline", dropout=0.0
     )
     model.compile(
         loss=LOSS,
@@ -225,7 +225,7 @@ plot_confusion_matrix(
     predictions=preds_str,
     targets=label_decoder(test_labels),
     display_labels=SUITS_SHORT,
-    title=f"All Predictions: {model.name}",
+    title=f"Confusion matrix: {model.name}",
 )
 
 
