@@ -329,6 +329,22 @@ Please refer to my [Keras-Tuner and TensorBoard article](https://fars.io/keras_t
 
 ### Defining the model
 
+The model is a simple CNN (convolutional neural network).
+It takes as input a tensor of shape (600, 200, 3) and outputs a probability distribution (softmax) of the predicted labels.
+
+The model's hidden, intermediate layers consist of two "blocks".
+Each block contains, in order, a Conv2D layer and two MaxPooling2D layers.
+The figure below displays the model's layers and their corresponding sizes.
+
+<figure class="center" style="width:98%;">
+    <img src="img/model_architecture.png" style="width:100%;"/>
+    <figcaption>Model architecture</figcaption>
+</figure>
+
+I opted for two MaxPooling2D layers in each block because the main class differentiation in the ToonVision Cog dataset is the suit color.
+In using two MaxPooling2D layers, I hope the model will easily discern the color differences and correctly label the samples.
+We'll put my theory to the test as we proceed!
+
 ---
 ## Training the baseline model
 

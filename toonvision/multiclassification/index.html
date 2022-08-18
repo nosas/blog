@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 16, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 17, 2022</p>
 
 <p><title>ToonVision: Multiclass Classification</title></p>
 
@@ -380,6 +380,22 @@ This callback logs events for TensorBoard, including:</p>
 <p>Please refer to my <a href="https://fars.io/keras_tuner_tensorboard/#tensorboard">Keras-Tuner and TensorBoard article</a> to learn more about the benefits of TensorBoard and see how it's used to evaluate model performance.</p>
 
 <h3 id="defining-the-model">Defining the model</h3>
+
+<p>The model is a simple CNN (convolutional neural network).
+It takes as input a tensor of shape (600, 200, 3) and outputs a probability distribution (softmax) of the predicted labels.</p>
+
+<p>The model's hidden, intermediate layers consist of two "blocks".
+Each block contains, in order, a Conv2D layer and two MaxPooling2D layers.
+The figure below displays the model's layers and their corresponding sizes.</p>
+
+<figure class="center" style="width:98%;">
+    <img src="img/model_architecture.png" style="width:100%;"/>
+    <figcaption>Model architecture</figcaption>
+</figure>
+
+<p>I opted for two MaxPooling2D layers in each block because the main class differentiation in the ToonVision Cog dataset is the suit color.
+In using two MaxPooling2D layers, I hope the model will easily discern the color differences and correctly label the samples.
+We'll put my theory to the test as we proceed!</p>
 
 <hr />
 
