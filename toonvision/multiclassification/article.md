@@ -480,7 +480,7 @@ But, there's no obvious trend of wrong predictions here.
 
 <figure class="center" style="width:90%;">
     <img src="img/wrong_predictions_baseline.png" style="width:100%;"/>
-    <figcaption></figcaption>
+    <figcaption>Baseline model's wrong predictions, no particular order</figcaption>
 </figure>
 
 The model totaled 20 wrong predictions out of 197 test images, resulting in a whopping 89.84% accuracy.
@@ -488,6 +488,47 @@ Given how imbalanced our dataset is, however, accuracy as a performance measure 
 Let's look at the model's confusion matrix, precision, and recall metrics instead.
 
 ### Baseline confusion matrix
+
+The confusion matrix shows us how many labels were correctly or incorrectly predicted.
+This technique provides invaluable insights into the model's performance.
+
+The matrix on the left is the complete confusion matrix for all predictions.
+We can visualize the correct predictions as the bright diagonal line, and incorrect predictions as the cells around the diagonal.
+The incorrect predictions are highlighted in the matrix on the right where we included only the wrong predictions.
+
+<table style="width:100%;">
+    <tr>
+        <td style="width:50%;">
+            <img src="img/confusion_matrix_baseline.png" style="width:100%;"/>
+        </td>
+        <td style="width:50%;">
+            <img src="img/confusion_matrix_wrong_baseline.png" style="width:100%;"/>
+        </td>
+    </tr>
+    <tr >
+        <td>
+            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                <small>
+                    <i>Baseline model's confusion matrix</i>
+                </small>
+            </span>
+        </td>
+        <td>
+            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                <small>
+                    <i>Baseline model's wrong predictions as a confusion matrix</i>
+                </small>
+            </span>
+        </td>
+    </tr>
+</table>
+
+We see that the most incorrect predictions are Cashbots predicted as Lawbots (7), and Bossbots predicted as Cashbots (5).
+Surprisingly, the model has trouble classifying Cashbots.
+I was wholly expecting the top-right and bottom-left cells - Bossbots predicted as Sellbots and vice-versa, respectively - to be lit up.
+It seems like the baseline model is capable of differentiating between Bossbot and Sellbot suits.
+
+Let's take a peek at the precision, recall, and F1-scores of each class.
 
 ---
 ## Training the optimized model
