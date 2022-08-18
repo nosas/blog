@@ -382,16 +382,72 @@ This callback logs events for TensorBoard, including:</p>
 <h3 id="defining-the-model">Defining the model</h3>
 
 <p>The model is a simple CNN (convolutional neural network).
-It takes as input a tensor of shape (600, 200, 3) and outputs a probability distribution (softmax) of the predicted labels.</p>
-
-<p>The model's hidden, intermediate layers consist of two "blocks".
-Each block contains, in order, a Conv2D layer and two MaxPooling2D layers.
+It takes as input a tensor of shape (600, 200, 3) and outputs a probability distribution (softmax) of the predicted labels.
 The figure below displays the model's layers and their corresponding sizes.</p>
 
 <figure class="center" style="width:98%;">
     <img src="img/model_architecture.png" style="width:100%;"/>
-    <figcaption>Model architecture</figcaption>
+    <figcaption>Model architecture, visualized with python package "visualkeras"</figcaption>
 </figure>
+
+<p>The model's hidden, intermediate layers consist of two "blocks".
+Each block contains, in order, a Conv2D layer and two MaxPooling2D layers.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">make_multiclass</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">augmentation</span><span class="p">:</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>  <span class="c1"># Height, width, channels</span>
+    <span class="k">if</span> <span class="n">augmentation</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">augmentation</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Rescaling</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="c1"># Block #1</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="c1"># Block #2</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;softmax&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
+</code></pre></div>
+
+<p><details>
+    <summary>Model summary</summary></p>
+
+<pre><code>Model: "toonvision_multiclass_baseline"
+_________________________________________________________________
+Layer (type)                Output Shape              Param #
+=================================================================
+input_1 (InputLayer)         [(None, 600, 200, 3)]     0
+rescaling (Rescaling)        (None, 600, 200, 3)       0
+conv2d (Conv2D)              (None, 600, 200, 4)       112
+max_pooling2d                (None, 300, 100, 4)       0
+max_pooling2d_1              (None, 150, 50, 4)        0
+dropout (Dropout)            (None, 150, 50, 4)        0
+conv2d_1 (Conv2D)            (None, 150, 50, 8)        296
+max_pooling2d_2              (None, 75, 25, 8)         0
+max_pooling2d_3              (None, 37, 12, 8)         0
+flatten (Flatten)            (None, 3552)              0
+dropout_1 (Dropout)          (None, 3552)              0
+dense (Dense)                (None, 4)                 14212
+
+=================================================================
+Total params: 14,620
+Trainable params: 14,620
+Non-trainable params: 0
+_________________________________________________________________
+</code></pre>
+
+<p></details></p>
+
+<p>Notably, the multiclassification model has less layers than the previous binary classification model.
+My goal is to learn how to intuitively produce small, yet, effective, models.
+I believe this model size can be reduced while still improving performance.</p>
 
 <p>I opted for two MaxPooling2D layers in each block because the main class differentiation in the ToonVision Cog dataset is the suit color.
 In using two MaxPooling2D layers, I hope the model will easily discern the color differences and correctly label the samples.

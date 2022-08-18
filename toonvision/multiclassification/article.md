@@ -331,15 +331,70 @@ Please refer to my [Keras-Tuner and TensorBoard article](https://fars.io/keras_t
 
 The model is a simple CNN (convolutional neural network).
 It takes as input a tensor of shape (600, 200, 3) and outputs a probability distribution (softmax) of the predicted labels.
-
-The model's hidden, intermediate layers consist of two "blocks".
-Each block contains, in order, a Conv2D layer and two MaxPooling2D layers.
 The figure below displays the model's layers and their corresponding sizes.
 
 <figure class="center" style="width:98%;">
     <img src="img/model_architecture.png" style="width:100%;"/>
-    <figcaption>Model architecture</figcaption>
+    <figcaption>Model architecture, visualized with python package "visualkeras"</figcaption>
 </figure>
+
+The model's hidden, intermediate layers consist of two "blocks".
+Each block contains, in order, a Conv2D layer and two MaxPooling2D layers.
+
+```python
+def make_multiclass(
+    name: str = "", augmentation: keras.Sequential = None, dropout: float = 0.5,
+) -> keras.Model:
+    inputs = keras.Input(shape=(600, 200, 3))  # Height, width, channels
+    if augmentation:
+        x = augmentation(inputs)
+    x = layers.Rescaling(1.0 / 255)(inputs)
+    # Block #1
+    x = layers.Conv2D(filters=4, kernel_size=3, activation="relu", padding="same")(x)
+    x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.Dropout(dropout)(x)
+    # Block #2
+    x = layers.Conv2D(filters=8, kernel_size=3, activation="relu", padding="same")(x)
+    x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.Flatten()(x)
+    x = layers.Dropout(dropout)(x)
+    outputs = layers.Dense(units=4, activation="softmax")(x)
+    model = keras.Model(name=name, inputs=inputs, outputs=outputs)
+    return model
+```
+
+<details>
+    <summary>Model summary</summary>
+
+    Model: "toonvision_multiclass_baseline"
+    _________________________________________________________________
+    Layer (type)                Output Shape              Param #
+    =================================================================
+    input_1 (InputLayer)         [(None, 600, 200, 3)]     0
+    rescaling (Rescaling)        (None, 600, 200, 3)       0
+    conv2d (Conv2D)              (None, 600, 200, 4)       112
+    max_pooling2d                (None, 300, 100, 4)       0
+    max_pooling2d_1              (None, 150, 50, 4)        0
+    dropout (Dropout)            (None, 150, 50, 4)        0
+    conv2d_1 (Conv2D)            (None, 150, 50, 8)        296
+    max_pooling2d_2              (None, 75, 25, 8)         0
+    max_pooling2d_3              (None, 37, 12, 8)         0
+    flatten (Flatten)            (None, 3552)              0
+    dropout_1 (Dropout)          (None, 3552)              0
+    dense (Dense)                (None, 4)                 14212
+
+    =================================================================
+    Total params: 14,620
+    Trainable params: 14,620
+    Non-trainable params: 0
+    _________________________________________________________________
+</details>
+
+Notably, the multiclassification model has less layers than the previous binary classification model.
+My goal is to learn how to intuitively produce small, yet, effective, models.
+I believe this model size can be reduced while still improving performance.
 
 I opted for two MaxPooling2D layers in each block because the main class differentiation in the ToonVision Cog dataset is the suit color.
 In using two MaxPooling2D layers, I hope the model will easily discern the color differences and correctly label the samples.
@@ -347,6 +402,8 @@ We'll put my theory to the test as we proceed!
 
 ---
 ## Training the baseline model
+
+
 
 ### Baseline loss and accuracy plots
 
