@@ -27,9 +27,16 @@ from data_visualization import (
     plot_wrong_predictions_multiclass,
 )
 from img_utils import get_image_augmentations
-from kerastuner import BayesianOptimization, Hyperband, RandomSearch
+from keras_tuner import BayesianOptimization, Hyperband, RandomSearch
 from model_utils import make_multiclass_model_original, make_multiclass_model_padding
-from sklearn.metrics import classification_report
+from sklearn.metrics import (
+    classification_report,
+    f1_score,
+    precision_score,
+    recall_score,
+    confusion_matrix,
+)
+
 from tensorflow.compat.v1 import ConfigProto, InteractiveSession
 
 config = ConfigProto()
@@ -52,9 +59,9 @@ METRICS = [
     tf.keras.metrics.SparseCategoricalAccuracy()
     if not ONEHOT
     else tf.keras.metrics.CategoricalAccuracy(),
-    tf.keras.metrics.Recall(),
-    tf.keras.metrics.Precision(),
 ]
+if ONEHOT:
+    METRICS += [tf.keras.metrics.Precision(), tf.keras.metrics.Recall()]
 
 # %% Convert all images in screenshots directory to data images
 process_images(move_images=True)
@@ -120,7 +127,7 @@ plt.imshow(val_images[idx] / 255)
 models_all = []
 
 
-for opt in [tf.keras.optimizers.Adam(learning_rate=1e-3, decay=1e-6)]:
+for opt in [tf.keras.optimizers.Adam()]:
     model = make_multiclass_model_padding(
         name="opt_tv_" + opt._name, augmentation=get_image_augmentations(), dropout=0.5
     )
@@ -188,6 +195,7 @@ for model in models_all:
     preds_str = integer_to_suit(preds_int)
 
     # Get the wrong predictions as a True/False array
+    # mask = np.argwhere(tf.keras.metrics.categorical_accuracy(test_labels, predictions) == 0)
     mask = preds_str != label_decoder(test_labels)
     wrong_idxs = np.argwhere(mask).transpose().flatten()
 
@@ -199,12 +207,11 @@ for model in models_all:
     plot_wrong_predictions_multiclass(wrong, model_name=model.name, show_num_wrong=10)
 
 # %% Plot the precision, recall and F1-score
-from sklearn.metrics import f1_score, precision_score, recall_score, confusion_matrix
 
 # Print f1, precision, and recall scores
-print(precision_score(label_decoder(test_labels), preds_str , average="macro"))
-print(recall_score(label_decoder(test_labels), preds_str , average="macro"))
-print(f1_score(label_decoder(test_labels), preds_str , average="macro"))
+print(precision_score(label_decoder(test_labels), preds_str, average="macro"))
+print(recall_score(label_decoder(test_labels), preds_str, average="macro"))
+print(f1_score(label_decoder(test_labels), preds_str, average="macro"))
 print(classification_report(label_decoder(test_labels), preds_str))
 # Print confusion matrix
 print(confusion_matrix(label_decoder(test_labels), preds_str))
@@ -279,7 +286,7 @@ tuner = RandomSearch(
     directory="models",
     project_name="multiclass_performance",
     seed=SEED,
-    # overwrite=False,  # Set to False to load previous trials
+    overwrite=False,  # Set to False to load previous trials
 )
 tuner.search_space_summary()
 
@@ -303,7 +310,7 @@ tuner.search(
 # model.build(input_shape=(None, 600, 200, 3))
 # 1, 4, 7
 # 10, 13, 14, 14, 17, 18
-best_hps = tuner.get_best_hyperparameters(num_trials=10)[:1]
+best_hps = tuner.get_best_hyperparameters(num_trials=25)[2:3]
 for hp_id, hp in enumerate(best_hps):
     model = tuner.hypermodel.build(hp)
     # hp.values
@@ -322,16 +329,6 @@ for hp_id, hp in enumerate(best_hps):
             ),
         ],
     )
-
-    # # Plot all training histories
-    # plt.figure(figsize=(10, 10), dpi=100)
-    # plot_history(
-    #     history=hist.history,
-    #     name=model.name.replace("tv_", ""),
-    #     multiclass=True,
-    #     loss_ylim=(0, 1),
-    #     includes_validation=False,
-    # )
 
     # Plot the wrong predictions
     predictions = model.predict(test_images)
@@ -357,9 +354,9 @@ for hp_id, hp in enumerate(best_hps):
     )
 
     # Print f1, precision, and recall scores
-    print(precision_score(label_decoder(test_labels), preds_str , average="macro"))
-    print(recall_score(label_decoder(test_labels), preds_str , average="macro"))
-    print(f1_score(label_decoder(test_labels), preds_str , average="macro"))
+    print(precision_score(label_decoder(test_labels), preds_str, average="macro"))
+    print(recall_score(label_decoder(test_labels), preds_str, average="macro"))
+    print(f1_score(label_decoder(test_labels), preds_str, average="macro"))
     print(classification_report(label_decoder(test_labels), preds_str))
     # Print confusion matrix
     print(confusion_matrix(label_decoder(test_labels), preds_str))
@@ -374,11 +371,12 @@ for hp_id, hp in enumerate(best_hps):
         targets=label_decoder(test_labels),
         display_labels=SUITS_SHORT,
         title=f"All Predictions: {model.name}",
-)
+    )
     # del model
 
 # %%
 model.save("./models/tuned_randomsearch_tv_Adam_3.keras")
+
 
 # %% Create a model builder to tune the hyperparameters
 def model_builder_bayesian(hp):
@@ -796,3 +794,7 @@ for model_fp in glob("./models/*.keras"):
         display_labels=SUITS_SHORT,
         title=f"All Predictions: {model.name}",
     )
+
+# %% Plot confidence values for each wrong prediction
+
+# %% Plot the top 10 least confident predictions
