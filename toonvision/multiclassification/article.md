@@ -49,6 +49,7 @@ For now, let's focus on multiclass classification.
         - [Baseline loss and accuracy plots](#baseline-loss-and-accuracy-plots)
         - [Baseline wrong predictions](#baseline-wrong-predictions)
         - [Baseline confusion matrix](#baseline-confusion-matrix)
+            - [Precision, recall, and f1-score](#precision-recall-and-f1-score)
     - [Training the optimized model](#training-the-optimized-model)
         - [Keras Tuner](#keras-tuner)
         - [Preventing overfitting](#preventing-overfitting)
@@ -250,7 +251,7 @@ if ONEHOT:
 ```
 
 The difference between each metric is crucial to understanding model performance - especially on imbalanced datasets like the ToonVision dataset.
-To read more about the differences and benefits of each metric, please read my previous article about [performance measures in classification problems](https://fars.io/performance_classification/).
+To read more about the differences and benefits of each metric, please read my previous article about [performance measures in classification problems][classification_performance_measures].
 
 #### Accuracy
 
@@ -334,7 +335,7 @@ The model is a simple CNN (convolutional neural network).
 It takes as input a tensor of shape (600, 200, 3) and outputs a probability distribution (softmax) of the predicted labels.
 The figure below displays the model's layers and their corresponding sizes.
 
-<figure class="center" style="width:98%;">
+<figure class="center" style="width:90%;">
     <img src="img/model_architecture.png" style="width:100%;"/>
     <figcaption>Model architecture, visualized with python package "visualkeras"</figcaption>
 </figure>
@@ -530,6 +531,75 @@ It seems like the baseline model is capable of differentiating between Bossbot a
 
 Let's take a peek at the precision, recall, and F1-scores of each class.
 
+#### Precision, recall, and f1-score
+
+Using the confusion matrix, we can derive the precision, recall, and F1-score for each class.
+Fortunately, scikit-learn simplified the calculations into a single function call: `classification_report`.
+
+If you're unfamiliar with these three performance measures, please read my previous article about [performance measures in classification problems][classification_performance_measures].
+
+```python
+>>> from sklearn.metrics import classification_report
+>>> classification_report(onehot_to_suit(test_labels), preds_str)
+              precision    recall  f1-score   support
+
+          bb       0.92      0.80      0.86        41
+          cb       0.85      0.80      0.83        41
+          lb       0.88      0.98      0.93        60
+          sb       0.95      0.95      0.95        55
+
+    accuracy                           0.90       197
+   macro avg       0.90      0.88      0.89       197
+weighted avg       0.90      0.90      0.90       197
+```
+
+Let's break down the output.
+First, we have four columns: precision, recall, f1-score, and support.
+The first three columns are self-explanatory.
+The fourth column, "support", is the number of samples in the test set.
+These values match the values seen in our `plot_datasets_suits()` function, as seen in the figure below.
+
+<figure class="center">
+    <img src="img/dataset_suits.png" style="width:100%;"/>
+    <figcaption>Samples per dataset, grouped by suits</figcaption>
+</figure>
+
+The following four rows give class-specific insight into the model's performance
+
+```
+    precision    recall  f1-score   support
+
+bb       0.92      0.80      0.86        41
+cb       0.85      0.80      0.83        41
+lb       0.88      0.98      0.93        60
+sb       0.95      0.95      0.95        55
+```
+
+Each row contains the precision, recall, f1-score, and sample size for each of the four classes: Bossbot, Cashbot, Lawbot, and Sellbot.
+The highlights in this section are the low recall and f1-scores of `bb` and `cb`.
+I suspect the model's low performance is due to the relatively smaller sample sizes of the two classes (41 vs 55 and 60).
+
+Lastly, we have the remaining three rows: accuracy, macro average, and weighted average.
+
+```
+              precision    recall  f1-score   support
+
+    accuracy                           0.90       197
+   macro avg       0.90      0.88      0.89       197
+weighted avg       0.90      0.90      0.90       197
+```
+
+Accuracy is straight-forward, although it's rounded to two decimal places - it should be 0.8984.
+
+The macro average is the average value of precision, recall, and f1-score for all classes.
+For instance, the macro precision average of 0.90 is the calculated as `(p_bb + p_cb + p_lb + p_sb) / 4`, where `p_*` are the precision values for each class.
+
+The weighted average is the average of the precision, recall, and f1-score weighted by the sample size: `(p_bb * 41 + p_cb * 41 + p_lb * 60 + p_sb * 55) / 197`.
+It takes into account the imbalance in the dataset, although the scores don't change much as a result.
+
+Ideally, we would like to have a model with higher precision and recall scores and an f1-score nearing 1.0.
+Let's see if we can do that.
+
 ---
 ## Training the optimized model
 
@@ -559,6 +629,7 @@ We can leverage this tool to find the best hyperparameters for our model instead
 ---
 ## References
 
+[classification_performance_measures]: https://fars.io/performance_classification/
 [categorical_accuracy]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/CategoricalAccuracy
 [precision]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision
 [recall]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall

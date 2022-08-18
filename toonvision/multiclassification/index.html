@@ -90,7 +90,10 @@ For now, let's focus on multiclass classification.</p>
 <ul>
 <li><a href="#baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</a></li>
 <li><a href="#baseline-wrong-predictions">Baseline wrong predictions</a></li>
-<li><a href="#baseline-confusion-matrix">Baseline confusion matrix</a></li>
+<li><a href="#baseline-confusion-matrix">Baseline confusion matrix</a>
+<ul>
+<li><a href="#precision-recall-and-f1-score">Precision, recall, and f1-score</a></li>
+</ul></li>
 </ul></li>
 <li><a href="#training-the-optimized-model">Training the optimized model</a>
 <ul>
@@ -386,7 +389,7 @@ This callback logs events for TensorBoard, including:</p>
 It takes as input a tensor of shape (600, 200, 3) and outputs a probability distribution (softmax) of the predicted labels.
 The figure below displays the model's layers and their corresponding sizes.</p>
 
-<figure class="center" style="width:98%;">
+<figure class="center" style="width:90%;">
     <img src="img/model_architecture.png" style="width:100%;"/>
     <figcaption>Model architecture, visualized with python package "visualkeras"</figcaption>
 </figure>
@@ -581,6 +584,72 @@ I was wholly expecting the top-right and bottom-left cells - Bossbots predicted 
 It seems like the baseline model is capable of differentiating between Bossbot and Sellbot suits.</p>
 
 <p>Let's take a peek at the precision, recall, and F1-scores of each class.</p>
+
+<h4 id="precision-recall-and-f1-score">Precision, recall, and f1-score</h4>
+
+<p>Using the confusion matrix, we can derive the precision, recall, and F1-score for each class.
+Fortunately, scikit-learn simplified the calculations into a single function call: <code>classification_report</code>.</p>
+
+<p>If you're unfamiliar with these three performance measures, please read my previous article about <a href="https://fars.io/performance_classification/">performance measures in classification problems</a>.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">classification_report</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">classification_report</span><span class="p">(</span><span class="n">onehot_to_suit</span><span class="p">(</span><span class="n">test_labels</span><span class="p">),</span> <span class="n">preds_str</span><span class="p">)</span>
+              <span class="n">precision</span>    <span class="n">recall</span>  <span class="n">f1</span><span class="o">-</span><span class="n">score</span>   <span class="n">support</span>
+
+          <span class="n">bb</span>       <span class="mf">0.92</span>      <span class="mf">0.80</span>      <span class="mf">0.86</span>        <span class="mi">41</span>
+          <span class="n">cb</span>       <span class="mf">0.85</span>      <span class="mf">0.80</span>      <span class="mf">0.83</span>        <span class="mi">41</span>
+          <span class="n">lb</span>       <span class="mf">0.88</span>      <span class="mf">0.98</span>      <span class="mf">0.93</span>        <span class="mi">60</span>
+          <span class="n">sb</span>       <span class="mf">0.95</span>      <span class="mf">0.95</span>      <span class="mf">0.95</span>        <span class="mi">55</span>
+
+    <span class="n">accuracy</span>                           <span class="mf">0.90</span>       <span class="mi">197</span>
+   <span class="n">macro</span> <span class="n">avg</span>       <span class="mf">0.90</span>      <span class="mf">0.88</span>      <span class="mf">0.89</span>       <span class="mi">197</span>
+<span class="n">weighted</span> <span class="n">avg</span>       <span class="mf">0.90</span>      <span class="mf">0.90</span>      <span class="mf">0.90</span>       <span class="mi">197</span>
+</code></pre></div>
+
+<p>Let's break down the output.
+First, we have four columns: precision, recall, f1-score, and support.
+The first three columns are self-explanatory.
+The fourth column, "support", is the number of samples in the test set.
+These values match the values seen in our <code>plot_datasets_suits()</code> function, as seen in the figure below.</p>
+
+<figure class="center">
+    <img src="img/dataset_suits.png" style="width:100%;"/>
+    <figcaption>Samples per dataset, grouped by suits</figcaption>
+</figure>
+
+<p>The following four rows give class-specific insight into the model's performance</p>
+
+<pre><code>    precision    recall  f1-score   support
+
+bb       0.92      0.80      0.86        41
+cb       0.85      0.80      0.83        41
+lb       0.88      0.98      0.93        60
+sb       0.95      0.95      0.95        55
+</code></pre>
+
+<p>Each row contains the precision, recall, f1-score, and sample size for each of the four classes: Bossbot, Cashbot, Lawbot, and Sellbot.
+The highlights in this section are the low recall and f1-scores of <code>bb</code> and <code>cb</code>.
+I suspect the model's low performance is due to the relatively smaller sample sizes of the two classes (41 vs 55 and 60).</p>
+
+<p>Lastly, we have the remaining three rows: accuracy, macro average, and weighted average.</p>
+
+<pre><code>              precision    recall  f1-score   support
+
+    accuracy                           0.90       197
+   macro avg       0.90      0.88      0.89       197
+weighted avg       0.90      0.90      0.90       197
+</code></pre>
+
+<p>Accuracy is straight-forward, although it's rounded to two decimal places - it should be 0.8984.</p>
+
+<p>The macro average is the average value of precision, recall, and f1-score for all classes.
+For instance, the macro precision average of 0.90 is the calculated as <code>(p_bb + p_cb + p_lb + p_sb) / 4</code>, where <code>p_*</code> are the precision values for each class.</p>
+
+<p>The weighted average is the average of the precision, recall, and f1-score weighted by the sample size: <code>(p_bb * 41 + p_cb * 41 + p_lb * 60 + p_sb * 55) / 197</code>.
+It takes into account the imbalance in the dataset, although the scores don't change much as a result.</p>
+
+<p>Ideally, we would like to have a model with higher precision and recall scores and an f1-score nearing 1.0.
+Let's see if we can do that.</p>
 
 <hr />
 
