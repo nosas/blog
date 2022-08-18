@@ -47,8 +47,8 @@ For now, let's focus on multiclass classification.
         - [Defining the model](#defining-the-model)
     - [Training the baseline model](#training-the-baseline-model)
         - [Baseline loss and accuracy plots](#baseline-loss-and-accuracy-plots)
-        - [Baseline confusion matrix](#baseline-confusion-matrix)
         - [Baseline wrong predictions](#baseline-wrong-predictions)
+        - [Baseline confusion matrix](#baseline-confusion-matrix)
     - [Training the optimized model](#training-the-optimized-model)
         - [Keras Tuner](#keras-tuner)
         - [Preventing overfitting](#preventing-overfitting)
@@ -442,9 +442,40 @@ Therefore, the baseline model's training stopped after 35 epochs.
 
 ### Baseline loss and accuracy plots
 
-### Baseline confusion matrix
+The model's training progress can be seen plotted below.
+We can see steady converging of the training loss, which is good.
+The high validation loss score is of concern, though.
+
+<figure class="center" style="width:90%;">
+    <img src="img/train_baseline.png" style="width:100%;"/>
+    <figcaption>Baseline model's training accuracy and loss</figcaption>
+</figure>
+
+The code block below demonstrates how to retrieve the peak accuracy and minimum loss values.
+We see the training accuracy reaches 99.8% at 33 epochs, but the validation accuracy only reaches 87.5% at 25 epochs.
+These are signs of overfitting to the training data and underfitting to the validation data.
+
+The loss converges to 0.04 on the training set after 35 epochs, but only 0.37 on the validation set after 30 epochs.
+Given the large `validation_loss` value, the model clearly has room for improvement.
+
+```python
+>>> h = history.history
+>>> max(h['categorical_accuracy']), np.argmax(h['categorical_accuracy'])
+(0.998019814491272, 33)
+
+>>> max(h['val_categorical_accuracy']), np.argmax(h['val_categorical_accuracy'])
+(0.875, 25)
+
+>>> min(h['loss']), np.argmin(h['loss'])
+(0.04749872535467148, 35)
+
+>>> min(h['val_loss']), np.argmin(h['val_loss'])
+(0.3700076937675476, 30)
+```
 
 ### Baseline wrong predictions
+
+### Baseline confusion matrix
 
 ---
 ## Training the optimized model

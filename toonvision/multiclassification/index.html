@@ -89,8 +89,8 @@ For now, let's focus on multiclass classification.</p>
 <li><a href="#training-the-baseline-model">Training the baseline model</a>
 <ul>
 <li><a href="#baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</a></li>
-<li><a href="#baseline-confusion-matrix">Baseline confusion matrix</a></li>
 <li><a href="#baseline-wrong-predictions">Baseline wrong predictions</a></li>
+<li><a href="#baseline-confusion-matrix">Baseline confusion matrix</a></li>
 </ul></li>
 <li><a href="#training-the-optimized-model">Training the optimized model</a>
 <ul>
@@ -495,9 +495,39 @@ Therefore, the baseline model's training stopped after 35 epochs.</p>
 
 <h3 id="baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</h3>
 
-<h3 id="baseline-confusion-matrix">Baseline confusion matrix</h3>
+<p>The model's training progress can be seen plotted below.
+We can see steady converging of the training loss, which is good.
+The high validation loss score is of concern, though.</p>
+
+<figure class="center" style="width:90%;">
+    <img src="img/train_baseline.png" style="width:100%;"/>
+    <figcaption>Baseline model's training accuracy and loss</figcaption>
+</figure>
+
+<p>The code block below demonstrates how to retrieve the peak accuracy and minimum loss values.
+We see the training accuracy reaches 99.8% at 33 epochs, but the validation accuracy only reaches 87.5% at 25 epochs.
+These are signs of overfitting to the training data and underfitting to the validation data.</p>
+
+<p>The loss converges to 0.04 on the training set after 35 epochs, but only 0.37 on the validation set after 30 epochs.
+Given the large <code>validation_loss</code> value, the model clearly has room for improvement.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">h</span> <span class="o">=</span> <span class="n">history</span><span class="o">.</span><span class="n">history</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">max</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;categorical_accuracy&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;categorical_accuracy&#39;</span><span class="p">])</span>
+<span class="p">(</span><span class="mf">0.998019814491272</span><span class="p">,</span> <span class="mi">33</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">max</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;val_categorical_accuracy&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;val_categorical_accuracy&#39;</span><span class="p">])</span>
+<span class="p">(</span><span class="mf">0.875</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">])</span>
+<span class="p">(</span><span class="mf">0.04749872535467148</span><span class="p">,</span> <span class="mi">35</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;val_loss&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;val_loss&#39;</span><span class="p">])</span>
+<span class="p">(</span><span class="mf">0.3700076937675476</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+</code></pre></div>
 
 <h3 id="baseline-wrong-predictions">Baseline wrong predictions</h3>
+
+<h3 id="baseline-confusion-matrix">Baseline confusion matrix</h3>
 
 <hr />
 
