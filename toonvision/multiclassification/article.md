@@ -475,6 +475,18 @@ Given the large `validation_loss` value, the model clearly has room for improvem
 
 ### Baseline wrong predictions
 
+I anticipated a significant number of Bossbots predicted as Sellbots, and vice-versa, because of the similarity in their suit colors (brown vs. maroon).
+But, there's no obvious trend of wrong predictions here.
+
+<figure class="center" style="width:90%;">
+    <img src="img/wrong_predictions_baseline.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
+
+The model totaled 20 wrong predictions out of 197 test images, resulting in a whopping 89.84% accuracy.
+Given how imbalanced our dataset is, however, accuracy as a performance measure is quite misleading.
+Let's look at the model's confusion matrix, precision, and recall metrics instead.
+
 ### Baseline confusion matrix
 
 ---
