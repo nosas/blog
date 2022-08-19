@@ -98,11 +98,8 @@ For now, let's focus on multiclass classification.</p>
 <li><a href="#training-the-optimized-model">Training the optimized model</a>
 <ul>
 <li><a href="#keras-tuner">Keras Tuner</a></li>
-<li><a href="#tensorboard">Tensorboard</a></li>
-<li><a href="#preventing-overfitting">Preventing overfitting</a></li>
+<li><a href="#tuning-results">Tuning results</a></li>
 <li><a href="#wrong-predictions">Wrong predictions</a></li>
-<li><a href="#baseline-comparison-training">Baseline comparison: Training</a></li>
-<li><a href="#baseline-comparison-evaluation">Baseline comparison: Evaluation</a></li>
 </ul></li>
 <li><a href="#model-interpretation-and-visualization">Model interpretation and visualization</a>
 <ul>
@@ -762,22 +759,13 @@ Hopefully, this will cause the majority of our highest-performing models to have
 <span class="p">)</span>
 </code></pre></div>
 
-<p>This specific search will take about 20-30 minutes to complete.
+<p>This specific search will take about 30-0 minutes to complete.
 Following the random search, we'll review the highest performing parameters in TensorBoard, tighten the search space, and then launch a more efficient <code>Hyperband</code> or <code>BayesianOptimization</code> search.
 Let's see what TensorBoard can tell us about the most optimal hyperparameter values.</p>
 
-<h3 id="tensorboard">Tensorboard</h3>
-
-<div class="codehilite"><pre><span></span><code>tensorboard --logdir<span class="o">=</span>./tb_logs/randomsearch
-</code></pre></div>
-
-<h3 id="preventing-overfitting">Preventing overfitting</h3>
+<h3 id="tuning-results">Tuning results</h3>
 
 <h3 id="wrong-predictions">Wrong predictions</h3>
-
-<h3 id="baseline-comparison-training">Baseline comparison: Training</h3>
-
-<h3 id="baseline-comparison-evaluation">Baseline comparison: Evaluation</h3>
 
 <hr />
 

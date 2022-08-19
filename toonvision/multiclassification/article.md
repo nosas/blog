@@ -52,11 +52,8 @@ For now, let's focus on multiclass classification.
             - [Precision, recall, and f1-score](#precision-recall-and-f1-score)
     - [Training the optimized model](#training-the-optimized-model)
         - [Keras Tuner](#keras-tuner)
-        - [Tensorboard](#tensorboard)
-        - [Preventing overfitting](#preventing-overfitting)
+        - [Tuning results](#tuning-results)
         - [Wrong predictions](#wrong-predictions)
-        - [Baseline comparison: Training](#baseline-comparison-training)
-        - [Baseline comparison: Evaluation](#baseline-comparison-evaluation)
     - [Model interpretation and visualization](#model-interpretation-and-visualization)
         - [Intermediate convnet outputs (intermediate activations)](#intermediate-convnet-outputs-intermediate-activations)
         - [Convnet filters](#convnet-filters)
@@ -713,23 +710,13 @@ tuner.search(
 )
 ```
 
-This specific search will take about 20-30 minutes to complete.
+This specific search will take about 30-0 minutes to complete.
 Following the random search, we'll review the highest performing parameters in TensorBoard, tighten the search space, and then launch a more efficient `Hyperband` or `BayesianOptimization` search.
 Let's see what TensorBoard can tell us about the most optimal hyperparameter values.
 
-### Tensorboard
-
-```bash
-tensorboard --logdir=./tb_logs/randomsearch
-```
-
-### Preventing overfitting
+### Tuning results
 
 ### Wrong predictions
-
-### Baseline comparison: Training
-
-### Baseline comparison: Evaluation
 
 ---
 ## Model interpretation and visualization
