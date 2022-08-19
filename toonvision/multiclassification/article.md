@@ -52,6 +52,7 @@ For now, let's focus on multiclass classification.
             - [Precision, recall, and f1-score](#precision-recall-and-f1-score)
     - [Training the optimized model](#training-the-optimized-model)
         - [Keras Tuner](#keras-tuner)
+        - [Tensorboard](#tensorboard)
         - [Preventing overfitting](#preventing-overfitting)
         - [Wrong predictions](#wrong-predictions)
         - [Baseline comparison: Training](#baseline-comparison-training)
@@ -564,7 +565,7 @@ These values match the values seen in our `plot_datasets_suits()` function, as s
     <figcaption>Samples per dataset, grouped by suits</figcaption>
 </figure>
 
-The following four rows give class-specific insight into the model's performance
+The following four rows provide class-specific insight into the model's performance
 
 ```
     precision    recall  f1-score   support
@@ -603,11 +604,124 @@ Let's see if we can do that.
 ---
 ## Training the optimized model
 
+We can now fine-tune and optimize our model.
+Remember, the goal is to create a smaller model that performs better than the baseline model.
+The full details of this process are covered in my hyperparameter optimization [article][keras_tuner_tensorboard].
+
 ### Keras Tuner
 
-`KerasTuner` is a tool for fine-tuning a model's hyperparameters.
-Hyperparameters include the model's layers, layer sizes, and optimizer.
-We can leverage this tool to find the best hyperparameters for our model instead of manually tuning the model and comparing the results.
+`KerasTuner` is a tool that automates the hyperparameter optimization process.
+Hyperparameters include the model's layers, layer sizes, and optimizer, among other things.
+We will use this this tool and save time from manually tuning the model and comparing the results.
+
+First, we must write a function to define the model with various hyperparameter values.
+We'll call the function `model_builder` and pass it [HyperParameter](https://keras.io/api/keras_tuner/hyperparameters/) object, `hp`,  as an argument.
+
+We use the `hp` object to define the model's hyperparameter search space.
+For instance, in the first Conv2D layer we use `hp.Int` to restrict the filter search space to 4, 8, 12, or 16.
+In the same layer we also use `hp.Choice` to restrict the kernel size search space to either 3 or 5.
+
+```python
+def model_builder(hp):
+    model = keras.Sequential(
+        [
+            # Input and augmentation layers
+            keras.layers.Rescaling(1.0 / 255),
+            keras.layers.RandomFlip("horizontal"),
+
+            # Block 1: Conv2D -> MaxPool2D -> MaxPool2D -> Dropout
+            keras.layers.Conv2D(
+                filters=hp.Int("conv_1_filters", min_value=4, max_value=16, step=4),
+                kernel_size=hp.Choice("conv_1_kernel_size", values=[3, 5]),
+                activation="relu",
+                padding="same",
+            ),
+            keras.layers.MaxPooling2D(
+                pool_size=hp.Int("pool_1_size", min_value=2, max_value=4, step=1),
+            ),
+            # Min value == 1 will void the second pooling layer
+            keras.layers.MaxPooling2D(
+                pool_size=hp.Int("pool_2_size", min_value=1, max_value=4, step=1),
+            ),
+            keras.layers.Dropout(
+                rate=hp.Float("dropout_1_rate", min_value=0.0, max_value=0.9, step=0.1),
+            ),
+            ...  # Repeat for Block 2 (omitted for brevity)
+
+            # Output layer
+            keras.layers.Flatten(),
+            keras.layers.Dense(units=4, activation="softmax"),
+        ]
+    )
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(
+            learning_rate=hp.Choice("learning_rate", values=[1e-2, 1e-3, 1e-4])
+        ),
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+        metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
+    )
+```
+
+Then we'll pass the model builder function into the `keras_tuner.RandomSearch` constructor.
+Random search is the least efficient search, but it provides valuable insights into the whereabouts of optimal hyperparameter values.
+Refer to my KerasTuner [article][keras_tuner_tensorboard] for more information about efficient search algorithms, such as `Hyperband` or `BayesianOptimization` search.
+
+Each trial of the search is a separate model with different hyperparameter values.
+We can adjust the `max_trials` argument to increase or decrease the number of times we run the search.
+Given that this is the first search, I recommend increasing `max_trials` to a large number and decreasing `executions_per_trial` to 1.
+This will provide a larger sample of hyperparameter values to analyze in TensorBoard.
+
+```python
+from keras_tuner import RandomSearch
+
+tuner = RandomSearch(
+    hypermodel=model_builder,
+    objective="val_loss",
+    max_trials=100,
+    executions_per_trial=1,  # Increase to reduce variance of the results
+    directory="models",
+    project_name="tuned_multiclass_randomsearch",
+    seed=42,
+)
+```
+
+Finally, we'll launch the tuning process and save the results to `./tb_logs/randomsearch`.
+
+We want a smaller model, so we must take into consideration how much time it will take to train.
+Larger models can overfit in as little as 5-10 epochs.
+Smaller models tend to take longer to converge because of how relatively little parameters they have.
+
+We'll set the number of epochs to 75 and allow the models more time to train.
+Hopefully, this will cause the majority of our highest-performing models to have a smaller number of parameters.
+
+```python
+import tensorflow as tf
+
+tuner.search(
+    train_images,
+    train_labels,
+    epochs=75,
+    batch_size=64,
+    validation_data=(val_images, val_labels),
+    verbose=1,
+    callbacks=[
+        tf.keras.callbacks.EarlyStopping(
+            monitor="val_loss", patience=3, restore_best_weights=True
+        ),
+        tf.keras.callbacks.TensorBoard("./tb_logs/randomsearch/"),
+    ],
+)
+```
+
+This specific search will take about 20-30 minutes to complete.
+Following the random search, we'll review the highest performing parameters in TensorBoard, tighten the search space, and then launch a more efficient `Hyperband` or `BayesianOptimization` search.
+Let's see what TensorBoard can tell us about the most optimal hyperparameter values.
+
+### Tensorboard
+
+```bash
+tensorboard --logdir=./tb_logs/randomsearch
+```
 
 ### Preventing overfitting
 
@@ -633,3 +747,4 @@ We can leverage this tool to find the best hyperparameters for our model instead
 [categorical_accuracy]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/CategoricalAccuracy
 [precision]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision
 [recall]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall
+[keras_tuner_tensorboard]: https://fars.io/keras_tuner_tensorboard/

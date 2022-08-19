@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 17, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 18, 2022</p>
 
 <p><title>ToonVision: Multiclass Classification</title></p>
 
@@ -98,6 +98,7 @@ For now, let's focus on multiclass classification.</p>
 <li><a href="#training-the-optimized-model">Training the optimized model</a>
 <ul>
 <li><a href="#keras-tuner">Keras Tuner</a></li>
+<li><a href="#tensorboard">Tensorboard</a></li>
 <li><a href="#preventing-overfitting">Preventing overfitting</a></li>
 <li><a href="#wrong-predictions">Wrong predictions</a></li>
 <li><a href="#baseline-comparison-training">Baseline comparison: Training</a></li>
@@ -617,7 +618,7 @@ These values match the values seen in our <code>plot_datasets_suits()</code> fun
     <figcaption>Samples per dataset, grouped by suits</figcaption>
 </figure>
 
-<p>The following four rows give class-specific insight into the model's performance</p>
+<p>The following four rows provide class-specific insight into the model's performance</p>
 
 <pre><code>    precision    recall  f1-score   support
 
@@ -655,11 +656,120 @@ Let's see if we can do that.</p>
 
 <h2 id="training-the-optimized-model">Training the optimized model</h2>
 
+<p>We can now fine-tune and optimize our model.
+Remember, the goal is to create a smaller model that performs better than the baseline model.
+The full details of this process are covered in my hyperparameter optimization <a href="https://fars.io/keras_tuner_tensorboard/">article</a>.</p>
+
 <h3 id="keras-tuner">Keras Tuner</h3>
 
-<p><code>KerasTuner</code> is a tool for fine-tuning a model's hyperparameters.
-Hyperparameters include the model's layers, layer sizes, and optimizer.
-We can leverage this tool to find the best hyperparameters for our model instead of manually tuning the model and comparing the results.</p>
+<p><code>KerasTuner</code> is a tool that automates the hyperparameter optimization process.
+Hyperparameters include the model's layers, layer sizes, and optimizer, among other things.
+We will use this this tool and save time from manually tuning the model and comparing the results.</p>
+
+<p>First, we must write a function to define the model with various hyperparameter values.
+We'll call the function <code>model_builder</code> and pass it <a href="https://keras.io/api/keras_tuner/hyperparameters/">HyperParameter</a> object, <code>hp</code>,  as an argument.</p>
+
+<p>We use the <code>hp</code> object to define the model's hyperparameter search space.
+For instance, in the first Conv2D layer we use <code>hp.Int</code> to restrict the filter search space to 4, 8, 12, or 16.
+In the same layer we also use <code>hp.Choice</code> to restrict the kernel size search space to either 3 or 5.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">model_builder</span><span class="p">(</span><span class="n">hp</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="c1"># Input and augmentation layers</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Rescaling</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">RandomFlip</span><span class="p">(</span><span class="s2">&quot;horizontal&quot;</span><span class="p">),</span>
+
+            <span class="c1"># Block 1: Conv2D -&gt; MaxPool2D -&gt; MaxPool2D -&gt; Dropout</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span>
+                <span class="n">filters</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="s2">&quot;conv_1_filters&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+                <span class="n">kernel_size</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Choice</span><span class="p">(</span><span class="s2">&quot;conv_1_kernel_size&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">]),</span>
+                <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
+                <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span>
+                <span class="n">pool_size</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="s2">&quot;pool_1_size&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="c1"># Min value == 1 will void the second pooling layer</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span>
+                <span class="n">pool_size</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="s2">&quot;pool_2_size&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span>
+                <span class="n">rate</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Float</span><span class="p">(</span><span class="s2">&quot;dropout_1_rate&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="o">...</span>  <span class="c1"># Repeat for Block 2 (omitted for brevity)</span>
+
+            <span class="c1"># Output layer</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span>
+            <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;softmax&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span>
+            <span class="n">learning_rate</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Choice</span><span class="p">(</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-2</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">])</span>
+        <span class="p">),</span>
+        <span class="n">loss</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">SparseCategoricalCrossentropy</span><span class="p">(),</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">SparseCategoricalAccuracy</span><span class="p">()],</span>
+    <span class="p">)</span>
+</code></pre></div>
+
+<p>Then we'll pass the model builder function into the <code>keras_tuner.RandomSearch</code> constructor.
+Random search is the least efficient search, but it provides valuable insights into the whereabouts of optimal hyperparameter values.
+Refer to my KerasTuner <a href="https://fars.io/keras_tuner_tensorboard/">article</a> for more information about efficient search algorithms, such as <code>Hyperband</code> or <code>BayesianOptimization</code> search.</p>
+
+<p>Each trial of the search is a separate model with different hyperparameter values.
+We can adjust the <code>max_trials</code> argument to increase or decrease the number of times we run the search.
+Given that this is the first search, I recommend increasing <code>max_trials</code> to a large number and decreasing <code>executions_per_trial</code> to 1.
+This will provide a larger sample of hyperparameter values to analyze in TensorBoard.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">keras_tuner</span> <span class="kn">import</span> <span class="n">RandomSearch</span>
+
+<span class="n">tuner</span> <span class="o">=</span> <span class="n">RandomSearch</span><span class="p">(</span>
+    <span class="n">hypermodel</span><span class="o">=</span><span class="n">model_builder</span><span class="p">,</span>
+    <span class="n">objective</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span>
+    <span class="n">max_trials</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">executions_per_trial</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Increase to reduce variance of the results</span>
+    <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;models&quot;</span><span class="p">,</span>
+    <span class="n">project_name</span><span class="o">=</span><span class="s2">&quot;tuned_multiclass_randomsearch&quot;</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Finally, we'll launch the tuning process and save the results to <code>./tb_logs/randomsearch</code>.</p>
+
+<p>We want a smaller model, so we must take into consideration how much time it will take to train.
+Larger models can overfit in as little as 5-10 epochs.
+Smaller models tend to take longer to converge because of how relatively little parameters they have.</p>
+
+<p>We'll set the number of epochs to 75 and allow the models more time to train.
+Hopefully, this will cause the majority of our highest-performing models to have a smaller number of parameters.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+
+<span class="n">tuner</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+    <span class="n">train_images</span><span class="p">,</span>
+    <span class="n">train_labels</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">val_images</span><span class="p">,</span> <span class="n">val_labels</span><span class="p">),</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">EarlyStopping</span><span class="p">(</span>
+            <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">restore_best_weights</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">),</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">TensorBoard</span><span class="p">(</span><span class="s2">&quot;./tb_logs/randomsearch/&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>This specific search will take about 20-30 minutes to complete.
+Following the random search, we'll review the highest performing parameters in TensorBoard, tighten the search space, and then launch a more efficient <code>Hyperband</code> or <code>BayesianOptimization</code> search.
+Let's see what TensorBoard can tell us about the most optimal hyperparameter values.</p>
+
+<h3 id="tensorboard">Tensorboard</h3>
+
+<div class="codehilite"><pre><span></span><code>tensorboard --logdir<span class="o">=</span>./tb_logs/randomsearch
+</code></pre></div>
 
 <h3 id="preventing-overfitting">Preventing overfitting</h3>
 
