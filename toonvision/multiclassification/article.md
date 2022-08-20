@@ -497,11 +497,11 @@ The incorrect predictions are highlighted in the matrix on the right where we in
 
 <table style="width:100%;">
     <tr>
-        <td style="width:50%;">
+        <td style="width:50.5%;">
             <img src="img/confusion_matrix_baseline.png" style="width:100%;"/>
         </td>
-        <td style="width:50%;">
-            <img src="img/confusion_matrix_wrong_baseline.png" style="width:100%;"/>
+        <td style="width:50.5%;">
+            <img src="img/confusion_matrix_baseline_wrong.png" style="width:100%;"/>
         </td>
     </tr>
     <tr >
@@ -710,13 +710,88 @@ tuner.search(
 )
 ```
 
-This specific search will take about 30-0 minutes to complete.
+This specific search will take about 30-40 minutes to complete.
 Following the random search, we'll review the highest performing parameters in TensorBoard, tighten the search space, and then launch a more efficient `Hyperband` or `BayesianOptimization` search.
 Let's see what TensorBoard can tell us about the most optimal hyperparameter values.
 
 ### Tuning results
 
+After 4 hours of repeated searching, tightening the search space, and training, we have a model with only 6,032 parameters!
+The model architecture is the same as the baseline model, but the hyperparameters are tuned to achieve higher performance.
+
+```
+Model: "toonvision_multiclass_tuned"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #
+=================================================================
+ random_flip_1 (RandomFlip)  (None, 600, 200, 3)       0
+ rescaling_1 (Rescaling)     (None, 600, 200, 3)       0
+ conv2d_1 (Conv2D)           (None, 600, 200, 16)      448
+ max_pooling2d_1             (None, 200, 66, 16)       0
+ max_pooling2d_2             (None, 100, 33, 16)       0
+ dropout_1 (Dropout)         (None, 100, 33, 16)       0
+ conv2d_2 (Conv2D)           (None, 100, 33, 12)       1740
+ max_pooling2d_2             (None, 50, 16, 12)        0
+ max_pooling2d_3             (None, 16, 5, 12)         0
+ flatten_1 (Flatten)         (None, 960)               0
+ dropout_2 (Dropout)         (None, 960)               0
+ dense_1 (Dense)             (None, 4)                 3844
+=================================================================
+Total params: 6,032
+Trainable params: 6,032
+Non-trainable params: 0
+_________________________________________________________________
+```
+
 ### Wrong predictions
+
+<figure class="right" style="width:30%;">
+    <img src="img/wrong_predictions_tuned.png" style="width:100%;"/>
+    <figcaption>Best model's wrong predictions</figcaption>
+</figure>
+
+The downside of small models is that their performance greatly varies based on their initial random weight values.
+If we were to train a small model 10 times, each time with a different random weight initialization, the model would produce vastly different results.
+
+Fortunately, the first training run produced a model with only two wrong predictions.
+To be fair to the model, the second wrong prediction correctly identified the Cog in the foreground.
+I should remove this sample from the dataset...
+The first wrong prediction, however, will be looked at in depth in the following sections.
+
+Subsequent training results ranged from 5 to 50 wrong predictions!
+Sometimes the model could barely predict an entire class of images correctly.
+
+The confusion matrices below visualize the predictions of the best and worst models.
+The matrix on the left shows the predictions of the best model, and the matrix on the right shows the predictions of the worst model.
+We can see the best model made only two wrong predictions, and they're reasonably incorrect.
+
+<table style='width:100%;'>
+    <tr>
+        <td style='width:50%;'>
+            <img src='img/confusion_matrix_tuned.png' style='width:100%;'/>
+        </td>
+        <td style='width:50%;'>
+            <img src='img/confusion_matrix_tuned_bad.png' style='width:100%;'/>
+        </td>
+    </tr>
+    <tr >
+        <td>
+            <span style='text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;'>
+                <small>
+                    <i>Good confusion matrix: 2 wrong predictions</i>
+                </small>
+            </span>
+        </td>
+        <td>
+            <span style='text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;'>
+                <small>
+                    <i>Bad confusion matrix: 35 Cashbots predicted as Lawbots</i>
+                </small>
+            </span>
+        </td>
+    </tr>
+</table>
+
 
 ---
 ## Model interpretation and visualization
