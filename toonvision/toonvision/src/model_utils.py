@@ -57,23 +57,21 @@ def make_multiclass_model_padding(
     return model
 
 
-def make_multiclass_model_padding_tuned(
+def make_multiclass_model_tuned(
     name: str = "",
-    augmentation: keras.Sequential = None,
 ) -> keras.Model:
     inputs = keras.Input(shape=(600, 200, 3))
-    if augmentation:
-        x = augmentation(inputs)
-    x = layers.Rescaling(1.0 / 255)(inputs)
-    x = layers.Conv2D(filters=16, kernel_size=5, activation="relu", padding="same")(x)
-    x = layers.MaxPooling2D(pool_size=1)(x)
-    x = layers.MaxPooling2D(pool_size=4)(x)
-    x = layers.Dropout(0.4)(x)
-    x = layers.Conv2D(filters=14, kernel_size=5, activation="relu", padding="same")(x)
+    # Input and augmentation layers
+    x = layers.RandomFlip("horizontal")(inputs)
+    x = layers.Conv2D(filters=16, kernel_size=3, activation="relu", padding="same")(x)
+    x = layers.MaxPooling2D(pool_size=3)(x)
     x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.Dropout(0.2)(x)
+    x = layers.Conv2D(filters=12, kernel_size=3, activation="relu", padding="same")(x)
     x = layers.MaxPooling2D(pool_size=2)(x)
+    x = layers.MaxPooling2D(pool_size=3)(x)
     x = layers.Flatten()(x)
-    x = layers.Dropout(0.6)(x)
+    x = layers.Dropout(0.3)(x)
     outputs = layers.Dense(units=4, activation="softmax")(x)
     model = keras.Model(name=name, inputs=inputs, outputs=outputs)
     return model
