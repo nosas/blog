@@ -763,7 +763,9 @@ Sometimes the model could barely predict an entire class of images correctly.
 
 The confusion matrices below visualize the predictions of the best and worst models.
 The matrix on the left shows the predictions of the best model, and the matrix on the right shows the predictions of the worst model.
-We can see the best model made only two wrong predictions, and they're reasonably incorrect.
+We can see the best model made only two wrong predictions - one Cashbot classified as a Lawbot and vice-versa.
+The worst model, however, made a plethora of wrong predictions.
+Most notably, it incorrectly classified 35 Cashbots as Lawbots!
 
 <table style='width:100%;'>
     <tr>
@@ -792,6 +794,8 @@ We can see the best model made only two wrong predictions, and they're reasonabl
     </tr>
 </table>
 
+Enough with the confusion matrices.
+Let's make some heatmaps and visualize what the model is looking for in these predictions.
 
 ---
 ## Model interpretation and visualization
