@@ -842,6 +842,95 @@ def plot_confusion_matrix(
     plt.show()
 
 
+def create_image_grid(filepaths, ncols=4, title: str = ""):
+    """
+    Create a grid of images given a list of filepaths.
+    """
+    nrows = int(np.ceil(len(filepaths) / ncols))
+    fig, ax = plt.subplots(nrows, ncols, figsize=(ncols * 2.5, nrows * 3.25), dpi=100)
+    for i, fp in enumerate(filepaths):
+        if nrows == 1:
+            ax[i].imshow(keras.preprocessing.image.load_img(fp))
+            ax[i].axis("off")
+        else:
+            ax[int(i / ncols), i % ncols].imshow(keras.preprocessing.image.load_img(fp))
+            ax[int(i / ncols), i % ncols].axis("off")
+
+    # Add the title
+    fig.suptitle(title, fontsize=16)
+    fig.tight_layout()
+    return fig, ax
+
+
+def plot_prediction_confidence(
+    results,
+    category_names: list[str] = SUITS_LONG,
+    category_colors: list[str] = None,
+    title: str = "Confidence levels for predictions",
+):
+    """
+    Plot the confidence levels for each prediction as a stacked horizontal bar chart
+    https://matplotlib.org/stable/gallery/lines_bars_and_markers/horizontal_barchart_distribution.html
+
+    Args:
+        results : dict
+            A mapping from labels to a probability distribution per class.
+            It is assumed all lists contain the same number of entries and that
+            it matches the length of *category_names*.
+        category_names : list of str
+            The category labels.
+
+    Sample input:
+        results = {
+            'cog_sb_namedropper_16': [0.44871306, 0.06975883, 0.00999381, 0.47153428,
+            'cog_sb_telemarketer_8': [5.4676242e-05, 3.8389821e-02, 4.2608532e-01, 5.3547019e-01],
+            'cog_cb_loanshark_24': [0.00269983, 0.6211853 , 0.3708871 , 0.00522783,
+            'cog_bb_downsizer_14': [8.8549483e-01, 1.3845650e-04, 1.3246332e-04, 1.1423415e-01]
+        }
+    """
+    labels = list(results.keys())
+    data = np.array(np.array(list(results.values())) * 100).astype("int")
+    data_cum = data.cumsum(axis=1)
+    if not category_colors:
+        category_colors = plt.colormaps["Set1"](np.linspace(0.15, 0.85, data.shape[1]))
+
+    fig, ax = plt.subplots(figsize=(8, 4), dpi=100)
+    ax.invert_yaxis()
+    ax.xaxis.set_visible(False)
+    ax.set_xlim(0, np.sum(data, axis=1).max())
+
+    for i, (colname, color) in enumerate(zip(category_names, category_colors)):
+        widths = data[:, i]
+        starts = data_cum[:, i] - widths
+        rects = ax.barh(
+            labels, widths, left=starts, height=0.5, label=colname, color=color
+        )
+        text_color = "white"
+        for rect in rects:
+            if round(rect.get_width()) > 0:
+                ax.text(
+                    rect.get_x() + rect.get_width() / 2,
+                    rect.get_y() + rect.get_height() / 2,
+                    str(int(rect.get_width())),
+                    ha="center",
+                    va="center",
+                    color=text_color,
+                    fontsize=10,
+                )
+    ax.legend(
+        ncol=len(category_names),
+        bbox_to_anchor=(0.05, 1),
+        loc="lower left",
+        fontsize="large",
+    )
+
+    # Set title
+    ax.set_title(f"{title}\n\n", fontsize=12)
+
+    return fig, ax
+
+
+
 # %% Plot data
 # plot_suits_as_bar()
 # plot_toons_as_bar()

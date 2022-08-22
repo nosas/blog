@@ -21,10 +21,12 @@ from data_processing import (
 )
 from data_visualization import (
     COLORS,
+    create_image_grid,
     plot_confusion_matrix,
     plot_histories,
     plot_history,
-    plot_streets,
+    plot_prediction_confidence,
+    plot_streets_suits,
     plot_wrong_predictions_multiclass,
 )
 from img_utils import get_image_augmentations
@@ -36,12 +38,11 @@ from model_utils import (
 )
 from sklearn.metrics import (
     classification_report,
+    confusion_matrix,
     f1_score,
     precision_score,
     recall_score,
-    confusion_matrix,
 )
-
 from tensorflow.compat.v1 import ConfigProto, InteractiveSession
 
 config = ConfigProto()
@@ -89,7 +90,7 @@ ds_train, ds_validate, ds_test = create_suit_datasets(
 # plot_xml_data()
 
 # # % Plot street balance
-# plot_streets()
+# plot_streets_suits()
 
 # # % Plot dataset balance
 # plot_datasets()
@@ -882,80 +883,16 @@ lc10_fps = test_fps[lc10_preds_idxs]
 lc10_fps_short = [fp.split("\\")[-1].strip(".png") for fp in lc10_fps]
 lc10_preds = predictions[lc10_preds_idxs]
 
-# %% Create function to visualize prediction confidence as a horizontal, stacked bar chart
-# https://matplotlib.org/stable/gallery/lines_bars_and_markers/horizontal_barchart_distribution.html
-category_names = SUITS_LONG
-
-
-def survey(
-    results,
-    category_names,
-    category_colors: list[str] = None,
-    title: str = "Confidence levels for predictions",
-):
-    """
-    Parameters
-    ----------
-    results : dict
-        A mapping from question labels to a list of answers per category.
-        It is assumed all lists contain the same number of entries and that
-        it matches the length of *category_names*.
-    category_names : list of str
-        The category labels.
-    """
-    labels = list(results.keys())
-    data = np.array(np.array(list(results.values())) * 100).astype("int")
-    data_cum = data.cumsum(axis=1)
-    if not category_colors:
-        category_colors = plt.colormaps["Set1"](np.linspace(0.15, 0.85, data.shape[1]))
-
-    fig, ax = plt.subplots(figsize=(8, 4), dpi=100)
-    ax.invert_yaxis()
-    ax.xaxis.set_visible(False)
-    ax.set_xlim(0, np.sum(data, axis=1).max())
-
-    for i, (colname, color) in enumerate(zip(category_names, category_colors)):
-        widths = data[:, i]
-        starts = data_cum[:, i] - widths
-        rects = ax.barh(
-            labels, widths, left=starts, height=0.5, label=colname, color=color
-        )
-
-        # r, g, b, _ = color
-        # text_color = 'white' if r * g * b < 0.5 else 'darkgrey'
-        text_color = "white"
-        # labels = [str(int(w*100)) if w >= 0.01 else "" for w in widths]
-        for rect in rects:
-            if rect.get_width() > 0:
-                ax.text(
-                    rect.get_x() + rect.get_width() / 2,
-                    rect.get_y() + rect.get_height() / 2,
-                    str(int(rect.get_width())),
-                    ha="center",
-                    va="center",
-                    color=text_color,
-                    fontsize=10,
-                )
-
-        # ax.bar_label(container=rects, label_type='center', color=text_color)
-    ax.legend(
-        ncol=len(category_names),
-        bbox_to_anchor=(0.05, 1),
-        loc="lower left",
-        fontsize="large",
-    )
-
-    # Set title
-    ax.set_title(f"{title}\n\n", fontsize=12)
-
-    return fig, ax
-
 
 # %% Plot the least confident predictions
 results = {lc10_fps_short[i]: lc10_preds[i] for i in range(len(lc10_fps_short))}
-colors = ["brown", "darkblue", "darkgreen", "maroon"]
 
-fig, ax = survey(results, category_names, colors, title="Confidence levels for least confident predictions")
+colors = ["brown", "darkblue", "darkgreen", "maroon"]
+fig, ax = plot_prediction_confidence(
+    results=results,
+    category_colors=colors,
+    title="Confidence levels for least confident predictions",
+)
 plt.show()
 
 
@@ -965,29 +902,12 @@ results = {
     wrong_fps_short[i]: predictions[wrong_idxs][i] for i in range(len(wrong_preds))
 }
 
-fig, ax = survey(results, category_names, colors, title="Confidence levels for wrong predictions")
+fig, ax = plot_prediction_confidence(
+    results=results, category_colors=colors, title="Confidence levels for wrong predictions"
+)
 plt.show()
 
 # %% Create image grid given image filepaths
-def create_image_grid(filepaths, ncols=4, title: str = ""):
-    """
-    Create a grid of images given a list of filepaths.
-    """
-    nrows = int(np.ceil(len(filepaths) / ncols))
-    fig, ax = plt.subplots(nrows, ncols, figsize=(ncols * 2.5, nrows * 3.25), dpi=100)
-    for i, fp in enumerate(filepaths):
-        if nrows == 1:
-            ax[i].imshow(tf.keras.utils.load_img(fp))
-            ax[i].axis("off")
-        else:
-            ax[int(i / ncols), i % ncols].imshow(tf.keras.utils.load_img(fp))
-            ax[int(i / ncols), i % ncols].axis("off")
-
-    # Add the title
-    fig.suptitle(title, fontsize=16)
-    fig.tight_layout()
-    return fig, ax
-
 create_image_grid(lc10_fps[:5], ncols=5, title="Least confident samples")
 
 # %%
