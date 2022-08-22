@@ -54,6 +54,7 @@ For now, let's focus on multiclass classification.
         - [Keras Tuner](#keras-tuner)
         - [Tuning results](#tuning-results)
         - [Wrong predictions](#wrong-predictions)
+        - [Confidence levels](#confidence-levels)
     - [Model interpretation and visualization](#model-interpretation-and-visualization)
         - [Intermediate convnet outputs (intermediate activations)](#intermediate-convnet-outputs-intermediate-activations)
         - [Convnet filters](#convnet-filters)
@@ -795,7 +796,34 @@ Most notably, it incorrectly classified 35 Cashbots as Lawbots!
 </table>
 
 Enough with the confusion matrices.
-Let's make some heatmaps and visualize what the model is looking for in these predictions.
+Let's move on and look at the model's least confident predictions.
+
+### Confidence levels
+
+Recall that the model's output layer produces a probability distribution over the classes as a result of the "softmax" activation.
+The index of the highest probability is the predicted class.
+For example, if we're given the probability distribution [0.1, 0.2, 0.7, 0.1], the predicted class is 2.
+
+Using `matplotlib`, we can create [stacked horizontal bar charts](https://matplotlib.org/stable/gallery/lines_bars_and_markers/horizontal_barchart_distribution.html) and visualize the confidence levels of the model's predictions.
+Below is stacked bar chart of the 10 least confident predictions.
+Under the bar charts we can find the 5 least confident samples.
+
+<figure class="center" style="width:90%;">
+    <img src="img/confidence_bottom_10.png" style="width:100%;"/>
+    <figcaption>Model's 10 least confident predictions</figcaption>
+</figure>
+
+<figure class="center" style="width:90%;">
+    <img src="img/predictions_bottom_10.png" style="width:100%;"/>
+    <figcaption>Model's 5 least confident samples</figcaption>
+</figure>
+
+The model is not confident in classifying Bossbots or Sellbots.
+The first sample is classified with 44% confidence as a Bossbot, 6% as a Lawbot, and 47% as a Sellbot.
+The second sample is more peculiar - it is correctly classified as a Sellbot with 53% confidence against a 42% confidence as a Lawbot.
+I'm not sure where the model sees a Lawbot in that photo - maybe the gray sliver in the middle of the photo is a Lawbot?
+
+Let's make some heatmaps and visualize what the model sees in the wrong and least confident predictions.
 
 ---
 ## Model interpretation and visualization
