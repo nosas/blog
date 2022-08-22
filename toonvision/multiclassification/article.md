@@ -805,7 +805,7 @@ The index of the highest probability is the predicted class.
 For example, if we're given the probability distribution [0.1, 0.2, 0.7, 0.1], the predicted class is 2.
 
 Using `matplotlib`, we can create [stacked horizontal bar charts](https://matplotlib.org/stable/gallery/lines_bars_and_markers/horizontal_barchart_distribution.html) and visualize the confidence levels of the model's predictions.
-Below is stacked bar chart of the 10 least confident predictions.
+Below is a stacked bar chart of the 10 least confident predictions.
 
 <figure class="center" style="width:90%;">
     <img src="img/confidence_bottom_10.png" style="width:100%;"/>
