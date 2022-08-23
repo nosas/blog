@@ -106,8 +106,11 @@ For now, let's focus on multiclass classification.</p>
 <ul>
 <li><a href="#class-activation-heatmaps">Class activation heatmaps</a></li>
 </ul></li>
-<li><a href="#references">References</a>
+<li><a href="#conclusion">Conclusion</a>
+<ul>
+<li><a href="#next-steps">Next steps</a>
 </details></li>
+</ul></li>
 </ul></li>
 </ul>
 
@@ -934,11 +937,23 @@ Surprisingly, the model was extremely confident in not identifying a Bossbot, de
 
 <hr />
 
-<h2 id="references">References</h2>
+<h2 id="conclusion">Conclusion</h2>
 
-<ul>
-<li><a href="https://fars.io/toonvision/classification/#model-interpretation-and-visualization">ToonVision: Binary Classification</a></li>
-</ul>
+<p>We've made an accurate and small convnet model capable of distinguishing between the four Cog suits.
+With the help of Keras-Tuner and Tensorboard, we compared different models and hyperparameters to create the most optimal model for our problem.
+Furthermore, we learned about classification performance metrics, such as recall, precision, F1-score, and how they excel over accuracy in imbalance datasets.
+Finally, we visualized the model's activations and superimposed heatmaps (CAMs) to understand what the model sees in each sample.</p>
+
+<h3 id="next-steps">Next steps</h3>
+
+<p>The next step is to create a real-time object detection model.
+I'm hoping to use this model to grow and balance the dataset by automatically extracting and labeling objects from images.
+The growing dataset will be used to re-train and improve the binary and multiclass models.
+We'll even use the dataset to create a 32-class Cog classifier.</p>
+
+<p>These next steps will teach me ML pipeline skills necessary for expanding datasets and continuously improving models.
+I can transfer these skills to expedite the image segmentation process, allowing me teach a model to identify ToonTown's streets, roads, and obstacles.
+OmniToon will be walking around ToonTown soon!</p>
 
 </body>
 </html>

@@ -57,7 +57,8 @@ For now, let's focus on multiclass classification.
         - [Confidence levels](#confidence-levels)
     - [Model interpretation and visualization](#model-interpretation-and-visualization)
         - [Class activation heatmaps](#class-activation-heatmaps)
-    - [References](#references)
+    - [Conclusion](#conclusion)
+        - [Next steps](#next-steps)
 </details>
 
 ## ToonVision
@@ -884,9 +885,24 @@ Surprisingly, the model was extremely confident in not identifying a Bossbot, de
 Why do you think the model was confident about the Cashbot class despite none of the activations landing on the Cog's suit?
 *HINT: Refer back to the class imbalances in the [Suits per Street chart](#dataset-balance)*.
 
-
 ---
-## References
+## Conclusion
+
+We've made an accurate and small convnet model capable of distinguishing between the four Cog suits.
+With the help of Keras-Tuner and Tensorboard, we compared different models and hyperparameters to create the most optimal model for our problem.
+Furthermore, we learned about classification performance metrics, such as recall, precision, F1-score, and how they excel over accuracy in imbalance datasets.
+Finally, we visualized the model's activations and superimposed heatmaps (CAMs) to understand what the model sees in each sample.
+
+### Next steps
+
+The next step is to create a real-time object detection model.
+I'm hoping to use this model to grow and balance the dataset by automatically extracting and labeling objects from images.
+The growing dataset will be used to re-train and improve the binary and multiclass models.
+We'll even use the dataset to create a 32-class Cog classifier.
+
+These next steps will teach me ML pipeline skills necessary for expanding datasets and continuously improving models.
+I can transfer these skills to expedite the image segmentation process, allowing me teach a model to identify ToonTown's streets, roads, and obstacles.
+OmniToon will be walking around ToonTown soon!
 
 [classification_performance_measures]: https://fars.io/performance_classification/
 [categorical_accuracy]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/CategoricalAccuracy
