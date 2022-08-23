@@ -22,6 +22,7 @@ from data_processing import (
 from data_visualization import (
     COLORS,
     create_image_grid,
+    generate_heatmap,
     plot_confusion_matrix,
     plot_histories,
     plot_history,
@@ -29,7 +30,6 @@ from data_visualization import (
     plot_streets_suits,
     plot_wrong_predictions_multiclass,
 )
-from img_utils import get_image_augmentations
 from keras_tuner import BayesianOptimization, Hyperband, RandomSearch
 from model_utils import (
     make_multiclass_model_original,
@@ -912,79 +912,6 @@ create_image_grid(lc10_fps[:5], ncols=5, title="Least confident samples")
 
 
 # %% Create functions to streamline heatmap generation
-def generate_heatmap(
-    img_fp: str,
-    model: keras.Model,
-    layer_name_last_conv: str = "",
-    class_id: int = None,
-) -> tuple[np.array, np.array]:
-    img = tf.keras.utils.load_img(img_fp, target_size=(600, 200))
-    img = np.expand_dims(img, axis=0)
-
-    layers_conv = [
-        layer
-        for layer in model.layers
-        if "conv" in layer.name or "pooling" in layer.name
-    ]
-    layers_classifier = [
-        layer
-        for layer in model.layers
-        if "flatten" in layer.name or "dropout" in layer.name or "dense" in layer.name
-    ]
-    if not layer_name_last_conv:
-        layer_name_last_conv = layers_conv[-1].name  # actually a MaxPooling2D layer
-
-    # Set up a model that returns the last convolutional layer's output
-    last_conv_layer = model.get_layer(name=layer_name_last_conv)
-    last_conv_layer_model = keras.Model(model.inputs, last_conv_layer.output)
-
-    # Reapply the classifier to the last convolutional layer's output
-    classifier_input = keras.Input(shape=last_conv_layer.output.shape[1:])
-    x = classifier_input
-    for layer in layers_classifier:
-        x = model.get_layer(name=layer.name)(x)
-    classifier_model = keras.Model(classifier_input, x)
-
-    # Retrieve the gradients of the class
-    with tf.GradientTape() as tape:
-        last_conv_layer_output = last_conv_layer_model(img)
-        tape.watch(last_conv_layer_output)
-        pred = classifier_model(last_conv_layer_output)
-        if class_id is None:
-            class_id = np.argmax(pred)  # Predicted class
-        top_class_channel = pred[:, class_id]
-    grads = tape.gradient(top_class_channel, last_conv_layer_output)
-
-    # Gradient pooling and channel-importance weighting
-    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2)).numpy()
-    last_conv_layer_output = last_conv_layer_output.numpy()[0]
-    for i in range(pooled_grads.shape[-1]):
-        last_conv_layer_output[:, :, i] *= pooled_grads[i]
-    heatmap = np.mean(last_conv_layer_output, axis=-1)
-
-    # Heatmap post-processing: normalize and scale to [0, 1]
-    heatmap = np.maximum(heatmap, 0)
-    if not (heatmap == 0).all():
-        heatmap = heatmap / np.max(heatmap)
-
-    # Superimpose the heatmap on the original image
-    import matplotlib.cm as cm
-
-    img = tf.keras.utils.load_img(img_fp, target_size=(600, 200))
-    img = tf.keras.utils.img_to_array(img)
-    unscaled_heatmap = np.uint(255 * heatmap)
-
-    jet = cm.get_cmap("jet")
-    jet_colors = jet(np.arange(256))[:, :3]
-    jet_heatmap = jet_colors[unscaled_heatmap]
-
-    jet_heatmap = tf.keras.utils.array_to_img(jet_heatmap)
-    jet_heatmap = jet_heatmap.resize((img.shape[1], img.shape[0]))
-    jet_heatmap = tf.keras.utils.img_to_array(jet_heatmap)
-
-    superimposed_img = jet_heatmap * 0.4 + img
-    superimposed_img = tf.keras.utils.array_to_img(superimposed_img)
-    return heatmap, superimposed_img
 
 
 # %% Display the original image, heatmap, and superimposed image
@@ -1013,9 +940,7 @@ for img_fp in img_fps:
     axs = []
     for class_id in range(4):
         heatmap, superimposed_img = generate_heatmap(
-            img_fp=img_fp,
-            model=model,
-            class_id=class_id
+            img_fp=img_fp, model=model, class_id=class_id
         )
         figure, ax = plt.subplots(1, 3, figsize=(5, 5), dpi=100)
         ax[0].imshow(img)
@@ -1047,6 +972,8 @@ for img_fp in img_fps:
         ax[0, i].axis("off")
         ax[1, i].axis("off")
 
-    figure.suptitle(f"{img_title}, Predicted as {integer_to_suit([np.argmax(pred)])[0]}")
+    figure.suptitle(
+        f"{img_title}, Predicted as {integer_to_suit([np.argmax(pred)])[0]}"
+    )
     plt.tight_layout()
     plt.show()
