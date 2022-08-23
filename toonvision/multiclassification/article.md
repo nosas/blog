@@ -56,8 +56,6 @@ For now, let's focus on multiclass classification.
         - [Wrong predictions](#wrong-predictions)
         - [Confidence levels](#confidence-levels)
     - [Model interpretation and visualization](#model-interpretation-and-visualization)
-        - [Intermediate convnet outputs (intermediate activations)](#intermediate-convnet-outputs-intermediate-activations)
-        - [Convnet filters](#convnet-filters)
         - [Class activation heatmaps](#class-activation-heatmaps)
     - [References](#references)
 </details>
@@ -123,11 +121,12 @@ We have achieved the 30 samples per Cog entity requirement, but we're not meetin
     <figcaption>Dataset balance per street</figcaption>
 </figure>
 
-There image above shows two notable imbalances.
-In the Suits per street graph, we can see:
+The image above shows few notable imbalances.
+In the Suits per street chart, we can see:
 
-1. Daisy's Garden (DG) has the most Lawbot and Sellbot samples.
-2. The Brrrgh (BR) has the most Bossbot samples.
+1. Daisy's Garden (DG) has the most Lawbot (73) and Sellbot (72) samples by far.
+2. The Brrrgh (BR) has the most Bossbot samples (64).
+3. Minnie's Melodyland (MML) has the least Bossbot samples (15).
 
 #### Why does The Brrrgh have the most Bossbot samples?
 
@@ -712,8 +711,8 @@ tuner.search(
 ```
 
 This specific search will take about 30-40 minutes to complete.
-Following the random search, we'll review the highest performing parameters in TensorBoard, tighten the search space, and then launch a more efficient `Hyperband` or `BayesianOptimization` search.
-Let's see what TensorBoard can tell us about the most optimal hyperparameter values.
+Following the random search, we'll review the highest performing parameters, tighten the search space, and then launch a more efficient `Hyperband` or `BayesianOptimization` search.
+Let's see what the tuning results can tell us about the most optimal hyperparameter values.
 
 ### Tuning results
 
@@ -748,7 +747,7 @@ _________________________________________________________________
 
 <figure class="right" style="width:30%;">
     <img src="img/wrong_predictions_tuned.png" style="width:100%;"/>
-    <figcaption>Best model's wrong predictions</figcaption>
+    <figcaption>Tuned model's wrong predictions</figcaption>
 </figure>
 
 The downside of small models is that their performance greatly varies based on their initial random weight values.
@@ -762,7 +761,7 @@ The first wrong prediction, however, will be looked at in depth in the following
 Subsequent training results ranged from 5 to 50 wrong predictions!
 Sometimes the model could barely predict an entire class of images correctly.
 
-The confusion matrices below visualize the predictions of the best and worst models.
+The confusion matrices below visualizes the predictions of the best and worst models.
 The matrix on the left shows the predictions of the best model, and the matrix on the right shows the predictions of the worst model.
 We can see the best model made only two wrong predictions - one Cashbot classified as a Lawbot and vice-versa.
 The worst model, however, made a plethora of wrong predictions.
@@ -800,12 +799,14 @@ Let's move on and look at the model's least confident predictions.
 
 ### Confidence levels
 
-Recall that the model's output layer produces a probability distribution over the classes as a result of the "softmax" activation.
+Recall that the model's output layer produces a probability distribution over as a result of the softmax activation function.
 The index of the highest probability is the predicted class.
 For example, if we're given the probability distribution [0.1, 0.2, 0.7, 0.1], the predicted class is 2.
 
 Using `matplotlib`, we can create [stacked horizontal bar charts](https://matplotlib.org/stable/gallery/lines_bars_and_markers/horizontal_barchart_distribution.html) and visualize the confidence levels of the model's predictions.
+We can derive the lowest confidence levels, and their corresponding samples, by sorting the predictions by the lowest maximum probability.
 Below is a stacked bar chart of the 10 least confident predictions.
+Following the bar chart are the respective top 5 least confident samples.
 
 <figure class="center" style="width:90%;">
     <img src="img/confidence_bottom_10.png" style="width:100%;"/>
@@ -817,7 +818,7 @@ We can clearly see the lack of confidence in the first sample image below.
 The model correctly classifies the Sellbot with 44% confidence as a Bossbot, 6% as a Lawbot, and 47% as a Sellbot.
 
 The second sample is more peculiar.
-It correctly classifies the Sellbot with 53% confidence against a 42% confidence as a Lawbot.
+It correctly classifies the Sellbot with 53% confidence against a 42% confidence as a Cashbot.
 I'm not sure where the model sees a Lawbot in that photo, though.
 Maybe the gray sliver in the middle of the photo is a Lawbot?
 
@@ -831,11 +832,58 @@ Let's make some heatmaps and visualize what the model sees in the wrong and leas
 ---
 ## Model interpretation and visualization
 
-### Intermediate convnet outputs (intermediate activations)
-
-### Convnet filters
+Neural networks are considered magical, mathematical black boxes.
+Convnets are quite the opposite.
+We can visualize convnet activations - intermediate layer outputs - as heatmaps and clearly visualize what a model sees in a sample.
+These heatmaps are referred to as *class activation maps* (CAMs).
 
 ### Class activation heatmaps
+
+Class activation maps are useful for understanding what parts of an image led to the predicted class.
+This helps model authors debug wrong predictions and characterize the model's performance on any given image.
+
+The technique involves scoring subsections of the sample based on how much they activate a class's feature detectors. We average the score across all feature maps to generate a heatmap of the sample, where the hotter the pixel, the more activation of the predicted class. Lastly, we superimpose the heatmap onto the sample to visualize the activation - visualize what parts of the image activate the class. The grid below shows heatmaps and superimposed images for the Bossbot, Lawbot, Cashbot, and Sellbot classes, respectively.
+
+<figure class="center" style="width:60%;">
+    <img src="img/heatmap_spindoctor_grid.png" style="width:100%;"/>
+    <figcaption>CAM of all classes for cog_lb_spindoctor_19</figcaption>
+</figure>
+
+The correct class is Lawbot (lb), but the model predicted Cashbot (cb) with 97% confidence against a 2% Lawbot confidence!
+Heatmap 1 shows expected target's activations; they're highly activated on the Spin Doctor, but it's not enough to correctly identify the class.
+Taking a look at Heatmap 2, the model displays high activations in the middle and right side of the image.
+These activations overlay the Cashbot's arm, which leads to the model correctly identifying the arm as a Cashbot.
+All in all, it's a poor sample.
+Let's look at the CAMs for the other wrong prediction.
+
+<figure class="center" style="width:60%;">
+    <img src="img/heatmap_loanshark_grid.png" style="width:100%;"/>
+    <figcaption>CAM of all classes for cog_cb_loanshark_24</figcaption>
+</figure>
+
+Recall that this Loanshark sample had a 62/37 confidence split between the Lawbot and Cashbot classes, respectively.
+Interestingly, the CAMs show zero activations in the Bossbot and Sellbot classes.
+More interesting is the almost even split in activations between the Lawbot and Cashbot classes.
+
+It seems the foggy occlusion in Donald's Dreamland discolored the Cog's suit, which led to high Lawbot activations and the model incorrectly identifying the Cog as a Lawbot.
+Note how the model is highly attentive to the Cog's leg in the Cashbot activation map; the fog is not affecting the leg, therefore the model correctly identifies the Cog's leg as a Cashbot.
+We can correct this issue by adding additional samples of Cogs in fog.
+But we're not going to do that here.
+Rather, I'll leave with one last peculiar CAM example.
+
+
+<figure class="center" style="width:60%;">
+    <img src="img/heatmap_telemarketer_grid.png" style="width:100%;"/>
+    <figcaption>CAM of all classes for cog_sb_telemarketer_8</figcaption>
+</figure>
+
+This sample had a 4/42/53 confidence split between the Lawbot, Cashbot, and Sellbot classes, respectively.
+The model correctly identified the sample's target class, although with not much confidence.
+Surprisingly, the model was extremely confident in not identifying a Bossbot, despite the suit color similarities between Bossbots and Sellbots.
+
+Why do you think the model was confident about the Cashbot class despite none of the activations landing on the Cog's suit?
+*HINT: Refer back to the class imbalances in the [Suits per Street chart](#dataset-balance)*.
+
 
 ---
 ## References
