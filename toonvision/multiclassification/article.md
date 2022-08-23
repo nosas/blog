@@ -4,19 +4,24 @@
 
 This article is the second in a series on **ToonVision**.
 The [first article](https://fars.io/toonvision/classification/) covered the basics of classification and binary classification of Toons and Cogs.
-This article covers multiclass classification of Cogs: Cog suits (4 unique suits) and Cog entities (32 unique Cogs).
+More specifically, the previous article covered how to
 
-After reading this article, we'll have a better understanding of how to
-
+- acquire, label, and process samples from image data
 - deal with a model overfitting to a small, imbalanced dataset
 - utilize image augmentation and dropout to improve the model's generalization capability
 - compare different models, optimizers, and hyperparameters
+- interpret the model's filters and intermediate activations, and create heatmaps
+
+This article covers the multiclass classification of Cogs: Cog suits (4 unique suits) and Cog entities (32 unique Cogs).
+After reading this article, we'll have a better understanding of how to
+
+- convert a binary dataset into a multiclass dataset
+- use classification performance measures such as precision, recall, and f1-score
 - automatically optimize hyperparameter values with Keras-tuner
-- use classification performance measures such as precision, recall and f1-score
-- interpret and visualize what the model is learning with confusion matrices
+- interpret and visualize what the model is learning with confusion matrices and class activation maps
 
 The following article will cover image segmentation of ToonTown's streets, roads, Cogs, and Cog buildings.
-Afterwards, we'll implement real-time object detection and, if possible, image segmentation.
+Afterward, we'll implement real-time object detection and, if possible, image segmentation.
 For now, let's focus on multiclass classification.
 
 <details>
@@ -64,7 +69,7 @@ For now, let's focus on multiclass classification.
 ## ToonVision
 
 ToonVision is my computer vision project for teaching a machine how to see in [ToonTown Online](https://en.wikipedia.org/wiki/Toontown_Online) - an MMORPG created by Disney in 2003.
-The ultimate goal is to teach a machine (nicknamed **OmniToon**) how to play ToonTown and create a self-sustaining ecosystem where the bots progress through the game together.
+The objective is to teach a machine (nicknamed **OmniToon**) how to play ToonTown and create a self-sustaining ecosystem where the bots progress through the game together.
 
 ---
 ## Classification
@@ -112,9 +117,9 @@ Therefore, it's important to take screenshots of Cogs from each street so our mo
 
 ### Dataset balance
 
-The Cog vs Toon dataset is imbalanced with a majority of the dataset belonging to the Cog class.
+The Cog vs Toon dataset is imbalanced, with much of the dataset belonging to the Cog class.
 However, the Cog dataset is mostly balanced.
-Our goal is ~30 samples per Cog entity with at least 5 samples per street.
+Our goal is ~30 samples per Cog entity, with at least 5 samples per street.
 We have achieved the 30 samples per Cog entity requirement, but we're not meeting the 5 samples per street requirement.
 
 <figure class="center" style="width:95%">
@@ -122,7 +127,7 @@ We have achieved the 30 samples per Cog entity requirement, but we're not meetin
     <figcaption>Dataset balance per street</figcaption>
 </figure>
 
-The image above shows few notable imbalances.
+The image above shows a few notable imbalances.
 In the Suits per street chart, we can see:
 
 1. Daisy's Garden (DG) has the most Lawbot (73) and Sellbot (72) samples by far.
@@ -132,11 +137,11 @@ In the Suits per street chart, we can see:
 #### Why does The Brrrgh have the most Bossbot samples?
 
 The street I frequented to acquire samples in The Brrrgh was [Walrus Way](https://toontown.fandom.com/wiki/Walrus_Way), where the Cog presence is split [90%, 10%] between Bossbots and Lawbots, respectively.
-It's no surprise that the majority of the samples from the Brrrgh street are Bossbot samples.
+It's no surprise that the majority of the samples from The Brrrgh street are Bossbot samples.
 
 #### Why are there so many Lawbot and Sellbot samples in Daisy's Garden?
 
-The Lawbot imbalance is because the street I visited was majority Lawbot and I took too many screenshots of Bottom Feeders.
+The Lawbot imbalance is because the street's population composed mostly of Lawbots, and I took too many screenshots of Bottom Feeders.
 The Sellbot imbalance, on the other hand, is due to the Sellbot HQ being located near Daisy's Garden.
 As a result, the majority of Sellbot Cogs reside in the [streets of DG](https://toontown.fandom.com/wiki/Daisy_Gardens#Streets).
 
@@ -193,9 +198,9 @@ test_images, test_labels = ds_test
 
 Previously, we split the entire dataset into 60%/20%/20% train/validate/test sets.
 This resulted in unbalanced suit samples in each set.
-For instance, the Bossbot suit samples would contain a disproportionate number of sample from Flunkies relative to other Bossbots.
+For instance, the Bossbot suit samples would contain a disproportionate number of samples from Flunkies relative to other Bossbots.
 
-To maintain balanced datasets for each Cog suit, we split each individual Cog entity using the 60/20/20 split.
+To maintain balanced datasets for each Cog suit, we split each Cog entity using the 60/20/20 split.
 This ensures a representative sample of each Cog entity.
 
 ---
@@ -217,7 +222,7 @@ model.compile(
 ### Loss function
 
 Our model is classifying multiple classes, so we'll have to choose between `categorical_crossentropy` or `sparse_categorical_crossentropy`.
-There's one small, but important difference between the two loss functions: `categorical_crossentropy` requires one-hot encoded labels whereas `sparse_categorical_crossentropy` requires integer labels.
+There's one small, but important difference between the two loss functions: `categorical_crossentropy` requires one-hot encoded labels, whereas `sparse_categorical_crossentropy` requires integer labels.
 
 ```python
 LOSS = (
@@ -271,7 +276,7 @@ When precision is high, we can trust the model to correctly classify a class.
 
 #### Recall
 
-Recall answers the question of "what proportion of a specific label was correctly identified?".
+Recall answers the question "what proportion of a specific label was correctly identified?".
 Relating to our ToonVision dataset, "what proportion of Bossbot labels were correctly identified?".
 
 Recall is a powerful performance measure when working with highly imbalanced datasets.
@@ -285,7 +290,7 @@ Just like the binary classifier, we'll be using the `Adam` optimizer.
 Please refer to the [previous article](https://fars.io/toonvision/classification/#optimizer) for detailed information about this decision.
 
 Reasoning tl;dr: The `Adam` optimizer is an adaptive variant of the stochastic gradient descent (`SGD`) algorithm.
-It's an effective optimizer with strong performance on the ToonVision dataset.
+It's an effective optimizer with a strong performance on the ToonVision dataset.
 Realistically, however, the optimizer should not significantly influence training results - only training time.
 
 ### Callbacks
@@ -308,18 +313,18 @@ callbacks = [
 #### EarlyStopping callback
 
 `EarlyStopping` stops training when a monitored metric has stopped improving.
-We're training our model to minimize the validation loss, therefore we monitor `val_loss` and set the mode to `min`.
+We're training our model to minimize the validation loss, and therefore we monitor `val_loss` and set the mode to `min`.
 If desired, we could even monitor accuracy, precision, or recall metrics - but we would set the mode to `max`.
 
 The `restore_best_weights` argument ensures that the weights from the best epoch are restored upon training termination.
-If False, the model weights are obtained form the last step and epoch of training.
+If False, the model weights are obtained from the last step and epoch of training.
 
 Training is terminated when no improvement is seen after 5 epochs; this value can be adjusted in the `patience` argument.
 
 #### Tensorboard callback
 
 The `TensorBoard` callback allows us to utilize TensorBoard to visualize our model's training progress.
-This callback logs events for TensorBoard, including:
+This callback logs training events for TensorBoard, including:
 
 - Metrics summary plots
 - Training graph visualization
@@ -393,7 +398,7 @@ def make_multiclass(
     _________________________________________________________________
 </details>
 
-Notably, the multiclassification model has less parameters than the previous binary classification model.
+Notably, the multiclassification model has fewer parameters than the previous binary classification model.
 My goal is to learn how to intuitively produce small, yet, effective, models.
 I believe this model size can be reduced while still improving performance.
 
@@ -405,11 +410,11 @@ We'll put my theory to the test as we proceed!
 ## Training the baseline model
 
 Before we draw conclusions and fine-tune our model architecture, we must develop a simple baseline.
-After training the baseline model, we can tweak hyperparameters such as number of layers, layer sizes, learning rates, batch sizes, etc.
+After training the baseline model, we can tweak hyperparameters such as the number of layers, layer sizes, learning rates, batch sizes, etc.
 First, see what our baseline can do!
 
 The code block below first initializes our baseline model as `model_baseline` and then trains it for 100 epochs.
-Note how the model does not utilize optimizations such image augmentations or dropout.
+Note how the model does not utilize optimizations such as image augmentations or dropout.
 
 ```python
 model_baseline = make_multiclass_model(
@@ -443,7 +448,7 @@ Therefore, the baseline model's training stopped after 35 epochs.
 ### Baseline loss and accuracy plots
 
 The model's training progress can be seen plotted below.
-We can see steady converging of the training loss, which is good.
+We can see a steady converging of the training loss, which is good.
 The high validation loss score is of concern, though.
 
 <figure class="center" style="width:90%;">
@@ -456,7 +461,7 @@ We see the training accuracy reaches 99.8% at 33 epochs, but the validation accu
 These are signs of overfitting to the training data and underfitting to the validation data.
 
 The loss converges to 0.04 on the training set after 35 epochs, but only 0.37 on the validation set after 30 epochs.
-Given the large `validation_loss` value, the model clearly has room for improvement.
+Given the large `validation_loss` value, the model has room for improvement.
 
 ```python
 >>> h = history.history
@@ -494,7 +499,7 @@ This technique provides invaluable insights into the model's performance.
 
 The matrix on the left is the complete confusion matrix for all predictions.
 We can visualize the correct predictions as the bright diagonal line, and incorrect predictions as the cells around the diagonal.
-The incorrect predictions are highlighted in the matrix on the right where we included only the wrong predictions.
+The incorrect predictions are highlighted in the matrix on the right, where we included only the wrong predictions.
 
 <table style="width:100%;">
     <tr>
@@ -533,7 +538,7 @@ Let's take a peek at the precision, recall, and F1-scores of each class.
 #### Precision, recall, and f1-score
 
 Using the confusion matrix, we can derive the precision, recall, and F1-score for each class.
-Fortunately, scikit-learn simplified the calculations into a single function call: `classification_report`.
+Fortunately, scikit-learn simplified the calculations into a single function called `classification_report`.
 
 If you're unfamiliar with these three performance measures, please read my previous article about [performance measures in classification problems][classification_performance_measures].
 
@@ -588,13 +593,13 @@ Lastly, we have the remaining three rows: accuracy, macro average, and weighted 
 weighted avg       0.90      0.90      0.90       197
 ```
 
-Accuracy is straight-forward, although it's rounded to two decimal places - it should be 0.8984.
+Accuracy is straightforward, although it's rounded to two decimal places - it should be 0.8984.
 
 The macro average is the average value of precision, recall, and f1-score for all classes.
 For instance, the macro precision average of 0.90 is the calculated as `(p_bb + p_cb + p_lb + p_sb) / 4`, where `p_*` are the precision values for each class.
 
 The weighted average is the average of the precision, recall, and f1-score weighted by the sample size: `(p_bb * 41 + p_cb * 41 + p_lb * 60 + p_sb * 55) / 197`.
-It takes into account the imbalance in the dataset, although the scores don't change much as a result.
+It considers the imbalance in the dataset, although the scores don't change much as a result.
 
 Ideally, we would like to have a model with higher precision and recall scores and an f1-score nearing 1.0.
 Let's see if we can do that.
@@ -610,14 +615,14 @@ The full details of this process are covered in my hyperparameter optimization [
 
 `KerasTuner` is a tool that automates the hyperparameter optimization process.
 Hyperparameters include the model's layers, layer sizes, and optimizer, among other things.
-We will use this this tool and save time from manually tuning the model and comparing the results.
+We will use this tool and save time from manually tuning the model and comparing the results.
 
 First, we must write a function to define the model with various hyperparameter values.
-We'll call the function `model_builder` and pass it [HyperParameter](https://keras.io/api/keras_tuner/hyperparameters/) object, `hp`,  as an argument.
+We'll call the function `model_builder` and pass it a [HyperParameter](https://keras.io/api/keras_tuner/hyperparameters/) object, `hp`, as an argument.
 
 We use the `hp` object to define the model's hyperparameter search space.
 For instance, in the first Conv2D layer we use `hp.Int` to restrict the filter search space to 4, 8, 12, or 16.
-In the same layer we also use `hp.Choice` to restrict the kernel size search space to either 3 or 5.
+In the same layer, we also use `hp.Choice` to restrict the kernel size search space to either 3 or 5.
 
 ```python
 def model_builder(hp):
@@ -687,7 +692,7 @@ Finally, we'll launch the tuning process and save the results to `./tb_logs/rand
 
 We want a smaller model, so we must take into consideration how much time it will take to train.
 Larger models can overfit in as little as 5-10 epochs.
-Smaller models tend to take longer to converge because of how relatively little parameters they have.
+Smaller models tend to take longer to converge because of how relatively few parameters they have.
 
 We'll set the number of epochs to 75 and allow the models more time to train.
 Hopefully, this will cause the majority of our highest-performing models to have a smaller number of parameters.
@@ -762,7 +767,7 @@ The first wrong prediction, however, will be looked at in depth in the following
 Subsequent training results ranged from 5 to 50 wrong predictions!
 Sometimes the model could barely predict an entire class of images correctly.
 
-The confusion matrices below visualizes the predictions of the best and worst models.
+The confusion matrices below visualize the predictions of the best and worst models.
 The matrix on the left shows the predictions of the best model, and the matrix on the right shows the predictions of the worst model.
 We can see the best model made only two wrong predictions - one Cashbot classified as a Lawbot and vice-versa.
 The worst model, however, made a plethora of wrong predictions.
@@ -815,7 +820,7 @@ Following the bar chart are the respective top 5 least confident samples.
 </figure>
 
 The model is not confident in classifying Bossbots or Sellbots.
-We can clearly see the lack of confidence in the first sample image below.
+We can see the lack of confidence in the first sample image below.
 The model correctly classifies the Sellbot with 44% confidence as a Bossbot, 6% as a Lawbot, and 47% as a Sellbot.
 
 The second sample is more peculiar.
@@ -835,7 +840,7 @@ Let's make some heatmaps and visualize what the model sees in the wrong and leas
 
 Neural networks are considered magical, mathematical black boxes.
 Convnets are quite the opposite.
-We can visualize convnet activations - intermediate layer outputs - as heatmaps and clearly visualize what a model sees in a sample.
+We can visualize convnet activations - intermediate layer outputs - as heatmaps and visualize what a model sees in a sample.
 These heatmaps are referred to as *class activation maps* (CAMs).
 
 ### Class activation heatmaps
@@ -846,20 +851,20 @@ This helps model authors debug wrong predictions and characterize the model's pe
 The technique involves scoring subsections of the sample based on how much they activate a class's feature detectors. We average the score across all feature maps to generate a heatmap of the sample, where the hotter the pixel, the more activation of the predicted class. Lastly, we superimpose the heatmap onto the sample to visualize the activation - visualize what parts of the image activate the class. The grid below shows heatmaps and superimposed images for the Bossbot, Lawbot, Cashbot, and Sellbot classes, respectively.
 
 <figure class="center" style="width:60%;">
-    <img src="img/heatmap_spindoctor_grid.png" style="width:100%;"/>
-    <figcaption>CAM of all classes for cog_lb_spindoctor_19</figcaption>
+    <img src="img/heatmap_spindoctor_grid.png" style="width:100%;"/>
+    <figcaption>CAM of all classes for cog_lb_spindoctor_19</figcaption>
 </figure>
 
 The correct class is Lawbot (lb), but the model predicted Cashbot (cb) with 97% confidence against a 2% Lawbot confidence!
-Heatmap 1 shows expected target's activations; they're highly activated on the Spin Doctor, but it's not enough to correctly identify the class.
-Taking a look at Heatmap 2, the model displays high activations in the middle and right side of the image.
+Heatmap 1 shows the expected target's activations; they're highly activated on the Spin Doctor, but it's not enough to correctly identify the class.
+Taking a look at Heatmap 2, the model displays high activations in the middle and right sides of the image.
 These activations overlay the Cashbot's arm, which leads to the model correctly identifying the arm as a Cashbot.
 All in all, it's a poor sample.
 Let's look at the CAMs for the other wrong prediction.
 
 <figure class="center" style="width:60%;">
-    <img src="img/heatmap_loanshark_grid.png" style="width:100%;"/>
-    <figcaption>CAM of all classes for cog_cb_loanshark_24</figcaption>
+    <img src="img/heatmap_loanshark_grid.png" style="width:100%;"/>
+    <figcaption>CAM of all classes for cog_cb_loanshark_24</figcaption>
 </figure>
 
 Recall that this Loanshark sample had a 62/37 confidence split between the Lawbot and Cashbot classes, respectively.
@@ -867,29 +872,29 @@ Interestingly, the CAMs show zero activations in the Bossbot and Sellbot classes
 More interesting is the almost even split in activations between the Lawbot and Cashbot classes.
 
 It seems the foggy occlusion in Donald's Dreamland discolored the Cog's suit, which led to high Lawbot activations and the model incorrectly identifying the Cog as a Lawbot.
-Note how the model is highly attentive to the Cog's leg in the Cashbot activation map; the fog is not affecting the leg, therefore the model correctly identifies the Cog's leg as a Cashbot.
-We can correct this issue by adding additional samples of Cogs in fog.
+Note how the model is highly attentive to the Cog's leg in the Cashbot activation map; the fog is not affecting the leg, and therefore the model correctly identifies the Cog's leg as a Cashbot.
+We can address this issue by adding additional samples of Cogs in fog.
 But we're not going to do that here.
 Rather, I'll leave with one last peculiar CAM example.
 
 
 <figure class="center" style="width:60%;">
-    <img src="img/heatmap_telemarketer_grid.png" style="width:100%;"/>
-    <figcaption>CAM of all classes for cog_sb_telemarketer_8</figcaption>
+    <img src="img/heatmap_telemarketer_grid.png" style="width:100%;"/>
+    <figcaption>CAM of all classes for cog_sb_telemarketer_8</figcaption>
 </figure>
 
 This sample had a 4/42/53 confidence split between the Lawbot, Cashbot, and Sellbot classes, respectively.
-The model correctly identified the sample's target class, although with not much confidence.
+The model correctly identified the sample's target class, albeit with little confidence.
 Surprisingly, the model was extremely confident in not identifying a Bossbot, despite the suit color similarities between Bossbots and Sellbots.
 
 Why do you think the model was confident about the Cashbot class despite none of the activations landing on the Cog's suit?
-*HINT: Refer back to the class imbalances in the [Suits per Street chart](#dataset-balance)*.
+*HINT: Refer to the class imbalances in the [Suits per Street chart](#dataset-balance)*.
 
 ---
 ## Conclusion
 
 We've made an accurate and small convnet model capable of distinguishing between the four Cog suits.
-With the help of Keras-Tuner and Tensorboard, we compared different models and hyperparameters to create the most optimal model for our problem.
+Thanks to Keras-Tuner and Tensorboard, we compared different models and hyperparameters to create the most optimal model for our problem.
 Furthermore, we learned about classification performance metrics, such as recall, precision, F1-score, and how they excel over accuracy in imbalance datasets.
 Finally, we visualized the model's activations and superimposed heatmaps (CAMs) to understand what the model sees in each sample.
 
@@ -901,7 +906,7 @@ The growing dataset will be used to re-train and improve the binary and multicla
 We'll even use the dataset to create a 32-class Cog classifier.
 
 These next steps will teach me ML pipeline skills necessary for expanding datasets and continuously improving models.
-I can transfer these skills to expedite the image segmentation process, allowing me teach a model to identify ToonTown's streets, roads, and obstacles.
+I can transfer these skills to expedite the image segmentation process, allowing me to teach a model to identify ToonTown's streets, roads, and obstacles.
 OmniToon will be walking around ToonTown soon!
 
 [classification_performance_measures]: https://fars.io/performance_classification/
