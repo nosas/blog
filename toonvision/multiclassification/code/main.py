@@ -915,12 +915,24 @@ create_image_grid(lc10_fps[:5], ncols=5, title="Least confident samples")
 def generate_heatmap(
     img_fp: str,
     model: keras.Model,
-    layer_name_last_conv: str,
-    layers_classifier: list[str],
+    layer_name_last_conv: str = "",
     class_id: int = None,
 ) -> tuple[np.array, np.array]:
     img = tf.keras.utils.load_img(img_fp, target_size=(600, 200))
     img = np.expand_dims(img, axis=0)
+
+    layers_conv = [
+        layer
+        for layer in model.layers
+        if "conv" in layer.name or "pooling" in layer.name
+    ]
+    layers_classifier = [
+        layer
+        for layer in model.layers
+        if "flatten" in layer.name or "dropout" in layer.name or "dense" in layer.name
+    ]
+    if not layer_name_last_conv:
+        layer_name_last_conv = layers_conv[-1].name  # actually a MaxPooling2D layer
 
     # Set up a model that returns the last convolutional layer's output
     last_conv_layer = model.get_layer(name=layer_name_last_conv)
@@ -941,7 +953,6 @@ def generate_heatmap(
         if class_id is None:
             class_id = np.argmax(pred)  # Predicted class
         top_class_channel = pred[:, class_id]
-        # top_class_channel = pred.argmax()
     grads = tape.gradient(top_class_channel, last_conv_layer_output)
 
     # Gradient pooling and channel-importance weighting
@@ -953,7 +964,6 @@ def generate_heatmap(
 
     # Heatmap post-processing: normalize and scale to [0, 1]
     heatmap = np.maximum(heatmap, 0)
-    print(heatmap)
     if not (heatmap == 0).all():
         heatmap = heatmap / np.max(heatmap)
 
@@ -978,61 +988,65 @@ def generate_heatmap(
 
 
 # %% Display the original image, heatmap, and superimposed image
-from random import choice
-
 img_fps = [
     "../../toonvision/img/data/test\\cog\\cog_cb_loanshark_24.png",  # Wrong pred #1
     "../../toonvision/img/data/test\\cog\\cog_lb_spindoctor_19.png",  # Wrong pred #2
     "../../toonvision/img/data/test\\cog\\cog_sb_namedropper_16.png",  # Least confident #1
     "../../toonvision/img/data/test\\cog\\cog_sb_telemarketer_8.png",  # Least confident #2
 ]
-layers_conv = [
-    layer
-    for layer in model.layers
-    if "conv2d" in layer.name or "max_pooling2d" in layer.name
-]
-layers_classifier = [
-    layer
-    for layer in model.layers
-    if "flatten" in layer.name or "dropout" in layer.name or "dense" in layer.name
-]
-last_conv_layer_name = layers_conv[-1].name  # actually a MaxPooling2D layer
-last_conv_layer = model.get_layer(name=last_conv_layer_name)
-last_conv_layer_model = keras.Model(model.inputs, last_conv_layer.output)
 
+for img_fp in img_fps:
+    # img_fp = choice(img_fps)
+    img = tf.keras.utils.load_img(img_fp, target_size=(600, 200))
+    img_title = img_fp.split("\\")[-1].replace(".png", "")
+    plt.title(img_title)
+    plt.axis("off")
+    plt.imshow(img)
 
-img_fp = choice(img_fps)
-img = tf.keras.utils.load_img(img_fp, target_size=(600, 200))
-img_title = img_fp.split("\\")[-1].replace(".png", "")
-plt.title(img_title)
-plt.axis("off")
-plt.imshow(img)
+    # Generate heatmap and superimposed image
 
-# %% Generate heatmap and superimposed image
+    pred = model.predict(np.expand_dims(img, axis=0))
 
-pred = model.predict(np.expand_dims(img, axis=0))
+    heatmaps = []
+    super_imgs = []
+    figs = []
+    axs = []
+    for class_id in range(4):
+        heatmap, superimposed_img = generate_heatmap(
+            img_fp=img_fp,
+            model=model,
+            class_id=class_id
+        )
+        figure, ax = plt.subplots(1, 3, figsize=(5, 5), dpi=100)
+        ax[0].imshow(img)
+        ax[0].set_title("Original", y=1.01)
+        ax[1].matshow(heatmap)
+        ax[1].set_title("Heatmap", y=1.01)
+        ax[2].imshow(superimposed_img)
+        ax[2].set_title("Superimposed", y=1.01)
+        plt.tight_layout()
+        heatmaps.append(heatmap)
+        super_imgs.append(superimposed_img)
+        figs.append(figure)
+        axs.append(ax)
 
-for class_id in range(4):
-    heatmap, superimposed_img = generate_heatmap(
-        img_fp=img_fp,
-        model=model,
-        layer_name_last_conv=last_conv_layer_name,
-        layers_classifier=layers_classifier,
-        class_id=class_id,
-    )
-    figure, ax = plt.subplots(1, 3, figsize=(5, 5), dpi=100)
-    ax[0].imshow(img)
-    ax[0].set_title("Original", y=1.01)
-    ax[1].matshow(heatmap)
-    ax[1].set_title("Heatmap", y=1.01)
-    ax[2].imshow(superimposed_img)
-    ax[2].set_title("Superimposed", y=1.01)
+        for ax_idx in range(len(ax)):
+            ax[ax_idx].axis("off")
+        figure.suptitle(
+            f"{img_title}, P:{integer_to_suit([np.argmax(pred)])[0]}, A:{integer_to_suit([class_id])[0]}"
+        )
 
-    for ax_idx in range(len(ax)):
-        ax[ax_idx].axis("off")
-    figure.suptitle(
-        f"{img_title}, {integer_to_suit([np.argmax(pred)])[0]}, {integer_to_suit([class_id])[0]}"
-    )
-figure.tight_layout()
+    # Create 2x2 grid of heatmaps and superimposed images
+    figure, ax = plt.subplots(2, 4, figsize=(10, 10), dpi=100)
+    suit_pred = integer_to_suit([np.argmax(pred)])[0]
+    for i, suit_actual in enumerate(SUITS_SHORT):
+        ax[0, i].imshow(heatmaps[i])
+        ax[0, i].set_title(f"Heatmap {i}: {suit_actual}", y=1.01)
+        ax[1, i].imshow(super_imgs[i])
+        ax[1, i].set_title(f"Superimposed {i}: {suit_actual}", y=1.01)
+        ax[0, i].axis("off")
+        ax[1, i].axis("off")
 
-# %%
+    figure.suptitle(f"{img_title}, Predicted as {integer_to_suit([np.argmax(pred)])[0]}")
+    plt.tight_layout()
+    plt.show()
