@@ -4,7 +4,7 @@
 
 This article is the second in a series on **ToonVision**.
 The [first article](https://fars.io/toonvision/classification/) covered the basics of classification and binary classification of Toons and Cogs.
-More specifically, the previous article covered how to
+More specifically, the previous article covered how to...
 
 - acquire, label, and process samples from image data
 - deal with a model overfitting to a small, imbalanced dataset
@@ -12,16 +12,16 @@ More specifically, the previous article covered how to
 - compare different models, optimizers, and hyperparameters
 - interpret the model's filters and intermediate activations, and create heatmaps
 
-This article covers the multiclass classification of Cogs: Cog suits (4 unique suits) and Cog entities (32 unique Cogs).
-After reading this article, we'll have a better understanding of how to
+This article covers the multiclass classification of Cog suits (4 unique suits).
+After reading this article, we'll have a better understanding of how to...
 
 - convert a binary dataset into a multiclass dataset
-- use classification performance measures such as precision, recall, and f1-score
+- use classification performance measures such as precision, recall, and F1-score
 - automatically optimize hyperparameter values with Keras-tuner
 - interpret and visualize what the model is learning with confusion matrices and class activation maps
 
-The following article will cover image segmentation of ToonTown's streets, roads, Cogs, and Cog buildings.
-Afterward, we'll implement real-time object detection and, if possible, image segmentation.
+The next article will cover real-time entity detection in ToonTown.
+Afterward, we'll implement image segmentation of ToonTown's streets, roads, Toons, Cogs, and Cog buildings.
 For now, let's focus on multiclass classification.
 
 <details>
@@ -54,7 +54,7 @@ For now, let's focus on multiclass classification.
         - [Baseline loss and accuracy plots](#baseline-loss-and-accuracy-plots)
         - [Baseline wrong predictions](#baseline-wrong-predictions)
         - [Baseline confusion matrix](#baseline-confusion-matrix)
-            - [Precision, recall, and f1-score](#precision-recall-and-f1-score)
+            - [Precision, recall, and F1-score](#precision-recall-and-f1-score)
     - [Training the optimized model](#training-the-optimized-model)
         - [Keras Tuner](#keras-tuner)
         - [Tuning results](#tuning-results)
@@ -69,7 +69,8 @@ For now, let's focus on multiclass classification.
 ## ToonVision
 
 ToonVision is my computer vision project for teaching a machine how to see in [ToonTown Online](https://en.wikipedia.org/wiki/Toontown_Online) - an MMORPG created by Disney in 2003.
-The objective is to teach a machine (nicknamed **OmniToon**) how to play ToonTown and create a self-sustaining ecosystem where the bots progress through the game together.
+The project's objective is to teach a machine (nicknamed **OmniToon**) how to play ToonTown and create a self-sustaining ecosystem where the bots progress through the game together.
+In the process, I will explain the intricacies of building computer vision models, setting up static and real-time (stream) data pipelines, and visualizing results and progress.
 
 ---
 ## Classification
@@ -86,7 +87,7 @@ Multiclass classification is a problem in which the model predicts which class a
 For instance, the model could predict that an animal belongs to the class of dogs, cats, rabbits, horses, or any other animal.
 
 We're building a model to predict which Cog suit a Cog belongs to - a 4-class classification problem.
-We'll push the model further by also predicting which Cog entity a Cog belongs to - a 32-class classification problem.
+We can push the model further by also predicting the Cog entity - a 32-class classification problem.
 Both multiclass classification problems require us to improve the ToonVision dataset.
 The current dataset is imbalanced and does not contain samples of all the Cog suits and entities.
 Let's look at how we can improve the dataset in the next section.
@@ -94,12 +95,18 @@ Let's look at how we can improve the dataset in the next section.
 ---
 ## The ToonVision dataset
 
+There doesn't exist a dataset for ToonVision, so I've been creating one from scratch.
+It's a laborious task involving manully taking screenshots, correctly labeling them, and organizing them.
+At the time of writing, the dataset is incredibly imbalanced.
+Creating these classifiers and pairing them with object detectors will allow us to automate the labeling and organizing task in the future.
+Until then, let's revise our dataset considerations.
+
 ### Dataset considerations
 
-We'll tweak the existing dataset considerations to focus on balancing the dataset's Cog entity samples.
+We'll tweak the existing dataset considerations to focus on balancing the dataset's Cog samples.
 The current Cog dataset contains two glaring problems:
 
-1. The samples do not account for *where* - on *which street* - the Cog is located.
+1. The samples do not account for *where* - on *which street* - the Cog is located
 1. There are no samples of the two highest-ranked Cogs
 
 To address problem #1, the ToonVision dataset now requires a balanced number of samples from each of the 6 uniquely designed streets: The Brrrgh, Daisy's Garden, Donald's Dreamland, Donald's Dock, Minnie's Melodyland, and ToonTown Central.
@@ -118,9 +125,14 @@ Therefore, it's important to take screenshots of Cogs from each street so our mo
 ### Dataset balance
 
 The Cog vs Toon dataset is imbalanced, with much of the dataset belonging to the Cog class.
-However, the Cog dataset is mostly balanced.
+However, the Cog dataset is also imbalanced.
 Our goal is ~30 samples per Cog entity, with at least 5 samples per street.
-We have achieved the 30 samples per Cog entity requirement, but we're not meeting the 5 samples per street requirement.
+The dataset cotains neither 30 samples per Cog entity nor 5 samples per street for all Cog entities.
+
+These imbalances are merely another hurdle that we must overcome.
+In the future, we'll have automated data pipelines which include image annotations.
+With time, these imbalances can be ironed out.
+Until then, let's proceed to make an effective classification model using this dataset.
 
 <figure class="center" style="width:95%">
     <img src="img/dataset_streets.png" style="width:100%;"/>
@@ -136,12 +148,15 @@ In the Suits per street chart, we can see:
 
 #### Why does The Brrrgh have the most Bossbot samples?
 
-The street I frequented to acquire samples in The Brrrgh was [Walrus Way](https://toontown.fandom.com/wiki/Walrus_Way), where the Cog presence is split [90%, 10%] between Bossbots and Lawbots, respectively.
+I frequented The Brrrgh's [Walrus Way](https://toontown.fandom.com/wiki/Walrus_Way) to acquire samples.
+As it turns out, Walrus Way's Cog population is split [90%, 10%] between Bossbots and Lawbots, respectively.
 It's no surprise that the majority of the samples from The Brrrgh street are Bossbot samples.
+This imbalance resulted from my lack of knowledge regarding Cog population distributions.
 
 #### Why are there so many Lawbot and Sellbot samples in Daisy's Garden?
 
-The Lawbot imbalance is because the street's population composed mostly of Lawbots, and I took too many screenshots of Bottom Feeders.
+The Lawbot imbalance is because the street's population composed mostly of Lawbots.
+I also took too many screenshots of Bottom Feeders.
 The Sellbot imbalance, on the other hand, is due to the Sellbot HQ being located near Daisy's Garden.
 As a result, the majority of Sellbot Cogs reside in the [streets of DG](https://toontown.fandom.com/wiki/Daisy_Gardens#Streets).
 
@@ -149,6 +164,9 @@ I would not have noticed either of these imbalances without charting the samples
 Moving forward, we'll be more conscious of street imbalance and take screenshots of Cogs from other streets.
 
 ### Creating the datasets
+
+We have the images and their labels - input data and target variables.
+Now, we must package them together before we begin training our models.
 
 We'll create simple tuples of images and labels instead of `Keras.dataset` objects.
 
@@ -210,8 +228,6 @@ Now that we've created the datasets, we can compile the model.
 Compiling the model requires choosing a loss function, optimizer, and metrics to monitor the model's performance during training.
 
 ```python
-ONEHOT = True
-
 model.compile(
     loss=LOSS,
     optimizer=OPTIMIZER,
@@ -221,10 +237,12 @@ model.compile(
 
 ### Loss function
 
-Our model is classifying multiple classes, so we'll have to choose between `categorical_crossentropy` or `sparse_categorical_crossentropy`.
-There's one small, but important difference between the two loss functions: `categorical_crossentropy` requires one-hot encoded labels, whereas `sparse_categorical_crossentropy` requires integer labels.
+Our model is classifying multiple classes, so we'll choose between `categorical_crossentropy` or `sparse_categorical_crossentropy`.
+There's one small, but important, difference between the two loss functions: `categorical_crossentropy` requires one-hot encoded labels, whereas `sparse_categorical_crossentropy` requires integer labels.
 
 ```python
+ONEHOT = True
+
 LOSS = (
     tf.keras.losses.SparseCategoricalCrossentropy()
     if not ONEHOT
@@ -272,7 +290,7 @@ Precision answers the question of "what proportion of predicted class labels act
 To make the question more relevant to our problem, "what proportion of predicted Bossbot labels actually belong to the Bossbot class?".
 
 We often refer to precision as the model's reliability.
-When precision is high, we can trust the model to correctly classify a class.
+When precision is high, we can trust the model when it says a sample is classified as some class.
 
 #### Recall
 
@@ -324,7 +342,7 @@ Training is terminated when no improvement is seen after 5 epochs; this value ca
 #### Tensorboard callback
 
 The `TensorBoard` callback allows us to utilize TensorBoard to visualize our model's training progress.
-This callback logs training events for TensorBoard, including:
+This callback logs training events and data, and creates the following in an interactive dashboard:
 
 - Metrics summary plots
 - Training graph visualization
@@ -335,7 +353,7 @@ Please refer to my [Keras-Tuner and TensorBoard article](https://fars.io/keras_t
 
 ### Defining the model
 
-The model is a simple CNN (convolutional neural network).
+The model is a simple CNN (convolutional neural network or convnet).
 It takes as input a tensor of shape (600, 200, 3) and outputs a probability distribution (softmax) of the predicted labels.
 The figure below displays the model's layers and their corresponding sizes.
 
@@ -398,7 +416,7 @@ def make_multiclass(
     _________________________________________________________________
 </details>
 
-Notably, the multiclassification model has fewer parameters than the previous binary classification model.
+Notably, the multiclassification model has fewer parameters (14,620) than the previous binary classification model (25,537).
 My goal is to learn how to intuitively produce small, yet, effective, models.
 I believe this model size can be reduced while still improving performance.
 
@@ -411,16 +429,16 @@ We'll put my theory to the test as we proceed!
 
 Before we draw conclusions and fine-tune our model architecture, we must develop a simple baseline.
 After training the baseline model, we can tweak hyperparameters such as the number of layers, layer sizes, learning rates, batch sizes, etc.
-First, see what our baseline can do!
+First, let's see what our baseline can do!
 
-The code block below first initializes our baseline model as `model_baseline` and then trains it for 100 epochs.
+The code block below initializes our baseline model as `model_baseline` and then trains it for 100 epochs.
 Note how the model does not utilize optimizations such as image augmentations or dropout.
 
 ```python
 model_baseline = make_multiclass_model(
     name="toonvision_multiclass_baseline",
     augmentation=None,
-    dropout=0.5
+    dropout=0.0
 )
 history = model_baseline.fit(
     train_images,
@@ -442,8 +460,7 @@ history = model_baseline.fit(
 ```
 
 Remember how we're using the `EarlyStopping` callback to terminate training early when no more performance improvements are shown?
-No improvement was shown in the `validation_loss` metric over 5 epochs.
-Therefore, the baseline model's training stopped after 35 epochs.
+The model's training was terminated after 35/100 epochs because no improvement was seen in the `validation_loss`.
 
 ### Baseline loss and accuracy plots
 
@@ -461,7 +478,7 @@ We see the training accuracy reaches 99.8% at 33 epochs, but the validation accu
 These are signs of overfitting to the training data and underfitting to the validation data.
 
 The loss converges to 0.04 on the training set after 35 epochs, but only 0.37 on the validation set after 30 epochs.
-Given the large `validation_loss` value, the model has room for improvement.
+Given the large `validation_loss` score, the model definitely has room for improvement.
 
 ```python
 >>> h = history.history
@@ -535,7 +552,7 @@ It seems like the baseline model is capable of differentiating between Bossbot a
 
 Let's take a peek at the precision, recall, and F1-scores of each class.
 
-#### Precision, recall, and f1-score
+#### Precision, recall, and F1-score
 
 Using the confusion matrix, we can derive the precision, recall, and F1-score for each class.
 Fortunately, scikit-learn simplified the calculations into a single function called `classification_report`.
@@ -558,10 +575,10 @@ weighted avg       0.90      0.90      0.90       197
 ```
 
 Let's break down the output.
-First, we have four columns: precision, recall, f1-score, and support.
+First, we have four columns: precision, recall, F1-score, and support.
 The first three columns are self-explanatory.
 The fourth column, "support", is the number of samples in the test set.
-These values match the values seen in our `plot_datasets_suits()` function, as seen in the figure below.
+These values match the values seen in our `plot_datasets_suits()` function, as seen in the figure's green boxes below.
 
 <figure class="center">
     <img src="img/dataset_suits.png" style="width:100%;"/>
@@ -579,8 +596,8 @@ lb       0.88      0.98      0.93        60
 sb       0.95      0.95      0.95        55
 ```
 
-Each row contains the precision, recall, f1-score, and sample size for each of the four classes: Bossbot, Cashbot, Lawbot, and Sellbot.
-The highlights in this section are the low recall and f1-scores of `bb` and `cb`.
+Each row contains the precision, recall, F1-score, and sample size for each of the four classes: Bossbot, Cashbot, Lawbot, and Sellbot.
+The highlights in this section are the low recall and F1-scores of `bb` and `cb`.
 I suspect the model's low performance is due to the relatively smaller sample sizes of the two classes (41 vs 55 and 60).
 
 Lastly, we have the remaining three rows: accuracy, macro average, and weighted average.
@@ -593,15 +610,15 @@ Lastly, we have the remaining three rows: accuracy, macro average, and weighted 
 weighted avg       0.90      0.90      0.90       197
 ```
 
-Accuracy is straightforward, although it's rounded to two decimal places - it should be 0.8984.
+Accuracy is straightforward, although it's rounded up to two decimal places - it should be 0.8984.
 
-The macro average is the average value of precision, recall, and f1-score for all classes.
+The macro average is the average value of precision, recall, and F1-score for all classes.
 For instance, the macro precision average of 0.90 is the calculated as `(p_bb + p_cb + p_lb + p_sb) / 4`, where `p_*` are the precision values for each class.
 
-The weighted average is the average of the precision, recall, and f1-score weighted by the sample size: `(p_bb * 41 + p_cb * 41 + p_lb * 60 + p_sb * 55) / 197`.
+The weighted average is the average of the precision, recall, and F1-score weighted by the sample size: `(p_bb * 41 + p_cb * 41 + p_lb * 60 + p_sb * 55) / 197`.
 It considers the imbalance in the dataset, although the scores don't change much as a result.
 
-Ideally, we would like to have a model with higher precision and recall scores and an f1-score nearing 1.0.
+Ideally, we would like to have a model with higher precision and recall scores and an F1-score nearing 1.0.
 Let's see if we can do that.
 
 ---
@@ -670,7 +687,7 @@ Random search is the least efficient search, but it provides valuable insights i
 Refer to my KerasTuner [article][keras_tuner_tensorboard] for more information about efficient search algorithms, such as `Hyperband` or `BayesianOptimization` search.
 
 Each trial of the search is a separate model with different hyperparameter values.
-We can adjust the `max_trials` argument to increase or decrease the number of times we run the search.
+We can adjust the `max_trials` argument to increase or decrease the number of searches.
 Given that this is the first search, I recommend increasing `max_trials` to a large number and decreasing `executions_per_trial` to 1.
 This will provide a larger sample of hyperparameter values to analyze in TensorBoard.
 
@@ -773,6 +790,7 @@ We can see the best model made only two wrong predictions - one Cashbot classifi
 The worst model, however, made a plethora of wrong predictions.
 Most notably, it incorrectly classified 35 Cashbots as Lawbots!
 
+<!-- TODO Correct the captions, and left figure's title -->
 <table style='width:100%;'>
     <tr>
         <td style='width:50%;'>
@@ -805,9 +823,9 @@ Let's move on and look at the model's least confident predictions.
 
 ### Confidence levels
 
-Recall that the model's output layer produces a probability distribution over as a result of the softmax activation function.
+Recall that the model's output layer produces a probability distribution as a result of the softmax activation function.
 The index of the highest probability is the predicted class.
-For example, if we're given the probability distribution [0.1, 0.2, 0.7, 0.1], the predicted class is 2.
+For example, if we're given the probability distribution [0.1, 0.2, 0.6, 0.1], the predicted class is 2.
 
 Using `matplotlib`, we can create [stacked horizontal bar charts](https://matplotlib.org/stable/gallery/lines_bars_and_markers/horizontal_barchart_distribution.html) and visualize the confidence levels of the model's predictions.
 We can derive the lowest confidence levels, and their corresponding samples, by sorting the predictions by the lowest maximum probability.
@@ -825,9 +843,10 @@ The model correctly classifies the Sellbot with 44% confidence as a Bossbot, 6% 
 
 The second sample is more peculiar.
 It correctly classifies the Sellbot with 53% confidence against a 42% confidence as a Cashbot.
-I'm not sure where the model sees a Lawbot in that photo, though.
-Maybe the gray sliver in the middle of the photo is a Lawbot?
+I'm not sure where the model sees a Cashbot in that image, though.
+Maybe the gray sliver in the middle of the image is a Cashbot?
 
+<!-- TODO: Add image_fp titles to each image -->
 <figure class="center" style="width:90%;">
     <img src="img/predictions_bottom_10.png" style="width:100%;"/>
     <figcaption>Model's 5 least confident samples</figcaption>
@@ -895,13 +914,13 @@ Why do you think the model was confident about the Cashbot class despite none of
 
 We've made an accurate and small convnet model capable of distinguishing between the four Cog suits.
 Thanks to Keras-Tuner and Tensorboard, we compared different models and hyperparameters to create the most optimal model for our problem.
-Furthermore, we learned about classification performance metrics, such as recall, precision, F1-score, and how they excel over accuracy in imbalance datasets.
+Furthermore, we learned about classification performance metrics, such as recall, precision, F1-score, and how they excel over accuracy in imbalanced datasets.
 Finally, we visualized the model's activations and superimposed heatmaps (CAMs) to understand what the model sees in each sample.
 
 ### Next steps
 
 The next step is to create a real-time object detection model.
-I'm hoping to use this model to grow and balance the dataset by automatically extracting and labeling objects from images.
+I'm hoping to use this model to grow and balance the dataset by automatically labeling and extracting objects from images.
 The growing dataset will be used to re-train and improve the binary and multiclass models.
 We'll even use the dataset to create a 32-class Cog classifier.
 
