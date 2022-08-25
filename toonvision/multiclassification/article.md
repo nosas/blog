@@ -96,7 +96,7 @@ Let's look at how we can improve the dataset in the next section.
 ## The ToonVision dataset
 
 There doesn't exist a dataset for ToonVision, so I've been creating one from scratch.
-It's a laborious task involving manully taking screenshots, correctly labeling them, and organizing them.
+It's a laborious task involving manually taking screenshots, correctly labeling them, and organizing them.
 At the time of writing, the dataset is incredibly imbalanced.
 Creating these classifiers and pairing them with object detectors will allow us to automate the labeling and organizing task in the future.
 Until then, let's revise our dataset considerations.
@@ -127,7 +127,7 @@ Therefore, it's important to take screenshots of Cogs from each street so our mo
 The Cog vs Toon dataset is imbalanced, with much of the dataset belonging to the Cog class.
 However, the Cog dataset is also imbalanced.
 Our goal is ~30 samples per Cog entity, with at least 5 samples per street.
-The dataset cotains neither 30 samples per Cog entity nor 5 samples per street for all Cog entities.
+The dataset contains neither 30 samples per Cog entity nor 5 samples per street for all Cog entities.
 
 These imbalances are merely another hurdle that we must overcome.
 In the future, we'll have automated data pipelines which include image annotations.
@@ -794,7 +794,7 @@ Most notably, it incorrectly classified 35 Cashbots as Lawbots!
 <table style='width:100%;'>
     <tr>
         <td style='width:50%;'>
-            <img src='img/confusion_matrix_tuned.png' style='width:100%;'/>
+            <img src='img/confusion_matrix_tuned.png' style='width:100%;'/>**
         </td>
         <td style='width:50%;'>
             <img src='img/confusion_matrix_tuned_bad.png' style='width:100%;'/>
@@ -870,8 +870,8 @@ This helps model authors debug wrong predictions and characterize the model's pe
 The technique involves scoring subsections of the sample based on how much they activate a class's feature detectors. We average the score across all feature maps to generate a heatmap of the sample, where the hotter the pixel, the more activation of the predicted class. Lastly, we superimpose the heatmap onto the sample to visualize the activation - visualize what parts of the image activate the class. The grid below shows heatmaps and superimposed images for the Bossbot, Lawbot, Cashbot, and Sellbot classes, respectively.
 
 <figure class="center" style="width:60%;">
-    <img src="img/heatmap_spindoctor_grid.png" style="width:100%;"/>
-    <figcaption>CAM of all classes for cog_lb_spindoctor_19</figcaption>
+    <img src="img/heatmap_spindoctor_grid.png" style="width:100%;"/>
+    <figcaption>CAM of all classes for cog_lb_spindoctor_19</figcaption>
 </figure>
 
 The correct class is Lawbot (lb), but the model predicted Cashbot (cb) with 97% confidence against a 2% Lawbot confidence!
@@ -882,8 +882,8 @@ All in all, it's a poor sample.
 Let's look at the CAMs for the other wrong prediction.
 
 <figure class="center" style="width:60%;">
-    <img src="img/heatmap_loanshark_grid.png" style="width:100%;"/>
-    <figcaption>CAM of all classes for cog_cb_loanshark_24</figcaption>
+    <img src="img/heatmap_loanshark_grid.png" style="width:100%;"/>
+    <figcaption>CAM of all classes for cog_cb_loanshark_24</figcaption>
 </figure>
 
 Recall that this Loanshark sample had a 62/37 confidence split between the Lawbot and Cashbot classes, respectively.
@@ -898,8 +898,8 @@ Rather, I'll leave with one last peculiar CAM example.
 
 
 <figure class="center" style="width:60%;">
-    <img src="img/heatmap_telemarketer_grid.png" style="width:100%;"/>
-    <figcaption>CAM of all classes for cog_sb_telemarketer_8</figcaption>
+    <img src="img/heatmap_telemarketer_grid.png" style="width:100%;"/>
+    <figcaption>CAM of all classes for cog_sb_telemarketer_8</figcaption>
 </figure>
 
 This sample had a 4/42/53 confidence split between the Lawbot, Cashbot, and Sellbot classes, respectively.
