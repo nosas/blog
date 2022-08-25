@@ -790,7 +790,6 @@ We can see the best model made only two wrong predictions - one Cashbot classifi
 The worst model, however, made a plethora of wrong predictions.
 Most notably, it incorrectly classified 35 Cashbots as Lawbots!
 
-<!-- TODO Correct the captions, and left figure's title -->
 <table style='width:100%;'>
     <tr>
         <td style='width:50%;'>
@@ -804,14 +803,14 @@ Most notably, it incorrectly classified 35 Cashbots as Lawbots!
         <td>
             <span style='text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;'>
                 <small>
-                    <i>Good confusion matrix: 2 wrong predictions</i>
+                    <i>High-performing model: 2 wrong predictions</i>
                 </small>
             </span>
         </td>
         <td>
             <span style='text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;'>
                 <small>
-                    <i>Bad confusion matrix: 35 Cashbots predicted as Lawbots</i>
+                    <i>Low-performing model:: 35 Cashbots predicted as Lawbots</i>
                 </small>
             </span>
         </td>
@@ -846,9 +845,8 @@ It correctly classifies the Sellbot with 53% confidence against a 42% confidence
 I'm not sure where the model sees a Cashbot in that image, though.
 Maybe the gray sliver in the middle of the image is a Cashbot?
 
-<!-- TODO: Add image_fp titles to each image -->
 <figure class="center" style="width:90%;">
-    <img src="img/predictions_bottom_10.png" style="width:100%;"/>
+    <img src="img/predictions_bottom_5.png" style="width:100%;"/>
     <figcaption>Model's 5 least confident samples</figcaption>
 </figure>
 

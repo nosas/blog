@@ -908,7 +908,7 @@ fig, ax = plot_prediction_confidence(
 plt.show()
 
 # %% Create image grid given image filepaths
-create_image_grid(lc10_fps[:5], ncols=5, title="Least confident samples")
+create_image_grid(lc10_fps[:5], ncols=5, title="Least confident samples", titles=lc10_fps_short[:5])
 
 
 # %% Create functions to streamline heatmap generation

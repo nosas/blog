@@ -843,7 +843,7 @@ def plot_confusion_matrix(
     plt.show()
 
 
-def create_image_grid(filepaths, ncols=4, title: str = ""):
+def create_image_grid(filepaths, ncols=4, title: str = "", titles: list[str] = None):
     """
     Create a grid of images given a list of filepaths.
     """
@@ -853,12 +853,16 @@ def create_image_grid(filepaths, ncols=4, title: str = ""):
         if nrows == 1:
             ax[i].imshow(keras.preprocessing.image.load_img(fp))
             ax[i].axis("off")
+            if titles:
+                ax[i].set_title(titles[i])
         else:
             ax[int(i / ncols), i % ncols].imshow(keras.preprocessing.image.load_img(fp))
             ax[int(i / ncols), i % ncols].axis("off")
+            if titles:
+                ax[i].set_title(titles[i])
 
     # Add the title
-    fig.suptitle(title, fontsize=16)
+    fig.suptitle(title, fontsize=16, y=1)
     fig.tight_layout()
     return fig, ax
 
