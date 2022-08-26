@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 25, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 26, 2022</p>
 
 <p><title>ToonVision: Object detection</title></p>
 
@@ -36,21 +36,36 @@ More specifically, the previous article covered how to...</p>
 <li>interpret and visualize what the model is learning with confusion matrices and class activation maps</li>
 </ul>
 
-<p>This article covers the object detection of Cogs and Toons.
-After reading this article, we'll have a better understanding of...</p>
+<p>This article explains object detection of Cogs and Toons - also called entity detection.
+After reading this article, you should have a better understanding of how to...</p>
 
 <ul>
-<li>differences between object detection algorithms (YOLO vs R-CNN)</li>
-<li>extracting detected objects from images and videos</li>
-<li>automatically build data pipelines to grow a dataset</li>
+<li>differentiate between object detection algorithms (YOLO, R-CNN, SSD)</li>
+<li>create an object detection model</li>
+<li>extract detected objects from images and videos</li>
+<li>build data pipelines to semi-autonomously grow a dataset (semi-supervised learning)</li>
 </ul>
 
 <p>The next article will cover image segmentation of ToonTown's streets, roads, Toons, Cogs, and Cog buildings.
 For now, let's focus on object detection.</p>
 
 <ul>
-<li><a href="#toonvision---object-detection">ToonVision - Object Detection</a></li>
+<li><a href="#toonvision---object-detection">ToonVision - Object Detection</a>
+<ul>
+<li><a href="#toonvision">ToonVision</a></li>
+<li><a href="#object-detection">Object detection</a></li>
+</ul></li>
 </ul>
+
+<h2 id="toonvision">ToonVision</h2>
+
+<p>ToonVision is my computer vision project for teaching a machine how to see in <a href="https://en.wikipedia.org/wiki/Toontown_Online">ToonTown Online</a> - an MMORPG created by Disney in 2003.
+The project's objective is to teach a machine (nicknamed <strong>OmniToon</strong>) how to play ToonTown and create a self-sustaining ecosystem where the bots progress through the game together.
+In the process, I will explain the intricacies of building computer vision models, configuring static and real-time (stream) data pipelines, and visualizing results and progress.</p>
+
+<hr />
+
+<h2 id="object-detection">Object detection</h2>
 
 </body>
 </html>
