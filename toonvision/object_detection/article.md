@@ -26,6 +26,8 @@ For now, let's focus on object detection.
     - [ToonVision](#toonvision)
     - [Object detection](#object-detection)
         - [Object detection algorithms](#object-detection-algorithms)
+            - [One shot](#one-shot)
+            - [Two shot](#two-shot)
         - [SSD](#ssd)
         - [R-CNN](#r-cnn)
         - [YOLO](#yolo)
@@ -51,6 +53,19 @@ In ToonVision's, object detection is applied to locating all entities - Cogs and
 
 ### Object detection algorithms
 
+<!-- TODO (True? More groups?) -->
+Object detection algorithms can be split into two main groups: one-shot and two-shot.
+Each group has accuracy and speed tradeoffs.
+When high detection speed is objective, such as in real-time videos, one-shot algorithms are superior.
+Two-shot algorithms are slower but more accurate; therefore, they're primarily used when working with image data.
+
+#### One shot
+
+SSD (Single-shot detector), YOLO (You only look once)
+
+#### Two shot
+
+R-CNN
 
 ### SSD
 
