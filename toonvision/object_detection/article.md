@@ -25,6 +25,11 @@ For now, let's focus on object detection.
 - [ToonVision - Object Detection](#toonvision---object-detection)
     - [ToonVision](#toonvision)
     - [Object detection](#object-detection)
+        - [Object detection algorithms](#object-detection-algorithms)
+        - [SSD](#ssd)
+        - [R-CNN](#r-cnn)
+        - [YOLO](#yolo)
+    - [Creating an object detection model](#creating-an-object-detection-model)
 
 ## ToonVision
 
@@ -34,3 +39,24 @@ In the process, I will explain the intricacies of building computer vision model
 
 ---
 ## Object detection
+
+Object detection is a computer vision task of detecting instances of objects from pre-defined classes in images and videos.
+Specifically, object detection algorithms detect and draw a bounding box around each object.
+
+<font style="color:red">TODO: Include row of ToonVision images: classification, classification + localization, object detection, instance segmentation</font>
+
+Common use-cases include face detection in cameras and pedestrian detection in autonomous vehicles.
+In ToonVision's, object detection is applied to locating all entities - Cogs and Toons - in both images and real-time video.
+
+
+### Object detection algorithms
+
+
+### SSD
+
+### R-CNN
+
+### YOLO
+
+---
+## Creating an object detection model
