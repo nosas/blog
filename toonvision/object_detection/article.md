@@ -22,16 +22,21 @@ After reading this article, you should have a better understanding of how to...
 The next article will cover image segmentation of ToonTown's streets, roads, Toons, Cogs, and Cog buildings.
 For now, let's focus on object detection.
 
+<details>
+    <summary>Table of Contents</summary>
+
 - [ToonVision - Object Detection](#toonvision---object-detection)
     - [ToonVision](#toonvision)
     - [Object detection](#object-detection)
         - [Object detection algorithms](#object-detection-algorithms)
-            - [One shot](#one-shot)
-            - [Two shot](#two-shot)
-        - [SSD](#ssd)
+            - [Two-shot](#two-shot)
+            - [Single-shot](#single-shot)
         - [R-CNN](#r-cnn)
+        - [SSD](#ssd)
         - [YOLO](#yolo)
     - [Creating an object detection model](#creating-an-object-detection-model)
+    - [References](#references)
+</details>
 
 ## ToonVision
 
@@ -43,7 +48,7 @@ In the process, I will explain the intricacies of building computer vision model
 ## Object detection
 
 Object detection is a computer vision task of detecting instances of objects from pre-defined classes in images and videos.
-Specifically, object detection algorithms detect and draw a bounding box around each object.
+Specifically, object detection algorithms detect, label, and draw a bounding box around each object.
 
 <font style="color:red">TODO: Include row of ToonVision images: classification, classification + localization, object detection, instance segmentation</font>
 
@@ -53,25 +58,49 @@ In ToonVision's, object detection is applied to locating all entities - Cogs and
 
 ### Object detection algorithms
 
-<!-- TODO (True? More groups?) -->
-Object detection algorithms can be split into two main groups: one-shot and two-shot.
+The most popular object detection algorithms can be split into two main groups: single-shot and two-shot.
 Each group has accuracy and speed tradeoffs.
-When high detection speed is objective, such as in real-time videos, one-shot algorithms are superior.
-Two-shot algorithms are slower but more accurate; therefore, they're primarily used when working with image data.
+Single-shot algorithms excel in tasks requiring high detection speed, such as in real-time videos.
+Two-shot algorithms are slower but more accurate; therefore, they're primarily used in tasks involving image data or low-FPS videos.
 
-#### One shot
+#### Two-shot
 
-SSD (Single-shot detector), YOLO (You only look once)
+The two-shot detection model has two stages: region proposal and then classification of those regions and refinement of the location prediction.
+R-CNN<sup>[1]</sup>
 
-#### Two shot
+#### Single-shot
 
-R-CNN
-
-### SSD
+Single-shot algorithms are designed for real-time object detection.
+They skip the region proposal stage and yield final localization and content prediction at once.
+They're capable of predicting bounding boxes and their classes directly from feature maps in one single forward pass.
+SSD<sup>[2]</sup> and YOLO<sup>[3]</sup> are popular single-shot object detection algorithms capable of running at 5-160 frames per second!
 
 ### R-CNN
 
+Two-shot algorithm
+2014, many variations, slow but accurate
+
+### SSD
+
+Single-shot algorithm
+2015, SOTA at the time, but no longer. YOLO is king
+
 ### YOLO
+
+Single-shot algorithm
+2015, many different versions v1 -> v7
+2022, YOLOv7 newest version, 5-160 FPS<sup>[4]</sup>
 
 ---
 ## Creating an object detection model
+
+---
+## References
+
+1. Rich feature hierarchies for accurate object detection and semantic segmentation, [https://arxiv.org/abs/1311.2524](https://arxiv.org/abs/1311.2524)
+
+2. SSD: Single Shot MultiBox Detector, [https://arxiv.org/abs/1512.02325](https://arxiv.org/abs/1512.02325)
+
+3. You Only Look Once: Unified, Real-Time Object Detection, [https://arxiv.org/abs/1506.02640](https://arxiv.org/abs/1506.02640)
+
+4. YOLOv7: Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors, [https://arxiv.org/abs/2207.02696](https://arxiv.org/abs/2207.02696)

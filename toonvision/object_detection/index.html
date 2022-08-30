@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 28, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 29, 2022</p>
 
 <p><title>ToonVision: Object detection</title></p>
 
@@ -49,6 +49,9 @@ After reading this article, you should have a better understanding of how to...<
 <p>The next article will cover image segmentation of ToonTown's streets, roads, Toons, Cogs, and Cog buildings.
 For now, let's focus on object detection.</p>
 
+<p><details>
+    <summary>Table of Contents</summary></p>
+
 <ul>
 <li><a href="#toonvision---object-detection">ToonVision - Object Detection</a>
 <ul>
@@ -57,14 +60,16 @@ For now, let's focus on object detection.</p>
 <ul>
 <li><a href="#object-detection-algorithms">Object detection algorithms</a>
 <ul>
-<li><a href="#one-shot">One shot</a></li>
-<li><a href="#two-shot">Two shot</a></li>
+<li><a href="#two-shot">Two-shot</a></li>
+<li><a href="#single-shot">Single-shot</a></li>
 </ul></li>
-<li><a href="#ssd">SSD</a></li>
 <li><a href="#r-cnn">R-CNN</a></li>
+<li><a href="#ssd">SSD</a></li>
 <li><a href="#yolo">YOLO</a></li>
 </ul></li>
 <li><a href="#creating-an-object-detection-model">Creating an object detection model</a></li>
+<li><a href="#references">References</a>
+</details></li>
 </ul></li>
 </ul>
 
@@ -79,7 +84,7 @@ In the process, I will explain the intricacies of building computer vision model
 <h2 id="object-detection">Object detection</h2>
 
 <p>Object detection is a computer vision task of detecting instances of objects from pre-defined classes in images and videos.
-Specifically, object detection algorithms detect and draw a bounding box around each object.</p>
+Specifically, object detection algorithms detect, label, and draw a bounding box around each object.</p>
 
 <p><font style="color:red">TODO: Include row of ToonVision images: classification, classification + localization, object detection, instance segmentation</font></p>
 
@@ -88,29 +93,53 @@ In ToonVision's, object detection is applied to locating all entities - Cogs and
 
 <h3 id="object-detection-algorithms">Object detection algorithms</h3>
 
-<p><!-- TODO (True? More groups?) -->
-Object detection algorithms can be split into two main groups: one-shot and two-shot.
+<p>The most popular object detection algorithms can be split into two main groups: single-shot and two-shot.
 Each group has accuracy and speed tradeoffs.
-When high detection speed is objective, such as in real-time videos, one-shot algorithms are superior.
-Two-shot algorithms are slower but more accurate; therefore, they're primarily used when working with image data.</p>
+Single-shot algorithms excel in tasks requiring high detection speed, such as in real-time videos.
+Two-shot algorithms are slower but more accurate; therefore, they're primarily used in tasks involving image data or low-FPS videos.</p>
 
-<h4 id="one-shot">One shot</h4>
+<h4 id="two-shot">Two-shot</h4>
 
-<p>SSD (Single-shot detector), YOLO (You only look once)</p>
+<p>The two-shot detection model has two stages: region proposal and then classification of those regions and refinement of the location prediction.
+R-CNN<sup>[1]</sup></p>
 
-<h4 id="two-shot">Two shot</h4>
+<h4 id="single-shot">Single-shot</h4>
 
-<p>R-CNN</p>
-
-<h3 id="ssd">SSD</h3>
+<p>Single-shot algorithms are designed for real-time object detection.
+They skip the region proposal stage and yield final localization and content prediction at once.
+They're capable of predicting bounding boxes and their classes directly from feature maps in one single forward pass.
+SSD<sup>[2]</sup> and YOLO<sup>[3]</sup> are popular single-shot object detection algorithms capable of running at 5-160 frames per second!</p>
 
 <h3 id="r-cnn">R-CNN</h3>
 
+<p>Two-shot algorithm
+2014, many variations, slow but accurate</p>
+
+<h3 id="ssd">SSD</h3>
+
+<p>Single-shot algorithm
+2015, SOTA at the time, but no longer. YOLO is king</p>
+
 <h3 id="yolo">YOLO</h3>
+
+<p>Single-shot algorithm
+2015, many different versions v1 -> v7
+2022, YOLOv7 newest version, 5-160 FPS<sup>[4]</sup></p>
 
 <hr />
 
 <h2 id="creating-an-object-detection-model">Creating an object detection model</h2>
+
+<hr />
+
+<h2 id="references">References</h2>
+
+<ol>
+<li><p>Rich feature hierarchies for accurate object detection and semantic segmentation, <a href="https://arxiv.org/abs/1311.2524">https://arxiv.org/abs/1311.2524</a></p></li>
+<li><p>SSD: Single Shot MultiBox Detector, <a href="https://arxiv.org/abs/1512.02325">https://arxiv.org/abs/1512.02325</a></p></li>
+<li><p>You Only Look Once: Unified, Real-Time Object Detection, <a href="https://arxiv.org/abs/1506.02640">https://arxiv.org/abs/1506.02640</a></p></li>
+<li><p>YOLOv7: Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors, <a href="https://arxiv.org/abs/2207.02696">https://arxiv.org/abs/2207.02696</a></p></li>
+</ol>
 
 </body>
 </html>
