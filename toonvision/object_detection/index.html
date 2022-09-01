@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 30, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 31, 2022</p>
 
 <p><title>ToonVision: Object detection</title></p>
 
@@ -119,8 +119,20 @@ SSD<sup>[3]</sup> and YOLO<sup>[4]</sup> are popular single-shot object detectio
 
 <h3 id="r-cnn">R-CNN</h3>
 
-<p>Two-shot algorithm
-2014, many variations, slow but accurate</p>
+<p>Regions with convolutional neural networks (R-CNN) is a two-shot detection algorithm.
+R-CNN combines rectangular region proposals with convolutional neural network features to detect objects.
+The first stage, region proposal, identifies a subset of regions in an image that might contain an object.
+The second stage classifies the object in each region.</p>
+
+<p>R-CNNs can be boiled down to the following three processes:</p>
+
+<ol>
+<li>Find regions in the image that might contain an object (region proposals)</li>
+<li>Extract features from the region proposals</li>
+<li>Classify the objects using the extracted features</li>
+</ol>
+
+<p>2014, many variations (Fast R-CNN, Faster R-CNN, Mask R-CNN), slow but accurate</p>
 
 <h3 id="ssd">SSD</h3>
 

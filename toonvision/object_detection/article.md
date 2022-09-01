@@ -85,8 +85,18 @@ SSD<sup>[3]</sup> and YOLO<sup>[4]</sup> are popular single-shot object detectio
 
 ### R-CNN
 
-Two-shot algorithm
-2014, many variations, slow but accurate
+Regions with convolutional neural networks (R-CNN) is a two-shot detection algorithm.
+R-CNN combines rectangular region proposals with convolutional neural network features to detect objects.
+The first stage, region proposal, identifies a subset of regions in an image that might contain an object.
+The second stage classifies the object in each region.
+
+R-CNNs can be boiled down to the following three processes:
+
+1. Find regions in the image that might contain an object (region proposals)
+2. Extract features from the region proposals
+3. Classify the objects using the extracted features
+
+2014, many variations (Fast R-CNN, Faster R-CNN, Mask R-CNN), slow but accurate
 
 ### SSD
 
