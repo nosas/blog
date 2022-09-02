@@ -102,8 +102,8 @@ There are many variants of R-CNN: Fast R-CNN<sup>[5]</sup>, Faster R-CNN<sup>[2]
 Each variant improves performance, but the algorithm is still slow when compared to single-shot.
 Mask R-CNN is unique because it's used for image segmentation while all others are for object detection.
 
-Overall, this algorithm has incredible accuracy in low-FPS or still-image tasks.
-SSD and YOLO both significantly outperform R-CNN in real-time object detection.
+R-The CNN algorithm has incredible accuracy in low-FPS or still-image tasks.
+However, both SSD and YOLO significantly outperform R-CNN in real-time object detection.
 
 ### SSD
 
@@ -122,17 +122,17 @@ Although SSD was state-of-the-art when it came out in 2015, there's a new king i
 ### YOLO
 
 The You Only Look Once (YOLO) model is a new approach to unified, real-time object detection.
-Created in 2015 by Joseph Redmon and gang, YOLO frames object detection as a regression problem.
-Similar to SSD, a single neural network predicts bounding boxes and class probabilities from images in one pass.
+Created in 2015 by Joseph Redmon and gang, YOLO reframes object detection as a regression problem rather than leveraging regional proposals and a CNN classifier.
+Like all single-shot algorithms, YOLO's single neural network predicts bounding boxes and class probabilities from images in one pass.
 
 <font style="color:red">TODO: Insert image showing bounding boxes, different ratio boxes, and result</font>
 
 YOLO is insanely fast.
 The base model processes images in real-time at 45 FPS.
 A smaller version, Fast YOLO, processes an astounding 155 FPS!
-Take a peek at its performance from the author's own 3-minute [YouTube video](https://www.youtube.com/watch?v=MPU2HistivI).
+Take a peek at YOLOv3's performance from the author's own 3-minute [YouTube video](https://www.youtube.com/watch?v=MPU2HistivI).
 
-Where YOLO excels in speed, it also struggles in accuracy.
+Where YOLO excels in speed, it struggles in accuracy.
 The algorithm is prone to making localization errors (sizes and location of bounding boxes).
 When comparing to state-of-the-art detection systems, however, YOLO is far less likely to predict false detections where nothing exists.
 

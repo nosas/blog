@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 01, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 02, 2022</p>
 
 <p><title>ToonVision: Object Detection</title></p>
 
@@ -140,8 +140,8 @@ The second stage classifies the object in each region using a CNN classifier.</p
 Each variant improves performance, but the algorithm is still slow when compared to single-shot.
 Mask R-CNN is unique because it's used for image segmentation while all others are for object detection.</p>
 
-<p>Overall, this algorithm has incredible accuracy in low-FPS or still-image tasks.
-SSD and YOLO both significantly outperform R-CNN in real-time object detection.</p>
+<p>R-The CNN algorithm has incredible accuracy in low-FPS or still-image tasks.
+However, both SSD and YOLO significantly outperform R-CNN in real-time object detection.</p>
 
 <h3 id="ssd">SSD</h3>
 
@@ -160,17 +160,17 @@ All computation is done in a single network, making SSD easy to train and integr
 <h3 id="yolo">YOLO</h3>
 
 <p>The You Only Look Once (YOLO) model is a new approach to unified, real-time object detection.
-Created in 2015 by Joseph Redmon and gang, YOLO frames object detection as a regression problem.
-Similar to SSD, a single neural network predicts bounding boxes and class probabilities from images in one pass.</p>
+Created in 2015 by Joseph Redmon and gang, YOLO reframes object detection as a regression problem rather than leveraging regional proposals and a CNN classifier.
+Like all single-shot algorithms, YOLO's single neural network predicts bounding boxes and class probabilities from images in one pass.</p>
 
 <p><font style="color:red">TODO: Insert image showing bounding boxes, different ratio boxes, and result</font></p>
 
 <p>YOLO is insanely fast.
 The base model processes images in real-time at 45 FPS.
 A smaller version, Fast YOLO, processes an astounding 155 FPS!
-Take a peek at its performance from the author's own 3-minute <a href="https://www.youtube.com/watch?v=MPU2HistivI">YouTube video</a>.</p>
+Take a peek at YOLOv3's performance from the author's own 3-minute <a href="https://www.youtube.com/watch?v=MPU2HistivI">YouTube video</a>.</p>
 
-<p>Where YOLO excels in speed, it also struggles in accuracy.
+<p>Where YOLO excels in speed, it struggles in accuracy.
 The algorithm is prone to making localization errors (sizes and location of bounding boxes).
 When comparing to state-of-the-art detection systems, however, YOLO is far less likely to predict false detections where nothing exists.</p>
 
