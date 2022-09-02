@@ -21,7 +21,7 @@
   <br>
   <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 01, 2022</p>
 
-<p><title>ToonVision: Object detection</title></p>
+<p><title>ToonVision: Object Detection</title></p>
 
 <h1 id="toonvision-object-detection">ToonVision - Object Detection</h1>
 
@@ -42,7 +42,7 @@ After reading this article, you should have a better understanding of how to...<
 <ul>
 <li>differentiate between object detection models (YOLO, R-CNN, SSD)</li>
 <li>create an object detection model</li>
-<li>extract detected objects from images and videos</li>
+<li>extract objects from images and videos</li>
 <li>build data pipelines to semi-autonomously grow a dataset (semi-supervised learning)</li>
 </ul>
 
@@ -68,6 +68,8 @@ For now, let's focus on object detection.</p>
 <li><a href="#yolo">YOLO</a></li>
 </ul></li>
 <li><a href="#creating-an-object-detection-model">Creating an object detection model</a></li>
+<li><a href="#extract-objects-from-an-image">Extract objects from an image</a></li>
+<li><a href="#build-data-pipelines-to-semi-autonomously-grow-a-dataset">Build data pipelines to semi-autonomously grow a dataset</a></li>
 <li><a href="#references">References</a>
 </details></li>
 </ul></li>
@@ -124,6 +126,8 @@ R-CNN combines <strong>rectangular region proposals</strong> with <strong>convol
 The first stage, region proposal, identifies a subset of regions in an image that might contain an object.
 The second stage classifies the object in each region using a CNN classifier.</p>
 
+<p><font style="color:red">TODO: Insert image showing bounding boxes, different region proposals, and result</font></p>
+
 <p>R-CNNs can be boiled down to the following three processes:</p>
 
 <ol>
@@ -146,6 +150,8 @@ Boxes of different aspect ratios and scales overlay each feature map.
 At prediction time, the network generates scores for the presence of each object in each box.
 The network combines predictions from multiple feature maps with different resolutions to handle objects of various sizes.</p>
 
+<p><font style="color:red">TODO: Insert image showing bounding boxes, different ratio boxes, and result</font></p>
+
 <p>Like all other single-shot models, SSD eliminates proposal generation and feature resampling.
 All computation is done in a single network, making SSD easy to train and integrate into systems requiring a detection component.</p>
 
@@ -156,6 +162,8 @@ All computation is done in a single network, making SSD easy to train and integr
 <p>The You Only Look Once (YOLO) model is a new approach to unified, real-time object detection.
 Created in 2015 by Joseph Redmon and gang, YOLO frames object detection as a regression problem.
 Similar to SSD, a single neural network predicts bounding boxes and class probabilities from images in one pass.</p>
+
+<p><font style="color:red">TODO: Insert image showing bounding boxes, different ratio boxes, and result</font></p>
 
 <p>YOLO is insanely fast.
 The base model processes images in real-time at 45 FPS.
@@ -173,6 +181,14 @@ The newest version, YOLOv7<sup>[7]</sup>, was released in July 2022 and is capab
 <hr />
 
 <h2 id="creating-an-object-detection-model">Creating an object detection model</h2>
+
+<hr />
+
+<h2 id="extract-objects-from-an-image">Extract objects from an image</h2>
+
+<hr />
+
+<h2 id="build-data-pipelines-to-semi-autonomously-grow-a-dataset">Build data pipelines to semi-autonomously grow a dataset</h2>
 
 <hr />
 

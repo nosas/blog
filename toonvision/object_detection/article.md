@@ -1,4 +1,4 @@
-<title>ToonVision: Object detection</title>
+<title>ToonVision: Object Detection</title>
 
 # ToonVision - Object Detection
 
@@ -16,7 +16,7 @@ After reading this article, you should have a better understanding of how to...
 
 - differentiate between object detection models (YOLO, R-CNN, SSD)
 - create an object detection model
-- extract detected objects from images and videos
+- extract objects from images and videos
 - build data pipelines to semi-autonomously grow a dataset (semi-supervised learning)
 
 The next article will cover image segmentation of ToonTown's streets, roads, Toons, Cogs, and Cog buildings.
@@ -35,6 +35,8 @@ For now, let's focus on object detection.
         - [SSD](#ssd)
         - [YOLO](#yolo)
     - [Creating an object detection model](#creating-an-object-detection-model)
+    - [Extract objects from an image](#extract-objects-from-an-image)
+    - [Build data pipelines to semi-autonomously grow a dataset](#build-data-pipelines-to-semi-autonomously-grow-a-dataset)
     - [References](#references)
 </details>
 
@@ -55,7 +57,6 @@ Specifically, object detection models detect, label, and draw a bounding box aro
 Common use-cases include face detection in cameras and pedestrian detection in autonomous vehicles.
 In ToonVision's, object detection is applied to locating all entities - Cogs and Toons - in both images and real-time video.
 
-
 ### Object detection models
 
 The most popular object detection models can be split into two main groups: single-shot and two-shot.
@@ -71,7 +72,6 @@ The two steps require significant computational resources, resulting in slow tra
 Despite the slowness, two-shot models have far superior accuracy when compared to single-shot models.
 R-CNN<sup>[1]</sup> is a commonly used two-shot detection model.
 Faster R-CNN<sup>[2]</sup>, R-CNN's improved variant, is the more popular choice for two-shot models.
-
 
 #### Single-shot
 
@@ -89,6 +89,8 @@ Regions with Convolutional Neural Networks (R-CNN) is a two-shot detection algor
 R-CNN combines **rectangular region proposals** with **convolutional neural network features** to detect objects.
 The first stage, region proposal, identifies a subset of regions in an image that might contain an object.
 The second stage classifies the object in each region using a CNN classifier.
+
+<font style="color:red">TODO: Insert image showing bounding boxes, different region proposals, and result</font>
 
 R-CNNs can be boiled down to the following three processes:
 
@@ -110,6 +112,8 @@ Boxes of different aspect ratios and scales overlay each feature map.
 At prediction time, the network generates scores for the presence of each object in each box.
 The network combines predictions from multiple feature maps with different resolutions to handle objects of various sizes.
 
+<font style="color:red">TODO: Insert image showing bounding boxes, different ratio boxes, and result</font>
+
 Like all other single-shot models, SSD eliminates proposal generation and feature resampling.
 All computation is done in a single network, making SSD easy to train and integrate into systems requiring a detection component.
 
@@ -120,6 +124,8 @@ Although SSD was state-of-the-art when it came out in 2015, there's a new king i
 The You Only Look Once (YOLO) model is a new approach to unified, real-time object detection.
 Created in 2015 by Joseph Redmon and gang, YOLO frames object detection as a regression problem.
 Similar to SSD, a single neural network predicts bounding boxes and class probabilities from images in one pass.
+
+<font style="color:red">TODO: Insert image showing bounding boxes, different ratio boxes, and result</font>
 
 YOLO is insanely fast.
 The base model processes images in real-time at 45 FPS.
@@ -136,6 +142,12 @@ The newest version, YOLOv7<sup>[7]</sup>, was released in July 2022 and is capab
 
 ---
 ## Creating an object detection model
+
+---
+## Extract objects from an image
+
+---
+## Build data pipelines to semi-autonomously grow a dataset
 
 ---
 ## References
