@@ -100,6 +100,9 @@ There are many variants of R-CNN: Fast R-CNN<sup>[5]</sup>, Faster R-CNN<sup>[2]
 Each variant improves performance, but the algorithm is still slow when compared to single-shot.
 Mask R-CNN is unique because it's used for image segmentation while all others are for object detection.
 
+Overall, this algorithm has incredible accuracy in low-FPS or still-image tasks.
+SSD and YOLO both significantly outperform R-CNN in real-time object detection.
+
 ### SSD
 
 Developed in 2015, the Single Shot MultiBox Detector (SSD) is a method for detecting object in images using a single deep neural network.
@@ -110,12 +113,26 @@ The network combines predictions from multiple feature maps with different resol
 Like all other single-shot models, SSD eliminates proposal generation and feature resampling.
 All computation is done in a single network, making SSD easy to train and integrate into systems requiring a detection component.
 
+Although SSD was state-of-the-art when it came out in 2015, there's a new king in town: YOLO.
+
 ### YOLO
 
-Single-shot algorithm
-2015, many different versions v1 -> v7
-2022, YOLOv7 newest version, 5-160 FPS<sup>[7]</sup>
-Faster than SSD, although less accurate.
+The You Only Look Once (YOLO) model is a new approach to unified, real-time object detection.
+Created in 2015 by Joseph Redmon and gang, YOLO frames object detection as a regression problem.
+Similar to SSD, a single neural network predicts bounding boxes and class probabilities from images in one pass.
+
+YOLO is insanely fast.
+The base model processes images in real-time at 45 FPS.
+A smaller version, Fast YOLO, processes an astounding 155 FPS!
+Take a peek at its performance from the author's own 3-minute [YouTube video](https://www.youtube.com/watch?v=MPU2HistivI).
+
+Where YOLO excels in speed, it also struggles in accuracy.
+The algorithm is prone to making localization errors (sizes and location of bounding boxes).
+When comparing to state-of-the-art detection systems, however, YOLO is far less likely to predict false detections where nothing exists.
+
+There have been **seven** iterations on the algorithm since its inception in 2015.
+Each variation resulted in higher accuracy and inference speed.
+The newest version, YOLOv7<sup>[7]</sup>, was released in July 2022 and is capable of 160FPS.
 
 ---
 ## Creating an object detection model
