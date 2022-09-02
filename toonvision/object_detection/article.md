@@ -85,10 +85,10 @@ SSD<sup>[3]</sup> and YOLO<sup>[4]</sup> are popular single-shot object detectio
 
 ### R-CNN
 
-Regions with convolutional neural networks (R-CNN) is a two-shot detection algorithm.
-R-CNN combines rectangular region proposals with convolutional neural network features to detect objects.
+Regions with Convolutional Neural Networks (R-CNN) is a two-shot detection algorithm created in 2013.
+R-CNN combines **rectangular region proposals** with **convolutional neural network features** to detect objects.
 The first stage, region proposal, identifies a subset of regions in an image that might contain an object.
-The second stage classifies the object in each region.
+The second stage classifies the object in each region using a CNN classifier.
 
 R-CNNs can be boiled down to the following three processes:
 
@@ -96,18 +96,25 @@ R-CNNs can be boiled down to the following three processes:
 2. Extract features from the region proposals
 3. Classify the objects using the extracted features
 
-2014, many variations (Fast R-CNN, Faster R-CNN, Mask R-CNN), slow but accurate
+There are many variants of R-CNN: Fast R-CNN<sup>[5]</sup>, Faster R-CNN<sup>[2]</sup>, Mask R-CNN<sup>[6]</sup>.
+Each variant improves performance, but the algorithm is still slow when compared to single-shot.
+Mask R-CNN is unique because it's used for image segmentation while all others are for object detection.
 
 ### SSD
 
-Single-shot algorithm
-2015, SOTA at the time, but no longer. YOLO is king
+Developed in 2015, the Single Shot MultiBox Detector (SSD) is a method for detecting object in images using a single deep neural network.
+Boxes of different aspect ratios and scales overlay each feature map.
+At prediction time, the network generates scores for the presence of each object in each box.
+The network combines predictions from multiple feature maps with different resolutions to handle objects of various sizes.
+
+Like all other single-shot models, SSD eliminates proposal generation and feature resampling.
+All computation is done in a single network, making SSD easy to train and integrate into systems requiring a detection component.
 
 ### YOLO
 
 Single-shot algorithm
 2015, many different versions v1 -> v7
-2022, YOLOv7 newest version, 5-160 FPS<sup>[5]</sup>
+2022, YOLOv7 newest version, 5-160 FPS<sup>[7]</sup>
 Faster than SSD, although less accurate.
 
 ---
@@ -124,4 +131,8 @@ Faster than SSD, although less accurate.
 
 4. You Only Look Once: Unified, Real-Time Object Detection, [https://arxiv.org/abs/1506.02640](https://arxiv.org/abs/1506.02640)
 
-5. YOLOv7: Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors, [https://arxiv.org/abs/2207.02696](https://arxiv.org/abs/2207.02696)
+5. Fast R-CNN, [https://arxiv.org/abs/1504.08083](https://arxiv.org/abs/1504.08083)
+
+6. Mask R-CNN, [https://arxiv.org/abs/1703.06870](https://arxiv.org/abs/1703.06870)
+
+7. YOLOv7: Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors, [https://arxiv.org/abs/2207.02696](https://arxiv.org/abs/2207.02696)
