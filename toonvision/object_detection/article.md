@@ -127,6 +127,16 @@ Like all single-shot algorithms, YOLO's single neural network predicts bounding 
 
 <font style="color:red">TODO: Insert image showing bounding boxes, different ratio boxes, and result</font>
 
+<!-- The YOLO framework has three main components:
+
+- Backbone
+- Neck
+- Head
+
+The **Backbone** mainly extracts essential features of an image and feeds them to the Head through Neck.
+The **Neck** collects feature maps extracted by the Backbone and creates feature pyramids.
+Finally, the **Head** consists of output layers that have final detections. -->
+
 YOLO is insanely fast.
 The base model processes images in real-time at 45 FPS.
 A smaller version, Fast YOLO, processes an astounding 155 FPS!
@@ -142,6 +152,10 @@ The newest version, YOLOv7<sup>[7]</sup>, was released in July 2022 and is capab
 
 ---
 ## Creating an object detection model
+
+I'll leverage TensorFlow's model zoo to fine-tune and train a Faster R-CNN model.
+This article will explain the general procedures for building the model.
+A detailed step-by-step article will be written in the future.
 
 ---
 ## Extract objects from an image

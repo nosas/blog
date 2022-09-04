@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 02, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 03, 2022</p>
 
 <p><title>ToonVision: Object Detection</title></p>
 
@@ -165,6 +165,16 @@ Like all single-shot algorithms, YOLO's single neural network predicts bounding 
 
 <p><font style="color:red">TODO: Insert image showing bounding boxes, different ratio boxes, and result</font></p>
 
+<!-- The YOLO framework has three main components:
+
+- Backbone
+- Neck
+- Head
+
+The **Backbone** mainly extracts essential features of an image and feeds them to the Head through Neck.
+The **Neck** collects feature maps extracted by the Backbone and creates feature pyramids.
+Finally, the **Head** consists of output layers that have final detections. -->
+
 <p>YOLO is insanely fast.
 The base model processes images in real-time at 45 FPS.
 A smaller version, Fast YOLO, processes an astounding 155 FPS!
@@ -181,6 +191,10 @@ The newest version, YOLOv7<sup>[7]</sup>, was released in July 2022 and is capab
 <hr />
 
 <h2 id="creating-an-object-detection-model">Creating an object detection model</h2>
+
+<p>I'll leverage TensorFlow's model zoo to fine-tune and train a Faster R-CNN model.
+This article will explain the general procedures for building the model.
+A detailed step-by-step article will be written in the future.</p>
 
 <hr />
 
