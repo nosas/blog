@@ -112,14 +112,14 @@ Installed C++ 14.0:       error: Microsoft Visual C++ 14.0 or greater is require
 
 OSError: Checkpoint is expected to be an object-based checkpoint.
   fine_tune_checkpoint: "C:/Users/Sason/Documents/Projects/blog/custom_object_detection/tensorflow/workspace/training_demo/pre_trained_models/faster_rcnn_resnet152_v1_1024x1024_coco17_tpu-8/checkpoint/ckpt-0.index"
-Solution: Modify `fine_tune_checkpoint` in pipeline.config, remove the .index
+Solution: Modify `fine_tune_checkpoint` in pipeline.config, strip the .index
 
 ### Monitor training progress with TensorBoard
 
+<font style="color:red">TODO: Insert image of training</font>
 
 ---
 ## Evaluate the model
-
 
 ---
 ## Export the model
@@ -135,3 +135,12 @@ New file located under `~/blog/custom_object_detection/tensorflow/workspace/trai
 ---
 ## Use model for inference
 
+The model does not generate bounding boxes on the images.
+I suspect it's due to the vast difference in image sizes.
+There are two avenues for resolving this issue:
+
+1. Train a custom object detector that takes as input an image 1/4 the original size
+2. Create a miniature dataset of image sizes relatively near the existing model's input size
+
+Another option is to train using a different architecture, such as SSD or EfficientDet.
+I will train another model first before I train a custom object detector.
