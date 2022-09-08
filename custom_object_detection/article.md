@@ -99,6 +99,8 @@ Create new directory under `training_demo\models`
 Modify pipeline.config `blog\custom_object_detection\tensorflow\workspace\training_demo\models\my_faster_rcnn_resnet152_v1\pipeline.config`
 Follow steps from here: https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/training.html#configure-the-training-pipeline
 
+Alternatively, copy custom pipeline config from TF's object detection sample config directory: `~\blog\custom_object_detection\tensorflow\models\research\object_detection\samples\configs`
+
 ---
 ## Train the model
 
