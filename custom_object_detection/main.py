@@ -46,7 +46,7 @@ def load_image_into_numpy_array(path):
     uint8 numpy array with shape (img_height, img_width, 3)
   """
   img_data = tf.io.gfile.GFile(path, 'rb').read()
-  image = Image.open(BytesIO(img_data)).resize((1024, 1024))
+  image = Image.open(BytesIO(img_data)).resize((1680,700))
   (im_width, im_height) = image.size
   return np.array(image.getdata()).reshape(
       (im_height, im_width, 3)).astype(np.uint8)
@@ -124,7 +124,8 @@ import tensorflow_hub as hub
 # For downloading the image.
 import matplotlib.pyplot as plt
 import tempfile
-from six.moves.urllib.request import urlopenfrom six import BytesIO
+from six.moves.urllib.request import urlopen
+from six import BytesIO
 
 # For drawing onto the image.
 import numpy as np
@@ -150,7 +151,7 @@ def display_image(image):
   plt.imshow(image)
 
 
-def resize_image(image_filepath, new_width=1024, new_height=1024, display=False):
+def resize_image(image_filepath, new_width=1680, new_height=700, display=False):
   pil_image = Image.open(image_filepath).resize((new_width, new_height))
   if display:
     display_image(pil_image)
@@ -236,7 +237,7 @@ def load_img(path):
   img = tf.image.decode_png(img, channels=3)
   img = tf.image.resize(
     img,
-    (1024, 1024),
+    (700, 1680),
     preserve_aspect_ratio=False,
     antialias=False,
     )

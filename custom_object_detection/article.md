@@ -1,4 +1,3 @@
-
 # Custom Object Detection
 
 This is for transfer learning object detection
@@ -96,7 +95,7 @@ training_demo/
 ### Configure the training **pipeline**
 
 Create new directory under `training_demo\models`
-Modify pipeline.config `blog\custom_object_detection\tensorflow\workspace\training_demo\models\my_faster_rcnn_resnet152_v1\pipeline.config`
+Modify pipeline.config `blog\custom_object_detection\tensorflow\workspace\training_demo\models\my_ssd\pipeline.config`
 Follow steps from here: https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/training.html#configure-the-training-pipeline
 
 Alternatively, copy custom pipeline config from TF's object detection sample config directory: `~\blog\custom_object_detection\tensorflow\models\research\object_detection\samples\configs`
@@ -106,7 +105,7 @@ Alternatively, copy custom pipeline config from TF's object detection sample con
 
 ```bash
 # from ~/blog/custom_object_detection/tensorflow/workspace/training_demo
-python model_main_tf2.py --model_dir=models/my_faster_rcnn_resnet152_v1 --pipeline_config_path=models/my_faster_rcnn_resnet152_v1/pipeline.config
+python model_main_tf2.py --model_dir=models/my_ssd --pipeline_config_path=models/my_ssd/pipeline.config
 ```
 
 No module name pycocotools, lvis,
@@ -128,7 +127,7 @@ Solution: Modify `fine_tune_checkpoint` in pipeline.config, strip the .index
 
 ```bash
 # from ~/blog/custom_object_detection/tensorflow/workspace/training_demo
-python ./exporter_main_v2.py --input_type image_tensor --pipeline_config_path ./models/my_faster_rcnn_resnet152_v1/pipeline.config --trained_checkpoint_dir ./models/my_faster_rcnn_resnet152_v1/ --output_directory ./exported-models/my_model
+python ./exporter_main_v2.py --input_type image_tensor --pipeline_config_path ./models/my_ssd/pipeline.config --trained_checkpoint_dir ./models/my_ssd/ --output_directory ./exported-models/my_model
 ```
 
 New file located under `~/blog/custom_object_detection/tensorflow/workspace/training_demo/exported-models/my_model`
