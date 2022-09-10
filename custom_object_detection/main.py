@@ -18,6 +18,7 @@ import tensorflow as tf
 from object_detection.utils import ops as utils_ops
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
+from random import shuffle
 
 %matplotlib inline
 
@@ -46,7 +47,7 @@ def load_image_into_numpy_array(path):
     uint8 numpy array with shape (img_height, img_width, 3)
   """
   img_data = tf.io.gfile.GFile(path, 'rb').read()
-  image = Image.open(BytesIO(img_data)).resize((1680,700))
+  image = Image.open(BytesIO(img_data)).resize((1720*2,720*2))
   (im_width, im_height) = image.size
   return np.array(image.getdata()).reshape(
       (im_height, im_width, 3)).astype(np.uint8)
@@ -88,9 +89,11 @@ def run_inference_for_single_image(model, image):
 
 
 # %% Run inference
-img_path_test = "./tensorflow/workspace/training_demo/images/test"
+img_path_test = "./tensorflow/workspace/training_demo/images/train"
 
-for image_path in glob.glob(f'{img_path_test}/*.png')[-1:]:
+img_fps = glob.glob(f'{img_path_test}/*.png')
+shuffle(img_fps)
+for image_path in img_fps[-5:]:
   image_np = load_image_into_numpy_array(image_path)
   output_dict = run_inference_for_single_image(model, image_np)
   img = vis_util.visualize_boxes_and_labels_on_image_array(
@@ -105,169 +108,4 @@ for image_path in glob.glob(f'{img_path_test}/*.png')[-1:]:
   display(Image.fromarray(img))
   print(output_dict['num_detections'])
 
-
-
-
-
-
-
-
-
-# %% Second attempt
-#@title Imports and function definitions
-
-# For running inference on the TF-Hub module.
-import tensorflow as tf
-
-import tensorflow_hub as hub
-
-# For downloading the image.
-import matplotlib.pyplot as plt
-import tempfile
-from six.moves.urllib.request import urlopen
-from six import BytesIO
-
-# For drawing onto the image.
-import numpy as np
-from PIL import Image
-from PIL import ImageColor
-from PIL import ImageDraw
-from PIL import ImageFont
-from PIL import ImageOps
-
-# For measuring the inference time.
-import time
-
-# Print Tensorflow version
-print(tf.__version__)
-
-# Check available GPU devices.
-print("The following GPU devices are available: %s" % tf.test.gpu_device_name())
-
-# %%
-def display_image(image):
-  fig = plt.figure(figsize=(20, 15))
-  plt.grid(False)
-  plt.imshow(image)
-
-
-def resize_image(image_filepath, new_width=1680, new_height=700, display=False):
-  pil_image = Image.open(image_filepath).resize((new_width, new_height))
-  if display:
-    display_image(pil_image)
-  return pil_image
-
-
-def draw_bounding_box_on_image(image,
-                               ymin,
-                               xmin,
-                               ymax,
-                               xmax,
-                               color,
-                               font,
-                               thickness=4,
-                               display_str_list=()):
-  """Adds a bounding box to an image."""
-  draw = ImageDraw.Draw(image)
-  im_width, im_height = image.size
-  (left, right, top, bottom) = (xmin * im_width, xmax * im_width,
-                                ymin * im_height, ymax * im_height)
-  draw.line([(left, top), (left, bottom), (right, bottom), (right, top),
-             (left, top)],
-            width=thickness,
-            fill=color)
-
-  # If the total height of the display strings added to the top of the bounding
-  # box exceeds the top of the image, stack the strings below the bounding box
-  # instead of above.
-  display_str_heights = [font.getsize(ds)[1] for ds in display_str_list]
-  # Each display_str has a top and bottom margin of 0.05x.
-  total_display_str_height = (1 + 2 * 0.05) * sum(display_str_heights)
-
-  if top > total_display_str_height:
-    text_bottom = top
-  else:
-    text_bottom = top + total_display_str_height
-  # Reverse list and print from bottom to top.
-  for display_str in display_str_list[::-1]:
-    text_width, text_height = font.getsize(display_str)
-    margin = np.ceil(0.05 * text_height)
-    draw.rectangle([(left, text_bottom - text_height - 2 * margin),
-                    (left + text_width, text_bottom)],
-                   fill=color)
-    draw.text((left + margin, text_bottom - text_height - margin),
-              display_str,
-              fill="black",
-              font=font)
-    text_bottom -= text_height - 2 * margin
-
-
-def draw_boxes(image, boxes, class_names, scores, max_boxes=10, min_score=0.1):
-  """Overlay labeled boxes on an image with formatted scores and label names."""
-  colors = list(ImageColor.colormap.values())
-
-  try:
-    font = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSansNarrow-Regular.ttf",
-                              25)
-  except IOError:
-    print("Font not found, using default font.")
-    font = ImageFont.load_default()
-
-  for i in range(min(boxes.shape[0], max_boxes)):
-    if scores[i] >= min_score:
-      ymin, xmin, ymax, xmax = tuple(boxes[i])
-      display_str = "{}: {}%".format(class_names[i].decode("ascii"),
-                                     int(100 * scores[i]))
-      color = colors[hash(class_names[i]) % len(colors)]
-      image_pil = Image.fromarray(np.uint8(image)).convert("RGB")
-      draw_bounding_box_on_image(
-          image_pil,
-          ymin,
-          xmin,
-          ymax,
-          xmax,
-          color,
-          font,
-          display_str_list=[display_str])
-      np.copyto(image, np.array(image_pil))
-  return image
-# %%
-def load_img(path):
-  img = tf.io.read_file(path)
-  img = tf.image.decode_png(img, channels=3)
-  img = tf.image.resize(
-    img,
-    (700, 1680),
-    preserve_aspect_ratio=False,
-    antialias=False,
-    )
-  return img
-
-def run_detector(detector, path):
-    img = load_img(path)
-    converted_img  = tf.image.convert_image_dtype(img, tf.uint8)[tf.newaxis, ...]
-    start_time = time.time()
-    # Run inference
-    result = detector(converted_img)
-    #   result = detector(converted_img)
-    end_time = time.time()
-
-    result = {key:value.numpy() for key,value in result.items()}
-    print(result)
-    print("Found %d objects." % len(result["detection_scores"]))
-    print("Inference time: ", end_time-start_time)
-    return (img, result)
-
-imgpath = 'C:/Users/Sason/Documents/Projects/blog/custom_object_detection/tensorflow/workspace/training_demo/images/test/ttr-screenshot-Thu-Jul-07-22-58-02-2022-195576.png'
-img, result = run_detector(model, imgpath)
-# %%
-
-image_with_boxes = draw_boxes(
-    image=img.numpy(),
-    boxes=result["detection_boxes"][0],
-    class_names=result["detection_classes"][0],
-    scores=result["detection_scores"][0],
-    max_boxes=200)
-
-display_image(image_with_boxes/255)
 # %%
