@@ -11,7 +11,7 @@ More specifically, the previous article covered how to...
 - automatically optimize hyperparameter values with Keras-tuner
 - interpret and visualize what the model is learning with confusion matrices and class activation maps
 
-This article explains object detection of Cogs and Toons - also called entity detection.
+This article explains object detection of Cogs - also called entity detection.
 After reading this article, you should have a better understanding of how to...
 
 - differentiate between object detection models (YOLO, R-CNN, SSD)
@@ -35,6 +35,10 @@ For now, let's focus on object detection.
         - [SSD](#ssd)
         - [YOLO](#yolo)
     - [Creating an object detection model](#creating-an-object-detection-model)
+        - [Issues encountered](#issues-encountered)
+            - [Input image size](#input-image-size)
+            - [Accuracy or speed](#accuracy-or-speed)
+            - [Unable to detect Toons](#unable-to-detect-toons)
     - [Extract objects from an image](#extract-objects-from-an-image)
     - [Build data pipelines to semi-autonomously grow a dataset](#build-data-pipelines-to-semi-autonomously-grow-a-dataset)
     - [References](#references)
@@ -153,9 +157,35 @@ The newest version, YOLOv7<sup>[7]</sup>, was released in July 2022 and is capab
 ---
 ## Creating an object detection model
 
-I'll leverage TensorFlow's model zoo to fine-tune and train a Faster R-CNN model.
+I'll leverage [TensorFlow's model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md) to fine-tune and train a SSD model.
 This article will explain the general procedures for building the model.
-A detailed step-by-step article will be written in the future.
+A rough step-by-step page can be found in my knowledge base.
+In the future, I'd like to write an article about how feature extractors are created and used for smaller projects like this.
+
+### Issues encountered
+
+#### Input image size
+My main concern about this project revolved around the dataset's image sizes being too large at 3440x1440.
+I trained a larger model (Faster R-CNN Resnet152) on the dataset and each training step took over 3 seconds.
+It took over 90 minutes to train 1000 steps!
+Even worse, the model likely would not converge until the following day; so, I stopped training.
+
+Scaling the image sizes down by half (1720x720) resulted in faster training and inference speed.
+Further scaling the images down to 1/4 the original size (860x360) led to even faster training.
+The model converged in less than an hour after 50,000 training steps.
+Issue #1 resolved!
+
+#### Accuracy or speed
+
+Started with Faster R-CNN because I wanted accuracy for the data pipeline.
+Shifted to SSD for realtime.
+
+#### Unable to detect Toons
+
+SSD model does not detect Toons.
+Two options: Increase Toon weights in dataset or modify entire dataset to include only Cogs.
+It's more important to detect Cogs, so we may just exclude all Toons for the time being.
+Another option is to tweak the model's thresholds, such as number of layers in the feature extractor.
 
 ---
 ## Extract objects from an image
