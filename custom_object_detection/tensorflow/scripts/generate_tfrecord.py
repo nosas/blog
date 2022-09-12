@@ -133,13 +133,13 @@ def split(df, group):
 
 def create_tf_example(group, path):
     with tf.gfile.GFile(os.path.join(path, "{}".format(group.filename)), "rb") as fid:
-        encoded_jpg = fid.read()
-    encoded_jpg_io = io.BytesIO(encoded_jpg)
-    image = Image.open(encoded_jpg_io)
+        encoded_png = fid.read()
+    encoded_png_io = io.BytesIO(encoded_png)
+    image = Image.open(encoded_png_io)
     width, height = image.size
 
     filename = group.filename.encode("utf8")
-    image_format = b"jpg"
+    image_format = b"png"
     xmins = []
     xmaxs = []
     ymins = []
@@ -147,34 +147,46 @@ def create_tf_example(group, path):
     classes_text = []
     classes = []
 
-    for index, row in group.object.iterrows():
+    for _, row in group.object.iterrows():
+        class_str = row["class"].split("_")[0]
+        if "toon" in class_str:
+            continue
         xmins.append(row["xmin"] / width)
         xmaxs.append(row["xmax"] / width)
         ymins.append(row["ymin"] / height)
         ymaxs.append(row["ymax"] / height)
-        classes_text.append(row["class"].encode("utf8"))
-        classes.append(class_text_to_int(row["class"]))
+        class_text = class_str.encode("utf8")
+        classes_text.append(class_text)
+        classes.append(class_text_to_int(class_str))
 
-    tf_example = tf.train.Example(
-        features=tf.train.Features(
-            feature={
-                "image/height": dataset_util.int64_feature(height),
-                "image/width": dataset_util.int64_feature(width),
-                "image/filename": dataset_util.bytes_feature(filename),
-                "image/source_id": dataset_util.bytes_feature(filename),
-                "image/encoded": dataset_util.bytes_feature(encoded_jpg),
-                "image/format": dataset_util.bytes_feature(image_format),
-                "image/object/bbox/xmin": dataset_util.float_list_feature(xmins),
-                "image/object/bbox/xmax": dataset_util.float_list_feature(xmaxs),
-                "image/object/bbox/ymin": dataset_util.float_list_feature(ymins),
-                "image/object/bbox/ymax": dataset_util.float_list_feature(ymaxs),
-                "image/object/class/text": dataset_util.bytes_list_feature(
-                    classes_text
-                ),
-                "image/object/class/label": dataset_util.int64_list_feature(classes),
-            }
+    tf_example = None
+    if classes_text != []:
+        tf_example = tf.train.Example(
+            features=tf.train.Features(
+                feature={
+                    "image/height": dataset_util.int64_feature(height),
+                    "image/width": dataset_util.int64_feature(width),
+                    "image/filename": dataset_util.bytes_feature(filename),
+                    "image/source_id": dataset_util.bytes_feature(filename),
+                    "image/encoded": dataset_util.bytes_feature(encoded_png),
+                    "image/format": dataset_util.bytes_feature(image_format),
+                    "image/object/bbox/xmin": dataset_util.float_list_feature(xmins),
+                    "image/object/bbox/xmax": dataset_util.float_list_feature(xmaxs),
+                    "image/object/bbox/ymin": dataset_util.float_list_feature(ymins),
+                    "image/object/bbox/ymax": dataset_util.float_list_feature(ymaxs),
+                    "image/object/class/text": dataset_util.bytes_list_feature(
+                        classes_text
+                    ),
+                    "image/object/class/label": dataset_util.int64_list_feature(classes),
+                }
+            )
         )
-    )
+    else:
+        # Remove images and XML files containing only Toons
+        fn = filename.decode()
+        print(path, fn)
+        os.rename(f"{path}/{fn}", f"./toons/{fn}")
+        os.rename(f"{path}/{fn.replace('png', 'xml')}", f"./toons/{fn.replace('png', 'xml')}")
     return tf_example
 
 
@@ -186,7 +198,8 @@ def main(_):
     grouped = split(examples, "filename")
     for group in grouped:
         tf_example = create_tf_example(group, path)
-        writer.write(tf_example.SerializeToString())
+        if tf_example:
+            writer.write(tf_example.SerializeToString())
     writer.close()
     print("Successfully created the TFRecord file: {}".format(args.output_path))
     if args.csv_path is not None:
