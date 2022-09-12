@@ -105,7 +105,7 @@ Alternatively, copy custom pipeline config from TF's object detection sample con
 
 ```bash
 # from ~/blog/custom_object_detection/tensorflow/workspace/training_demo
-python model_main_tf2.py --model_dir=models/my_ssd --pipeline_config_path=models/my_ssd/pipeline.config
+python model_main_tf2.py --model_dir=models/my_ssd2 --pipeline_config_path=models/my_ssd2/pipeline.config
 ```
 
 No module name pycocotools, lvis,

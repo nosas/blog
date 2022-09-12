@@ -166,7 +166,7 @@ In the future, I'd like to write an article about how feature extractors are cre
 
 #### Input image size
 My main concern about this project revolved around the dataset's image sizes being too large at 3440x1440.
-I trained a larger model (Faster R-CNN Resnet152) on the dataset and each training step took over 3 seconds.
+I trained a larger model (Faster R-CNN ResNet152) on the dataset and each training step took over 3 seconds.
 It took over 90 minutes to train 1000 steps!
 Even worse, the model likely would not converge until the following day; so, I stopped training.
 
@@ -184,8 +184,10 @@ Shifted to SSD for realtime.
 
 SSD model does not detect Toons.
 Two options: Increase Toon weights in dataset or modify entire dataset to include only Cogs.
-It's more important to detect Cogs, so we may just exclude all Toons for the time being.
 Another option is to tweak the model's thresholds, such as number of layers in the feature extractor.
+It's more important to detect Cogs so I will exclude Toons from the dataset.
+
+I generated new TensorFlow record files which consist purely of Cog
 
 ---
 ## Extract objects from an image
