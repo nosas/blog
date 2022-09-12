@@ -1,25 +1,17 @@
 # %%  Imports and function definitions
-import io
-import os
-import scipy.misc
 import numpy as np
-import six
-import time
 import glob
 from IPython.display import display
 
 from six import BytesIO
 
-import matplotlib
-import matplotlib.pyplot as plt
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 
 import tensorflow as tf
 from object_detection.utils import ops as utils_ops
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
-from random import shuffle
-
+from pascal_voc_writer import Writer
 
 # %% Load model
 tf.keras.backend.clear_session()
@@ -95,7 +87,7 @@ def run_inference_for_single_image(model, image):
 
 
 # %% Run inference
-img_path_test = "./tensorflow/workspace/training_demo/images/train"
+img_path_test = "./tensorflow/workspace/training_demo/images/label"
 
 img_fps = glob.glob(f"{img_path_test}/*.png")
 # shuffle(img_fps)
@@ -118,12 +110,14 @@ for image_path in img_fps[-1:]:
 # %% Create function to retrieve detected objects' boxes
 
 
-def get_highest_scoring_boxes(output_dict):
-    score_threshold = 0.5
+def get_highest_scoring_boxes(output_dict: dict, score_threshold: float = 0.5):
     num_detections = 0
+    # Output scores are sorted b descending values
+    # The loop can be broken if a score < threshold is encountered
     for score in output_dict["detection_scores"]:
-        if score > score_threshold:
-            num_detections += 1
+        if score < score_threshold:
+            break
+        num_detections += 1
 
     if num_detections > 0:
         scores = output_dict["detection_scores"][:num_detections]
@@ -148,8 +142,17 @@ def normal_box_to_absolute(image_np: np.ndarray, box: list[float]):
         list[float]: List containing absolute coordinate values
     """
     y, x, _ = image_np.shape
-    ymin, xmin, ymax, xmax = box
-    return [y * ymin, x * xmin, y * ymax, x * xmax]
+    if box.ndim > 1:  # Input is a list of bounding boxes
+        boxes = []
+        for b in box:
+            ymin, xmin, ymax, xmax = b
+            boxes.append(
+                np.array([y * ymin, x * xmin, y * ymax, x * xmax]).astype("int")
+            )
+        return np.array(boxes)
+    else:  # Input is a single bounding box
+        ymin, xmin, ymax, xmax = box
+        return np.array([y * ymin, x * xmin, y * ymax, x * xmax]).astype("int")
 
 
 # %% Get highest scoring boxes
@@ -173,4 +176,54 @@ img = vis_util.visualize_boxes_and_labels_on_image_array(
 )
 display(Image.fromarray(img))
 
+# %% Create XML files in Pascal-VOC format
+# Create pascal VOC writer
+writer = Writer(path=image_path, width=image_np.shape[1], height=image_np.shape[0])
+
+# Add objects (class, xmin, ymin, xmax, ymax)
+for class_str, box in zip(classes_str, boxes):
+    ymin, xmin, ymax, xmax = normal_box_to_absolute(image_np, box)
+    writer.addObject(class_str, xmin, ymin, xmax, ymax)
+
+fn_xml = image_path.split("\\")[-1].replace(".png", ".xml")
+path_xml = f"tensorflow/workspace/training_demo/images/label/{fn_xml}"
+writer.save(annotation_path=path_xml)
+
+
+# %% Create XML files for a list of test images
+img_path_test = "./tensorflow/workspace/training_demo/images/label"
+
+img_fps = glob.glob(f"{img_path_test}/*.png")
+# shuffle(img_fps)
+for image_path in img_fps:
+
+    # Create downscaled image array to decrease inference times
+    image_np_downscale = load_image_into_numpy_array(image_path, resize=(1720, 720))
+    output_dict = run_inference_for_single_image(model, image_np_downscale)
+    img = vis_util.visualize_boxes_and_labels_on_image_array(
+        image=image_np_downscale,
+        boxes=output_dict["detection_boxes"],
+        classes=output_dict["detection_classes"],
+        scores=output_dict["detection_scores"],
+        category_index=category_index,
+        instance_masks=output_dict.get("detection_masks_reframed", None),
+        use_normalized_coordinates=True,
+        line_thickness=10,
+    )
+
+    # Create original size image array for accurate absolute bounding boxes
+    image_np = load_image_into_numpy_array(image_path)
+    scores, boxes, classes, classes_str = get_highest_scoring_boxes(output_dict)
+    # Create pascal VOC writer
+    writer = Writer(path=image_path, width=image_np.shape[1], height=image_np.shape[0])
+    # Add objects (class, xmin, ymin, xmax, ymax)
+    for class_str, box in zip(classes_str, boxes):
+        ymin, xmin, ymax, xmax = normal_box_to_absolute(image_np, box)
+        writer.addObject(class_str, xmin, ymin, xmax, ymax)
+
+    fn_xml = image_path.split("\\")[-1].replace(".png", ".xml")
+    path_xml = f"{img_path_test}/{fn_xml}"
+    writer.save(annotation_path=path_xml)
+
+    print(image_path)
 # %%
