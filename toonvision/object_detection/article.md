@@ -39,6 +39,7 @@ For now, let's focus on object detection.
             - [Input image size](#input-image-size)
             - [Accuracy or speed](#accuracy-or-speed)
             - [Unable to detect Toons](#unable-to-detect-toons)
+            - [Dataset inconsistencies](#dataset-inconsistencies)
     - [Extract objects from an image](#extract-objects-from-an-image)
     - [Build data pipelines to semi-autonomously grow a dataset](#build-data-pipelines-to-semi-autonomously-grow-a-dataset)
     - [References](#references)
@@ -164,7 +165,16 @@ In the future, I'd like to write an article about how feature extractors are cre
 
 ### Issues encountered
 
+I encountered many issues that are not often discussed in articles and tutorials.
+In an effort to provide a realistic overview of my process, I've explained the following issues:
+
+1. Input image size being too large
+2. Accuracy or speed for model selection
+3. Model does not detect Toons
+4. Bounding box inconsistencies in the dataset
+
 #### Input image size
+
 My main concern about this project revolved around the dataset's image sizes being too large at 3440x1440.
 I trained a larger model (Faster R-CNN ResNet152) on the dataset and each training step took over 3 seconds.
 It took over 90 minutes to train 1000 steps!
@@ -187,11 +197,45 @@ Issue #2 resolved!
 
 The trained SSD model does not detect Toons.
 In fact, the Toons it does detect are classified as Cogs.
+This issue is largely due to the massive dataset imbalance: 526 Cog samples and 148 Toon samples.
 There are two solutions: Increase weights of Toon localization and classification during training or modify entire dataset to include only Cogs.
 
 Recall that the goal of ToonVision is for a Toon to see Cogs.
 Given that it's more important to detect Cogs, I will exclude Toons from the dataset.
 I generated new TensorFlow record files which consist purely of Cogs and excluded any images that contained only Toons.
+Issue #3 resolved!
+
+#### Dataset inconsistencies
+
+This is probably an uncommon issue.
+When creating the binary and multi-class classification models, I opted to only include clear, non-obstructed Cog and Toon samples.
+This means I did not put bounding boxes on entities that were occluded by another object.
+However, the trained SSD model detects and classifies occluded Cogs!
+
+*Why is it bad for the model to detect objects that I did not classify in the training set?*
+It negatively affects the training loss.
+More specifically, the localization loss increases during training.
+
+*What's causing the loss increase?*
+During training, the localization loss is calculated in part by how accurate the model's predicted bounding boxes compares to the ground truth bounding boxes.
+In object detection terms, the bounding box accuracy is called the **Intersection over Union** (IoU).
+IoU scores the overlap of the predicted box and the ground truth box.
+The higher the IoU score, the higher the accuracy.
+If there's no ground truth box, however, the IoU score will be zero and training loss will increase.
+
+*How does this inconsistency affect training?*
+The inconsistency did not affect the model's performance, but it decreased training performance and convergence.
+
+<font style="color:red">TODO: Insert Tensorboard loss graphs</font>
+
+*How can I resolve the issue?*
+I would have to go through the dataset and label the non-labeled Cogs.
+Alternatively, I could run the entire dataset through the model and compare the number of detected objects against the ground truth.
+If there's a discrepancy, I can manually review the ground truth labels and correct them if needed.
+
+In short, the model localizes objects that I did not declare as ground truth.
+It slowed down training but did not affect performance too much.
+Issue #4 explained, but unresolved!
 
 ---
 ## Extract objects from an image
