@@ -177,20 +177,21 @@ Issue #1 resolved!
 
 #### Accuracy or speed
 
-Originally, I had planned to have one model for real-time detection in videos (speed) and another for detection in images (accuracy).
+I had originally planned to have two model: one for real-time detection in videos (speed) and another for detection in images (accuracy).
 Faster R-CNN was to be used in image detection because I wanted accuracy for the data pipeline.
 SSD or YOLO for the real-time video detection.
 Given the large size and lengthy training process of two-shot models, I've scrapped the idea of two models in favor of a single SSD model.
-
+Issue #2 resolved!
 
 #### Unable to detect Toons
 
-SSD model does not detect Toons.
-Two options: Increase Toon weights in dataset or modify entire dataset to include only Cogs.
-Another option is to tweak the model's thresholds, such as number of layers in the feature extractor.
-It's more important to detect Cogs so I will exclude Toons from the dataset.
+The trained SSD model does not detect Toons.
+In fact, the Toons it does detect are classified as Cogs.
+There are two solutions: Increase weights of Toon localization and classification during training or modify entire dataset to include only Cogs.
 
-I generated new TensorFlow record files which consist purely of Cog
+Recall that the goal of ToonVision is for a Toon to see Cogs.
+Given that it's more important to detect Cogs, I will exclude Toons from the dataset.
+I generated new TensorFlow record files which consist purely of Cogs and excluded any images that contained only Toons.
 
 ---
 ## Extract objects from an image
