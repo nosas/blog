@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 14, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 15, 2022</p>
 
 <p><title>ToonVision: Object Detection</title></p>
 
@@ -77,11 +77,22 @@ For now, let's focus on object detection.</p>
 <li><a href="#dataset-inconsistencies">Dataset inconsistencies</a></li>
 </ul></li>
 </ul></li>
+<li><a href="#prediction-results">Prediction results</a>
+<ul>
+<li><a href="#run-inference">Run inference</a></li>
+<li><a href="#retrieve-predicted-bounding-boxes">Retrieve predicted bounding boxes</a></li>
+<li><a href="#visualize-boxes-and-labels-on-the-input-image">Visualize boxes and labels on the input image</a></li>
+<li><a href="#sample-predictions">Sample predictions</a></li>
+</ul></li>
 <li><a href="#save-predicted-annotations-in-pascal-voc-format">Save predicted annotations in PASCAL VOC format</a>
 <ul>
+<li><a href="#review-correct-and-verify-the-predicted-annotations">Review, correct, and verify the predicted annotations</a></li>
 <li><a href="#extract-the-annotated-objects">Extract the annotated objects</a></li>
 </ul></li>
-<li><a href="#build-data-pipelines-to-semi-autonomously-grow-a-dataset">Build data pipelines to semi-autonomously grow a dataset</a></li>
+<li><a href="#build-data-pipelines-to-semi-autonomously-grow-a-dataset">Build data pipelines to semi-autonomously grow a dataset</a>
+<ul>
+<li><a href="#future-pipeline-enhancements">Future pipeline enhancements</a></li>
+</ul></li>
 <li><a href="#references">References</a>
 </details></li>
 </ul></li>
@@ -253,6 +264,8 @@ In fact, the Toons it does detect are classified as Cogs.
 This issue is largely due to the massive dataset imbalance: 526 Cog samples and 148 Toon samples.
 There are two solutions: Increase weights of Toon localization and classification during training or modify entire dataset to include only Cogs.</p>
 
+<p><font style="color:red">TODO: Insert image of undetected or wrongly detected Toon</font></p>
+
 <p>Recall that the goal of ToonVision is for a Toon to see Cogs.
 Given that it's more important to detect Cogs, I will exclude Toons from the dataset.
 I generated new TensorFlow record files which consist purely of Cogs and excluded any images that contained only Toons.
@@ -296,13 +309,86 @@ Issue #4 explained, but unresolved!</p>
 
 <hr />
 
+<h2 id="prediction-results">Prediction results</h2>
+
+<p>Enough about my issues, let's take a look at the model's predictions.
+But first I need functions to run inference, retrieve the predicted bounding boxes, and visualize boxes and labels on the input image.</p>
+
+<h3 id="run-inference">Run inference</h3>
+
+<h3 id="retrieve-predicted-bounding-boxes">Retrieve predicted bounding boxes</h3>
+
+<h3 id="visualize-boxes-and-labels-on-the-input-image">Visualize boxes and labels on the input image</h3>
+
+<h3 id="sample-predictions">Sample predictions</h3>
+
+<p><font style="color:red">TODO: Insert image of sample predictions with bounding boxes</font></p>
+
+<hr />
+
 <h2 id="save-predicted-annotations-in-pascal-voc-format">Save predicted annotations in PASCAL VOC format</h2>
 
+<p>Utilize a small Python package for reading and writing PASCAL VOC annotations.
+Save annotations in the same directory as the sample image.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pascal_voc_writer</span> <span class="kn">import</span> <span class="n">Writer</span>
+
+<span class="c1"># Create pascal VOC writer</span>
+<span class="n">writer</span> <span class="o">=</span> <span class="n">Writer</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">image_path</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">image_np</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">image_np</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1"># Add objects (class, xmin, ymin, xmax, ymax)</span>
+<span class="k">for</span> <span class="n">class_str</span><span class="p">,</span> <span class="n">box</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">classes_str</span><span class="p">,</span> <span class="n">boxes</span><span class="p">):</span>
+    <span class="n">ymin</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="n">normal_box_to_absolute</span><span class="p">(</span><span class="n">image_np</span><span class="p">,</span> <span class="n">box</span><span class="p">)</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">addObject</span><span class="p">(</span><span class="n">class_str</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+
+<span class="n">fn_xml</span> <span class="o">=</span> <span class="n">image_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.png&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">)</span>
+<span class="n">path_xml</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;tensorflow/workspace/training_demo/images/label/</span><span class="si">{</span><span class="n">fn_xml</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">annotation_path</span><span class="o">=</span><span class="n">path_xml</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="review-correct-and-verify-the-predicted-annotations">Review, correct, and verify the predicted annotations</h3>
+
 <h3 id="extract-the-annotated-objects">Extract the annotated objects</h3>
+
+<p>Insert code snippets to extract objects from bounding boxes</p>
 
 <hr />
 
 <h2 id="build-data-pipelines-to-semi-autonomously-grow-a-dataset">Build data pipelines to semi-autonomously grow a dataset</h2>
+
+<p>The new pipeline looks like this:</p>
+
+<ol>
+<li>Take screenshot</li>
+<li>Save to correct directory within <code>toonvision/img/raw/screenshots/</code></li>
+<li>Load model</li>
+<li>Run inference</li>
+<li>Save predicted annotations in PASCAL VOC format in same directory as its respective sample image</li>
+<li>Manually review, correct, and verify the predicted annotations</li>
+</ol>
+
+<p>New process saves me time by assisting with the dataset annotation process.</p>
+
+<h3 id="future-pipeline-enhancements">Future pipeline enhancements</h3>
+
+<ul>
+<li>Run the extracted objects through a suit and name classifier to enhance the label from "cog" to "cog_bb_flunky"
+<ul>
+<li>Raise an error/alert me if the suit and name mismatch</li>
+<li>Manually label the image</li>
+</ul></li>
+<li>Create metadata about the image
+<ul>
+<li>Number of Cogs</li>
+<li>Number of Toons</li>
+<li>Street name</li>
+<li>Playground</li>
+<li>Cog names and counts</li>
+<li>Cog suits and counts</li>
+</ul></li>
+<li>Store metadata in SQLite database</li>
+<li>Visualize dataset over time to see how it grows</li>
+</ul>
 
 <hr />
 

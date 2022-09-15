@@ -40,9 +40,16 @@ For now, let's focus on object detection.
             - [Accuracy or speed](#accuracy-or-speed)
             - [Unable to detect Toons](#unable-to-detect-toons)
             - [Dataset inconsistencies](#dataset-inconsistencies)
+    - [Prediction results](#prediction-results)
+        - [Run inference](#run-inference)
+        - [Retrieve predicted bounding boxes](#retrieve-predicted-bounding-boxes)
+        - [Visualize boxes and labels on the input image](#visualize-boxes-and-labels-on-the-input-image)
+        - [Sample predictions](#sample-predictions)
     - [Save predicted annotations in PASCAL VOC format](#save-predicted-annotations-in-pascal-voc-format)
+        - [Review, correct, and verify the predicted annotations](#review-correct-and-verify-the-predicted-annotations)
         - [Extract the annotated objects](#extract-the-annotated-objects)
     - [Build data pipelines to semi-autonomously grow a dataset](#build-data-pipelines-to-semi-autonomously-grow-a-dataset)
+        - [Future pipeline enhancements](#future-pipeline-enhancements)
     - [References](#references)
 </details>
 
@@ -206,6 +213,8 @@ In fact, the Toons it does detect are classified as Cogs.
 This issue is largely due to the massive dataset imbalance: 526 Cog samples and 148 Toon samples.
 There are two solutions: Increase weights of Toon localization and classification during training or modify entire dataset to include only Cogs.
 
+<font style="color:red">TODO: Insert image of undetected or wrongly detected Toon</font>
+
 Recall that the goal of ToonVision is for a Toon to see Cogs.
 Given that it's more important to detect Cogs, I will exclude Toons from the dataset.
 I generated new TensorFlow record files which consist purely of Cogs and excluded any images that contained only Toons.
@@ -248,12 +257,77 @@ It slowed down training but did not affect performance too much.
 Issue #4 explained, but unresolved!
 
 ---
+## Prediction results
+
+Enough about my issues, let's take a look at the model's predictions.
+But first I need functions to run inference, retrieve the predicted bounding boxes, and visualize boxes and labels on the input image.
+
+### Run inference
+
+### Retrieve predicted bounding boxes
+
+### Visualize boxes and labels on the input image
+
+### Sample predictions
+
+<font style="color:red">TODO: Insert image of sample predictions with bounding boxes</font>
+
+---
 ## Save predicted annotations in PASCAL VOC format
+
+Utilize a small Python package for reading and writing PASCAL VOC annotations.
+Save annotations in the same directory as the sample image.
+
+```python
+from pascal_voc_writer import Writer
+
+# Create pascal VOC writer
+writer = Writer(path=image_path, width=image_np.shape[1], height=image_np.shape[0])
+
+# Add objects (class, xmin, ymin, xmax, ymax)
+for class_str, box in zip(classes_str, boxes):
+    ymin, xmin, ymax, xmax = normal_box_to_absolute(image_np, box)
+    writer.addObject(class_str, xmin, ymin, xmax, ymax)
+
+fn_xml = image_path.split("\\")[-1].replace(".png", ".xml")
+path_xml = f"tensorflow/workspace/training_demo/images/label/{fn_xml}"
+writer.save(annotation_path=path_xml)
+```
+
+### Review, correct, and verify the predicted annotations
 
 ### Extract the annotated objects
 
+Insert code snippets to extract objects from bounding boxes
+
 ---
 ## Build data pipelines to semi-autonomously grow a dataset
+
+The new pipeline looks like this:
+
+1. Take screenshot
+1. Save to correct directory within `toonvision/img/raw/screenshots/`
+1. Load model
+1. Run inference
+1. Save predicted annotations in PASCAL VOC format in same directory as its respective sample image
+1. Manually review, correct, and verify the predicted annotations
+
+New process saves me time by assisting with the dataset annotation process.
+
+### Future pipeline enhancements
+
+- Run the extracted objects through a suit and name classifier to enhance the label from "cog" to "cog_bb_flunky"
+    - Raise an error/alert me if the suit and name mismatch
+    - Manually label the image
+- Create metadata about the image
+    - Number of Cogs
+    - Number of Toons
+    - Street name
+    - Playground
+    - Cog names and counts
+    - Cog suits and counts
+- Store metadata in SQLite database
+- Visualize dataset over time to see how it grows
 
 ---
 ## References
