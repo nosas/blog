@@ -1,6 +1,7 @@
 # %%  Imports and function definitions
 import numpy as np
 import glob
+import time
 from IPython.display import display
 
 from six import BytesIO
@@ -86,30 +87,7 @@ def run_inference_for_single_image(model, image):
     return output_dict
 
 
-# %% Run inference
-img_path_test = "./tensorflow/workspace/training_demo/images/label"
-
-img_fps = glob.glob(f"{img_path_test}/*.png")
-# shuffle(img_fps)
-for image_path in img_fps[-1:]:
-    image_np = load_image_into_numpy_array(image_path, resize=(1720 * 2, 720 * 2))
-    output_dict = run_inference_for_single_image(model, image_np)
-    img = vis_util.visualize_boxes_and_labels_on_image_array(
-        image=image_np,
-        boxes=output_dict["detection_boxes"],
-        classes=output_dict["detection_classes"],
-        scores=output_dict["detection_scores"],
-        category_index=category_index,
-        instance_masks=output_dict.get("detection_masks_reframed", None),
-        use_normalized_coordinates=True,
-        line_thickness=10,
-    )
-    display(Image.fromarray(img))
-    print(image_path)
-
 # %% Create function to retrieve detected objects' boxes
-
-
 def get_highest_scoring_boxes(output_dict: dict, score_threshold: float = 0.5):
     num_detections = 0
     # Output scores are sorted b descending values
@@ -153,6 +131,31 @@ def normal_box_to_absolute(image_np: np.ndarray, box: list[float]):
     else:  # Input is a single bounding box
         ymin, xmin, ymax, xmax = box
         return np.array([y * ymin, x * xmin, y * ymax, x * xmax]).astype("int")
+
+
+# %% Run inference
+img_path_test = "./tensorflow/workspace/training_demo/images/label"
+
+start = time.perf_counter()
+img_fps = glob.glob(f"{img_path_test}/*.png")
+# shuffle(img_fps)
+for image_path in img_fps[-1:]:
+    image_np = load_image_into_numpy_array(image_path, resize=(1720 * 2, 720 * 2))
+    output_dict = run_inference_for_single_image(model, image_np)
+    img = vis_util.visualize_boxes_and_labels_on_image_array(
+        image=image_np,
+        boxes=output_dict["detection_boxes"],
+        classes=output_dict["detection_classes"],
+        scores=output_dict["detection_scores"],
+        category_index=category_index,
+        instance_masks=output_dict.get("detection_masks_reframed", None),
+        use_normalized_coordinates=True,
+        line_thickness=10,
+    )
+    display(Image.fromarray(img))
+    print(image_path)
+end = time.perf_counter()
+print(f"Took {round(end-start, 3)} seconds")
 
 
 # %% Get highest scoring boxes
@@ -211,7 +214,7 @@ for image_path in img_fps:
         line_thickness=10,
     )
 
-    # Create original size image array for accurate absolute bounding boxes
+    # Create original size image array for accurate absolute bounding boxes annotations
     image_np = load_image_into_numpy_array(image_path)
     scores, boxes, classes, classes_str = get_highest_scoring_boxes(output_dict)
     # Create pascal VOC writer

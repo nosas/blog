@@ -105,7 +105,7 @@ Alternatively, copy custom pipeline config from TF's object detection sample con
 
 ```bash
 # from ~/blog/custom_object_detection/tensorflow/workspace/training_demo
-python model_main_tf2.py --model_dir=models/my_ssd2 --pipeline_config_path=models/my_ssd2/pipeline.config
+python model_main_tf2.py --model_dir=models/my_ssd_cogs --pipeline_config_path=models/my_ssd_cogs/pipeline.config
 ```
 
 No module name pycocotools, lvis,
@@ -127,7 +127,7 @@ Solution: Modify `fine_tune_checkpoint` in pipeline.config, strip the .index
 
 ```bash
 # from ~/blog/custom_object_detection/tensorflow/workspace/training_demo
-python ./exporter_main_v2.py --input_type image_tensor --pipeline_config_path ./models/my_ssd/pipeline.config --trained_checkpoint_dir ./models/my_ssd/ --output_directory ./exported-models/my_model
+python ./exporter_main_v2.py --input_type image_tensor --pipeline_config_path ./models/my_ssd_cogs/pipeline.config --trained_checkpoint_dir ./models/my_ssd_cogs/ --output_directory ./exported-models/my_ssd_cogs
 ```
 
 New file located under `~/blog/custom_object_detection/tensorflow/workspace/training_demo/exported-models/my_model`
