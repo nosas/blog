@@ -40,7 +40,8 @@ For now, let's focus on object detection.
             - [Accuracy or speed](#accuracy-or-speed)
             - [Unable to detect Toons](#unable-to-detect-toons)
             - [Dataset inconsistencies](#dataset-inconsistencies)
-    - [Extract objects from an image](#extract-objects-from-an-image)
+    - [Save predicted annotations in PASCAL VOC format](#save-predicted-annotations-in-pascal-voc-format)
+        - [Extract the annotated objects](#extract-the-annotated-objects)
     - [Build data pipelines to semi-autonomously grow a dataset](#build-data-pipelines-to-semi-autonomously-grow-a-dataset)
     - [References](#references)
 </details>
@@ -74,6 +75,8 @@ Two-shot models are slower but more accurate; therefore, they're primarily used 
 Two-shot detection models have two stages: region proposal and then classification of those regions and refinement of the location prediction.
 The two steps require significant computational resources, resulting in slow training and inference.
 
+<font style="color:red">TODO: Insert image of ToonTown region proposal -> classification and regression networks</font>
+
 Despite the slowness, two-shot models have far superior accuracy when compared to single-shot models.
 R-CNN<sup>[1]</sup> is a commonly used two-shot detection model.
 Faster R-CNN<sup>[2]</sup>, R-CNN's improved variant, is the more popular choice for two-shot models.
@@ -83,6 +86,8 @@ Faster R-CNN<sup>[2]</sup>, R-CNN's improved variant, is the more popular choice
 Single-shot models are designed for real-time object detection.
 They have quicker inference speeds and use less resources during training than two-shot models.
 These two properties allow for quick training, prototyping, and experimenting without consuming considerable computation resources.
+
+<font style="color:red">TODO: Insert image of anchor boxes and feature maps</font>
 
 In a single forward pass, these models predict bounding boxes and class labels directly from the input's feature maps.
 They skip the region proposal stage and yield final localization and content prediction at once.
@@ -94,6 +99,7 @@ Regions with Convolutional Neural Networks (R-CNN) is a two-shot detection algor
 R-CNN combines **rectangular region proposals** with **convolutional neural network features** to detect objects.
 The first stage, region proposal, identifies a subset of regions in an image that might contain an object.
 The second stage classifies the object in each region using a CNN classifier.
+Each proposed object requires a forward pass of the classification network; as a result, the algorithm has slow inference speed.
 
 <font style="color:red">TODO: Insert image showing bounding boxes, different region proposals, and result</font>
 
@@ -212,6 +218,8 @@ When creating the binary and multi-class classification models, I opted to only 
 This means I did not put bounding boxes on entities that were occluded by another object.
 However, the trained SSD model detects and classifies occluded Cogs!
 
+<font style="color:red">TODO: Insert image of sample vs predictions</font>
+
 *Why is it bad for the model to detect objects that I did not classify in the training set?*
 It negatively affects the training loss.
 More specifically, the localization loss increases during training.
@@ -222,6 +230,8 @@ In object detection terms, the bounding box accuracy is called the **Intersectio
 IoU scores the overlap of the predicted box and the ground truth box.
 The higher the IoU score, the higher the accuracy.
 If there's no ground truth box, however, the IoU score will be zero and training loss will increase.
+
+<font style="color:red">TODO: Insert image of IoU</font>
 
 *How does this inconsistency affect training?*
 The inconsistency did not affect the model's performance, but it decreased training performance and convergence.
@@ -238,7 +248,9 @@ It slowed down training but did not affect performance too much.
 Issue #4 explained, but unresolved!
 
 ---
-## Extract objects from an image
+## Save predicted annotations in PASCAL VOC format
+
+### Extract the annotated objects
 
 ---
 ## Build data pipelines to semi-autonomously grow a dataset

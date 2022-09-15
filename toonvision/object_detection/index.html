@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 03, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 14, 2022</p>
 
 <p><title>ToonVision: Object Detection</title></p>
 
@@ -36,7 +36,7 @@ More specifically, the previous article covered how to...</p>
 <li>interpret and visualize what the model is learning with confusion matrices and class activation maps</li>
 </ul>
 
-<p>This article explains object detection of Cogs and Toons - also called entity detection.
+<p>This article explains object detection of Cogs - also called entity detection.
 After reading this article, you should have a better understanding of how to...</p>
 
 <ul>
@@ -67,8 +67,20 @@ For now, let's focus on object detection.</p>
 <li><a href="#ssd">SSD</a></li>
 <li><a href="#yolo">YOLO</a></li>
 </ul></li>
-<li><a href="#creating-an-object-detection-model">Creating an object detection model</a></li>
-<li><a href="#extract-objects-from-an-image">Extract objects from an image</a></li>
+<li><a href="#creating-an-object-detection-model">Creating an object detection model</a>
+<ul>
+<li><a href="#issues-encountered">Issues encountered</a>
+<ul>
+<li><a href="#input-image-size">Input image size</a></li>
+<li><a href="#accuracy-or-speed">Accuracy or speed</a></li>
+<li><a href="#unable-to-detect-toons">Unable to detect Toons</a></li>
+<li><a href="#dataset-inconsistencies">Dataset inconsistencies</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#save-predicted-annotations-in-pascal-voc-format">Save predicted annotations in PASCAL VOC format</a>
+<ul>
+<li><a href="#extract-the-annotated-objects">Extract the annotated objects</a></li>
+</ul></li>
 <li><a href="#build-data-pipelines-to-semi-autonomously-grow-a-dataset">Build data pipelines to semi-autonomously grow a dataset</a></li>
 <li><a href="#references">References</a>
 </details></li>
@@ -105,6 +117,8 @@ Two-shot models are slower but more accurate; therefore, they're primarily used 
 <p>Two-shot detection models have two stages: region proposal and then classification of those regions and refinement of the location prediction.
 The two steps require significant computational resources, resulting in slow training and inference.</p>
 
+<p><font style="color:red">TODO: Insert image of ToonTown region proposal -> classification and regression networks</font></p>
+
 <p>Despite the slowness, two-shot models have far superior accuracy when compared to single-shot models.
 R-CNN<sup>[1]</sup> is a commonly used two-shot detection model.
 Faster R-CNN<sup>[2]</sup>, R-CNN's improved variant, is the more popular choice for two-shot models.</p>
@@ -115,6 +129,8 @@ Faster R-CNN<sup>[2]</sup>, R-CNN's improved variant, is the more popular choice
 They have quicker inference speeds and use less resources during training than two-shot models.
 These two properties allow for quick training, prototyping, and experimenting without consuming considerable computation resources.</p>
 
+<p><font style="color:red">TODO: Insert image of anchor boxes and feature maps</font></p>
+
 <p>In a single forward pass, these models predict bounding boxes and class labels directly from the input's feature maps.
 They skip the region proposal stage and yield final localization and content prediction at once.
 SSD<sup>[3]</sup> and YOLO<sup>[4]</sup> are popular single-shot object detection models capable of running at 5-160 frames per second!</p>
@@ -124,7 +140,8 @@ SSD<sup>[3]</sup> and YOLO<sup>[4]</sup> are popular single-shot object detectio
 <p>Regions with Convolutional Neural Networks (R-CNN) is a two-shot detection algorithm created in 2013.
 R-CNN combines <strong>rectangular region proposals</strong> with <strong>convolutional neural network features</strong> to detect objects.
 The first stage, region proposal, identifies a subset of regions in an image that might contain an object.
-The second stage classifies the object in each region using a CNN classifier.</p>
+The second stage classifies the object in each region using a CNN classifier.
+Each proposed object requires a forward pass of the classification network; as a result, the algorithm has slow inference speed.</p>
 
 <p><font style="color:red">TODO: Insert image showing bounding boxes, different region proposals, and result</font></p>
 
@@ -192,13 +209,96 @@ The newest version, YOLOv7<sup>[7]</sup>, was released in July 2022 and is capab
 
 <h2 id="creating-an-object-detection-model">Creating an object detection model</h2>
 
-<p>I'll leverage TensorFlow's model zoo to fine-tune and train a Faster R-CNN model.
+<p>I'll leverage <a href="https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md">TensorFlow's model zoo</a> to fine-tune and train a SSD model.
 This article will explain the general procedures for building the model.
-A detailed step-by-step article will be written in the future.</p>
+A rough step-by-step page can be found in my knowledge base.
+In the future, I'd like to write an article about how feature extractors are created and used for smaller projects like this.</p>
+
+<h3 id="issues-encountered">Issues encountered</h3>
+
+<p>I encountered many issues that are not often discussed in articles and tutorials.
+In an effort to provide a realistic overview of my process, I've explained the following issues:</p>
+
+<ol>
+<li>Input image size being too large</li>
+<li>Accuracy or speed for model selection</li>
+<li>Model does not detect Toons</li>
+<li>Bounding box inconsistencies in the dataset</li>
+</ol>
+
+<h4 id="input-image-size">Input image size</h4>
+
+<p>My main concern about this project revolved around the dataset's image sizes being too large at 3440x1440.
+I trained a larger model (Faster R-CNN ResNet152) on the dataset and each training step took over 3 seconds.
+It took over 90 minutes to train 1000 steps!
+Even worse, the model likely would not converge until the following day; so, I stopped training.</p>
+
+<p>Scaling the image sizes down by half (1720x720) resulted in faster training and inference speed.
+Further scaling the images down to 1/4 the original size (860x360) led to even faster training.
+The model converged in less than an hour after 50,000 training steps.
+Issue #1 resolved!</p>
+
+<h4 id="accuracy-or-speed">Accuracy or speed</h4>
+
+<p>I had originally planned to have two model: one for real-time detection in videos (speed) and another for detection in images (accuracy).
+Faster R-CNN was to be used in image detection because I wanted accuracy for the data pipeline.
+SSD or YOLO for the real-time video detection.
+Given the large size and lengthy training process of two-shot models, I've scrapped the idea of two models in favor of a single SSD model.
+Issue #2 resolved!</p>
+
+<h4 id="unable-to-detect-toons">Unable to detect Toons</h4>
+
+<p>The trained SSD model does not detect Toons.
+In fact, the Toons it does detect are classified as Cogs.
+This issue is largely due to the massive dataset imbalance: 526 Cog samples and 148 Toon samples.
+There are two solutions: Increase weights of Toon localization and classification during training or modify entire dataset to include only Cogs.</p>
+
+<p>Recall that the goal of ToonVision is for a Toon to see Cogs.
+Given that it's more important to detect Cogs, I will exclude Toons from the dataset.
+I generated new TensorFlow record files which consist purely of Cogs and excluded any images that contained only Toons.
+Issue #3 resolved!</p>
+
+<h4 id="dataset-inconsistencies">Dataset inconsistencies</h4>
+
+<p>This is probably an uncommon issue.
+When creating the binary and multi-class classification models, I opted to only include clear, non-obstructed Cog and Toon samples.
+This means I did not put bounding boxes on entities that were occluded by another object.
+However, the trained SSD model detects and classifies occluded Cogs!</p>
+
+<p><font style="color:red">TODO: Insert image of sample vs predictions</font></p>
+
+<p><em>Why is it bad for the model to detect objects that I did not classify in the training set?</em>
+It negatively affects the training loss.
+More specifically, the localization loss increases during training.</p>
+
+<p><em>What's causing the loss increase?</em>
+During training, the localization loss is calculated in part by how accurate the model's predicted bounding boxes compares to the ground truth bounding boxes.
+In object detection terms, the bounding box accuracy is called the <strong>Intersection over Union</strong> (IoU).
+IoU scores the overlap of the predicted box and the ground truth box.
+The higher the IoU score, the higher the accuracy.
+If there's no ground truth box, however, the IoU score will be zero and training loss will increase.</p>
+
+<p><font style="color:red">TODO: Insert image of IoU</font></p>
+
+<p><em>How does this inconsistency affect training?</em>
+The inconsistency did not affect the model's performance, but it decreased training performance and convergence.</p>
+
+<p><font style="color:red">TODO: Insert Tensorboard loss graphs</font></p>
+
+<p><em>How can I resolve the issue?</em>
+I would have to go through the dataset and label the non-labeled Cogs.
+Alternatively, I could run the entire dataset through the model and compare the number of detected objects against the ground truth.
+If there's a discrepancy, I can manually review the ground truth labels and correct them if needed.</p>
+
+<p>In short, the model localizes objects that I did not declare as ground truth.
+It slowed down training but did not affect performance too much.
+Issue #4 explained, but unresolved!</p>
 
 <hr />
 
-<h2 id="extract-objects-from-an-image">Extract objects from an image</h2>
+<h2 id="save-predicted-annotations-in-pascal-voc-format">Save predicted annotations in PASCAL VOC format</h2>
+
+<h3 id="extract-the-annotated-objects">Extract the annotated objects</h3>
 
 <hr />
 
