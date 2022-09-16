@@ -89,13 +89,10 @@ def run_inference_for_single_image(model, image):
 
 # %% Create function to retrieve detected objects' boxes
 def get_highest_scoring_boxes(output_dict: dict, score_threshold: float = 0.5):
-    num_detections = 0
-    # Output scores are sorted b descending values
-    # The loop can be broken if a score < threshold is encountered
-    for score in output_dict["detection_scores"]:
-        if score < score_threshold:
-            break
-        num_detections += 1
+    # Output scores are sorted by descending values
+    scores = np.array(output_dict["detection_scores"])
+    scores = scores[scores > score_threshold]
+    num_detections = len(scores)
 
     if num_detections > 0:
         scores = output_dict["detection_scores"][:num_detections]
