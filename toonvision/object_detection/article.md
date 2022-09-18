@@ -72,7 +72,7 @@ Specifically, object detection models detect, label, and draw a bounding box aro
 </figure>
 
 Common use-cases include face detection in cameras and pedestrian detection in autonomous vehicles.
-In ToonVision's, object detection is applied to locating all entities - Cogs and Toons - in both images and real-time video.
+In ToonVision's case, object detection is applied to locate all entities - Cogs and Toons - in both images and real-time video.
 
 ### Object detection models
 
@@ -86,7 +86,11 @@ Two-shot models are slower but more accurate; therefore, they're primarily used 
 Two-shot detection models have two stages: region proposal and then classification of those regions and refinement of the location prediction.
 The two steps require significant computational resources, resulting in slow training and inference.
 
-<font style="color:red">TODO: Insert image of ToonTown region proposal -> classification and regression networks</font>
+
+<figure class="center" style="width:98%;">
+    <img src="img/region_proposal.png" style="width:100%;"/>
+    <figcaption>R-CNN region proposal and classification</figcaption>
+</figure>
 
 Despite the slowness, two-shot models have far superior accuracy when compared to single-shot models.
 R-CNN<sup>[1]</sup> is a commonly used two-shot detection model.
