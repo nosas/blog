@@ -66,7 +66,10 @@ In the process, I will explain the intricacies of building computer vision model
 Object detection is a computer vision task of detecting instances of objects from pre-defined classes in images and videos.
 Specifically, object detection models detect, label, and draw a bounding box around each object.
 
-<font style="color:red">TODO: Include row of ToonVision images: classification, classification + localization, object detection, instance segmentation</font>
+<figure class="center" style="width:98%;">
+    <img src="img/object_detection.png" style="width:100%;"/>
+    <figcaption>Image classification, localization, object detection/localization, and semantic image segmentation</figcaption>
+</figure>
 
 Common use-cases include face detection in cameras and pedestrian detection in autonomous vehicles.
 In ToonVision's, object detection is applied to locating all entities - Cogs and Toons - in both images and real-time video.

@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 15, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 18, 2022</p>
 
 <p><title>ToonVision: Object Detection</title></p>
 
@@ -110,6 +110,11 @@ In the process, I will explain the intricacies of building computer vision model
 
 <p>Object detection is a computer vision task of detecting instances of objects from pre-defined classes in images and videos.
 Specifically, object detection models detect, label, and draw a bounding box around each object.</p>
+
+<figure class="center" style="width:98%;">
+    <img src="img/object_detection.png" style="width:100%;"/>
+    <figcaption>Image classification, localization, object detection/localization, and semantic image segmentation</figcaption>
+</figure>
 
 <p><font style="color:red">TODO: Include row of ToonVision images: classification, classification + localization, object detection, instance segmentation</font></p>
 
@@ -316,9 +321,147 @@ But first I need functions to run inference, retrieve the predicted bounding box
 
 <h3 id="run-inference">Run inference</h3>
 
+<p>First load the image into a numpy array.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">load_image_into_numpy_array</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">resize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load an image from file into a numpy array.</span>
+
+<span class="sd">    Puts image into numpy array to feed into tensorflow graph.</span>
+<span class="sd">    Note that by convention we put it into a numpy array with shape</span>
+<span class="sd">    (height, width, channels), where channels=3 for RGB.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      path: a file path (this can be local or on colossus)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      uint8 numpy array with shape (img_height, img_width, 3)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">img_data</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">gfile</span><span class="o">.</span><span class="n">GFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">img_data</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">resize</span><span class="p">:</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">resize</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">im_width</span><span class="p">,</span> <span class="n">im_height</span><span class="p">)</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">getdata</span><span class="p">())</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">im_height</span><span class="p">,</span> <span class="n">im_width</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">run_inference_for_single_image</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="c1"># The input needs to be a tensor, convert it using `tf.convert_to_tensor`.</span>
+    <span class="n">input_tensor</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">convert_to_tensor</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="c1"># The model expects a batch of images, so add an axis with `tf.newaxis`.</span>
+    <span class="n">input_tensor</span> <span class="o">=</span> <span class="n">input_tensor</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+    <span class="c1"># Run inference</span>
+    <span class="n">model_fn</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">signatures</span><span class="p">[</span><span class="s2">&quot;serving_default&quot;</span><span class="p">]</span>
+    <span class="n">output_dict</span> <span class="o">=</span> <span class="n">model_fn</span><span class="p">(</span><span class="n">input_tensor</span><span class="p">)</span>
+
+    <span class="c1"># All outputs are batches tensors.</span>
+    <span class="c1"># Convert to numpy arrays, and take index [0] to remove the batch dimension.</span>
+    <span class="c1"># We&#39;re only interested in the first num_detections.</span>
+    <span class="n">num_detections</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">output_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;num_detections&quot;</span><span class="p">))</span>
+    <span class="n">output_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="n">num_detections</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;num_detections&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_detections</span>
+
+    <span class="c1"># detection_classes should be ints.</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;detection_classes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;detection_classes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+    <span class="c1"># Handle models with masks:</span>
+    <span class="k">if</span> <span class="s2">&quot;detection_masks&quot;</span> <span class="ow">in</span> <span class="n">output_dict</span><span class="p">:</span>
+        <span class="c1"># Reframe the the bbox mask to the image size.</span>
+        <span class="n">detection_masks_reframed</span> <span class="o">=</span> <span class="n">utils_ops</span><span class="o">.</span><span class="n">reframe_box_masks_to_image_masks</span><span class="p">(</span>
+            <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;detection_masks&quot;</span><span class="p">],</span>
+            <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;detection_boxes&quot;</span><span class="p">],</span>
+            <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">detection_masks_reframed</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">detection_masks_reframed</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;detection_masks_reframed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">detection_masks_reframed</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">output_dict</span>
+</code></pre></div>
+
 <h3 id="retrieve-predicted-bounding-boxes">Retrieve predicted bounding boxes</h3>
 
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_highest_scoring_boxes</span><span class="p">(</span><span class="n">output_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">score_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
+    <span class="c1"># Output scores are sorted by descending values</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;detection_scores&quot;</span><span class="p">])</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">scores</span> <span class="o">&gt;</span> <span class="n">score_threshold</span><span class="p">]</span>
+    <span class="n">num_detections</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">num_detections</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;detection_scores&quot;</span><span class="p">][:</span><span class="n">num_detections</span><span class="p">]</span>
+        <span class="n">boxes</span> <span class="o">=</span> <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;detection_boxes&quot;</span><span class="p">][:</span><span class="n">num_detections</span><span class="p">]</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;detection_classes&quot;</span><span class="p">][:</span><span class="n">num_detections</span><span class="p">]</span>
+        <span class="n">classes_str</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">category_index</span><span class="p">[</span><span class="n">class_id</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">class_id</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">scores</span><span class="p">,</span> <span class="n">boxes</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">classes_str</span>
+
+
+<span class="k">def</span> <span class="nf">normal_box_to_absolute</span><span class="p">(</span><span class="n">image_np</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">box</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Generate absolute box coordinates from relative box coordinates</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        image_np (np.ndarray): Numpy array containing an image, from `load_image_into_numpy_array`</span>
+<span class="sd">        box (list[float]): List containing the relative [ymin, xmin, ymax, xmax] values</span>
+<span class="sd">            Values must be in range [0, 1]</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[float]: List containing absolute coordinate values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">image_np</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">box</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Input is a list of bounding boxes</span>
+        <span class="n">boxes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">box</span><span class="p">:</span>
+            <span class="n">ymin</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="n">b</span>
+            <span class="n">boxes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y</span> <span class="o">*</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">y</span> <span class="o">*</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="n">xmax</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">boxes</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># Input is a single bounding box</span>
+        <span class="n">ymin</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="n">box</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y</span> <span class="o">*</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">y</span> <span class="o">*</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="n">xmax</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">)</span>
+</code></pre></div>
+
 <h3 id="visualize-boxes-and-labels-on-the-input-image">Visualize boxes and labels on the input image</h3>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">object_detection.utils</span> <span class="kn">import</span> <span class="n">visualization_utils</span> <span class="k">as</span> <span class="n">vis_util</span>
+<span class="n">img_path_test</span> <span class="o">=</span> <span class="s2">&quot;./tensorflow/workspace/training_demo/images/label&quot;</span>
+
+<span class="n">img_fps</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">img_path_test</span><span class="si">}</span><span class="s2">/*.png&quot;</span><span class="p">)</span>
+<span class="c1"># shuffle(img_fps)</span>
+<span class="k">for</span> <span class="n">image_path</span> <span class="ow">in</span> <span class="n">img_fps</span><span class="p">:</span>
+    <span class="c1"># Create downscaled image array to decrease inference times</span>
+    <span class="n">image_np_downscale</span> <span class="o">=</span> <span class="n">load_image_into_numpy_array</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="n">resize</span><span class="o">=</span><span class="p">(</span><span class="mi">1720</span><span class="p">,</span> <span class="mi">720</span><span class="p">))</span>
+    <span class="n">output_dict</span> <span class="o">=</span> <span class="n">run_inference_for_single_image</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">image_np_downscale</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">vis_util</span><span class="o">.</span><span class="n">visualize_boxes_and_labels_on_image_array</span><span class="p">(</span>
+        <span class="n">image</span><span class="o">=</span><span class="n">image_np_downscale</span><span class="p">,</span>
+        <span class="n">boxes</span><span class="o">=</span><span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;detection_boxes&quot;</span><span class="p">],</span>
+        <span class="n">classes</span><span class="o">=</span><span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;detection_classes&quot;</span><span class="p">],</span>
+        <span class="n">scores</span><span class="o">=</span><span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;detection_scores&quot;</span><span class="p">],</span>
+        <span class="n">category_index</span><span class="o">=</span><span class="n">category_index</span><span class="p">,</span>
+        <span class="n">instance_masks</span><span class="o">=</span><span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;detection_masks_reframed&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">use_normalized_coordinates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">line_thickness</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># Create original size image array for accurate absolute bounding boxes annotations</span>
+    <span class="n">image_np</span> <span class="o">=</span> <span class="n">load_image_into_numpy_array</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+    <span class="n">scores</span><span class="p">,</span> <span class="n">boxes</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">classes_str</span> <span class="o">=</span> <span class="n">get_highest_scoring_boxes</span><span class="p">(</span><span class="n">output_dict</span><span class="p">)</span>
+    <span class="c1"># Create pascal VOC writer</span>
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">Writer</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">image_path</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">image_np</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">image_np</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="c1"># Add objects (class, xmin, ymin, xmax, ymax)</span>
+    <span class="k">for</span> <span class="n">class_str</span><span class="p">,</span> <span class="n">box</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">classes_str</span><span class="p">,</span> <span class="n">boxes</span><span class="p">):</span>
+        <span class="n">ymin</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="n">normal_box_to_absolute</span><span class="p">(</span><span class="n">image_np</span><span class="p">,</span> <span class="n">box</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">addObject</span><span class="p">(</span><span class="n">class_str</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+    <span class="n">fn_xml</span> <span class="o">=</span> <span class="n">image_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.png&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">)</span>
+    <span class="n">path_xml</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">img_path_test</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">fn_xml</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">annotation_path</span><span class="o">=</span><span class="n">path_xml</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+</code></pre></div>
 
 <h3 id="sample-predictions">Sample predictions</h3>
 
@@ -348,6 +491,12 @@ Save annotations in the same directory as the sample image.</p>
 
 <h3 id="review-correct-and-verify-the-predicted-annotations">Review, correct, and verify the predicted annotations</h3>
 
+<p>Not all of the model's predicted annotations will be accurate or correct.
+I have to manually review all annotations, fix the bounding boxes, annotate the missing objects, and verify the image.
+All of this is completed with <a href="https://github.com/heartexlabs/labelImg">labelimg</a>.</p>
+
+<p>Once the annotations are verified, we can move the images to the "unprocessed" directory to extract the objects for our other classification models.</p>
+
 <h3 id="extract-the-annotated-objects">Extract the annotated objects</h3>
 
 <p>Insert code snippets to extract objects from bounding boxes</p>
@@ -365,6 +514,7 @@ Save annotations in the same directory as the sample image.</p>
 <li>Run inference</li>
 <li>Save predicted annotations in PASCAL VOC format in same directory as its respective sample image</li>
 <li>Manually review, correct, and verify the predicted annotations</li>
+<li>Move verified images and their annotations to the <code>processed</code> directory</li>
 </ol>
 
 <p>New process saves me time by assisting with the dataset annotation process.</p>
@@ -374,6 +524,7 @@ Save annotations in the same directory as the sample image.</p>
 <ul>
 <li>Run the extracted objects through a suit and name classifier to enhance the label from "cog" to "cog_bb_flunky"
 <ul>
+<li>Alternatively, create a multilabel classifier (suit, name, playground) and store in metadata file</li>
 <li>Raise an error/alert me if the suit and name mismatch</li>
 <li>Manually label the image</li>
 </ul></li>
