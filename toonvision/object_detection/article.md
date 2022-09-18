@@ -60,6 +60,7 @@ The project's objective is to teach a machine (nicknamed **OmniToon**) how to pl
 In the process, I will explain the intricacies of building computer vision models, configuring static and real-time (stream) data pipelines, and visualizing results and progress.
 
 ---
+
 ## Object detection
 
 Object detection is a computer vision task of detecting instances of objects from pre-defined classes in images and videos.
@@ -169,6 +170,7 @@ Each variation resulted in higher accuracy and inference speed.
 The newest version, YOLOv7<sup>[7]</sup>, was released in July 2022 and is capable of 160FPS.
 
 ---
+
 ## Creating an object detection model
 
 I'll leverage [TensorFlow's model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md) to fine-tune and train a SSD model.
@@ -257,6 +259,7 @@ It slowed down training but did not affect performance too much.
 Issue #4 explained, but unresolved!
 
 ---
+
 ## Prediction results
 
 Enough about my issues, let's take a look at the model's predictions.
@@ -415,6 +418,7 @@ for image_path in img_fps:
 <font style="color:red">TODO: Insert image of sample predictions with bounding boxes</font>
 
 ---
+
 ## Save predicted annotations in PASCAL VOC format
 
 Utilize a small Python package for reading and writing PASCAL VOC annotations.
@@ -438,11 +442,18 @@ writer.save(annotation_path=path_xml)
 
 ### Review, correct, and verify the predicted annotations
 
+Not all of the model's predicted annotations will be accurate or correct.
+I have to manually review all annotations, fix the bounding boxes, annotate the missing objects, and verify the image.
+All of this is completed with [labelimg](https://github.com/heartexlabs/labelImg).
+
+Once the annotations are verified, we can move the images to the "unprocessed" directory to extract the objects for our other classification models.
+
 ### Extract the annotated objects
 
 Insert code snippets to extract objects from bounding boxes
 
 ---
+
 ## Build data pipelines to semi-autonomously grow a dataset
 
 The new pipeline looks like this:
@@ -453,12 +464,14 @@ The new pipeline looks like this:
 1. Run inference
 1. Save predicted annotations in PASCAL VOC format in same directory as its respective sample image
 1. Manually review, correct, and verify the predicted annotations
+1. Move verified images and their annotations to the `processed` directory
 
 New process saves me time by assisting with the dataset annotation process.
 
 ### Future pipeline enhancements
 
 - Run the extracted objects through a suit and name classifier to enhance the label from "cog" to "cog_bb_flunky"
+    - Alternatively, create a multilabel classifier (suit, name, playground) and store in metadata file
     - Raise an error/alert me if the suit and name mismatch
     - Manually label the image
 - Create metadata about the image
@@ -472,6 +485,7 @@ New process saves me time by assisting with the dataset annotation process.
 - Visualize dataset over time to see how it grows
 
 ---
+
 ## References
 
 1. Rich feature hierarchies for accurate object detection and semantic segmentation, [https://arxiv.org/abs/1311.2524](https://arxiv.org/abs/1311.2524)
