@@ -87,11 +87,6 @@ Two-shot detection models have two stages: region proposal and then classificati
 The two steps require significant computational resources, resulting in slow training and inference.
 
 
-<figure class="center" style="width:98%;">
-    <img src="img/region_proposal.png" style="width:100%;"/>
-    <figcaption>R-CNN region proposal and classification</figcaption>
-</figure>
-
 Despite the slowness, two-shot models have far superior accuracy when compared to single-shot models.
 R-CNN<sup>[1]</sup> is a commonly used two-shot detection model.
 Faster R-CNN<sup>[2]</sup>, R-CNN's improved variant, is the more popular choice for two-shot models.
@@ -105,7 +100,7 @@ These two properties allow for quick training, prototyping, and experimenting wi
 <font style="color:red">TODO: Insert image of anchor boxes and feature maps</font>
 
 In a single forward pass, these models predict bounding boxes and class labels directly from the input's feature maps.
-They skip the region proposal stage and yield final localization and content prediction at once.
+They skip the region proposal stage and yield localization and class predictions at once.
 SSD<sup>[3]</sup> and YOLO<sup>[4]</sup> are popular single-shot object detection models capable of running at 5-160 frames per second!
 
 ### R-CNN
@@ -116,7 +111,10 @@ The first stage, region proposal, identifies a subset of regions in an image tha
 The second stage classifies the object in each region using a CNN classifier.
 Each proposed object requires a forward pass of the classification network; as a result, the algorithm has slow inference speed.
 
-<font style="color:red">TODO: Insert image showing bounding boxes, different region proposals, and result</font>
+<figure class="center" style="width:98%;">
+    <img src="img/region_proposal.png" style="width:100%;"/>
+    <figcaption>R-CNN region proposal and classification</figcaption>
+</figure>
 
 R-CNNs can be boiled down to the following three processes:
 
@@ -138,7 +136,10 @@ Boxes of different aspect ratios and scales overlay each feature map.
 At prediction time, the network generates scores for the presence of each object in each box.
 The network combines predictions from multiple feature maps with different resolutions to handle objects of various sizes.
 
-<font style="color:red">TODO: Insert image showing bounding boxes, different ratio boxes, and result</font>
+<figure class="center" style="width:98%;">
+    <img src="img/ssd_anchor_boxes.png" style="width:100%;"/>
+    <figcaption>SSD anchor boxes and localization</figcaption>
+</figure>
 
 Like all other single-shot models, SSD eliminates proposal generation and feature resampling.
 All computation is done in a single network, making SSD easy to train and integrate into systems requiring a detection component.
