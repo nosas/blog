@@ -86,7 +86,6 @@ Two-shot models are slower but more accurate; therefore, they're primarily used 
 Two-shot detection models have two stages: region proposal and then classification of those regions and refinement of the location prediction.
 The two steps require significant computational resources, resulting in slow training and inference.
 
-
 Despite the slowness, two-shot models have far superior accuracy when compared to single-shot models.
 R-CNN<sup>[1]</sup> is a commonly used two-shot detection model.
 Faster R-CNN<sup>[2]</sup>, R-CNN's improved variant, is the more popular choice for two-shot models.
@@ -96,8 +95,6 @@ Faster R-CNN<sup>[2]</sup>, R-CNN's improved variant, is the more popular choice
 Single-shot models are designed for real-time object detection.
 They have quicker inference speeds and use less resources during training than two-shot models.
 These two properties allow for quick training, prototyping, and experimenting without consuming considerable computation resources.
-
-<font style="color:red">TODO: Insert image of anchor boxes and feature maps</font>
 
 In a single forward pass, these models predict bounding boxes and class labels directly from the input's feature maps.
 They skip the region proposal stage and yield localization and class predictions at once.
@@ -148,11 +145,15 @@ Although SSD was state-of-the-art when it came out in 2015, there's a new king i
 
 ### YOLO
 
-The You Only Look Once (YOLO) model is a new approach to unified, real-time object detection.
-Created in 2015 by Joseph Redmon and gang, YOLO reframes object detection as a regression problem rather than leveraging regional proposals and a CNN classifier.
+Created in 2015 by Joseph Redmon and gang, the You Only Look Once (YOLO) model is a new approach to unified, real-time object detection.
+Rather than leveraging regional proposals and a CNN classifier, YOLO reframes object detection as a regression problem.
+Both the anchor boxes and the predicted bounding boxes are [generated through with use of the k-means clustering algorithm](https://towardsdatascience.com/training-yolo-select-anchor-boxes-like-this-3226cb8d7f0b).
 Like all single-shot algorithms, YOLO's single neural network predicts bounding boxes and class probabilities from images in one pass.
 
-<font style="color:red">TODO: Insert image showing bounding boxes, different ratio boxes, and result</font>
+<figure class="center" style="width:98%;">
+    <img src="img/yolo_anchor_boxes.png" style="width:100%;"/>
+    <figcaption>YOLO anchor boxes and localization</figcaption>
+</figure>
 
 <!-- The YOLO framework has three main components:
 

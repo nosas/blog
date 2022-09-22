@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 19, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 21, 2022</p>
 
 <p><title>ToonVision: Object Detection</title></p>
 
@@ -141,8 +141,6 @@ Faster R-CNN<sup>[2]</sup>, R-CNN's improved variant, is the more popular choice
 They have quicker inference speeds and use less resources during training than two-shot models.
 These two properties allow for quick training, prototyping, and experimenting without consuming considerable computation resources.</p>
 
-<p><font style="color:red">TODO: Insert image of anchor boxes and feature maps</font></p>
-
 <p>In a single forward pass, these models predict bounding boxes and class labels directly from the input's feature maps.
 They skip the region proposal stage and yield localization and class predictions at once.
 SSD<sup>[3]</sup> and YOLO<sup>[4]</sup> are popular single-shot object detection models capable of running at 5-160 frames per second!</p>
@@ -194,11 +192,15 @@ All computation is done in a single network, making SSD easy to train and integr
 
 <h3 id="yolo">YOLO</h3>
 
-<p>The You Only Look Once (YOLO) model is a new approach to unified, real-time object detection.
-Created in 2015 by Joseph Redmon and gang, YOLO reframes object detection as a regression problem rather than leveraging regional proposals and a CNN classifier.
+<p>Created in 2015 by Joseph Redmon and gang, the You Only Look Once (YOLO) model is a new approach to unified, real-time object detection.
+Rather than leveraging regional proposals and a CNN classifier, YOLO reframes object detection as a regression problem.
+Both the anchor boxes and the predicted bounding boxes are <a href="https://towardsdatascience.com/training-yolo-select-anchor-boxes-like-this-3226cb8d7f0b">generated through with use of the k-means clustering algorithm</a>.
 Like all single-shot algorithms, YOLO's single neural network predicts bounding boxes and class probabilities from images in one pass.</p>
 
-<p><font style="color:red">TODO: Insert image showing bounding boxes, different ratio boxes, and result</font></p>
+<figure class="center" style="width:98%;">
+    <img src="img/yolo_anchor_boxes.png" style="width:100%;"/>
+    <figcaption>YOLO anchor boxes and localization</figcaption>
+</figure>
 
 <!-- The YOLO framework has three main components:
 
