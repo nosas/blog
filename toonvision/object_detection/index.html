@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 21, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 22, 2022</p>
 
 <p><title>ToonVision: Object Detection</title></p>
 
@@ -260,10 +260,11 @@ Issue #1 resolved!</p>
 
 <h4 id="accuracy-or-speed">Accuracy or speed</h4>
 
-<p>I had originally planned to have two model: one for real-time detection in videos (speed) and another for detection in images (accuracy).
+<p>I had originally planned to create two models: one for real-time detection in videos (speed) and another for detection in images (accuracy).
 Faster R-CNN was to be used in image detection because I wanted accuracy for the data pipeline.
 SSD or YOLO for the real-time video detection.
 Given the large size and lengthy training process of two-shot models, I've scrapped the idea of two models in favor of a single SSD model.
+SSD's lower accuracy will be countered by my manual review and corrections of the model's annotations.
 Issue #2 resolved!</p>
 
 <h4 id="unable-to-detect-toons">Unable to detect Toons</h4>
@@ -285,7 +286,7 @@ Issue #3 resolved!</p>
 <p>This is probably an uncommon issue.
 When creating the binary and multi-class classification models, I opted to only include clear, non-obstructed Cog and Toon samples.
 This means I did not put bounding boxes on entities that were occluded by another object.
-However, the trained SSD model detects and classifies occluded Cogs!</p>
+Surprisingly, the trained SSD model correctly detected and classified occluded Cogs!</p>
 
 <p><font style="color:red">TODO: Insert image of sample vs predictions</font></p>
 
