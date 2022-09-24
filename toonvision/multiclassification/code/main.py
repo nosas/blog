@@ -21,8 +21,6 @@ from data_processing import (
 )
 from data_visualization import (
     COLORS,
-    create_image_grid,
-    generate_heatmap,
     plot_confusion_matrix,
     plot_histories,
     plot_history,
@@ -30,6 +28,7 @@ from data_visualization import (
     plot_streets_suits,
     plot_wrong_predictions_multiclass,
 )
+from visualization_utils import create_image_grid, generate_heatmap
 from keras_tuner import BayesianOptimization, Hyperband, RandomSearch
 from model_utils import (
     make_multiclass_model_original,
