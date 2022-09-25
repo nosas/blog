@@ -148,7 +148,7 @@ def create_tf_example(group, path):
     classes = []
 
     for _, row in group.object.iterrows():
-        class_str = row["class"].split("_")[0]
+        class_str = row["class"]
         if "toon" in class_str:
             continue
         xmins.append(row["xmin"] / width)
