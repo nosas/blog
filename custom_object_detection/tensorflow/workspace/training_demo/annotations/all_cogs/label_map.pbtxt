@@ -1,0 +1,160 @@
+item {
+    id: 1
+    name: 'cog_bb_flunky'
+}
+
+item {
+    id: 2
+    name: 'cog_bb_pencilpusher'
+}
+
+item {
+    id: 3
+    name: 'cog_bb_yesman'
+}
+
+item {
+    id: 4
+    name: 'cog_bb_micromanager'
+}
+
+item {
+    id: 5
+    name: 'cog_bb_downsizer'
+}
+
+item {
+    id: 6
+    name: 'cog_bb_headhunter'
+}
+
+item {
+    id: 7
+    name: 'cog_bb_corporateraider'
+}
+
+item {
+    id: 8
+    name: 'cog_bb_thebigcheese'
+}
+
+item {
+    id: 9
+    name: 'cog_lb_bottomfeeder'
+}
+
+item {
+    id: 10
+    name: 'cog_lb_bloodsucker'
+}
+
+item {
+    id: 11
+    name: 'cog_lb_doubletalker'
+}
+
+item {
+    id: 12
+    name: 'cog_lb_ambulancechaser'
+}
+
+item {
+    id: 13
+    name: 'cog_lb_backstabber'
+}
+
+item {
+    id: 14
+    name: 'cog_lb_spindoctor'
+}
+
+item {
+    id: 15
+    name: 'cog_lb_legaleagle'
+}
+
+item {
+    id: 16
+    name: 'cog_lb_bigwig'
+}
+
+item {
+    id: 17
+    name: 'cog_cb_shortchange'
+}
+
+item {
+    id: 18
+    name: 'cog_cb_pennypincher'
+}
+
+item {
+    id: 19
+    name: 'cog_cb_tightwad'
+}
+
+item {
+    id: 20
+    name: 'cog_cb_beancounter'
+}
+
+item {
+    id: 21
+    name: 'cog_cb_numbercruncher'
+}
+
+item {
+    id: 22
+    name: 'cog_cb_moneybags'
+}
+
+item {
+    id: 23
+    name: 'cog_cb_loanshark'
+}
+
+item {
+    id: 24
+    name: 'cog_cb_robberbaron'
+}
+
+item {
+    id: 25
+    name: 'cog_sb_coldcaller'
+}
+
+item {
+    id: 26
+    name: 'cog_sb_telemarketer'
+}
+
+item {
+    id: 27
+    name: 'cog_sb_namedropper'
+}
+
+item {
+    id: 28
+    name: 'cog_sb_gladhander'
+}
+
+item {
+    id: 29
+    name: 'cog_sb_movershaker'
+}
+
+item {
+    id: 30
+    name: 'cog_sb_twoface'
+}
+
+item {
+    id: 31
+    name: 'cog_sb_themingler'
+}
+
+item {
+    id: 32
+    name: 'cog_sb_mrhollywood'
+}
+

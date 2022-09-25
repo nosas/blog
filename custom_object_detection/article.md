@@ -58,7 +58,10 @@ item {
 Replace `cog_SUIT_NAME` to `cog`, and `toon_ANIMAL` to `toon` in all .xml files
 
 Used VSCode's search and replace, should create a script
-Maybe unnecessary, can add a step when creating TensorFlow records
+Alternatively, add a step during TensorFlow TF records creation to simplify labels
+
+`~/blog/custom_object_detection/tensorflow/scripts/generate_tfrecord.py`
+
 
 ---
 ## Create TensorFlow records
@@ -68,9 +71,9 @@ Now that we have generated our annotations and split our dataset into the desire
 ```bash
 # from ~/blog/custom_object_detection/tensorflow/workspace/training_demo/images (main)
 # Create train data
-python ../../../scripts/generate_tfrecord.py -x ./train -l ../annotations/label_map.pbtxt -o ../annotations/train.record
+python ../../../scripts/generate_tfrecord.py -x ./train -l ../annotations/all_cogs/label_map.pbtxt -o ../annotations/all_cogs/train.record
 # Create test data
-python ../../../scripts/generate_tfrecord.py -x ./test -l ../annotations/label_map.pbtxt -o ../annotations/test.record
+python ../../../scripts/generate_tfrecord.py -x ./test -l ../annotations/all_cogs/label_map.pbtxt -o ../annotations/all_cogs/test.record
 ```
 
 ---
@@ -79,7 +82,7 @@ python ../../../scripts/generate_tfrecord.py -x ./test -l ../annotations/label_m
 To begin with, we need to download the latest pre-trained network for the model we wish to use.
 Using TF pre-trained models, specifically `Faster R-CNN ResNet152 V1 1024x1024`
 Not creating custom training job (yet)
-Download the model and extract to `~\blog\custom_object_detection\tensorflow\workspace\training_demo\pre_trained_models\`
+Download the model and extract to `~/blog\custom_object_detection\tensorflow\workspace\training_demo\pre_trained_models\`
 
 ```
 training_demo/
@@ -105,7 +108,7 @@ Alternatively, copy custom pipeline config from TF's object detection sample con
 
 ```bash
 # from ~/blog/custom_object_detection/tensorflow/workspace/training_demo
-python model_main_tf2.py --model_dir=models/my_ssd_cogs --pipeline_config_path=models/my_ssd_cogs/pipeline.config
+python model_main_tf2.py --model_dir=models/my_ssd_all_cogs --pipeline_config_path=models/my_ssd_all_cogs/pipeline.config
 ```
 
 No module name pycocotools, lvis,
@@ -127,7 +130,7 @@ Solution: Modify `fine_tune_checkpoint` in pipeline.config, strip the .index
 
 ```bash
 # from ~/blog/custom_object_detection/tensorflow/workspace/training_demo
-python ./exporter_main_v2.py --input_type image_tensor --pipeline_config_path ./models/my_ssd_cogs/pipeline.config --trained_checkpoint_dir ./models/my_ssd_cogs/ --output_directory ./exported-models/my_ssd_cogs
+python ./exporter_main_v2.py --input_type image_tensor --pipeline_config_path ./models/my_ssd_all_cogs/pipeline.config --trained_checkpoint_dir ./models/my_ssd_all_cogs/ --output_directory ./exported-models/my_ssd_all_cogs
 ```
 
 New file located under `~/blog/custom_object_detection/tensorflow/workspace/training_demo/exported-models/my_model`

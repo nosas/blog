@@ -14,14 +14,61 @@ from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
 from pascal_voc_writer import Writer
 
+# %% All cogs to labelmap
+all_cogs = [
+    "cog_bb_flunky",
+    "cog_bb_pencilpusher",
+    "cog_bb_yesman",
+    "cog_bb_micromanager",
+    "cog_bb_downsizer",
+    "cog_bb_headhunter",
+    "cog_bb_corporateraider",
+    "cog_bb_thebigcheese",
+    "cog_lb_bottomfeeder",
+    "cog_lb_bloodsucker",
+    "cog_lb_doubletalker",
+    "cog_lb_ambulancechaser",
+    "cog_lb_backstabber",
+    "cog_lb_spindoctor",
+    "cog_lb_legaleagle",
+    "cog_lb_bigwig",
+    "cog_cb_shortchange",
+    "cog_cb_pennypincher",
+    "cog_cb_tightwad",
+    "cog_cb_beancounter",
+    "cog_cb_numbercruncher",
+    "cog_cb_moneybags",
+    "cog_cb_loanshark",
+    "cog_cb_robberbaron",
+    "cog_sb_coldcaller",
+    "cog_sb_telemarketer",
+    "cog_sb_namedropper",
+    "cog_sb_gladhander",
+    "cog_sb_movershaker",
+    "cog_sb_twoface",
+    "cog_sb_themingler",
+    "cog_sb_mrhollywood"
+]
+template = """item {{
+    id: {idx}
+    name: '{cog}'
+}}
+
+"""
+# all_cogs_items = [template.format(idx=idx+1, cog=cog) for idx, cog in enumerate(all_cogs)]
+# labelmap_path = "./tensorflow/workspace/training_demo/annotations/all_cogs/label_map.pbtxt"
+# with open(labelmap_path, 'w') as f:
+#     f.writelines(str.join("", all_cogs_items))
+
 # %% Load model
 tf.keras.backend.clear_session()
 model = tf.saved_model.load(
-    "./tensorflow/workspace/training_demo/exported-models/my_ssd_cogs/saved_model"
+    "./tensorflow/workspace/training_demo/exported-models/my_ssd_all_cogs/saved_model"
 )
 
 # %% Load variables
-labelmap_path = "./tensorflow/workspace/training_demo/annotations/label_map.pbtxt"
+# labelmap_path = "./tensorflow/workspace/training_demo/annotations/label_map.pbtxt"
+labelmap_path = "./tensorflow/workspace/training_demo/annotations/all_cogs/label_map.pbtxt"
 category_index = label_map_util.create_category_index_from_labelmap(
     labelmap_path, use_display_name=True
 )
@@ -101,8 +148,8 @@ def get_highest_scoring_boxes(output_dict: dict, score_threshold: float = 0.5):
         classes_str = np.array(
             [category_index[class_id]["name"] for class_id in classes]
         )
-
-    return scores, boxes, classes, classes_str
+        return scores, boxes, classes, classes_str
+    return scores, None, None, None
 
 
 def normal_box_to_absolute(image_np: np.ndarray, box: list[float]):
@@ -198,7 +245,7 @@ img_fps = glob.glob(f"{img_path_test}/*.png")
 for image_path in img_fps:
 
     # Create downscaled image array to decrease inference times
-    image_np_downscale = load_image_into_numpy_array(image_path, resize=(1720, 720))
+    image_np_downscale = load_image_into_numpy_array(image_path, resize=(1720*2, 720*2))
     output_dict = run_inference_for_single_image(model, image_np_downscale)
     img = vis_util.visualize_boxes_and_labels_on_image_array(
         image=image_np_downscale,
@@ -214,16 +261,18 @@ for image_path in img_fps:
     # Create original size image array for accurate absolute bounding boxes annotations
     image_np = load_image_into_numpy_array(image_path)
     scores, boxes, classes, classes_str = get_highest_scoring_boxes(output_dict)
-    # Create pascal VOC writer
-    writer = Writer(path=image_path, width=image_np.shape[1], height=image_np.shape[0])
-    # Add objects (class, xmin, ymin, xmax, ymax)
-    for class_str, box in zip(classes_str, boxes):
-        ymin, xmin, ymax, xmax = normal_box_to_absolute(image_np, box)
-        writer.addObject(class_str, xmin, ymin, xmax, ymax)
+    if boxes is not None:
+        # Create pascal VOC writer
+        writer = Writer(path=image_path, width=image_np.shape[1], height=image_np.shape[0])
+        # Add objects (class, xmin, ymin, xmax, ymax)
+        for class_str, box in zip(classes_str, boxes):
+            ymin, xmin, ymax, xmax = normal_box_to_absolute(image_np, box)
+            writer.addObject(class_str, xmin, ymin, xmax, ymax)
 
-    fn_xml = image_path.split("\\")[-1].replace(".png", ".xml")
-    path_xml = f"{img_path_test}/{fn_xml}"
-    writer.save(annotation_path=path_xml)
-
+        fn_xml = image_path.split("\\")[-1].replace(".png", ".xml")
+        path_xml = f"{img_path_test}/{fn_xml}"
+        writer.save(annotation_path=path_xml)
+    else:
+        print("No boxes!")
     print(image_path)
 # %%
