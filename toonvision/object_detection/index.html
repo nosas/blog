@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 22, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 25, 2022</p>
 
 <p><title>ToonVision: Object Detection</title></p>
 
@@ -500,11 +500,65 @@ Save annotations in the same directory as the sample image.</p>
 I have to manually review all annotations, fix the bounding boxes, annotate the missing objects, and verify the image.
 All of this is completed with <a href="https://github.com/heartexlabs/labelImg">labelimg</a>.</p>
 
-<p>Once the annotations are verified, we can move the images to the "unprocessed" directory to extract the objects for our other classification models.</p>
+<p>Once the annotations are verified, we can move the images to the "unprocessed" directory and pass the annotated images to our other classification models.</p>
 
 <h3 id="extract-the-annotated-objects">Extract the annotated objects</h3>
 
-<p>Insert code snippets to extract objects from bounding boxes</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">extract_objects_from_xml</span><span class="p">(</span><span class="n">xml_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Extract objects from XML file.</span>
+
+
+<span class="sd">    Given a path to an XML file containing objects&#39; bounding box</span>
+<span class="sd">    dimensions, extract the objects and return a list of images.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        xml_path (str): Absolute path to the XML file</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[tuple[str, int, int, int, int]]: List of tuples containing obj name, xmin, ymin, xmax, ymax</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Load XML file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">xml_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">xml_file</span><span class="p">:</span>
+        <span class="n">xml_str</span> <span class="o">=</span> <span class="n">xml_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="c1"># Parse XML file</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">xml_str</span><span class="p">)</span>
+    <span class="n">objects</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">):</span>
+        <span class="n">obj_name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">obj_bndbox</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;bndbox&quot;</span><span class="p">)</span>
+        <span class="n">obj_xmin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">obj_bndbox</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;xmin&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">obj_ymin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">obj_bndbox</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;ymin&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">obj_xmax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">obj_bndbox</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;xmax&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">obj_ymax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">obj_bndbox</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;ymax&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">objects</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">obj_xmin</span><span class="p">,</span> <span class="n">obj_ymin</span><span class="p">,</span> <span class="n">obj_xmax</span><span class="p">,</span> <span class="n">obj_ymax</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">objects</span>
+
+
+<span class="k">def</span> <span class="nf">extract_objects_from_img</span><span class="p">(</span>
+    <span class="n">img_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">objs_from_xml</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Extract objects from an image given a tuple of objects `from extract_object_from_xml()`</span>
+
+<span class="sd">    Given a path to an image and objects&#39; bounding box dimensions, extract the objects from the</span>
+<span class="sd">    image and return a list of images.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        img_path (str): Absolute path to the image</span>
+<span class="sd">        objs_from_xml (tuple): Tuple containing obj name, xmin, ymin, xmax, ymax</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[tuple[str, list]]: List of tuples containing obj name and obj img</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Load image</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span>
+    <span class="c1"># Extract objects</span>
+    <span class="n">objects</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs_from_xml</span><span class="p">:</span>
+        <span class="n">obj_name</span><span class="p">,</span> <span class="n">obj_xmin</span><span class="p">,</span> <span class="n">obj_ymin</span><span class="p">,</span> <span class="n">obj_xmax</span><span class="p">,</span> <span class="n">obj_ymax</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="n">obj_img</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="n">obj_ymin</span><span class="p">:</span><span class="n">obj_ymax</span><span class="p">,</span> <span class="n">obj_xmin</span><span class="p">:</span><span class="n">obj_xmax</span><span class="p">]</span>
+        <span class="n">objects</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">obj_img</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">objects</span>
+</code></pre></div>
 
 <hr />
 

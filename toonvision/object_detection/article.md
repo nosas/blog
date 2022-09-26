@@ -456,11 +456,66 @@ Not all of the model's predicted annotations will be accurate or correct.
 I have to manually review all annotations, fix the bounding boxes, annotate the missing objects, and verify the image.
 All of this is completed with [labelimg](https://github.com/heartexlabs/labelImg).
 
-Once the annotations are verified, we can move the images to the "unprocessed" directory to extract the objects for our other classification models.
+Once the annotations are verified, we can move the images to the "unprocessed" directory and pass the annotated images to our other classification models.
 
 ### Extract the annotated objects
 
-Insert code snippets to extract objects from bounding boxes
+```python
+def extract_objects_from_xml(xml_path: str) -> list[tuple[str, int, int, int, int]]:
+    """Extract objects from XML file.
+
+
+    Given a path to an XML file containing objects' bounding box
+    dimensions, extract the objects and return a list of images.
+
+    Args:
+        xml_path (str): Absolute path to the XML file
+
+    Returns:
+        list[tuple[str, int, int, int, int]]: List of tuples containing obj name, xmin, ymin, xmax, ymax
+    """
+    # Load XML file
+    with open(xml_path, "r") as xml_file:
+        xml_str = xml_file.read()
+    # Parse XML file
+    tree = ET.fromstring(xml_str)
+    objects = []
+    for obj in tree.findall("object"):
+        obj_name = obj.find("name").text
+        obj_bndbox = obj.find("bndbox")
+        obj_xmin = int(obj_bndbox.find("xmin").text)
+        obj_ymin = int(obj_bndbox.find("ymin").text)
+        obj_xmax = int(obj_bndbox.find("xmax").text)
+        obj_ymax = int(obj_bndbox.find("ymax").text)
+        objects.append((obj_name, obj_xmin, obj_ymin, obj_xmax, obj_ymax))
+    return objects
+
+
+def extract_objects_from_img(
+    img_path: str, objs_from_xml: tuple[str, int, int, int, int]
+) -> list[tuple[str, list]]:
+    """Extract objects from an image given a tuple of objects `from extract_object_from_xml()`
+
+    Given a path to an image and objects' bounding box dimensions, extract the objects from the
+    image and return a list of images.
+
+    Args:
+        img_path (str): Absolute path to the image
+        objs_from_xml (tuple): Tuple containing obj name, xmin, ymin, xmax, ymax
+
+    Returns:
+        list[tuple[str, list]]: List of tuples containing obj name and obj img
+    """
+    # Load image
+    img = cv2.imread(img_path)
+    # Extract objects
+    objects = []
+    for obj in objs_from_xml:
+        obj_name, obj_xmin, obj_ymin, obj_xmax, obj_ymax = obj
+        obj_img = img[obj_ymin:obj_ymax, obj_xmin:obj_xmax]
+        objects.append((obj_name, obj_img))
+    return objects
+```
 
 ---
 
