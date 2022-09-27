@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 25, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 26, 2022</p>
 
 <p><title>ToonVision: Object Detection</title></p>
 
@@ -503,6 +503,10 @@ All of this is completed with <a href="https://github.com/heartexlabs/labelImg">
 <p>Once the annotations are verified, we can move the images to the "unprocessed" directory and pass the annotated images to our other classification models.</p>
 
 <h3 id="extract-the-annotated-objects">Extract the annotated objects</h3>
+
+<p>Once the objects are annotated, we can extract them and save them to our dataset.
+The bounded boxes of each object in the sample can be retrieved using the <code>extract_objects_from_xml</code> function.
+Afterwards, using the <code>extract_objects_from_img</code> function, the actual images can be extracted and saved to the dataset.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">extract_objects_from_xml</span><span class="p">(</span><span class="n">xml_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Extract objects from XML file.</span>

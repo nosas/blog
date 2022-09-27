@@ -460,6 +460,10 @@ Once the annotations are verified, we can move the images to the "unprocessed" d
 
 ### Extract the annotated objects
 
+Once the objects are annotated, we can extract them and save them to our dataset.
+The bounded boxes of each object in the sample can be retrieved using the `extract_objects_from_xml` function.
+Afterwards, using the `extract_objects_from_img` function, the actual images can be extracted and saved to the dataset.
+
 ```python
 def extract_objects_from_xml(xml_path: str) -> list[tuple[str, int, int, int, int]]:
     """Extract objects from XML file.
