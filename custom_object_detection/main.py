@@ -63,12 +63,12 @@ template = """item {{
 # %% Load model
 tf.keras.backend.clear_session()
 model = tf.saved_model.load(
-    "./tensorflow/workspace/training_demo/exported-models/my_ssd_all_cogs/saved_model"
+    "./tensorflow/workspace/training_demo/exported-models/my_ssd_cogs/saved_model"
 )
 
 # %% Load variables
 # labelmap_path = "./tensorflow/workspace/training_demo/annotations/label_map.pbtxt"
-labelmap_path = "./tensorflow/workspace/training_demo/annotations/all_cogs/label_map.pbtxt"
+labelmap_path = "./tensorflow/workspace/training_demo/annotations/label_map.pbtxt"
 category_index = label_map_util.create_category_index_from_labelmap(
     labelmap_path, use_display_name=True
 )
@@ -177,14 +177,39 @@ def normal_box_to_absolute(image_np: np.ndarray, box: list[float]):
         return np.array([y * ymin, x * xmin, y * ymax, x * xmax]).astype("int")
 
 
+def absolute_box_to_normal(image_np: np.ndarray, box: list[float]):
+    """Generate normalized box coordinates from absolute box coordinates
+
+    Args:
+        image_np (np.ndarray): Numpy array containing an image, from `load_image_into_numpy_array`
+        box (list[float]): List containing the normalized [ymin, xmin, ymax, xmax] values
+            Values must be in range [0, 1]
+
+    Returns:
+        list[float]: List containing normalized coordinate values
+    """
+    y, x, _ = image_np.shape
+    if box.ndim > 1:  # Input is a list of bounding boxes
+        boxes = []
+        for b in box:
+            ymin, xmin, ymax, xmax = b
+            boxes.append(
+                np.array([ymin / y, xmin / x, ymax / y, xmax / x]).astype("float")
+            )
+        return np.array(boxes)
+    else:  # Input is a single bounding box
+        ymin, xmin, ymax, xmax = box
+        return np.array([ymin / y, xmin / x, ymax / y, xmax / x]).astype("float")
+
+
 # %% Run inference
-img_path_test = "./tensorflow/workspace/training_demo/images/label"
+img_path_test = "./tensorflow/workspace/training_demo/images/test"
 
 start = time.perf_counter()
 img_fps = glob.glob(f"{img_path_test}/*.png")
 # shuffle(img_fps)
-for image_path in img_fps[-1:]:
-    image_np = load_image_into_numpy_array(image_path, resize=(1720 * 2, 720 * 2))
+for image_path in img_fps[:1]:
+    image_np = load_image_into_numpy_array(image_path, resize=(3378, 1417))
     output_dict = run_inference_for_single_image(model, image_np)
     img = vis_util.visualize_boxes_and_labels_on_image_array(
         image=image_np,
@@ -201,6 +226,34 @@ for image_path in img_fps[-1:]:
 end = time.perf_counter()
 print(f"Took {round(end-start, 3)} seconds")
 
+# %% Overlap existing bounding boxes on predicted bounded boxes
+from img_utils import extract_objects_from_xml
+
+objs = extract_objects_from_xml(image_path.replace("png", "xml"))  # class, xmin, ymin, xmax, ymax
+old_boxes = []
+for obj in objs:
+    # Expected ordering: ymin, xmin, ymax, xmax = b
+    _, xmin, ymin, xmax, ymax = obj
+    new_box = np.array([ymin, xmin, ymax, xmax])
+    old_boxes.append(new_box)
+# old_boxes = [normal_box_to_absolute(image_np, np.array(o[1:])) for o in objs]
+normalized_old_boxes = absolute_box_to_normal(image_np, np.array(old_boxes))
+
+# %% Draw boxes
+for box in normalized_old_boxes:
+    ymin, xmin, ymax, xmax = box
+    vis_util.draw_bounding_box_on_image_array(
+        img,
+        ymin,
+        xmin,
+        ymax,
+        xmax,
+        color="Aqua",
+        thickness=10,
+        # display_str_list=box_to_display_str_map[box],
+        use_normalized_coordinates=True,
+    )
+display(Image.fromarray(img))
 
 # %% Get highest scoring boxes
 scores, boxes, classes, classes_str = get_highest_scoring_boxes(output_dict)
