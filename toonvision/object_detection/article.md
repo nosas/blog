@@ -239,7 +239,10 @@ When creating the binary and multi-class classification models, I opted to only 
 This means I did not put bounding boxes on entities that were occluded by another object.
 Surprisingly, the trained SSD model correctly detected and classified occluded Cogs!
 
-<font style="color:red">TODO: Insert image of sample vs predictions</font>
+<figure class="center" style="width:95%";>
+    <img src="img/annotation_occluded_2.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
 
 *Why is it bad for the model to detect objects that I did not classify in the training set?*
 It negatively affects the training loss.
@@ -425,7 +428,10 @@ for image_path in img_fps:
 
 ### Sample predictions
 
-<font style="color:red">TODO: Insert image of sample predictions with bounding boxes</font>
+<figure class="center" style="width:95%";>
+    <img src="img/annotation_occluded.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
 
 ---
 
