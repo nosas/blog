@@ -238,10 +238,11 @@ This is probably an uncommon issue.
 When creating the binary and multi-class classification models, I opted to only include clear, non-obstructed Cog and Toon samples.
 This means I did not put bounding boxes on entities that were occluded by another object.
 Surprisingly, the trained SSD model correctly detected and classified occluded Cogs!
+Notice in the image below how the Cogs on the right-side of the image contains model annotations but no ground-truth annotation.
 
 <figure class="center" style="width:95%";>
     <img src="img/annotation_occluded_2.png" style="width:100%;"/>
-    <figcaption></figcaption>
+    <figcaption>Model annotations of occluded Cogs (green box) compared to ground-truth annotation (teal box) </figcaption>
 </figure>
 
 *Why is it bad for the model to detect objects that I did not classify in the training set?*
@@ -260,7 +261,10 @@ If there's no ground truth box, however, the IoU score will be zero and training
 *How does this inconsistency affect training?*
 The inconsistency did not affect the model's performance, but it decreased training performance and convergence.
 
-<font style="color:red">TODO: Insert Tensorboard loss graphs</font>
+<figure class="center" style="width:95%;">
+    <img src="img/training_loss.png" style="width:100%;"/>
+    <figcaption>Training loss of two models after 50k steps: Cog (blue) and all Cog names (red)</figcaption>
+</figure>
 
 *How can I resolve the issue?*
 I would have to go through the dataset and label the non-labeled Cogs.

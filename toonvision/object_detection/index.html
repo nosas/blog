@@ -19,7 +19,7 @@
   </center>
 
   <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 26, 2022</p>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 29, 2022</p>
 
 <p><title>ToonVision: Object Detection</title></p>
 
@@ -286,9 +286,13 @@ Issue #3 resolved!</p>
 <p>This is probably an uncommon issue.
 When creating the binary and multi-class classification models, I opted to only include clear, non-obstructed Cog and Toon samples.
 This means I did not put bounding boxes on entities that were occluded by another object.
-Surprisingly, the trained SSD model correctly detected and classified occluded Cogs!</p>
+Surprisingly, the trained SSD model correctly detected and classified occluded Cogs!
+Notice in the image below how the Cogs on the right-side of the image contains model annotations but no ground-truth annotation.</p>
 
-<p><font style="color:red">TODO: Insert image of sample vs predictions</font></p>
+<figure class="center" style="width:95%";>
+    <img src="img/annotation_occluded_2.png" style="width:100%;"/>
+    <figcaption>Model annotations of occluded Cogs (green box) compared to ground-truth annotation (teal box) </figcaption>
+</figure>
 
 <p><em>Why is it bad for the model to detect objects that I did not classify in the training set?</em>
 It negatively affects the training loss.
@@ -306,7 +310,10 @@ If there's no ground truth box, however, the IoU score will be zero and training
 <p><em>How does this inconsistency affect training?</em>
 The inconsistency did not affect the model's performance, but it decreased training performance and convergence.</p>
 
-<p><font style="color:red">TODO: Insert Tensorboard loss graphs</font></p>
+<figure class="center" style="width:95%;">
+    <img src="img/training_loss.png" style="width:100%;"/>
+    <figcaption>Training loss of two models after 50k steps: Cog (blue) and all Cog names (red)</figcaption>
+</figure>
 
 <p><em>How can I resolve the issue?</em>
 I would have to go through the dataset and label the non-labeled Cogs.
@@ -470,7 +477,10 @@ But first I need functions to run inference, retrieve the predicted bounding box
 
 <h3 id="sample-predictions">Sample predictions</h3>
 
-<p><font style="color:red">TODO: Insert image of sample predictions with bounding boxes</font></p>
+<figure class="center" style="width:95%";>
+    <img src="img/annotation_occluded.png" style="width:100%;"/>
+    <figcaption></figcaption>
+</figure>
 
 <hr />
 

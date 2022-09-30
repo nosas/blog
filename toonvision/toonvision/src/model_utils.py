@@ -3,6 +3,7 @@ from glob import glob
 
 import keras
 import numpy as np
+import tensorflow as tf
 
 # from tensorflow import keras
 from keras import layers
@@ -342,3 +343,8 @@ def get_wrong_predictions(model: keras.Model) -> tuple[str, str, float, float]:
         if label == "Cog":
             preds_wrong.append((fn, label, pred, abs(pred - 0.5)))
     return preds_wrong
+
+
+def load_object_detection_model(path: str):
+    # "./tensorflow/workspace/training_demo/exported-models/my_ssd_all_cogs/saved_model"
+    return tf.saved_model.load(path)
