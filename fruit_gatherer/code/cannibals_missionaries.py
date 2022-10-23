@@ -8,28 +8,39 @@ At any time, the cannibals must not outnumber the missionaries or else the missi
 The goal is to get all 6 of them to the other side of the river.
 """
 
+from collections import namedtuple
+from copy import deepcopy
+
 # %%
 from itertools import combinations
-from copy import deepcopy
 from queue import Queue
 
 
-def is_fail(rivers: list[list[int]]):
+def is_fail(rivers: str):
+    """
+    Return whether a state results in the missionaries being eaten
+
+    Input:
+
+    rivers (str): Example "cmmBccm" is a failed state, "cccmmmB" is the goal state
+    """
+
+
     return any(
-        [river.count(1) > river.count(0) and river.count(0) != 0 for river in rivers]
+        [river.count('c') > river.count('m') and river.count('m') != 0 for river in rivers.split("B")]
     )
 
 
-def is_goal(rivers) -> bool:
-    return len(rivers[1]) == 0 and not is_fail(rivers)
+def is_goal(rivers: str) -> bool:
+    return len(rivers.split("B")[1]) == 0 and not is_fail(rivers)
 
 
-def get_actions(rivers: list[int], boat: str) -> list[tuple[int]]:
+def get_actions(rivers: str, boat: str) -> list[tuple[int]]:
     def is_valid_action(action):
         result_rivers, _ = result(action, deepcopy(rivers), boat)
         return not is_fail(result_rivers)
 
-    river = rivers[1] if boat == "right" else rivers[0]
+    river = rivers.split("B")[1 if boat == "right" else 0]
     possible_actions = set(
         [
             tuple(sorted(t))
@@ -40,55 +51,78 @@ def get_actions(rivers: list[int], boat: str) -> list[tuple[int]]:
     return actions
 
 
-def result(action: tuple[int, int], rivers: list[list[int]], boat: str):
-    if boat == "right":
-        to_river, from_river = rivers
-    else:
-        from_river, to_river = rivers
+def result(action: tuple[int, int], rivers: str, boat: str):
+    def to_str(left, right):
+        """Turn two lists of strings into a single string joined by 'B'"""
+        return "B".join(["".join(sorted(left)), "".join(sorted(right))])
 
-    for person in action:
-        to_river.append(from_river.pop(from_river.index(person)))
-
-    from_river = sorted(from_river)
-    to_river = sorted(to_river)
+    left, right = list(map(list, rivers.split("B")))
+    result_boat = "left" if boat == "right" else "right"
 
     if boat == "right":
-        result_rivers = [
-            to_river,
-            from_river,
-        ]  # Ensure rivers always returns [left_river, right_river]
-        boat = "left"
+        for person in action:
+            left.append(right.pop(right.index(person)))
     else:
-        result_rivers = [
-            from_river,
-            to_river,
-        ]  # Ensure rivers always returns [left_river, right_river]
-        boat = "right"
+        for person in action:
+            right.append(left.pop(left.index(person)))
 
-    return result_rivers, boat
+    result_river = to_str(left, right)
+    return result_river, result_boat
 
 
-print(is_fail([[1, 1, 0], [0, 0]]))  # True
-print(is_fail([[1, 1, 1], [0, 1]]))  # False
-print(is_fail([[1, 0, 0], [0, 0]]))  # False
+def search(rivers, boat):
+    State = namedtuple("State", "rivers,boat")
+    Action = namedtuple("Action", "action,state")
 
-print(is_goal([[0, 1, 0, 1], []]))  # True
-print(is_goal([[0, 1, 0, 1, 1], []]))  # False
-print(is_goal([[0, 1, 0, 1, 0], [1]]))  # False
+    state_init = State(rivers, boat)
+    reached = {state_init: [()]}
+    frontier = Queue()
+
+    for action in get_actions(rivers=rivers, boat=boat):
+        frontier.put(Action(action, state_init))
+
+    while not frontier.empty():
+        action = frontier.get()
+        path = reached[action.state]
+        if is_goal(action.state.rivers):
+            return path[1:]
+
+        result_river, result_boat = result(
+            action.action, deepcopy(action.state.rivers), action.state.boat
+        )
+        state_res = State(result_river, result_boat)
+        if state_res not in reached:  # Check for redundancies: turns tree search into graph search
+            reached[state_res] = path + [action.action]
+            for action in get_actions(rivers=state_res.rivers, boat=state_res.boat):
+                frontier.put(Action(action, state_res))
+
+
+# %% Search
+river_left = ""
+river_right = "mmmccc"  # Cannibals are represented as 1, missionaries as 0
+
+rivers = "B".join([river_left, river_right])
+boat = "right"
+
+solution = search(rivers, boat)
+print(solution)
+
+
+# %% Scratch pad for tests
+print(is_fail('ccmBcmm'))  # True
+print(is_fail('ccBcmmm'))  # False
+print(is_fail('cmmBmm'))  # False
+
+print(is_goal('ccmmB'))  # True
+print(is_goal('cccmmB'))  # False
+print(is_goal('ccmmmBc'))  # False
 
 # %%
-r = [[[1, 1], [0, 0, 0, 1]], [[0, 1], [0, 1, 0, 1]], [[1, 1, 1], [0, 0, 0]]]
-
-
-river_left = []
-river_right = [0, 0, 0, 1, 1, 1]  # Cannibals are represented as 1, missionaries as 0
-
-rivers = [river_left, river_right]
+rivers = 'Bcccmmm'
 boat = "right"
 
 
 # %%
-rivers = r[1]
 a = get_actions(rivers, boat)
 a
 
@@ -104,32 +138,5 @@ rivers2, boat2 = result(action=a2[0], rivers=rivers1, boat=boat1)
 rivers1, boat1, a2[0], rivers1, boat2
 
 # %%
-river_left = []
-river_right = [0, 0, 1, 1]  # Cannibals are represented as 1, missionaries as 0
-
-rivers = [river_left, river_right]
-boat = "right"
-
-
-def search(rivers, boat):
-    reached = {(str(rivers), boat): [()]}
-    frontier = Queue()
-    for action in get_actions(rivers=rivers, boat=boat):
-        frontier.put(action)
-
-    while not frontier.empty():
-        action = frontier.get()
-        path = reached[(str(rivers), boat)]
-        if is_goal(rivers):
-            return path
-
-        result_river, result_boat = result(action, deepcopy(rivers), boat)
-        res = (str(result_river), result_boat)
-        if res not in reached:
-            reached[res] = path + [action]
-
-search(rivers, boat)
-
-
 
 # %%
