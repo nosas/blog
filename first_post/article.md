@@ -23,7 +23,7 @@ print(some_func(some_var))
 
 Sample text under a sub-header.
 
-[Sample URL, don't click me.](www.fars.io/) Or do click it. It's safe.
+[Sample URL, don't click me.](www.sasonreza.com/) Or do click it. It's safe.
 
 
 | Header 1 | *Header* 2 |

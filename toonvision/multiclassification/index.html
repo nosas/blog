@@ -26,7 +26,7 @@
 <h1 id="toonvision-multiclass-classification">ToonVision - Multiclass Classification</h1>
 
 <p>This article is the second in a series on <strong>ToonVision</strong>.
-The <a href="https://fars.io/toonvision/classification/">first article</a> covered the basics of classification and binary classification of Toons and Cogs.
+The <a href="https://sasonreza.com/toonvision/classification/">first article</a> covered the basics of classification and binary classification of Toons and Cogs.
 More specifically, the previous article covered how to...</p>
 
 <ul>
@@ -131,11 +131,11 @@ In the process, I will explain the intricacies of building computer vision model
 
 <h2 id="classification">Classification</h2>
 
-<p>As discussed in the <a href="https://fars.io/toonvision/classification/#classification">previous article</a>, image classification is the process of assigning a label to an input image.
+<p>As discussed in the <a href="https://sasonreza.com/toonvision/classification/#classification">previous article</a>, image classification is the process of assigning a label to an input image.
 For instance, given a dog-vs-cat classification model and an image of a Pomeranian, the model will predict that the image is a dog.</p>
 
 <p>There are a few variants of the image classification problem: binary, multiclass, multi-label, and so on.
-We'll focus on <a href="https://fars.io/toonvision/classification/#multiclass-classification">multiclass classification</a> in this article.</p>
+We'll focus on <a href="https://sasonreza.com/toonvision/classification/#multiclass-classification">multiclass classification</a> in this article.</p>
 
 <h3 id="multiclass-classification">Multiclass classification</h3>
 
@@ -330,7 +330,7 @@ These metrics measure the model's correctness and quality.</p>
 </code></pre></div>
 
 <p>The difference between each metric is crucial to understanding model performance - especially on imbalanced datasets like the ToonVision dataset.
-To read more about the differences and benefits of each metric, please read my previous article about <a href="https://fars.io/performance_classification/">performance measures in classification problems</a>.</p>
+To read more about the differences and benefits of each metric, please read my previous article about <a href="https://sasonreza.com/performance_classification/">performance measures in classification problems</a>.</p>
 
 <h4 id="accuracy">Accuracy</h4>
 
@@ -362,7 +362,7 @@ Optimizing our model's Sellbot recall would ensure that Sellbot samples do not g
 <h3 id="optimizer">Optimizer</h3>
 
 <p>Just like the binary classifier, we'll be using the <code>Adam</code> optimizer.
-Please refer to the <a href="https://fars.io/toonvision/classification/#optimizer">previous article</a> for detailed information about this decision.</p>
+Please refer to the <a href="https://sasonreza.com/toonvision/classification/#optimizer">previous article</a> for detailed information about this decision.</p>
 
 <p>Reasoning tl;dr: The <code>Adam</code> optimizer is an adaptive variant of the stochastic gradient descent (<code>SGD</code>) algorithm.
 It's an effective optimizer with a strong performance on the ToonVision dataset.
@@ -407,7 +407,7 @@ This callback logs training events and data, and creates the following in an int
 <li>Sampled profiling</li>
 </ul>
 
-<p>Please refer to my <a href="https://fars.io/keras_tuner_tensorboard/#tensorboard">Keras-Tuner and TensorBoard article</a> to learn more about the benefits of TensorBoard and see how it's used to evaluate model performance.</p>
+<p>Please refer to my <a href="https://sasonreza.com/keras_tuner_tensorboard/#tensorboard">Keras-Tuner and TensorBoard article</a> to learn more about the benefits of TensorBoard and see how it's used to evaluate model performance.</p>
 
 <h3 id="defining-the-model">Defining the model</h3>
 
@@ -615,7 +615,7 @@ It seems like the baseline model is capable of differentiating between Bossbot a
 <p>Using the confusion matrix, we can derive the precision, recall, and F1-score for each class.
 Fortunately, scikit-learn simplified the calculations into a single function called <code>classification_report</code>.</p>
 
-<p>If you're unfamiliar with these three performance measures, please read my previous article about <a href="https://fars.io/performance_classification/">performance measures in classification problems</a>.</p>
+<p>If you're unfamiliar with these three performance measures, please read my previous article about <a href="https://sasonreza.com/performance_classification/">performance measures in classification problems</a>.</p>
 
 <div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">classification_report</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">classification_report</span><span class="p">(</span><span class="n">onehot_to_suit</span><span class="p">(</span><span class="n">test_labels</span><span class="p">),</span> <span class="n">preds_str</span><span class="p">)</span>
@@ -682,7 +682,7 @@ Let's see if we can do that.</p>
 
 <p>We can now fine-tune and optimize our model.
 Remember, the goal is to create a smaller model that performs better than the baseline model.
-The full details of this process are covered in my hyperparameter optimization <a href="https://fars.io/keras_tuner_tensorboard/">article</a>.</p>
+The full details of this process are covered in my hyperparameter optimization <a href="https://sasonreza.com/keras_tuner_tensorboard/">article</a>.</p>
 
 <h3 id="keras-tuner">Keras Tuner</h3>
 
@@ -739,7 +739,7 @@ In the same layer, we also use <code>hp.Choice</code> to restrict the kernel siz
 
 <p>Then we'll pass the model builder function into the <code>keras_tuner.RandomSearch</code> constructor.
 Random search is the least efficient search, but it provides valuable insights into the whereabouts of optimal hyperparameter values.
-Refer to my KerasTuner <a href="https://fars.io/keras_tuner_tensorboard/">article</a> for more information about efficient search algorithms, such as <code>Hyperband</code> or <code>BayesianOptimization</code> search.</p>
+Refer to my KerasTuner <a href="https://sasonreza.com/keras_tuner_tensorboard/">article</a> for more information about efficient search algorithms, such as <code>Hyperband</code> or <code>BayesianOptimization</code> search.</p>
 
 <p>Each trial of the search is a separate model with different hyperparameter values.
 We can adjust the <code>max_trials</code> argument to increase or decrease the number of searches.

@@ -3,7 +3,7 @@
 # ToonVision - Multiclass Classification
 
 This article is the second in a series on **ToonVision**.
-The [first article](https://fars.io/toonvision/classification/) covered the basics of classification and binary classification of Toons and Cogs.
+The [first article](https://sasonreza.com/toonvision/classification/) covered the basics of classification and binary classification of Toons and Cogs.
 More specifically, the previous article covered how to...
 
 - acquire, label, and process samples from image data
@@ -75,11 +75,11 @@ In the process, I will explain the intricacies of building computer vision model
 ---
 ## Classification
 
-As discussed in the [previous article](https://fars.io/toonvision/classification/#classification), image classification is the process of assigning a label to an input image.
+As discussed in the [previous article](https://sasonreza.com/toonvision/classification/#classification), image classification is the process of assigning a label to an input image.
 For instance, given a dog-vs-cat classification model and an image of a Pomeranian, the model will predict that the image is a dog.
 
 There are a few variants of the image classification problem: binary, multiclass, multi-label, and so on.
-We'll focus on [multiclass classification](https://fars.io/toonvision/classification/#multiclass-classification) in this article.
+We'll focus on [multiclass classification](https://sasonreza.com/toonvision/classification/#multiclass-classification) in this article.
 
 ### Multiclass classification
 
@@ -305,7 +305,7 @@ Optimizing our model's Sellbot recall would ensure that Sellbot samples do not g
 ### Optimizer
 
 Just like the binary classifier, we'll be using the `Adam` optimizer.
-Please refer to the [previous article](https://fars.io/toonvision/classification/#optimizer) for detailed information about this decision.
+Please refer to the [previous article](https://sasonreza.com/toonvision/classification/#optimizer) for detailed information about this decision.
 
 Reasoning tl;dr: The `Adam` optimizer is an adaptive variant of the stochastic gradient descent (`SGD`) algorithm.
 It's an effective optimizer with a strong performance on the ToonVision dataset.
@@ -349,7 +349,7 @@ This callback logs training events and data, and creates the following in an int
 - Weight histograms
 - Sampled profiling
 
-Please refer to my [Keras-Tuner and TensorBoard article](https://fars.io/keras_tuner_tensorboard/#tensorboard) to learn more about the benefits of TensorBoard and see how it's used to evaluate model performance.
+Please refer to my [Keras-Tuner and TensorBoard article](https://sasonreza.com/keras_tuner_tensorboard/#tensorboard) to learn more about the benefits of TensorBoard and see how it's used to evaluate model performance.
 
 ### Defining the model
 
@@ -926,8 +926,8 @@ These next steps will teach me ML pipeline skills necessary for expanding datase
 I can transfer these skills to expedite the image segmentation process, allowing me to teach a model to identify ToonTown's streets, roads, and obstacles.
 OmniToon will be walking around ToonTown soon!
 
-[classification_performance_measures]: https://fars.io/performance_classification/
+[classification_performance_measures]: https://sasonreza.com/performance_classification/
 [categorical_accuracy]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/CategoricalAccuracy
 [precision]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision
 [recall]: https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall
-[keras_tuner_tensorboard]: https://fars.io/keras_tuner_tensorboard/
+[keras_tuner_tensorboard]: https://sasonreza.com/keras_tuner_tensorboard/

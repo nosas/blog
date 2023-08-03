@@ -3,7 +3,7 @@
 # ToonVision - Object Detection
 
 This article is the third in a series on **ToonVision**.
-The [first article](https://fars.io/toonvision/classification/) covered the basics of classification and binary classification of Toons and Cogs.
+The [first article](https://sasonreza.com/toonvision/classification/) covered the basics of classification and binary classification of Toons and Cogs.
 More specifically, the previous article covered how to...
 
 - convert a binary dataset into a multiclass dataset
