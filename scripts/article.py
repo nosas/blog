@@ -14,14 +14,15 @@ HEADER = """
 
 <body>
   <center>
-    <div style="display: inline-block; vertical-align:middle;">
-      <a href="/" style="text-decoration: none;">SASON REZA<br>
-      </a>
-      <hr>
-      <div style="text-align: center;display: inline-block; width: 100%;">
-        <a class="title" href="../about">ABOUT</a> &nbsp;<a class="title" href="../contact">CONTACT</a>
+      <div style="display: inline-block; vertical-align:middle;">
+          <a href="/" style="text-decoration: none;">SASON REZA<br>
+          </a>
+          <hr>
+          <div style="text-align: center;display: inline-block; width: 100%;">
+              <a class="title" href="books">BOOKS</a> &nbsp;<a class="title" href="about">ABOUT</a> &nbsp;<a
+                  class="title" href="contact">CONTACT</a>
+          </div>
       </div>
-    </div>
   </center>
 
   <br>
