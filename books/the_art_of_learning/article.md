@@ -1,3 +1,5 @@
+<title>The Art of Learning</title>
+
 # "The Art of Learning" by Josh Waitzkin
 
 Josh Waitzkin is an 8x chess national champ and 21x national and world champ in Push Hands.
