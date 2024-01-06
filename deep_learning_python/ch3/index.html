@@ -1,246 +1,305 @@
-
 <html>
 
+<base href="https://sasonreza.com/">
+
 <head>
-  <link rel="stylesheet" type="text/css" href="../../css/default_dark.css">
-  <link rel="stylesheet" type="text/css" href="../../css/syntax_dark.css">
+    <link rel="stylesheet" type="text/css" href="/css/default_dark.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax_dark.css">
 </head>
 
 <body>
-  <center>
-    <div style="display: inline-block; vertical-align:middle;">
-      <a href="/" style="text-decoration: none;">SASON REZA<br>
-      </a>
-      <hr>
-      <div style="text-align: center;display: inline-block; width: 100%;">
-        <a class="title" href="../../about">ABOUT</a> &nbsp;<a class="title" href="../../contact">CONTACT</a>
-      </div>
-    </div>
-  </center>
+    <center>
+        <div style="display: inline-block; vertical-align:middle;">
+            <a href="/" style="text-decoration: none;">SASON REZA<br>
+            </a>
+            <hr>
+            <div style="text-align: center;display: inline-block; width: 100%;">
+                <a class="title" href="/books">BOOKS</a> &nbsp;<a class="title" href="/about">ABOUT</a> &nbsp;<a
+                    class="title" href="/contact">CONTACT</a>
+            </div>
+        </div>
+    </center>
 
-  <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 08, 2022</p>
+    <br>
+    <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">June 08, 2022</p>
 
-<p><title>Deep Learning with Python: Chapter 3 - Introduction to Keras and TensorFlow</title></p>
+    <p>
+        <title>Deep Learning with Python: Chapter 3 - Introduction to Keras and TensorFlow</title>
+    </p>
 
-<h1 id="deep-learning-with-python-omit-in-toc-">Deep Learning with Python  <!-- omit in toc --></h1>
+    <h1 id="deep-learning-with-python-omit-in-toc-">Deep Learning with Python <!-- omit in toc --></h1>
 
-<p>This article is part 3/13 (?) of a series of articles named <em>Deep Learning with Python</em>.</p>
+    <p>This article is part 3/13 (?) of a series of articles named <em>Deep Learning with Python</em>.</p>
 
-<p>In this series, I will read through the second edition of <em>Deep Learning with Python</em> by François Chollet.
-Articles in this series will sequentially review key concepts, examples, and interesting facts from each chapter of the book.</p>
+    <p>In this series, I will read through the second edition of <em>Deep Learning with Python</em> by François Chollet.
+        Articles in this series will sequentially review key concepts, examples, and interesting facts from each chapter
+        of the book.</p>
 
-<p><details>
-    <summary>Table of Contents</summary></p>
+    <p>
+    <details>
+        <summary>Table of Contents</summary>
+        </p>
 
-<ul>
-<li><a href="#chapter-3-introduction-to-keras-and-tensorflow">Chapter 3: Introduction to Keras and TensorFlow</a>
-<ul>
-<li><a href="#whats-tensorflow">What's TensorFlow?</a>
-<ul>
-<li><a href="#tensorflow-vs-numpy">TensorFlow vs. NumPy</a></li>
-<li><a href="#tensorflow-ecosystem">TensorFlow ecosystem</a></li>
-</ul></li>
-<li><a href="#whats-keras">What's Keras?</a>
-<ul>
-<li><a href="#keras-and-tensorflow-a-brief-history">Keras and TensorFlow: A brief history</a></li>
-</ul></li>
-<li><a href="#setting-up-a-deep-learning-workspace">Setting up a deep learning workspace</a>
-<ul>
-<li><a href="#physical-machine-with-nvidia-gpu">Physical machine with NVIDIA GPU</a></li>
-<li><a href="#cloud-gpu-instances">Cloud GPU instances</a></li>
-<li><a href="#google-colab">Google Colab</a></li>
-</ul></li>
-<li><a href="#first-steps-with-tensorflow">First steps with TensorFlow</a>
-<ul>
-<li><a href="#constant-tensors-and-variables">Constant tensors and variables</a></li>
-<li><a href="#a-second-look-at-the-gradient-tape-api">A second look at the Gradient Tape API</a></li>
-<li><a href="#computing-second-order-gradients">Computing second-order gradients</a></li>
-</ul></li>
-<li><a href="#example-linear-classifier-in-pure-tensorflow">Example: Linear classifier in pure TensorFlow</a>
-<ul>
-<li><a href="#what-is-linear-classification">What is linear classification?</a></li>
-<li><a href="#generating-synthetic-data">Generating synthetic data</a></li>
-<li><a href="#creating-the-linear-classifier">Creating the linear classifier</a></li>
-<li><a href="#training-the-linear-classifier">Training the linear classifier</a></li>
-<li><a href="#plotting-the-loss">Plotting the loss</a></li>
-<li><a href="#plotting-the-predictions">Plotting the predictions</a></li>
-</ul></li>
-<li><a href="#understanding-core-keras-apis">Understanding core Keras APIs</a>
-<ul>
-<li><a href="#layers-the-building-blocks-of-deep-learning">Layers: the building blocks of deep learning</a></li>
-<li><a href="#from-layers-to-models">From layers to models</a>
-<ul>
-<li><a href="#importance-of-model-architecture">Importance of model architecture</a></li>
-</ul></li>
-<li><a href="#the-compile-step-configuring-the-learning-process">The "compile" step: Configuring the learning process</a></li>
-<li><a href="#picking-a-loss-function">Picking a loss function</a></li>
-<li><a href="#understanding-the-fit-method">Understanding the fit() method</a></li>
-<li><a href="#monitoring-loss-and-metrics-on-validation-data">Monitoring loss and metrics on validation data</a></li>
-<li><a href="#making-predictions-with-the-model">Making predictions with the model</a></li>
-</ul></li>
-<li><a href="#summary">Summary</a>
-</details></li>
-</ul></li>
-</ul>
+        <ul>
+            <li><a href="#chapter-3-introduction-to-keras-and-tensorflow">Chapter 3: Introduction to Keras and
+                    TensorFlow</a>
+                <ul>
+                    <li><a href="#whats-tensorflow">What's TensorFlow?</a>
+                        <ul>
+                            <li><a href="#tensorflow-vs-numpy">TensorFlow vs. NumPy</a></li>
+                            <li><a href="#tensorflow-ecosystem">TensorFlow ecosystem</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#whats-keras">What's Keras?</a>
+                        <ul>
+                            <li><a href="#keras-and-tensorflow-a-brief-history">Keras and TensorFlow: A brief
+                                    history</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#setting-up-a-deep-learning-workspace">Setting up a deep learning workspace</a>
+                        <ul>
+                            <li><a href="#physical-machine-with-nvidia-gpu">Physical machine with NVIDIA GPU</a></li>
+                            <li><a href="#cloud-gpu-instances">Cloud GPU instances</a></li>
+                            <li><a href="#google-colab">Google Colab</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#first-steps-with-tensorflow">First steps with TensorFlow</a>
+                        <ul>
+                            <li><a href="#constant-tensors-and-variables">Constant tensors and variables</a></li>
+                            <li><a href="#a-second-look-at-the-gradient-tape-api">A second look at the Gradient Tape
+                                    API</a></li>
+                            <li><a href="#computing-second-order-gradients">Computing second-order gradients</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#example-linear-classifier-in-pure-tensorflow">Example: Linear classifier in pure
+                            TensorFlow</a>
+                        <ul>
+                            <li><a href="#what-is-linear-classification">What is linear classification?</a></li>
+                            <li><a href="#generating-synthetic-data">Generating synthetic data</a></li>
+                            <li><a href="#creating-the-linear-classifier">Creating the linear classifier</a></li>
+                            <li><a href="#training-the-linear-classifier">Training the linear classifier</a></li>
+                            <li><a href="#plotting-the-loss">Plotting the loss</a></li>
+                            <li><a href="#plotting-the-predictions">Plotting the predictions</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#understanding-core-keras-apis">Understanding core Keras APIs</a>
+                        <ul>
+                            <li><a href="#layers-the-building-blocks-of-deep-learning">Layers: the building blocks of
+                                    deep learning</a></li>
+                            <li><a href="#from-layers-to-models">From layers to models</a>
+                                <ul>
+                                    <li><a href="#importance-of-model-architecture">Importance of model architecture</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><a href="#the-compile-step-configuring-the-learning-process">The "compile" step:
+                                    Configuring the learning process</a></li>
+                            <li><a href="#picking-a-loss-function">Picking a loss function</a></li>
+                            <li><a href="#understanding-the-fit-method">Understanding the fit() method</a></li>
+                            <li><a href="#monitoring-loss-and-metrics-on-validation-data">Monitoring loss and metrics on
+                                    validation data</a></li>
+                            <li><a href="#making-predictions-with-the-model">Making predictions with the model</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#summary">Summary</a>
+    </details>
+    </li>
+    </ul>
+    </li>
+    </ul>
 
-<hr />
+    <hr />
 
-<h1 id="chapter-3-introduction-to-keras-and-tensorflow">Chapter 3: Introduction to Keras and TensorFlow</h1>
+    <h1 id="chapter-3-introduction-to-keras-and-tensorflow">Chapter 3: Introduction to Keras and TensorFlow</h1>
 
-<p>This chapter covers...</p>
+    <p>This chapter covers...</p>
 
-<ul>
-<li>A closer look at TensorFlow, Keras, and their relationship</li>
-<li>Setting up a deep learning workspace</li>
-<li>Review of how deep learning concepts learned in previous chapters translate to Keras and TensorFlow</li>
-</ul>
+    <ul>
+        <li>A closer look at TensorFlow, Keras, and their relationship</li>
+        <li>Setting up a deep learning workspace</li>
+        <li>Review of how deep learning concepts learned in previous chapters translate to Keras and TensorFlow</li>
+    </ul>
 
-<p>This chapter gives us everything required to get started with deep learning.
-By the end of this chapter, we'll be ready to move on to practical, real-world applications of deep learning.</p>
+    <p>This chapter gives us everything required to get started with deep learning.
+        By the end of this chapter, we'll be ready to move on to practical, real-world applications of deep learning.
+    </p>
 
-<hr />
+    <hr />
 
-<h2 id="whats-tensorflow">What's TensorFlow?</h2>
+    <h2 id="whats-tensorflow">What's TensorFlow?</h2>
 
-<p>TensorFlow is a free and <a href="https://github.com/tensorflow/tensorflow">open-source</a> machine learning framework for Python.
-It was primarily developed by Google.
-Similar to NumPy, it is a general-purpose and efficient numerical library used by engineers to manipulate mathematical expressions using numerical tensors.</p>
+    <p>TensorFlow is a free and <a href="https://github.com/tensorflow/tensorflow">open-source</a> machine learning
+        framework for Python.
+        It was primarily developed by Google.
+        Similar to NumPy, it is a general-purpose and efficient numerical library used by engineers to manipulate
+        mathematical expressions using numerical tensors.</p>
 
-<h3 id="tensorflow-vs-numpy">TensorFlow vs. NumPy</h3>
+    <h3 id="tensorflow-vs-numpy">TensorFlow vs. NumPy</h3>
 
-<p>TensorFlow far surpasses NumPy in the following ways:</p>
+    <p>TensorFlow far surpasses NumPy in the following ways:</p>
 
-<ul>
-<li>Automatically computes the gradient of any differentiable expressions (as seen in <a href="../ch2/#tensorflows-gradient-tape">chapter 2</a> with <code>GradientTape</code>)</li>
-<li>Runs not only on CPUs but also on GPUs and TPUs (highly-parallel hardware accelerators)</li>
-<li>Easily distributes computations across multiple devices (CPUs, GPUs, and TPUs) and machines</li>
-<li>TensorFlow programs can be exported and easily    deployed to other runtimes, such as C++, JavaScript (for browsers), or TensorFlow lite (for mobile devices or embedded systems)</li>
-</ul>
+    <ul>
+        <li>Automatically computes the gradient of any differentiable expressions (as seen in <a
+                href="../ch2/#tensorflows-gradient-tape">chapter 2</a> with <code>GradientTape</code>)</li>
+        <li>Runs not only on CPUs but also on GPUs and TPUs (highly-parallel hardware accelerators)</li>
+        <li>Easily distributes computations across multiple devices (CPUs, GPUs, and TPUs) and machines</li>
+        <li>TensorFlow programs can be exported and easily deployed to other runtimes, such as C++, JavaScript (for
+            browsers), or TensorFlow lite (for mobile devices or embedded systems)</li>
+    </ul>
 
-<h3 id="tensorflow-ecosystem">TensorFlow ecosystem</h3>
+    <h3 id="tensorflow-ecosystem">TensorFlow ecosystem</h3>
 
-<p>TensorFlow is much more than a single Python library.
-Rather, it's a platform home to a vast ecosystem of components, including:</p>
+    <p>TensorFlow is much more than a single Python library.
+        Rather, it's a platform home to a vast ecosystem of components, including:</p>
 
-<ul>
-<li>TF-Agents for reinforcement learning</li>
-<li>TF-Hub (repository) for pre-trained deep neural networks</li>
-<li>TensorFlow Serving for production deployment</li>
-<li>TFX for distributed training and ML workflow management</li>
-</ul>
+    <ul>
+        <li>TF-Agents for reinforcement learning</li>
+        <li>TF-Hub (repository) for pre-trained deep neural networks</li>
+        <li>TensorFlow Serving for production deployment</li>
+        <li>TFX for distributed training and ML workflow management</li>
+    </ul>
 
-<p>Together, these components cover a wide range of use cases: from cutting-edge research to large-scale production, or just a simple image classification application to distinguish between a dog or a cat.</p>
+    <p>Together, these components cover a wide range of use cases: from cutting-edge research to large-scale production,
+        or just a simple image classification application to distinguish between a dog or a cat.</p>
 
-<p>Scientists from Oak Ridge National Lab have used TensorFlow to train an extreme weather forecasting model on the 27,000 GPUs within the IBM Summit supercomputer.
-Google, on the other hand, has used TensorFlow to develop deep learning applications such as the chess-playing and Go-playing agent AlphaZero.</p>
+    <p>Scientists from Oak Ridge National Lab have used TensorFlow to train an extreme weather forecasting model on the
+        27,000 GPUs within the IBM Summit supercomputer.
+        Google, on the other hand, has used TensorFlow to develop deep learning applications such as the chess-playing
+        and Go-playing agent AlphaZero.</p>
 
-<hr />
+    <hr />
 
-<h2 id="whats-keras">What's Keras?</h2>
+    <h2 id="whats-keras">What's Keras?</h2>
 
-<figure class="right"`>
-    <img src="img/keras_hierarchy.png" style="width:50%;"/>
-    <figcaption>Keras is built on top of TensorFlow, which uses CPU/GPU/TPU to perform calculations</figcaption>
-</figure>
+    <figure class="right" `>
+        <img src="img/keras_hierarchy.png" style="width:50%;" />
+        <figcaption>Keras is built on top of TensorFlow, which uses CPU/GPU/TPU to perform calculations</figcaption>
+    </figure>
 
-<p>Keras is a high-level deep learning API built on top of TensorFlow.
-It provides a convenient and flexible API for building and training deep learning models.</p>
+    <p>Keras is a high-level deep learning API built on top of TensorFlow.
+        It provides a convenient and flexible API for building and training deep learning models.</p>
 
-<p>Keras is known for providing a clean, simple, and efficient API that prioritizes the developer experience.
-It's an API for human beings, not machines, and follows best practices for reducing cognitive load.
-The API provides consistent and simple workflows, minimizes the number of actions required for common use cases, and outputs clear and actionable feedback upon user error.</p>
+    <p>Keras is known for providing a clean, simple, and efficient API that prioritizes the developer experience.
+        It's an API for human beings, not machines, and follows best practices for reducing cognitive load.
+        The API provides consistent and simple workflows, minimizes the number of actions required for common use cases,
+        and outputs clear and actionable feedback upon user error.</p>
 
-<p>Much like Python, Keras' large and diverse user base enables a well-documented and wide range of workflows for utilizing the API.
-Keras does not force one to follow a single "true" way of building and training models.
-Rather, it allows the user to build and train models corresponding to their preference, and to explore the possibilities of each approach.</p>
+    <p>Much like Python, Keras' large and diverse user base enables a well-documented and wide range of workflows for
+        utilizing the API.
+        Keras does not force one to follow a single "true" way of building and training models.
+        Rather, it allows the user to build and train models corresponding to their preference, and to explore the
+        possibilities of each approach.</p>
 
-<h3 id="keras-and-tensorflow-a-brief-history">Keras and TensorFlow: A brief history</h3>
+    <h3 id="keras-and-tensorflow-a-brief-history">Keras and TensorFlow: A brief history</h3>
 
-<p>Keras was designed originally in March 2015 to be used with Theano, a tensor-manipulation library developed by Montreal Institute for Learning Algorithms (MILA).
-Theano pioneered the idea of using static computation graphs for automatic differentiation and compiling code to both CPU and GPU support.</p>
+    <p>Keras was designed originally in March 2015 to be used with Theano, a tensor-manipulation library developed by
+        Montreal Institute for Learning Algorithms (MILA).
+        Theano pioneered the idea of using static computation graphs for automatic differentiation and compiling code to
+        both CPU and GPU support.</p>
 
-<p>Following the release of TensorFlow 1.0 in November 2015, Keras was refactored to support multiple backend architectures: starting with Theano and TensorFlow in late 2015, and adding support for CNTK and MXNet in 2017.</p>
+    <p>Following the release of TensorFlow 1.0 in November 2015, Keras was refactored to support multiple backend
+        architectures: starting with Theano and TensorFlow in late 2015, and adding support for CNTK and MXNet in 2017.
+    </p>
 
-<p>Keras became well known as the user-friendly way to develop TensorFlow applications.
-By late 2017, a majority of TensorFlow users were using Keras.
-In 2018, the TensorFlow leadership picked Keras as TensorFlow's official high-level API.
-As of September 2019, the Keras API is the official API for TensorFlow 2.0.</p>
+    <p>Keras became well known as the user-friendly way to develop TensorFlow applications.
+        By late 2017, a majority of TensorFlow users were using Keras.
+        In 2018, the TensorFlow leadership picked Keras as TensorFlow's official high-level API.
+        As of September 2019, the Keras API is the official API for TensorFlow 2.0.</p>
 
-<p>Enough of the history, let's learn how to set up a deep learning workspace.</p>
+    <p>Enough of the history, let's learn how to set up a deep learning workspace.</p>
 
-<hr />
+    <hr />
 
-<h2 id="setting-up-a-deep-learning-workspace">Setting up a deep learning workspace</h2>
+    <h2 id="setting-up-a-deep-learning-workspace">Setting up a deep learning workspace</h2>
 
-<p>There are a handful of ways to set up a deep learning workspace:</p>
+    <p>There are a handful of ways to set up a deep learning workspace:</p>
 
-<ul>
-<li>Buy and install a physical machine with an NVIDIA GPU</li>
-<li>Use GPU instances on AWS, Google Cloud, or cheaper alternatives such as Jarvis Labs</li>
-<li>Use the free GPU runtime from Google Colab, a hosted Jupyter notebook service that executes code on GPUs and even TPUs</li>
-</ul>
+    <ul>
+        <li>Buy and install a physical machine with an NVIDIA GPU</li>
+        <li>Use GPU instances on AWS, Google Cloud, or cheaper alternatives such as Jarvis Labs</li>
+        <li>Use the free GPU runtime from Google Colab, a hosted Jupyter notebook service that executes code on GPUs and
+            even TPUs</li>
+    </ul>
 
-<p>Each approach has its advantages and disadvantages in terms of flexibility, cost, and ease of use.
-I'll briefly discuss the advantages and disadvantages of each approach below, but I will not discuss setup at all.
-In short, the easiest way to get started is Google Colab or some cloud GPU instance.</p>
+    <p>Each approach has its advantages and disadvantages in terms of flexibility, cost, and ease of use.
+        I'll briefly discuss the advantages and disadvantages of each approach below, but I will not discuss setup at
+        all.
+        In short, the easiest way to get started is Google Colab or some cloud GPU instance.</p>
 
-<h3 id="physical-machine-with-nvidia-gpu">Physical machine with NVIDIA GPU</h3>
+    <h3 id="physical-machine-with-nvidia-gpu">Physical machine with NVIDIA GPU</h3>
 
-<p>Buying a machine with a GPU is not the easiest way to get started with DL, as it's the most expensive upfront and requires manual setup.
-The upfront cost is amplified by the current (as of June 2022) chip shortage and GPU scalpers.
-This method involves installing proper drivers, sorting out version conflicts, and then configuring the libraries to use the GPU instead of the CPU.</p>
+    <p>Buying a machine with a GPU is not the easiest way to get started with DL, as it's the most expensive upfront and
+        requires manual setup.
+        The upfront cost is amplified by the current (as of June 2022) chip shortage and GPU scalpers.
+        This method involves installing proper drivers, sorting out version conflicts, and then configuring the
+        libraries to use the GPU instead of the CPU.</p>
 
-<p>Most users already have NVIDIA GPUs installed on their computers.
-Given the large user base of TensorFlow, there are many tutorials for setting up NVIDIA GPUs for deep learning, so this is not a bad option for tech-savvy people.
-I run most of my deep learning code on my GPU as it's the most convenient option and does not require an internet connection.</p>
+    <p>Most users already have NVIDIA GPUs installed on their computers.
+        Given the large user base of TensorFlow, there are many tutorials for setting up NVIDIA GPUs for deep learning,
+        so this is not a bad option for tech-savvy people.
+        I run most of my deep learning code on my GPU as it's the most convenient option and does not require an
+        internet connection.</p>
 
-<p>The alternative to buying a GPU is the use of embedded devices built specifically for efficient and highly-parallelized math operations, such as <a href="https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/">NVIDIA's Jetson</a> or <a href="https://coral.ai/products/">Google's Coral</a>.</p>
+    <p>The alternative to buying a GPU is the use of embedded devices built specifically for efficient and
+        highly-parallelized math operations, such as <a
+            href="https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/">NVIDIA's Jetson</a> or <a
+            href="https://coral.ai/products/">Google's Coral</a>.</p>
 
-<h3 id="cloud-gpu-instances">Cloud GPU instances</h3>
+    <h3 id="cloud-gpu-instances">Cloud GPU instances</h3>
 
-<p>Using GPU instances is cheaper in the short term because you pay as you go (per hour basis), but it's not sustainable in the long run if you're a heavy user of deep learning.
-The benefit of using GPU instances is that it requires minimal setup as most instances have Python, TensorFlow, and Keras pre-installed - it's mostly plug-and-play and easy to use.
-Moreover, the GPU instance can easily be upgraded, torn down, cloned, and re-installed.
-Lastly, students and enterprise employees often get discounts - or free usage - for AWS and Google Cloud.</p>
+    <p>Using GPU instances is cheaper in the short term because you pay as you go (per hour basis), but it's not
+        sustainable in the long run if you're a heavy user of deep learning.
+        The benefit of using GPU instances is that it requires minimal setup as most instances have Python, TensorFlow,
+        and Keras pre-installed - it's mostly plug-and-play and easy to use.
+        Moreover, the GPU instance can easily be upgraded, torn down, cloned, and re-installed.
+        Lastly, students and enterprise employees often get discounts - or free usage - for AWS and Google Cloud.</p>
 
-<p>I use Jarvis Labs and AWS for my deep learning needs because I have discounts for both services.
-There aren't many differences between cloud instance providers other than the availability of high-powered GPUs.</p>
+    <p>I use Jarvis Labs and AWS for my deep learning needs because I have discounts for both services.
+        There aren't many differences between cloud instance providers other than the availability of high-powered GPUs.
+    </p>
 
-<h3 id="google-colab">Google Colab</h3>
+    <h3 id="google-colab">Google Colab</h3>
 
-<p>The last approach - using free GPUs from Google Colab - is the simplest way to get started with deep learning.
-It's recommended for those who are not familiar with the hardware and software, and for those who are new to deep learning.
-Francois himself recommends executing code examples found in the book using Google Colab as it requires the least amount of setup.
-The drawback of Colab is that the free GPU is time-limited and shared by users - meaning that the execution may be slower.</p>
+    <p>The last approach - using free GPUs from Google Colab - is the simplest way to get started with deep learning.
+        It's recommended for those who are not familiar with the hardware and software, and for those who are new to
+        deep learning.
+        Francois himself recommends executing code examples found in the book using Google Colab as it requires the
+        least amount of setup.
+        The drawback of Colab is that the free GPU is time-limited and shared by users - meaning that the execution may
+        be slower.</p>
 
-<hr />
+    <hr />
 
-<h2 id="first-steps-with-tensorflow">First steps with TensorFlow</h2>
+    <h2 id="first-steps-with-tensorflow">First steps with TensorFlow</h2>
 
-<p>Training a neural network revolves around low-level tensor manipulations and high-level deep learning concepts.
-TensorFlow takes care of the tensor manipulation through the use of:</p>
+    <p>Training a neural network revolves around low-level tensor manipulations and high-level deep learning concepts.
+        TensorFlow takes care of the tensor manipulation through the use of:</p>
 
-<ul>
-<li><em>Tensors</em>, including special tensors that store the network's state (<em>variables</em>)</li>
-<li><em>Tensor operations</em> such as addition, <code>relu</code>, <code>matmul</code>, etc.
-<ul>
-<li>The previous article details <a href="../ch2/#tensor-operations">tensor operations</a></li>
-</ul></li>
-<li><em>Backpropagation</em>, a way to compute gradients of mathematical operations (using TensorFlow's <code>GradientTape</code>)
-<ul>
-<li>The previous article discusses <a href="../ch2/#backpropagation">backpropagation</a> and <a href="../ch2/#tensorflows-gradient-tape">TensorFlow's GradientTape</a></li>
-</ul></li>
-</ul>
+    <ul>
+        <li><em>Tensors</em>, including special tensors that store the network's state (<em>variables</em>)</li>
+        <li><em>Tensor operations</em> such as addition, <code>relu</code>, <code>matmul</code>, etc.
+            <ul>
+                <li>The previous article details <a href="../ch2/#tensor-operations">tensor operations</a></li>
+            </ul>
+        </li>
+        <li><em>Backpropagation</em>, a way to compute gradients of mathematical operations (using TensorFlow's
+            <code>GradientTape</code>)
+            <ul>
+                <li>The previous article discusses <a href="../ch2/#backpropagation">backpropagation</a> and <a
+                        href="../ch2/#tensorflows-gradient-tape">TensorFlow's GradientTape</a></li>
+            </ul>
+        </li>
+    </ul>
 
-<p>Let's take a deeper dive into how all of the concepts above translate to TensorFlow.</p>
+    <p>Let's take a deeper dive into how all of the concepts above translate to TensorFlow.</p>
 
-<h3 id="constant-tensors-and-variables">Constant tensors and variables</h3>
+    <h3 id="constant-tensors-and-variables">Constant tensors and variables</h3>
 
-<p>To do anything in TensorFlow, we need to create tensors.
-Let's look at code examples for creating tensors with all ones, zeros, or random values:</p>
+    <p>To do anything in TensorFlow, we need to create tensors.
+        Let's look at code examples for creating tensors with all ones, zeros, or random values:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 
 <span class="c1"># Equivalent to np.ones((2, 2))</span>
 <span class="n">t_ones</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
@@ -250,11 +309,13 @@ Let's look at code examples for creating tensors with all ones, zeros, or random
 <span class="n">t_random_normal</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">mean</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">stddev</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
 <span class="c1"># Equivalent to np.random.uniform(size=(1, 3), low=0., high=1.)</span>
 <span class="n">t_random_uniform</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">minval</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">maxvval</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>What do the outputs of each tensor look like?</p>
+    <p>What do the outputs of each tensor look like?</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">t_ones</span><span class="p">)</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">t_ones</span><span class="p">)</span>
 <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span>
     <span class="p">[[</span><span class="mf">1.</span> <span class="mf">1.</span><span class="p">]</span>
      <span class="p">[</span><span class="mf">1.</span> <span class="mf">1.</span><span class="p">]],</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
@@ -273,13 +334,18 @@ Let's look at code examples for creating tensors with all ones, zeros, or random
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">t_random_uniform</span><span class="p">)</span>
 <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span>
     <span class="p">[[</span><span class="mf">0.141</span> <span class="mf">0.824</span> <span class="mf">0.912</span><span class="p">]],</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>A significant difference between NumPy arrays and TensorFlow tensors is that tensors are not assignable: they're <em>constant</em>.
-For instance, in NumPy, we can assign a value to a tensor, as seen in the code block below.
-Whereas, in TensorFlow, we are greeted with an error: <code>TypeError: 'Tensor' object does not support item assignment</code>.</p>
+    <p>A significant difference between NumPy arrays and TensorFlow tensors is that tensors are not assignable: they're
+        <em>constant</em>.
+        For instance, in NumPy, we can assign a value to a tensor, as seen in the code block below.
+        Whereas, in TensorFlow, we are greeted with an error:
+        <code>TypeError: 'Tensor' object does not support item assignment</code>.
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">t_ones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">t_ones</span>
 <span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span>
@@ -299,21 +365,28 @@ Whereas, in TensorFlow, we are greeted with an error: <code>TypeError: 'Tensor' 
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
   <span class="n">File</span> <span class="s2">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="ne">TypeError</span><span class="p">:</span> <span class="s1">&#39;Tensor&#39;</span> <span class="nb">object</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">support</span> <span class="n">item</span> <span class="n">assignment</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>To train a model, however, it's important to be able to change the values of the tensors - update the weights of the model.
-This is where the TensorFlow's <em>variable</em> (<code>tf.Variable</code>) comes into play:</p>
+    <p>To train a model, however, it's important to be able to change the values of the tensors - update the weights of
+        the model.
+        This is where the TensorFlow's <em>variable</em> (<code>tf.Variable</code>) comes into play:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">v</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">initial_value</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">v</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">initial_value</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 <span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.644994</span> <span class="p">],</span>
        <span class="p">[</span> <span class="mf">1.47064</span>  <span class="p">],</span>
        <span class="p">[</span><span class="o">-</span><span class="mf">0.6413262</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>The state of a variable - the entirety of or a subset of coefficients - can be modified via its <code>assign</code> method:</p>
+    <p>The state of a variable - the entirety of or a subset of coefficients - can be modified via its
+        <code>assign</code> method:
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">v</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">v</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
 <span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">],</span>
        <span class="p">[</span><span class="mf">1.</span><span class="p">],</span>
        <span class="p">[</span><span class="mf">1.</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
@@ -321,11 +394,15 @@ This is where the TensorFlow's <em>variable</em> (<code>tf.Variable</code>) come
 <span class="n">array</span><span class="p">([[</span><span class="mf">9.</span><span class="p">],</span>
        <span class="p">[</span><span class="mf">1.</span><span class="p">],</span>
        <span class="p">[</span><span class="mf">1.</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Similarly, the <code>assign_add()</code> and <code>assign_sub()</code> are tensor-efficient equivalents of <code>+=</code> and <code>-=</code>, respectively.</p>
+    <p>Similarly, the <code>assign_add()</code> and <code>assign_sub()</code> are tensor-efficient equivalents of
+        <code>+=</code> and <code>-=</code>, respectively.
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">v</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">v</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
 <span class="n">array</span><span class="p">([[</span><span class="mf">10.</span><span class="p">],</span>
        <span class="p">[</span> <span class="mf">2.</span><span class="p">],</span>
        <span class="p">[</span> <span class="mf">2.</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
@@ -333,14 +410,18 @@ This is where the TensorFlow's <em>variable</em> (<code>tf.Variable</code>) come
 <span class="n">array</span><span class="p">([[</span><span class="mf">9.</span><span class="p">],</span>
        <span class="p">[</span><span class="mf">1.</span><span class="p">],</span>
        <span class="p">[</span><span class="mf">1.</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="a-second-look-at-the-gradient-tape-api">A second look at the Gradient Tape API</h3>
+    <h3 id="a-second-look-at-the-gradient-tape-api">A second look at the Gradient Tape API</h3>
 
-<p>TensorFlow's ability to retrieve gradients of any expression with respect to any of its inputs is what makes the TensorFlow library so powerful.
-All we have to do is open a <code>GradientTape</code> context, manipulate the input tensors, and retrieve the gradients with respect to the inputs.</p>
+    <p>TensorFlow's ability to retrieve gradients of any expression with respect to any of its inputs is what makes the
+        TensorFlow library so powerful.
+        All we have to do is open a <code>GradientTape</code> context, manipulate the input tensors, and retrieve the
+        gradients with respect to the inputs.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 
 <span class="n">input_var</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">initial_value</span><span class="o">=</span><span class="mf">3.</span><span class="p">)</span>
 <span class="c1"># Open a GradientTape context</span>
@@ -350,34 +431,45 @@ All we have to do is open a <code>GradientTape</code> context, manipulate the in
 
 <span class="c1"># gradient = &lt;tf.Tensor: shape=(), dtype=float32, numpy=6.0&gt;</span>
 <span class="n">gradient</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">input_var</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>The gradient tape is most commonly used to retrieve the gradients of the model's loss with respect to its weights: <code>gradient = tape.gradient(loss, weights)</code>.
-We discussed and demonstrated this functionality in the <a href="../ch2/#tensorflows-gradient-tape">previous article</a>.</p>
+    <p>The gradient tape is most commonly used to retrieve the gradients of the model's loss with respect to its
+        weights: <code>gradient = tape.gradient(loss, weights)</code>.
+        We discussed and demonstrated this functionality in the <a href="../ch2/#tensorflows-gradient-tape">previous
+            article</a>.</p>
 
-<p>So far, we've only looked at the simplest case of <code>GradientTapes</code> - where the input tensors in <code>tape.gradient()</code> were TensorFlow variables.
-It's possible for the input tensors to be any arbitrary tensor, not just variables, by calling <code>tape.watch(arbitrary_tensor)</code> within the <code>GradientTape</code> context.</p>
+    <p>So far, we've only looked at the simplest case of <code>GradientTapes</code> - where the input tensors in
+        <code>tape.gradient()</code> were TensorFlow variables.
+        It's possible for the input tensors to be any arbitrary tensor, not just variables, by calling
+        <code>tape.watch(arbitrary_tensor)</code> within the <code>GradientTape</code> context.
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">arbitrary_tensor</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">2.</span><span class="p">)</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">arbitrary_tensor</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">2.</span><span class="p">)</span>
 <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">tape</span><span class="p">:</span>
     <span class="n">tape</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="n">arbitrary_tensor</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">arbitrary_tensor</span> <span class="o">*</span> <span class="n">arbitrary_tensor</span>
 
 <span class="c1"># tf.Tensor(4.0, shape=(), dtype=float32)</span>
 <span class="n">gradient</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">arbitrary_tensor</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>By default, only <em>trainable variables</em> are tracked because it would be too expensive to preemptively store the information required to compute the gradient of anything with respect to anything.
-To avoid wasting resources, only the trainable variables are tracked unless otherwise explicitly specified.</p>
+    <p>By default, only <em>trainable variables</em> are tracked because it would be too expensive to preemptively store
+        the information required to compute the gradient of anything with respect to anything.
+        To avoid wasting resources, only the trainable variables are tracked unless otherwise explicitly specified.</p>
 
-<h3 id="computing-second-order-gradients">Computing second-order gradients</h3>
+    <h3 id="computing-second-order-gradients">Computing second-order gradients</h3>
 
-<p>The gradient tape is a powerful utility capable of computing <em>second-order gradients</em> - or, the gradient of a gradient.</p>
+    <p>The gradient tape is a powerful utility capable of computing <em>second-order gradients</em> - or, the gradient
+        of a gradient.</p>
 
-<p>For instance, the gradient of an object's position with respect to time is the object's <em>speed</em>.
-The second-order gradient of the object's speed is its <em>acceleration</em>.</p>
+    <p>For instance, the gradient of an object's position with respect to time is the object's <em>speed</em>.
+        The second-order gradient of the object's speed is its <em>acceleration</em>.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">time</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">initial_value</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">time</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">initial_value</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
 <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">outer_tape</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">inner_tape</span><span class="p">:</span>
         <span class="n">position</span> <span class="o">=</span> <span class="mf">4.9</span> <span class="o">*</span> <span class="n">time</span> <span class="o">**</span> <span class="mi">2</span>
@@ -385,47 +477,56 @@ The second-order gradient of the object's speed is its <em>acceleration</em>.</p
 
 <span class="c1"># &lt;tf.Tensor: shape=(), dtype=float32, numpy=9.8&gt;</span>
 <span class="n">acceleration</span> <span class="o">=</span> <span class="n">outer_tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<hr />
+    <hr />
 
-<h2 id="example-linear-classifier-in-pure-tensorflow">Example: Linear classifier in pure TensorFlow</h2>
+    <h2 id="example-linear-classifier-in-pure-tensorflow">Example: Linear classifier in pure TensorFlow</h2>
 
-<p>We now know about tensors, variables, tensor operations, and gradient computation.
-That's enough to build any machine learning model based on gradient descent.
-Let's put our knowledge to the test and build an end-to-end linear classification model purely in TensorFlow.</p>
+    <p>We now know about tensors, variables, tensor operations, and gradient computation.
+        That's enough to build any machine learning model based on gradient descent.
+        Let's put our knowledge to the test and build an end-to-end linear classification model purely in TensorFlow.
+    </p>
 
-<p>We're going to implement a linear classifier that predicts whether a given input belongs to class A or class B.
-But first, we need to understand what linear classification is.</p>
+    <p>We're going to implement a linear classifier that predicts whether a given input belongs to class A or class B.
+        But first, we need to understand what linear classification is.</p>
 
-<h3 id="what-is-linear-classification">What is linear classification?</h3>
+    <h3 id="what-is-linear-classification">What is linear classification?</h3>
 
-<figure class="right">
-    <img src="img/linear_classifier_data_line.png" style="width:100%;background:white;"/>
-    <figcaption>Two classes of data separated by a line</figcaption>
-</figure>
+    <figure class="right">
+        <img src="img/linear_classifier_data_line.png" style="width:100%;background:white;" />
+        <figcaption>Two classes of data separated by a line</figcaption>
+    </figure>
 
-<p>In linear classification problems, the model is trying to find a linear combination of the input features that best predicts the target variable.
-Simply put, the model is trying to classify input data into 2+ categories (classes) by drawing a line through the data.
-The line best fits to separate the data into two classes.</p>
+    <p>In linear classification problems, the model is trying to find a linear combination of the input features that
+        best predicts the target variable.
+        Simply put, the model is trying to classify input data into 2+ categories (classes) by drawing a line through
+        the data.
+        The line best fits to separate the data into two classes.</p>
 
-<p>We see in the figure to the right how the model classifies the two classes with a red line.
-Inputs above the red line belong to class A and inputs below the line belong to class B.
-There are a few class B outliers above the line, but remember that the classification line is best fit, not perfect fit.</p>
+    <p>We see in the figure to the right how the model classifies the two classes with a red line.
+        Inputs above the red line belong to class A and inputs below the line belong to class B.
+        There are a few class B outliers above the line, but remember that the classification line is best fit, not
+        perfect fit.</p>
 
-<p>This is the basic idea behind linear classification.
-Now let's generate some data and train a linear classifier.
-All of the code related to this linear classifier can be found on my <a href="https://github.com/nosas/blog/blob/main/deep_learning_python/ch3/code/linear_classifier.py">GitHub</a> as an interactive python file.
-I recommend using VSCode to utilize the interactive python code blocks - similar to Jupyter Notebooks.</p>
+    <p>This is the basic idea behind linear classification.
+        Now let's generate some data and train a linear classifier.
+        All of the code related to this linear classifier can be found on my <a
+            href="https://github.com/nosas/blog/blob/main/deep_learning_python/ch3/code/linear_classifier.py">GitHub</a>
+        as an interactive python file.
+        I recommend using VSCode to utilize the interactive python code blocks - similar to Jupyter Notebooks.</p>
 
-<h3 id="generating-synthetic-data">Generating synthetic data</h3>
+    <h3 id="generating-synthetic-data">Generating synthetic data</h3>
 
-<p>We need some nicely linear data to train our linear classifier.
-To keep it simple, we'll create two classes of points in a 2D plane and call them class A and class B.
-To keep it more simple, we won't explain all the math behind the data generation - just understand that both classes should be clearly separated and roughly distributed like a cloud.
-We'll use the following formula to generate the data:</p>
+    <p>We need some nicely linear data to train our linear classifier.
+        To keep it simple, we'll create two classes of points in a 2D plane and call them class A and class B.
+        To keep it more simple, we won't explain all the math behind the data generation - just understand that both
+        classes should be clearly separated and roughly distributed like a cloud.
+        We'll use the following formula to generate the data:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">num_samples_per_class</span> <span class="o">=</span> <span class="mi">500</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">num_samples_per_class</span> <span class="o">=</span> <span class="mi">500</span>
 <span class="n">class_a_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span>
     <span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
     <span class="n">cov</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>
@@ -434,21 +535,25 @@ We'll use the following formula to generate the data:</p>
     <span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
     <span class="n">cov</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>
     <span class="n">size</span><span class="o">=</span><span class="n">num_samples_per_class</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>The figure below shows the linearly-separable data of classes A and B.
-See the following code block to see how we plot the data.</p>
+    <p>The figure below shows the linearly-separable data of classes A and B.
+        See the following code block to see how we plot the data.</p>
 
-<figure class="center">
-    <img src="img/linear_classifier_data.png" style="width:100%;background:white;"/>
-    <figcaption>Two classes of synthetic and random points in the 2D plane</figcaption>
-</figure>
+    <figure class="center">
+        <img src="img/linear_classifier_data.png" style="width:100%;background:white;" />
+        <figcaption>Two classes of synthetic and random points in the 2D plane</figcaption>
+    </figure>
 
-<p>Both samples are matrices of shape <code>(500, 2)</code> - meaning there are 500 rows of 2-dimensional data (aka 500 vectors/tuples, each containing an x,y).
-Let's stack both class samples into a single array with the shape <code>(1000, 2)</code>.
-Stacking the samples into a single array will allow for easier processing later on, such as plotting the data.</p>
+    <p>Both samples are matrices of shape <code>(500, 2)</code> - meaning there are 500 rows of 2-dimensional data (aka
+        500 vectors/tuples, each containing an x,y).
+        Let's stack both class samples into a single array with the shape <code>(1000, 2)</code>.
+        Stacking the samples into a single array will allow for easier processing later on, such as plotting the data.
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="c1"># The first 500 samples are from class A, the next 500 samples are from class B</span>
@@ -487,27 +592,36 @@ Stacking the samples into a single array will allow for easier processing later 
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;../img/linear_classifier_data.png&quot;</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="creating-the-linear-classifier">Creating the linear classifier</h3>
+    <h3 id="creating-the-linear-classifier">Creating the linear classifier</h3>
 
-<p>A linear classifier is an <em>affine transformation</em> of the input data (<code>prediction = dot(W, x) + b</code>), trained to minimize the square of the difference (mean squared error, or MSE) between the prediction and the target label.</p>
+    <p>A linear classifier is an <em>affine transformation</em> of the input data
+        (<code>prediction = dot(W, x) + b</code>), trained to minimize the square of the difference (mean squared error,
+        or MSE) between the prediction and the target label.</p>
 
-<p>I have not explained affine transformations - or any geometric interpretations of tensor operations - in my articles, but François Chollet greatly details geometric transformations in Chapter 2 of his book.
-In short, an affine transformation is the combination of a linear transform (dot product) and a translation (vector addition).</p>
+    <p>I have not explained affine transformations - or any geometric interpretations of tensor operations - in my
+        articles, but François Chollet greatly details geometric transformations in Chapter 2 of his book.
+        In short, an affine transformation is the combination of a linear transform (dot product) and a translation
+        (vector addition).</p>
 
-<p>Now that we understand the basic math behind linear classification, let's create the model's variables, forward pass, and loss function.</p>
+    <p>Now that we understand the basic math behind linear classification, let's create the model's variables, forward
+        pass, and loss function.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">input_dim</span> <span class="o">=</span> <span class="mi">2</span>   <span class="c1"># input is a 2D vector</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">input_dim</span> <span class="o">=</span> <span class="mi">2</span>   <span class="c1"># input is a 2D vector</span>
 <span class="n">output_dim</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># output is a scalar, class B &lt; 0.5 &lt; class A</span>
 <span class="n">W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">initial_value</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">)))</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">initial_value</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">output_dim</span><span class="p">,)))</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Our forward pass function is the affine transformation discussed above.
-Our loss function is the mean squared error (MSE) between the prediction and the target label.</p>
+    <p>Our forward pass function is the affine transformation discussed above.
+        Our loss function is the mean squared error (MSE) between the prediction and the target label.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
 
 <span class="k">def</span> <span class="nf">square_loss</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
@@ -515,15 +629,17 @@ Our loss function is the mean squared error (MSE) between the prediction and the
     <span class="n">per_sample_loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">targets</span> <span class="o">-</span> <span class="n">predictions</span><span class="p">)</span>
     <span class="c1"># Average the per-sample loss and return a single scalar loss value</span>
     <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">per_sample_loss</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Next, we have to train the model.</p>
+    <p>Next, we have to train the model.</p>
 
-<h3 id="training-the-linear-classifier">Training the linear classifier</h3>
+    <h3 id="training-the-linear-classifier">Training the linear classifier</h3>
 
-<p>Let's create the training step, where the model's weights and biases are updated based on the loss.</p>
+    <p>Let's create the training step, where the model's weights and biases are updated based on the loss.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">training_step</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="k">def</span> <span class="nf">training_step</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">tape</span><span class="p">:</span>
         <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="n">square_loss</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
@@ -533,16 +649,21 @@ Our loss function is the mean squared error (MSE) between the prediction and the
     <span class="n">W</span><span class="o">.</span><span class="n">assign_sub</span><span class="p">(</span><span class="n">learning_rate</span> <span class="o">*</span> <span class="n">grad_loss_wrt_W</span><span class="p">)</span>
     <span class="n">b</span><span class="o">.</span><span class="n">assign_sub</span><span class="p">(</span><span class="n">learning_rate</span> <span class="o">*</span> <span class="n">grad_loss_wrt_b</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">loss</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Finally, let's create the training loop.
-For simplicity, we'll do <em>batch training</em> instead of <em>mini-batch training</em>.
-Batch training means the model trains on all the data at once instead of iteratively over small batches of the data.</p>
+    <p>Finally, let's create the training loop.
+        For simplicity, we'll do <em>batch training</em> instead of <em>mini-batch training</em>.
+        Batch training means the model trains on all the data at once instead of iteratively over small batches of the
+        data.</p>
 
-<p>Batch training has its pros and cons: each training step will take much longer to run since we'll compute the forward pass and gradient calculation for the entire dataset (1000 samples in our example).
-On the other hand, because the model is training on the entire dataset, each gradient update will be much more effective at reducing the loss since it learns information from all training samples.</p>
+    <p>Batch training has its pros and cons: each training step will take much longer to run since we'll compute the
+        forward pass and gradient calculation for the entire dataset (1000 samples in our example).
+        On the other hand, because the model is training on the entire dataset, each gradient update will be much more
+        effective at reducing the loss since it learns information from all training samples.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">50</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">50</span>
 <span class="c1"># Save the loss scores so we can plot them later</span>
 <span class="n">loss_all</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="c1"># Save all predictions so we can calculate and plot the accuracy later</span>
@@ -553,12 +674,15 @@ On the other hand, because the model is training on the entire dataset, each gra
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2"> loss: </span><span class="si">{</span><span class="n">step_loss</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">loss_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_loss</span><span class="p">)</span>
     <span class="n">predictions_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">))</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p><details>
-    <summary>Full output of loss scores</summary></p>
+    <p>
+    <details>
+        <summary>Full output of loss scores</summary>
+        </p>
 
-<pre><code>Step 0: Loss = 2.9617
+        <pre><code>Step 0: Loss = 2.9617
 Step 1: Loss = 0.4816
 Step 2: Loss = 0.1756
 Step 3: Loss = 0.1239
@@ -610,83 +734,97 @@ Step 48: Loss = 0.0254
 Step 49: Loss = 0.0254
 </code></pre>
 
-<p></details></p>
+        <p>
+    </details>
+    </p>
 
-<p>After 50 epochs, or 50 training steps, the loss score stabilizes to around 0.025.
-Let's plot the loss scores to see how the loss score changes after each training step.</p>
+    <p>After 50 epochs, or 50 training steps, the loss score stabilizes to around 0.025.
+        Let's plot the loss scores to see how the loss score changes after each training step.</p>
 
-<h3 id="plotting-the-loss">Plotting the loss</h3>
+    <h3 id="plotting-the-loss">Plotting the loss</h3>
 
-<p>It's difficult to see the rate of decrease in the loss score following the rapid convergence after step 0 and long tail.
-The initial loss score was initially at 2.9617 on step 0 and dropped to 0.4816 on step 1.
-We can improve the plot by excluding the initial loss score and "trimming" the long tail at the point where see the score stabilizes (~40 epochs).
-Let's clean up the data and plot the loss scores so we can better visualize the rate of decrease.</p>
+    <p>It's difficult to see the rate of decrease in the loss score following the rapid convergence after step 0 and
+        long tail.
+        The initial loss score was initially at 2.9617 on step 0 and dropped to 0.4816 on step 1.
+        We can improve the plot by excluding the initial loss score and "trimming" the long tail at the point where see
+        the score stabilizes (~40 epochs).
+        Let's clean up the data and plot the loss scores so we can better visualize the rate of decrease.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">loss_all</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">41</span><span class="p">])</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">loss_all</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">41</span><span class="p">])</span>
 <span class="n">plot</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Epoch&quot;</span><span class="p">)</span>
 <span class="n">plot</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Loss&quot;</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<table style="width:100%;">
-    <tr>
-        <td style="width:50%;">
-            <img src="img/loss_all.png" style="background:white; width:100%;">
-        </td>
-        <td style="width:50%;">
-            <img src="img/loss_exclude_initial_and_tail.png" style="background:white; width:100%;">
-        </td>
-    </tr>
-    <tr >
-        <td>
-            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
-                <small>
-                    <i>Loss scores of all training steps, converges to ~0.025 after roughly 40 epochs<i>
-                </small>
-            </span>
-        </td>
-        <td>
-            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
-                <small>
-                    <i>All loss scores, excluding the initial loss score and trimming the plot's long tail<i>
-                </small>
-            </span>
-        </td>
-    </tr>
-</table>
+    <table style="width:100%;">
+        <tr>
+            <td style="width:50%;">
+                <img src="img/loss_all.png" style="background:white; width:100%;">
+            </td>
+            <td style="width:50%;">
+                <img src="img/loss_exclude_initial_and_tail.png" style="background:white; width:100%;">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                    <small>
+                        <i>Loss scores of all training steps, converges to ~0.025 after roughly 40 epochs<i>
+                    </small>
+                </span>
+            </td>
+            <td>
+                <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                    <small>
+                        <i>All loss scores, excluding the initial loss score and trimming the plot's long tail<i>
+                    </small>
+                </span>
+            </td>
+        </tr>
+    </table>
 
-<p><em>Can we train the model for more epochs and make it more accurate?</em></p>
+    <p><em>Can we train the model for more epochs and make it more accurate?</em></p>
 
-<p>No.
-Take a look at the plots above: the loss score stabilizes after roughly 40 epochs.</p>
+    <p>No.
+        Take a look at the plots above: the loss score stabilizes after roughly 40 epochs.</p>
 
-<p>The stabilization shows that the model learned its optimal weights given the current model architecture and training data.
-If we were to train it for more epochs, the model would <em>overfit</em> (memorize) to the data.</p>
+    <p>The stabilization shows that the model learned its optimal weights given the current model architecture and
+        training data.
+        If we were to train it for more epochs, the model would <em>overfit</em> (memorize) to the data.</p>
 
-<p><em>Overfitting</em> is a huge concept in machine learning, which we'll cover later on.
-For now, understand that more training does not guarantee better results!
-Training with a quality dataset and decently-configured model architecture is more impactful than excessive training.</p>
+    <p><em>Overfitting</em> is a huge concept in machine learning, which we'll cover later on.
+        For now, understand that more training does not guarantee better results!
+        Training with a quality dataset and decently-configured model architecture is more impactful than excessive
+        training.</p>
 
-<h3 id="plotting-the-predictions">Plotting the predictions</h3>
+    <h3 id="plotting-the-predictions">Plotting the predictions</h3>
 
-<p>After each training step - each iteration over the entire dataset - the model updates its weights and biases (parameters) and makes predictions on the inputs.
-We append those predictions to a list called <code>predictions_all</code>.
-Using the predictions, we can plot model's accuracy after each training step: green dot if correctly predicted, red otherwise.</p>
+    <p>After each training step - each iteration over the entire dataset - the model updates its weights and biases
+        (parameters) and makes predictions on the inputs.
+        We append those predictions to a list called <code>predictions_all</code>.
+        Using the predictions, we can plot model's accuracy after each training step: green dot if correctly predicted,
+        red otherwise.</p>
 
-<p>Predictions are classified as <em>correct</em> or <em>incorrect</em> based on the following criteria:</p>
+    <p>Predictions are classified as <em>correct</em> or <em>incorrect</em> based on the following criteria:</p>
 
-<ul>
-<li>If the prediction is greater than 0.5, the predicted label is class A</li>
-<li>If the prediction is less than 0.5, the predicted label is class B</li>
-</ul>
+    <ul>
+        <li>If the prediction is greater than 0.5, the predicted label is class A</li>
+        <li>If the prediction is less than 0.5, the predicted label is class B</li>
+    </ul>
 
-<p>An easier way to understand this is: if the dot is <em>above</em> the red line, it belongs to class A, otherwise it's below the line and belongs to class B.</p>
+    <p>An easier way to understand this is: if the dot is <em>above</em> the red line, it belongs to class A, otherwise
+        it's below the line and belongs to class B.</p>
 
-<p>We need two helper functions to create the accuracy plots and GIFs below: <code>plot_prediction_acc(prediction, input)</code> and <code>make_gif(predictions, inputs)</code>.
-The <code>plot_prediction_acc()</code> function will plot the accuracy of the model and save it to an IO buffer.
-The <code>make_gif()</code> function will create a GIF from the IO buffer and save it to a file.
-Easy peasy.</p>
+    <p>We need two helper functions to create the accuracy plots and GIFs below:
+        <code>plot_prediction_acc(prediction, input)</code> and <code>make_gif(predictions, inputs)</code>.
+        The <code>plot_prediction_acc()</code> function will plot the accuracy of the model and save it to an IO buffer.
+        The <code>make_gif()</code> function will create a GIF from the IO buffer and save it to a file.
+        Easy peasy.
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="c1"># %% Scatter plot for the model&#39;s predictions where the dots are green if the prediction is accurate, red if the prediction is incorrect</span>
@@ -732,27 +870,36 @@ Easy peasy.</p>
 
 <span class="c1"># %% Make gif</span>
 <span class="n">make_gif</span><span class="p">(</span><span class="n">predictions_all</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="s2">&quot;prediction_accuracy&quot;</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p><details>
-    <summary>How to make a GIF of matplotlib plots</summary></p>
+    <p>
+    <details>
+        <summary>How to make a GIF of matplotlib plots</summary>
+        </p>
 
-<p>There are many ways to make a GIF of matplotlib plots.
-Matplotlib even has an <code>animation</code> module (<a href="https://matplotlib.org/stable/api/animation_api.html">here</a>) that can be used to make GIFs.
-However, it's not intuitive enough for me to use at the moment, so I hacked together something I knew would work using <code>imageio</code> and <code>io.BytesIO</code>.</p>
+        <p>There are many ways to make a GIF of matplotlib plots.
+            Matplotlib even has an <code>animation</code> module (<a
+                href="https://matplotlib.org/stable/api/animation_api.html">here</a>) that can be used to make GIFs.
+            However, it's not intuitive enough for me to use at the moment, so I hacked together something I knew would
+            work using <code>imageio</code> and <code>io.BytesIO</code>.</p>
 
-<p>Please refer to the code block below to view my implementations of <code>make_gif</code>.
-There are two different implementations:</p>
+        <p>Please refer to the code block below to view my implementations of <code>make_gif</code>.
+            There are two different implementations:</p>
 
-<ul>
-<li><code>make_gif</code> appends each image to the writer object (<code>imageio.get_writer()</code>)</li>
-<li><code>make_gif_with_duration</code> appends each image to a list and passes the list to <code>imageio.mimsave()</code></li>
-</ul>
+        <ul>
+            <li><code>make_gif</code> appends each image to the writer object (<code>imageio.get_writer()</code>)</li>
+            <li><code>make_gif_with_duration</code> appends each image to a list and passes the list to
+                <code>imageio.mimsave()</code>
+            </li>
+        </ul>
 
-<p>A third implementation to better generalize and enhance this function: save all the prediction images outside of the function and pass the list of images to <code>make_gif</code> instead of the list of predictions.
-Therefore, we'd only have to make each image one time and save computational resources.</p>
+        <p>A third implementation to better generalize and enhance this function: save all the prediction images outside
+            of the function and pass the list of images to <code>make_gif</code> instead of the list of predictions.
+            Therefore, we'd only have to make each image one time and save computational resources.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
+        <div class="codehilite">
+            <pre><span></span><code><span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
 <span class="kn">import</span> <span class="nn">imageio</span>
 
 
@@ -795,77 +942,98 @@ Therefore, we'd only have to make each image one time and save computational res
         <span class="n">buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">))</span>
     <span class="n">imageio</span><span class="o">.</span><span class="n">mimsave</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;../img/</span><span class="si">{</span><span class="n">savename</span><span class="si">}</span><span class="s2">.gif&quot;</span><span class="p">,</span> <span class="n">images</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+        </div>
 
-<p></details></p>
+        <p>
+    </details>
+    </p>
 
-<p>In the following plots, we see green dots representing correct predictions and red dots representing incorrect predictions.
-After each training step, the model adjusts its parameters causing the red class-separation line to gradually adjust in the direction of the correct prediction.
-As training continues, the number of incorrect predictions decreases, and the line properly separates the two classes.
-Pretty cool, right?</p>
+    <p>In the following plots, we see green dots representing correct predictions and red dots representing incorrect
+        predictions.
+        After each training step, the model adjusts its parameters causing the red class-separation line to gradually
+        adjust in the direction of the correct prediction.
+        As training continues, the number of incorrect predictions decreases, and the line properly separates the two
+        classes.
+        Pretty cool, right?</p>
 
-<table style="width:100%;">
-    <tr>
-        <td style="width:50%;">
-            <img src="img/prediction_accuracy_slowed.gif" style="background:white; width:100%;">
-        </td>
-        <td style="width:50%;">
-            <img src="img/prediction_accuracy.gif" style="background:white; width:100%;">
-        </td>
-    </tr>
-    <tr >
-        <td>
-            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
-                <small>
-                    <i>Accuracy of the first 20 predictions, slowed down<i>
-                </small>
-            </span>
-        </td>
-        <td>
-            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
-                <small>
-                    <i>Accuracy of all predictions<i>
-                </small>
-            </span>
-        </td>
-    </tr>
-</table>
+    <table style="width:100%;">
+        <tr>
+            <td style="width:50%;">
+                <img src="img/prediction_accuracy_slowed.gif" style="background:white; width:100%;">
+            </td>
+            <td style="width:50%;">
+                <img src="img/prediction_accuracy.gif" style="background:white; width:100%;">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                    <small>
+                        <i>Accuracy of the first 20 predictions, slowed down<i>
+                    </small>
+                </span>
+            </td>
+            <td>
+                <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                    <small>
+                        <i>Accuracy of all predictions<i>
+                    </small>
+                </span>
+            </td>
+        </tr>
+    </table>
 
-<p>This is what linear classification is all about: finding the parameters of a line that neatly separates two classes of data.
-In higher-dimensional spaces, we're finding the parameters of a hyperplane that neatly separates the two classes.</p>
+    <p>This is what linear classification is all about: finding the parameters of a line that neatly separates two
+        classes of data.
+        In higher-dimensional spaces, we're finding the parameters of a hyperplane that neatly separates the two
+        classes.</p>
 
-<hr />
+    <hr />
 
-<h2 id="understanding-core-keras-apis">Understanding core Keras APIs</h2>
+    <h2 id="understanding-core-keras-apis">Understanding core Keras APIs</h2>
 
-<p>We've learned how to create a linear classifier using pure TensorFlow.
-Now, let's look closer at Keras - specifically, the anatomy of a neural network through Keras layers and models.</p>
+    <p>We've learned how to create a linear classifier using pure TensorFlow.
+        Now, let's look closer at Keras - specifically, the anatomy of a neural network through Keras layers and models.
+    </p>
 
-<h3 id="layers-the-building-blocks-of-deep-learning">Layers: the building blocks of deep learning</h3>
+    <h3 id="layers-the-building-blocks-of-deep-learning">Layers: the building blocks of deep learning</h3>
 
-<p>A layer is the fundamental data structure in neural networks.
-As discussed in chapter 2, a layer is a data processing module that takes as input one or more tensors and outputs one or more tensors.
-We previously referred to layers as a "data filter" where data goes in and comes out more useful.
-Everything in Keras is either a layer or something that closely interacts with a layer.</p>
+    <p>A layer is the fundamental data structure in neural networks.
+        As discussed in chapter 2, a layer is a data processing module that takes as input one or more tensors and
+        outputs one or more tensors.
+        We previously referred to layers as a "data filter" where data goes in and comes out more useful.
+        Everything in Keras is either a layer or something that closely interacts with a layer.</p>
 
-<p>Some layers can be stateless, but layers are more commonly stateful.
-The layer's state may contain <em>weights</em> which represent the network's <em>knowledge</em>.</p>
+    <p>Some layers can be stateless, but layers are more commonly stateful.
+        The layer's state may contain <em>weights</em> which represent the network's <em>knowledge</em>.</p>
 
-<p>Furthermore, different types of layers are appropriate for different tensor formats and data processing tasks:</p>
+    <p>Furthermore, different types of layers are appropriate for different tensor formats and data processing tasks:
+    </p>
 
-<ul>
-<li><code>Dense</code>, or fully-connected, layers often process vector data stored in 2D tensors of shape <code>(samples, features)</code></li>
-<li>Recurrent layers, such as <code>LSTM</code> (long short-term memory) or <code>Conv1D</code> (1D convolution layer), often process time-series data stored in 3D tensors of shape <code>(samples, timesteps, features)</code></li>
-<li><code>Conv2D</code> (2D convolution layer) and <code>Conv3D</code> (3D convolution layer) often process images stored in 4D tensors of shape <code>(samples, height, width, channels)</code></li>
-</ul>
+    <ul>
+        <li><code>Dense</code>, or fully-connected, layers often process vector data stored in 2D tensors of shape
+            <code>(samples, features)</code>
+        </li>
+        <li>Recurrent layers, such as <code>LSTM</code> (long short-term memory) or <code>Conv1D</code> (1D convolution
+            layer), often process time-series data stored in 3D tensors of shape
+            <code>(samples, timesteps, features)</code>
+        </li>
+        <li><code>Conv2D</code> (2D convolution layer) and <code>Conv3D</code> (3D convolution layer) often process
+            images stored in 4D tensors of shape <code>(samples, height, width, channels)</code></li>
+    </ul>
 
-<p>Tensor formats were discussed in more detail in the previous <a href="../ch2/#real-world-examples-of-data-tensors">article</a>.</p>
+    <p>Tensor formats were discussed in more detail in the previous <a
+            href="../ch2/#real-world-examples-of-data-tensors">article</a>.</p>
 
-<p>In Keras, a <code>Layer</code> is an object that encapsulates some state (weights) and some computation (a forward pass).
-The weights are typically defined in a <code>build()</code> method - although they could be created in the constructor.
-The computation, or forward pass, is defined in the <code>call()</code> method.</p>
+    <p>In Keras, a <code>Layer</code> is an object that encapsulates some state (weights) and some computation (a
+        forward pass).
+        The weights are typically defined in a <code>build()</code> method - although they could be created in the
+        constructor.
+        The computation, or forward pass, is defined in the <code>call()</code> method.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
 
 
 <span class="k">class</span> <span class="nc">SimpleDense</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
@@ -899,11 +1067,13 @@ The computation, or forward pass, is defined in the <code>call()</code> method.<
 <span class="n">input_tensor</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span>
 <span class="n">output_tensor</span> <span class="o">=</span> <span class="n">my_dense</span><span class="p">(</span><span class="n">input_tensor</span><span class="p">)</span>
 <span class="n">output_tensor</span><span class="o">.</span><span class="n">shape</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Once instantiated, a layer can be called on a tensor to produce a new tensor.</p>
+    <p>Once instantiated, a layer can be called on a tensor to produce a new tensor.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">my_dense</span> <span class="o">=</span> <span class="n">SimpleDense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">)</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">my_dense</span> <span class="o">=</span> <span class="n">SimpleDense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">input_tensor</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">784</span><span class="p">))</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">output_tensor</span> <span class="o">=</span> <span class="n">my_dense</span><span class="p">(</span><span class="n">input_tensor</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">output_tensor</span><span class="o">.</span><span class="n">shape</span>
@@ -915,120 +1085,162 @@ The computation, or forward pass, is defined in the <code>call()</code> method.<
        <span class="p">[</span><span class="mf">0.</span>        <span class="p">,</span> <span class="mf">0.16681111</span><span class="p">,</span> <span class="mf">0.37626198</span><span class="p">,</span> <span class="mf">0.32816353</span><span class="p">,</span> <span class="mf">0.</span>        <span class="p">,</span>
         <span class="o">...</span>
         <span class="mf">0.</span>        <span class="p">,</span> <span class="mf">0.16670324</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p><em>When do we call the <code>build()</code> method? How are the weights created?</em></p>
+    <p><em>When do we call the <code>build()</code> method? How are the weights created?</em></p>
 
-<p>We don't have to explicitly call the <code>build()</code> method because it's handled by the superclass.
-The weights are built - and <code>build()</code> called automatically - the first time the layer is called.
-The superclass's <code>__call__()</code> method calls the <code>build()</code> method if the layer has not been built yet.</p>
+    <p>We don't have to explicitly call the <code>build()</code> method because it's handled by the superclass.
+        The weights are built - and <code>build()</code> called automatically - the first time the layer is called.
+        The superclass's <code>__call__()</code> method calls the <code>build()</code> method if the layer has not been
+        built yet.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">built</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">built</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>That's the gist of Keras layers.
-Let's talk about model architectures.</p>
+    <p>That's the gist of Keras layers.
+        Let's talk about model architectures.</p>
 
-<h3 id="from-layers-to-models">From layers to models</h3>
+    <h3 id="from-layers-to-models">From layers to models</h3>
 
-<p>Simply put, a deep learning model, such as the <code>Model</code> class in Keras, is a graph of layers.
-Until now, we've only discussed <code>Sequential</code> models - a linear stack of layers that map a single input to a single output.
-As we move forward, we'll be exposed to a variety of neural network architectures:</p>
+    <p>Simply put, a deep learning model, such as the <code>Model</code> class in Keras, is a graph of layers.
+        Until now, we've only discussed <code>Sequential</code> models - a linear stack of layers that map a single
+        input to a single output.
+        As we move forward, we'll be exposed to a variety of neural network architectures:</p>
 
-<ul>
-<li>Two-branch networks</li>
-<li>Multihead networks</li>
-<li>Residual networks</li>
-</ul>
+    <ul>
+        <li>Two-branch networks</li>
+        <li>Multihead networks</li>
+        <li>Residual networks</li>
+    </ul>
 
-<p>The difference between each of these topologies is the type of layers and how they are connected.
-Each network topology has its pros, cons, and common use cases.
-Picking the right network topology is more an art than a science, where only practice can help you become a proper neural network architect.</p>
+    <p>The difference between each of these topologies is the type of layers and how they are connected.
+        Each network topology has its pros, cons, and common use cases.
+        Picking the right network topology is more an art than a science, where only practice can help you become a
+        proper neural network architect.</p>
 
-<h4 id="importance-of-model-architecture">Importance of model architecture</h4>
+    <h4 id="importance-of-model-architecture">Importance of model architecture</h4>
 
-<p><em>Why is it important to pick a proper network architecture for my use case?</em></p>
+    <p><em>Why is it important to pick a proper network architecture for my use case?</em></p>
 
-<p>To learn from data, we have to make assumptions about it - also referred to as a <em>hypothesis space</em> or <em>space of possibilities</em> in chapter 1.
-These assumptions (hypothesis space) define what can be learned.
-By choosing a network topology, we <em>constrain</em> our hypothesis space to a specific series of tensor operations.
-As such, the architecture of the model is extremely important for constraining what our model can learn - how it can make proper assumptions.</p>
+    <p>To learn from data, we have to make assumptions about it - also referred to as a <em>hypothesis space</em> or
+        <em>space of possibilities</em> in chapter 1.
+        These assumptions (hypothesis space) define what can be learned.
+        By choosing a network topology, we <em>constrain</em> our hypothesis space to a specific series of tensor
+        operations.
+        As such, the architecture of the model is extremely important for constraining what our model can learn - how it
+        can make proper assumptions.
+    </p>
 
-<p>The hypothesis space encodes the assumptions we make about our problems, aka the prior knowledge that the model starts with.
-For instance, if we're working on a two-class classification problem with a model made of a single <code>Dense</code> layer with no activation function, then we are assuming that our two classes are linearly separable.
-Finding the right balance between the number of layers, types of layers, and the number of parameters in the model is a key part of choosing a network architecture.</p>
+    <p>The hypothesis space encodes the assumptions we make about our problems, aka the prior knowledge that the model
+        starts with.
+        For instance, if we're working on a two-class classification problem with a model made of a single
+        <code>Dense</code> layer with no activation function, then we are assuming that our two classes are linearly
+        separable.
+        Finding the right balance between the number of layers, types of layers, and the number of parameters in the
+        model is a key part of choosing a network architecture.
+    </p>
 
-<p>In short, the network's architecture constrains the data that can be learned.
-We must find the right architecture for our problem and data.
-With time, this process will become second nature.</p>
+    <p>In short, the network's architecture constrains the data that can be learned.
+        We must find the right architecture for our problem and data.
+        With time, this process will become second nature.</p>
 
-<p>Enough of model architecture, let's talk about model compilation and how we configure the learning process.</p>
+    <p>Enough of model architecture, let's talk about model compilation and how we configure the learning process.</p>
 
-<h3 id="the-compile-step-configuring-the-learning-process">The "compile" step: Configuring the learning process</h3>
+    <h3 id="the-compile-step-configuring-the-learning-process">The "compile" step: Configuring the learning process</h3>
 
-<p>Once the model architecture is defined, there are three more key parts to be defined:</p>
+    <p>Once the model architecture is defined, there are three more key parts to be defined:</p>
 
-<ol>
-<li><em>Loss function</em> - The quantity that will be minimized during training. It represents a measure of the model's success for the task at hand.</li>
-<li><em>Optimizer</em> - Determines how the network will be updated based on the loss function.</li>
-<li><em>Metrics</em> - The various measures of success we can monitor during training and validation, such as classification accuracy.</li>
-</ol>
+    <ol>
+        <li><em>Loss function</em> - The quantity that will be minimized during training. It represents a measure of the
+            model's success for the task at hand.</li>
+        <li><em>Optimizer</em> - Determines how the network will be updated based on the loss function.</li>
+        <li><em>Metrics</em> - The various measures of success we can monitor during training and validation, such as
+            classification accuracy.</li>
+    </ol>
 
-<p>Once we've defined the loss function, optimizer, and metrics, we can begin training the model using the <code>model.compile()</code> and <code>model.fit()</code> methods.
-Alternatively, we could write our custom training loops instead of using the <code>model.fit()</code> method, but that's covered in chapter 7.
-For now, let's take a look at the <code>compile()</code> method.</p>
+    <p>Once we've defined the loss function, optimizer, and metrics, we can begin training the model using the
+        <code>model.compile()</code> and <code>model.fit()</code> methods.
+        Alternatively, we could write our custom training loops instead of using the <code>model.fit()</code> method,
+        but that's covered in chapter 7.
+        For now, let's take a look at the <code>compile()</code> method.
+    </p>
 
-<p>The <code>compile()</code> method configures the training process using the arguments <code>optimizer</code>, <code>loss</code>, and <code>metrics</code> (a list):</p>
+    <p>The <code>compile()</code> method configures the training process using the arguments <code>optimizer</code>,
+        <code>loss</code>, and <code>metrics</code> (a list):
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">)])</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">)])</span>
 <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s2">&quot;rmsprop&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;mean_squared_error&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">])</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>One important thing to note is how we pass in the arguments to the <code>compile()</code> method.
-In the example above, we passed them in as strings and the method is flexible enough to understand what we want.
-However, rather than passing in a string, we can also pass in objects.</p>
+    <p>One important thing to note is how we pass in the arguments to the <code>compile()</code> method.
+        In the example above, we passed them in as strings and the method is flexible enough to understand what we want.
+        However, rather than passing in a string, we can also pass in objects.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
     <span class="n">optimizer</span><span class="o">=</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">RMSprop</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">),</span>
     <span class="n">loss</span><span class="o">=</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">MeanSquaredError</span><span class="p">(),</span>
     <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">BinaryAccuracy</span><span class="p">()]</span>
 <span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Passing in objects is useful when we want to use a custom object, such as a custom loss function or optimizer.
-As stated above, customizing the training process will be discussed in chapter 7.
-In the meantime, please refer to the Keras documentation regarding built-in options for <a href="https://www.tensorflow.org/api_docs/python/tf/keras/optimizers">optimizers</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/losses">loss functions</a>, and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics">metrics</a>.</p>
+    <p>Passing in objects is useful when we want to use a custom object, such as a custom loss function or optimizer.
+        As stated above, customizing the training process will be discussed in chapter 7.
+        In the meantime, please refer to the Keras documentation regarding built-in options for <a
+            href="https://www.tensorflow.org/api_docs/python/tf/keras/optimizers">optimizers</a>, <a
+            href="https://www.tensorflow.org/api_docs/python/tf/keras/losses">loss functions</a>, and <a
+            href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics">metrics</a>.</p>
 
-<h3 id="picking-a-loss-function">Picking a loss function</h3>
+    <h3 id="picking-a-loss-function">Picking a loss function</h3>
 
-<p>Choosing the proper loss function for the right problem is a critical step in training a model.
-Neural networks will take any shortcut they can to minimize the loss score, even if it means learning the wrong thing and performing incorrectly.
-The network will end up doing things we did not intend it to do.
-Read more about how "smart" neural networks can be in OpenAI's article about <a href="https://www.deepmind.com/blog/specification-gaming-the-flip-side-of-ai-ingenuity">specification gaming</a>.</p>
+    <p>Choosing the proper loss function for the right problem is a critical step in training a model.
+        Neural networks will take any shortcut they can to minimize the loss score, even if it means learning the wrong
+        thing and performing incorrectly.
+        The network will end up doing things we did not intend it to do.
+        Read more about how "smart" neural networks can be in OpenAI's article about <a
+            href="https://www.deepmind.com/blog/specification-gaming-the-flip-side-of-ai-ingenuity">specification
+            gaming</a>.</p>
 
-<p>Common problems - such as classification, regression, and timeseries prediction (forecasting) - all have general guidelines for choosing a loss function.
-For instance, the <a href="https://en.wikipedia.org/wiki/Mean_squared_error">mean squared error</a> is a good choice for regression problems.
-The <a href="https://en.wikipedia.org/wiki/Cross_entropy">binary cross-entropy</a> is a good choice for two-class classification problems, whereas the <a href="https://www.tensorflow.org/api_docs/python/tf/keras/losses/CategoricalCrossentropy">categorical cross-entropy</a> is a good choice for multi-class classification problems.
-Only when we have a problem that is not one of these common problems will we need to develop a custom loss function.</p>
+    <p>Common problems - such as classification, regression, and timeseries prediction (forecasting) - all have general
+        guidelines for choosing a loss function.
+        For instance, the <a href="https://en.wikipedia.org/wiki/Mean_squared_error">mean squared error</a> is a good
+        choice for regression problems.
+        The <a href="https://en.wikipedia.org/wiki/Cross_entropy">binary cross-entropy</a> is a good choice for
+        two-class classification problems, whereas the <a
+            href="https://www.tensorflow.org/api_docs/python/tf/keras/losses/CategoricalCrossentropy">categorical
+            cross-entropy</a> is a good choice for multi-class classification problems.
+        Only when we have a problem that is not one of these common problems will we need to develop a custom loss
+        function.</p>
 
-<p>In the next few chapters, we'll detail explicitly which loss functions to choose for a wide range of common problems.</p>
+    <p>In the next few chapters, we'll detail explicitly which loss functions to choose for a wide range of common
+        problems.</p>
 
-<h3 id="understanding-the-fit-method">Understanding the fit() method</h3>
+    <h3 id="understanding-the-fit-method">Understanding the fit() method</h3>
 
-<p>After compiling the model, we can fit it to data by calling the <code>fit()</code> method.
-The <code>fit()</code> method implements the training loop using a few key arguments:</p>
+    <p>After compiling the model, we can fit it to data by calling the <code>fit()</code> method.
+        The <code>fit()</code> method implements the training loop using a few key arguments:</p>
 
-<ul>
-<li>The <code>data</code> (inputs and targets) to train on. Data is typically passed in as a Numpy array or TensorFlow <code>Dataset</code> object.</li>
-<li>The number of <code>epochs</code> to train for: how many times the training loop should iterate over the entire dataset.</li>
-<li>The batch size (optional): the number of samples to train on before updating the model's parameters.</li>
-</ul>
+    <ul>
+        <li>The <code>data</code> (inputs and targets) to train on. Data is typically passed in as a Numpy array or
+            TensorFlow <code>Dataset</code> object.</li>
+        <li>The number of <code>epochs</code> to train for: how many times the training loop should iterate over the
+            entire dataset.</li>
+        <li>The batch size (optional): the number of samples to train on before updating the model's parameters.</li>
+    </ul>
 
-<div class="codehilite"><pre><span></span><code><span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
     <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span>
 <span class="p">)</span>
 
@@ -1047,39 +1259,52 @@ The <code>fit()</code> method implements the training loop using a few key argum
     <span class="n">epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
     <span class="n">validation_data</span><span class="o">=</span><span class="n">validation_dataset</span><span class="p">,</span>
 <span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<blockquote>
-  <p><strong>NOTE: TensorFlow Dataset object</strong></p>
+    <blockquote>
+        <p><strong>NOTE: TensorFlow Dataset object</strong></p>
 
-  <p>The Dataset object will be covered in depth in later chapters.
-  However, it's important to understand that the Dataset object is a wrapper around a Python generator.
-  The Dataset is powerful and simple at the same time.
-  Read more about the Dataset object in the <a href="https://www.tensorflow.org/guide/datasets">TensorFlow guide</a> or <a href="https://www.tensorflow.org/api_docs/python/tf/data/Dataset">TensorFlow API documentation</a>.</p>
-</blockquote>
+        <p>The Dataset object will be covered in depth in later chapters.
+            However, it's important to understand that the Dataset object is a wrapper around a Python generator.
+            The Dataset is powerful and simple at the same time.
+            Read more about the Dataset object in the <a href="https://www.tensorflow.org/guide/datasets">TensorFlow
+                guide</a> or <a href="https://www.tensorflow.org/api_docs/python/tf/data/Dataset">TensorFlow API
+                documentation</a>.</p>
+    </blockquote>
 
-<p>The <code>fit()</code> method returns a <code>History</code> object, which contains information about the training process.
-This object contains a dictionary (<code>History.history</code>) which maps training metrics, such as the loss and accuracy, to their per-epoch values.</p>
+    <p>The <code>fit()</code> method returns a <code>History</code> object, which contains information about the
+        training process.
+        This object contains a dictionary (<code>History.history</code>) which maps training metrics, such as the loss
+        and accuracy, to their per-epoch values.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">history</span><span class="o">.</span><span class="n">history</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">history</span><span class="o">.</span><span class="n">history</span>
 <span class="p">{</span><span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.988</span><span class="p">,</span> <span class="mf">0.878</span><span class="p">,</span> <span class="mf">0.632</span><span class="p">,</span> <span class="mf">0.498</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
  <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.283</span><span class="p">,</span> <span class="mf">0.401</span><span class="p">,</span> <span class="mf">0.651</span><span class="p">,</span> <span class="o">...</span><span class="p">]}</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>This dictionary is used to plot the training loss and accuracy during training.</p>
+    <p>This dictionary is used to plot the training loss and accuracy during training.</p>
 
-<h3 id="monitoring-loss-and-metrics-on-validation-data">Monitoring loss and metrics on validation data</h3>
+    <h3 id="monitoring-loss-and-metrics-on-validation-data">Monitoring loss and metrics on validation data</h3>
 
-<p>The goal of machine learning is to obtain models that perform well on both training data and unseen data.
-Just because the model performs well on the training data, it does not mean it can perform well on new, unseen data.</p>
+    <p>The goal of machine learning is to obtain models that perform well on both training data and unseen data.
+        Just because the model performs well on the training data, it does not mean it can perform well on new, unseen
+        data.</p>
 
-<p>To understand how the model performs on unseen data, it's standard practice to reserve a subset of the training data as <em>validation data</em>.
-The validation data is used for computing the loss value and metrics, whereas the training data is used for updating the model's weights (training the model).</p>
+    <p>To understand how the model performs on unseen data, it's standard practice to reserve a subset of the training
+        data as <em>validation data</em>.
+        The validation data is used for computing the loss value and metrics, whereas the training data is used for
+        updating the model's weights (training the model).</p>
 
-<p>We can utilize the <code>fit()</code> method's <code>validation_data</code> argument to monitor the model's performance on our validation data.
-Similar to the training data, the validation data can be passed in as a Numpy array or a TensorFlow Dataset object.</p>
+    <p>We can utilize the <code>fit()</code> method's <code>validation_data</code> argument to monitor the model's
+        performance on our validation data.
+        Similar to the training data, the validation data can be passed in as a Numpy array or a TensorFlow Dataset
+        object.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="c1"># Reserve 25% of training data for validation</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="c1"># Reserve 25% of training data for validation</span>
 <span class="n">num_validation_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="mf">0.25</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">))</span>
 
 <span class="c1"># Create training and validation datasets</span>
@@ -1096,69 +1321,88 @@ Similar to the training data, the validation data can be passed in as a Numpy ar
     <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
     <span class="n">validation_data</span><span class="o">=</span><span class="n">validation_data</span>  <span class="c1"># Can be a tuple (inputs, targets) or a Dataset object</span>
 <span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>During training, the model will be trained on the training data and then evaluated on the validation data.
-As a result, the <code>history.history</code> object will contain the loss and accuracy values for both the training and validation data.</p>
+    <p>During training, the model will be trained on the training data and then evaluated on the validation data.
+        As a result, the <code>history.history</code> object will contain the loss and accuracy values for both the
+        training and validation data.</p>
 
-<blockquote>
-  <p><strong>NOTE: Keep training and validation data strictly separated</strong></p>
+    <blockquote>
+        <p><strong>NOTE: Keep training and validation data strictly separated</strong></p>
 
-  <p>The purpose of validation is to monitor whether what the model is learning is useful for new data.
-  If any of the validation data has already been seen by the model during training, the model's validation loss and accuracy will be flawed.</p>
-</blockquote>
+        <p>The purpose of validation is to monitor whether what the model is learning is useful for new data.
+            If any of the validation data has already been seen by the model during training, the model's validation
+            loss and accuracy will be flawed.</p>
+    </blockquote>
 
-<p>If instead, we wanted to compute the model's validation loss and metrics <em>after</em> the training loop has finished, we can use the <code>evaluate()</code> method.
-<code>evaluate()</code> iterates over the data passed in batches and returns a list of scalars, where the first scalar is the loss and the second is the accuracy.</p>
+    <p>If instead, we wanted to compute the model's validation loss and metrics <em>after</em> the training loop has
+        finished, we can use the <code>evaluate()</code> method.
+        <code>evaluate()</code> iterates over the data passed in batches and returns a list of scalars, where the first
+        scalar is the loss and the second is the accuracy.
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="c1"># Evaluate the model on validation data</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="c1"># Evaluate the model on validation data</span>
 <span class="n">loss_and_metrics</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">validation_inputs</span><span class="p">,</span> <span class="n">validation_targets</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_and_metrics</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">metric</span> <span class="o">=</span> <span class="n">loss_and_metrics</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Now that the model is trained, it can be used to make predictions on new data.</p>
+    <p>Now that the model is trained, it can be used to make predictions on new data.</p>
 
-<h3 id="making-predictions-with-the-model">Making predictions with the model</h3>
+    <h3 id="making-predictions-with-the-model">Making predictions with the model</h3>
 
-<p>The model can now be used to make predictions on new data in two ways:</p>
+    <p>The model can now be used to make predictions on new data in two ways:</p>
 
-<ul>
-<li>Pass in a Numpy array or TensorFlow tensor directly to the model's <code>__call__()</code> method: <code>model(inputs)</code>
-<ul>
-<li>This will process all inputs at once, which may be unfeasible for large datasets because of memory requirements</li>
-</ul></li>
-<li>Use the model's <code>predict(inputs, batch_size)</code> method, which returns a Numpy array of predictions: <code>model.predict(inputs, batch_size)</code></li>
-</ul>
+    <ul>
+        <li>Pass in a Numpy array or TensorFlow tensor directly to the model's <code>__call__()</code> method:
+            <code>model(inputs)</code>
+            <ul>
+                <li>This will process all inputs at once, which may be unfeasible for large datasets because of memory
+                    requirements</li>
+            </ul>
+        </li>
+        <li>Use the model's <code>predict(inputs, batch_size)</code> method, which returns a Numpy array of predictions:
+            <code>model.predict(inputs, batch_size)</code>
+        </li>
+    </ul>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">predictions</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>  <span class="c1"># Print first 3 predictions</span>
 <span class="p">[[</span><span class="mf">0.124155</span><span class="p">,</span>
   <span class="mf">0.298401</span>
   <span class="mf">0.695342</span><span class="p">,]]</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Training a model isn't as difficult as it sounds.
-This is all we need to know about the Keras API for now.
-We're now ready to start building models for real-world problems.</p>
+    <p>Training a model isn't as difficult as it sounds.
+        This is all we need to know about the Keras API for now.
+        We're now ready to start building models for real-world problems.</p>
 
-<p>The following chapter will discuss how to build neural networks for classification and regression problems.</p>
+    <p>The following chapter will discuss how to build neural networks for classification and regression problems.</p>
 
-<hr />
+    <hr />
 
-<h2 id="summary">Summary</h2>
+    <h2 id="summary">Summary</h2>
 
-<ul>
-<li>The fundamental objects of TensorFlow include tensors, variables, tensor operations, and the gradient tape.</li>
-<li>The central class of the Keras API is the <code>Layer</code> class.
-A layer encapsulates some weights and some computation.
-Models are composed of layers.</li>
-<li>Before training the model, we must define the model's architecture - optimizer, loss function, and metrics - with the <code>model.compile()</code> method</li>
-<li>Training the model is done using the <code>model.fit()</code> method.
-It's common practice to train the model on the training data and to monitor the model's performance on the validation data - a set of inputs that have not been seen by the model.</li>
-<li>Use <code>model.predict(inputs, batch_size)</code> to make predictions on new data.</li>
-</ul>
+    <ul>
+        <li>The fundamental objects of TensorFlow include tensors, variables, tensor operations, and the gradient tape.
+        </li>
+        <li>The central class of the Keras API is the <code>Layer</code> class.
+            A layer encapsulates some weights and some computation.
+            Models are composed of layers.</li>
+        <li>Before training the model, we must define the model's architecture - optimizer, loss function, and metrics -
+            with the <code>model.compile()</code> method</li>
+        <li>Training the model is done using the <code>model.fit()</code> method.
+            It's common practice to train the model on the training data and to monitor the model's performance on the
+            validation data - a set of inputs that have not been seen by the model.</li>
+        <li>Use <code>model.predict(inputs, batch_size)</code> to make predictions on new data.</li>
+    </ul>
 
 </body>
+
 </html>

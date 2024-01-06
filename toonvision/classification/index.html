@@ -1,318 +1,378 @@
-
 <html>
 
+<base href="https://sasonreza.com/">
+
 <head>
-  <link rel="stylesheet" type="text/css" href="../../css/default_dark.css">
-  <link rel="stylesheet" type="text/css" href="../../css/syntax_dark.css">
+    <link rel="stylesheet" type="text/css" href="/css/default_dark.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax_dark.css">
 </head>
 
 <body>
-  <center>
-    <div style="display: inline-block; vertical-align:middle;">
-      <a href="/" style="text-decoration: none;">SASON REZA<br>
-      </a>
-      <hr>
-      <div style="text-align: center;display: inline-block; width: 100%;">
-        <a class="title" href="../../about">ABOUT</a> &nbsp;<a class="title" href="../../contact">CONTACT</a>
-      </div>
-    </div>
-  </center>
+    <center>
+        <div style="display: inline-block; vertical-align:middle;">
+            <a href="/" style="text-decoration: none;">SASON REZA<br>
+            </a>
+            <hr>
+            <div style="text-align: center;display: inline-block; width: 100%;">
+                <a class="title" href="/books">BOOKS</a> &nbsp;<a class="title" href="/about">ABOUT</a> &nbsp;<a
+                    class="title" href="/contact">CONTACT</a>
+            </div>
+        </div>
+    </center>
 
-  <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 04, 2022</p>
 
-<p><title>ToonVision: Binary Classification</title></p>
+    <br>
+    <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 04, 2022</p>
 
-<h1 id="toonvision-classification">ToonVision - Classification</h1>
+    <p>
+        <title>ToonVision: Binary Classification</title>
+    </p>
 
-<p>This article is the first in a series on <strong>ToonVision</strong>.</p>
+    <h1 id="toonvision-classification">ToonVision - Classification</h1>
 
-<p>ToonVision is my computer vision project for teaching a machine how to see in <a href="https://en.wikipedia.org/wiki/Toontown_Online">ToonTown Online</a> - an MMORPG created by Disney in 2003.
-The ultimate goal is to teach a machine (nicknamed <strong>OmniToon</strong>) how to play ToonTown and create a self-sustaining ecosystem where the bots progress through the game together.</p>
+    <p>This article is the first in a series on <strong>ToonVision</strong>.</p>
 
-<p>This article covers binary classification of Toons and Cogs.
-The following article will cover multiclass classification of Cog suits (4 unique suits) and Cog names (32 unique names).</p>
+    <p>ToonVision is my computer vision project for teaching a machine how to see in <a
+            href="https://en.wikipedia.org/wiki/Toontown_Online">ToonTown Online</a> - an MMORPG created by Disney in
+        2003.
+        The ultimate goal is to teach a machine (nicknamed <strong>OmniToon</strong>) how to play ToonTown and create a
+        self-sustaining ecosystem where the bots progress through the game together.</p>
 
-<p>After reading this article, we'll have a better understanding of how to</p>
+    <p>This article covers binary classification of Toons and Cogs.
+        The following article will cover multiclass classification of Cog suits (4 unique suits) and Cog names (32
+        unique names).</p>
 
-<ul>
-<li>acquire, label, and process samples from image data</li>
-<li>deal with a model overfitting to a small, imbalanced dataset</li>
-<li>utilize image augmentation and dropout to improve the model's generalization capability</li>
-<li>compare different models, optimizers, and hyperparameters</li>
-<li>interpret and visualize what the model is learning</li>
-</ul>
+    <p>After reading this article, we'll have a better understanding of how to</p>
 
-<p>In later articles, we'll dive into image segmentation and object detection.
-For now, let's focus on classification.</p>
+    <ul>
+        <li>acquire, label, and process samples from image data</li>
+        <li>deal with a model overfitting to a small, imbalanced dataset</li>
+        <li>utilize image augmentation and dropout to improve the model's generalization capability</li>
+        <li>compare different models, optimizers, and hyperparameters</li>
+        <li>interpret and visualize what the model is learning</li>
+    </ul>
 
-<p><details>
-    <summary>Table of Contents</summary></p>
+    <p>In later articles, we'll dive into image segmentation and object detection.
+        For now, let's focus on classification.</p>
 
-<ul>
-<li><a href="#toonvision---classification">ToonVision - Classification</a>
-<ul>
-<li><a href="#classification">Classification</a>
-<ul>
-<li><a href="#binary-classification">Binary classification</a></li>
-<li><a href="#multiclass-classification">Multiclass classification</a>
-<ul>
-<li><a href="#multiclass-multilabel-classification">Multiclass multilabel classification</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#toontown-online">ToonTown Online</a>
-<ul>
-<li><a href="#toons">Toons</a>
-<ul>
-<li><a href="#toontasks">ToonTasks</a></li>
-</ul></li>
-<li><a href="#cogs">Cogs</a></li>
-<li><a href="#why-is-it-important-for-toons-to-classify-cogs">Why is it important for Toons to classify Cogs?</a></li>
-</ul></li>
-<li><a href="#the-toonvision-dataset">The ToonVision dataset</a>
-<ul>
-<li><a href="#dataset-considerations">Dataset considerations</a></li>
-<li><a href="#filename-and-data-folder-structure">Filename and data folder structure</a></li>
-<li><a href="#data-acquisition">Data acquisition</a></li>
-<li><a href="#data-labeling">Data labeling</a></li>
-<li><a href="#data-extraction">Data extraction</a></li>
-<li><a href="#data-processing">Data processing</a></li>
-<li><a href="#creating-the-dataset-objects">Creating the dataset objects</a>
-<ul>
-<li><a href="#spitting-the-images-into-train-validate-and-test">Spitting the images into train, validate, and test</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#compiling-the-model">Compiling the model</a>
-<ul>
-<li><a href="#loss-function">Loss function</a></li>
-<li><a href="#optimizer">Optimizer</a>
-<ul>
-<li><a href="#adam-optimizer">Adam optimizer</a></li>
-</ul></li>
-<li><a href="#metrics">Metrics</a></li>
-<li><a href="#callbacks">Callbacks</a></li>
-<li><a href="#defining-the-model">Defining the model</a></li>
-</ul></li>
-<li><a href="#training-the-baseline-model">Training the baseline model</a>
-<ul>
-<li><a href="#baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</a></li>
-<li><a href="#baseline-wrong-predictions">Baseline wrong predictions</a></li>
-</ul></li>
-<li><a href="#training-the-optimized-model">Training the optimized model</a>
-<ul>
-<li><a href="#preventing-overfitting">Preventing overfitting</a>
-<ul>
-<li><a href="#data-augmentation">Data augmentation</a></li>
-<li><a href="#dropout">Dropout</a></li>
-<li><a href="#learning-rate-decay">Learning rate decay</a></li>
-</ul></li>
-<li><a href="#wrong-predictions">Wrong predictions</a></li>
-<li><a href="#baseline-comparison-training">Baseline comparison: Training</a>
-<ul>
-<li><a href="#whats-with-the-jagged-lines">What's with the jagged lines?</a></li>
-</ul></li>
-<li><a href="#baseline-comparison-evaluation">Baseline comparison: Evaluation</a></li>
-</ul></li>
-<li><a href="#model-interpretation-and-visualization">Model interpretation and visualization</a>
-<ul>
-<li><a href="#intermediate-convnet-outputs-intermediate-activations">Intermediate convnet outputs (intermediate activations)</a></li>
-<li><a href="#convnet-filters">Convnet filters</a></li>
-<li><a href="#class-activation-heatmaps">Class activation heatmaps</a>
-<ul>
-<li><a href="#additional-cam-findings">Additional CAM findings</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#future-improvements">Future improvements</a>
-<ul>
-<li><a href="#dataset-balance">Dataset balance</a></li>
-<li><a href="#model-architecture">Model architecture</a></li>
-<li><a href="#model-interpretation">Model interpretation</a></li>
-</ul></li>
-</ul></li>
-</ul>
+    <p>
+    <details>
+        <summary>Table of Contents</summary>
+        </p>
 
-<p></details></p>
+        <ul>
+            <li><a href="#toonvision---classification">ToonVision - Classification</a>
+                <ul>
+                    <li><a href="#classification">Classification</a>
+                        <ul>
+                            <li><a href="#binary-classification">Binary classification</a></li>
+                            <li><a href="#multiclass-classification">Multiclass classification</a>
+                                <ul>
+                                    <li><a href="#multiclass-multilabel-classification">Multiclass multilabel
+                                            classification</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#toontown-online">ToonTown Online</a>
+                        <ul>
+                            <li><a href="#toons">Toons</a>
+                                <ul>
+                                    <li><a href="#toontasks">ToonTasks</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#cogs">Cogs</a></li>
+                            <li><a href="#why-is-it-important-for-toons-to-classify-cogs">Why is it important for Toons
+                                    to classify Cogs?</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#the-toonvision-dataset">The ToonVision dataset</a>
+                        <ul>
+                            <li><a href="#dataset-considerations">Dataset considerations</a></li>
+                            <li><a href="#filename-and-data-folder-structure">Filename and data folder structure</a>
+                            </li>
+                            <li><a href="#data-acquisition">Data acquisition</a></li>
+                            <li><a href="#data-labeling">Data labeling</a></li>
+                            <li><a href="#data-extraction">Data extraction</a></li>
+                            <li><a href="#data-processing">Data processing</a></li>
+                            <li><a href="#creating-the-dataset-objects">Creating the dataset objects</a>
+                                <ul>
+                                    <li><a href="#spitting-the-images-into-train-validate-and-test">Spitting the images
+                                            into train, validate, and test</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#compiling-the-model">Compiling the model</a>
+                        <ul>
+                            <li><a href="#loss-function">Loss function</a></li>
+                            <li><a href="#optimizer">Optimizer</a>
+                                <ul>
+                                    <li><a href="#adam-optimizer">Adam optimizer</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#metrics">Metrics</a></li>
+                            <li><a href="#callbacks">Callbacks</a></li>
+                            <li><a href="#defining-the-model">Defining the model</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#training-the-baseline-model">Training the baseline model</a>
+                        <ul>
+                            <li><a href="#baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</a></li>
+                            <li><a href="#baseline-wrong-predictions">Baseline wrong predictions</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#training-the-optimized-model">Training the optimized model</a>
+                        <ul>
+                            <li><a href="#preventing-overfitting">Preventing overfitting</a>
+                                <ul>
+                                    <li><a href="#data-augmentation">Data augmentation</a></li>
+                                    <li><a href="#dropout">Dropout</a></li>
+                                    <li><a href="#learning-rate-decay">Learning rate decay</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#wrong-predictions">Wrong predictions</a></li>
+                            <li><a href="#baseline-comparison-training">Baseline comparison: Training</a>
+                                <ul>
+                                    <li><a href="#whats-with-the-jagged-lines">What's with the jagged lines?</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#baseline-comparison-evaluation">Baseline comparison: Evaluation</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#model-interpretation-and-visualization">Model interpretation and visualization</a>
+                        <ul>
+                            <li><a href="#intermediate-convnet-outputs-intermediate-activations">Intermediate convnet
+                                    outputs (intermediate activations)</a></li>
+                            <li><a href="#convnet-filters">Convnet filters</a></li>
+                            <li><a href="#class-activation-heatmaps">Class activation heatmaps</a>
+                                <ul>
+                                    <li><a href="#additional-cam-findings">Additional CAM findings</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#future-improvements">Future improvements</a>
+                        <ul>
+                            <li><a href="#dataset-balance">Dataset balance</a></li>
+                            <li><a href="#model-architecture">Model architecture</a></li>
+                            <li><a href="#model-interpretation">Model interpretation</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
 
-<hr />
+        <p>
+    </details>
+    </p>
 
-<h2 id="classification">Classification</h2>
+    <hr />
 
-<p>Classification is the process of assigning categorical labels to input examples such as images, timeseries, or text.
-For instance, given a dog-vs-cat classification model and an image of a Pomeranian, the model will predict that the image is a dog.
-Technically, we would say that the model predicts that the image belongs to the "dog" class.
-Given an email, the model will predict that the email is spam.
-Given user activity data on a website, the model will predict whether the user is a human or a bot.</p>
+    <h2 id="classification">Classification</h2>
 
-<p>There are many classification problems: binary classification, multiclass classification, and multilabel classification.</p>
+    <p>Classification is the process of assigning categorical labels to input examples such as images, timeseries, or
+        text.
+        For instance, given a dog-vs-cat classification model and an image of a Pomeranian, the model will predict that
+        the image is a dog.
+        Technically, we would say that the model predicts that the image belongs to the "dog" class.
+        Given an email, the model will predict that the email is spam.
+        Given user activity data on a website, the model will predict whether the user is a human or a bot.</p>
 
-<h3 id="binary-classification">Binary classification</h3>
+    <p>There are many classification problems: binary classification, multiclass classification, and multilabel
+        classification.</p>
 
-<p>Binary classification - also called two-class classification - is the most common type of classification problem.
-It is a problem where the model predicts whether an input example belongs to class A or class B.</p>
+    <h3 id="binary-classification">Binary classification</h3>
 
-<p>In this article, we're building a model to predict whether an image is a Toon or a Cog.</p>
+    <p>Binary classification - also called two-class classification - is the most common type of classification problem.
+        It is a problem where the model predicts whether an input example belongs to class A or class B.</p>
 
-<h3 id="multiclass-classification">Multiclass classification</h3>
+    <p>In this article, we're building a model to predict whether an image is a Toon or a Cog.</p>
 
-<p>On the other hand, multiclass classification is a problem in which the model predicts which <em>single class</em> an input example belongs.
-Where binary classification is a two-class problem, multiclass classification is a multi-class problem - meaning three or more classes.
-For instance, the model could predict that an animal belongs to the class of dogs, cats, rabbits, horses, or any other animal.</p>
+    <h3 id="multiclass-classification">Multiclass classification</h3>
 
-<p>In the next article, we'll build a model to predict which of the four Cog suits an image belongs to.
-We can push the model even further to predict which of the 32 Cog names an image belongs to.</p>
+    <p>On the other hand, multiclass classification is a problem in which the model predicts which <em>single class</em>
+        an input example belongs.
+        Where binary classification is a two-class problem, multiclass classification is a multi-class problem - meaning
+        three or more classes.
+        For instance, the model could predict that an animal belongs to the class of dogs, cats, rabbits, horses, or any
+        other animal.</p>
 
-<h4 id="multiclass-multilabel-classification">Multiclass multilabel classification</h4>
+    <p>In the next article, we'll build a model to predict which of the four Cog suits an image belongs to.
+        We can push the model even further to predict which of the 32 Cog names an image belongs to.</p>
 
-<p>Lastly, multiclass multilabel classification is a classification problem where the model predicts which <em>classes</em> an input example belongs.
-For instance, a multiclass multilabel animal classifier can predict not only that an image belongs to the class of dogs, cats, rabbits, etc. but also the specific breed of dog, cat, rabbit, etc.
-Alternatively, a vehicle classifier can predict not only that an image belongs to the class of cars, trucks, motorcycles, etc. but also the specific make and model of car, truck, motorcycle, etc.</p>
+    <h4 id="multiclass-multilabel-classification">Multiclass multilabel classification</h4>
 
-<p>Other practical applications of multiclass multilabel classification include labeling which classes are present in an image.
-For example, an image of a park could be labeled as containing a tree, a bench, a flower, a pond, etc.</p>
+    <p>Lastly, multiclass multilabel classification is a classification problem where the model predicts which
+        <em>classes</em> an input example belongs.
+        For instance, a multiclass multilabel animal classifier can predict not only that an image belongs to the class
+        of dogs, cats, rabbits, etc. but also the specific breed of dog, cat, rabbit, etc.
+        Alternatively, a vehicle classifier can predict not only that an image belongs to the class of cars, trucks,
+        motorcycles, etc. but also the specific make and model of car, truck, motorcycle, etc.
+    </p>
 
-<p>We could upgrade the single-label multiclass Cog suit classifier to a multilabel multiclass classification model and have it predict Cog state/level/hp/name/suit.
-But this adds unneeded complexity to the model and should be an article of its own.
-In the future, I will surely add the classification of the Cog's state: battle, patrolling, spawning, de-spawning, etc.
-Let's keep it simple for now.</p>
+    <p>Other practical applications of multiclass multilabel classification include labeling which classes are present
+        in an image.
+        For example, an image of a park could be labeled as containing a tree, a bench, a flower, a pond, etc.</p>
 
-<hr />
+    <p>We could upgrade the single-label multiclass Cog suit classifier to a multilabel multiclass classification model
+        and have it predict Cog state/level/hp/name/suit.
+        But this adds unneeded complexity to the model and should be an article of its own.
+        In the future, I will surely add the classification of the Cog's state: battle, patrolling, spawning,
+        de-spawning, etc.
+        Let's keep it simple for now.</p>
 
-<h2 id="toontown-online">ToonTown Online</h2>
+    <hr />
 
-<p>ToonTown Online is a multiplayer online role-playing game (MMORPG) created by Disney in 2003.
-The game is based on a cartoon animal world where each player controls a Toon (a cartoon animal).</p>
+    <h2 id="toontown-online">ToonTown Online</h2>
 
-<p>Like most MMORPGs, there's no single focus in ToonTown's gameplay.
-Players can perform whatever activities they want: socialize, fight Cogs, explore the world, complete tasks for rewards, fish, race karts, and even play minigames.</p>
+    <p>ToonTown Online is a multiplayer online role-playing game (MMORPG) created by Disney in 2003.
+        The game is based on a cartoon animal world where each player controls a Toon (a cartoon animal).</p>
 
-<p>We won't discuss too many game details in this article because they are not relevant for our classification problem.
-We're building an image classifier, not a full end-to-end ToonTown AI (yet).</p>
+    <p>Like most MMORPGs, there's no single focus in ToonTown's gameplay.
+        Players can perform whatever activities they want: socialize, fight Cogs, explore the world, complete tasks for
+        rewards, fish, race karts, and even play minigames.</p>
 
-<h3 id="toons">Toons</h3>
+    <p>We won't discuss too many game details in this article because they are not relevant for our classification
+        problem.
+        We're building an image classifier, not a full end-to-end ToonTown AI (yet).</p>
 
-<p>Toons are the main protagonists of ToonTown online.
-They are cartoon animals that enjoy having fun and are constantly using their arsenal of gags (jokes/weapons) to stop Cogs from invading their neighborhoods and converting ToonTown into a corporate dystopia.</p>
+    <h3 id="toons">Toons</h3>
 
-<p>Players can customize their Toon name, species, color, clothes, and other attributes.
-There are 11 unique animals:</p>
+    <p>Toons are the main protagonists of ToonTown online.
+        They are cartoon animals that enjoy having fun and are constantly using their arsenal of gags (jokes/weapons) to
+        stop Cogs from invading their neighborhoods and converting ToonTown into a corporate dystopia.</p>
 
-<ul>
-<li>bear</li>
-<li>cat</li>
-<li>crocodile</li>
-<li>deer</li>
-<li>dog</li>
-<li>duck</li>
-<li>horse</li>
-<li>monkey</li>
-<li>mouse</li>
-<li>pig</li>
-<li>rabbit</li>
-</ul>
+    <p>Players can customize their Toon name, species, color, clothes, and other attributes.
+        There are 11 unique animals:</p>
 
-<p>Each animal can have a unique head shape, body length, and height.
-Furthermore, each animal can have mismatching colors for its head, arms, and legs.</p>
+    <ul>
+        <li>bear</li>
+        <li>cat</li>
+        <li>crocodile</li>
+        <li>deer</li>
+        <li>dog</li>
+        <li>duck</li>
+        <li>horse</li>
+        <li>monkey</li>
+        <li>mouse</li>
+        <li>pig</li>
+        <li>rabbit</li>
+    </ul>
 
-<p><details>
-    <summary>All animal species</summary>
-    This dataset lacks mismatched-colored Toons.
-    As you can see below, all Toons have matching colors for their head, arms, and legs.
-    <figure class="center" style="width:90%;">
-        <img src="img/unique_animals.png" style="width:100%;background:white;"/>
-        <figcaption>11 unique animal species in ToonTown</figcaption>
+    <p>Each animal can have a unique head shape, body length, and height.
+        Furthermore, each animal can have mismatching colors for its head, arms, and legs.</p>
+
+    <p>
+    <details>
+        <summary>All animal species</summary>
+        This dataset lacks mismatched-colored Toons.
+        As you can see below, all Toons have matching colors for their head, arms, and legs.
+        <figure class="center" style="width:90%;">
+            <img src="img/unique_animals.png" style="width:100%;background:white;" />
+            <figcaption>11 unique animal species in ToonTown</figcaption>
+        </figure>
+    </details>
+    </p>
+
+    <p>Toons progress through the game by completing ToonTasks and acquiring rewards.
+        Ultimately, the goal is to eliminate the Cogs from the streets and acquire the most powerful gags.</p>
+
+    <h4 id="toontasks">ToonTasks</h4>
+
+    <p>A ToonTask is a quest given by ToonTown NPCs in which Toons must complete to earn rewards.
+        Tasks include:</p>
+
+    <ul>
+        <li>Defeating specific Cogs or a specific number of Cogs</li>
+        <li>Retrieving items from defeated Cogs</li>
+        <li>Defeating Cog buildings</li>
+        <li>Talking to other NPCs</li>
+    </ul>
+
+    <p>Rewards include jellybeans (currency), laff points (health points), gag advancements (weapons), access to other
+        areas of the game, and <a href="https://toontown.fandom.com/wiki/ToonTask">more</a>.</p>
+
+    <h3 id="cogs">Cogs</h3>
+
+    <figure class="right">
+        <img src="img/unique_suits.png" style="width:100%;" />
+        <figcaption>4 unique Cog suits and their respective colors</figcaption>
     </figure>
-</details></p>
 
-<p>Toons progress through the game by completing ToonTasks and acquiring rewards.
-Ultimately, the goal is to eliminate the Cogs from the streets and acquire the most powerful gags.</p>
+    <p>Cogs are the main antagonists of ToonTown Online.
+        They are corporate robots that are trying to take over ToonTown and convert it into a corporate dystopia.</p>
 
-<h4 id="toontasks">ToonTasks</h4>
+    <p>There are 4 Cog suits, each with a unique color:</p>
 
-<p>A ToonTask is a quest given by ToonTown NPCs in which Toons must complete to earn rewards.
-Tasks include:</p>
+    <ul>
+        <li>Bossbot (brown)</li>
+        <li>Lawbot (blue)</li>
+        <li>Cashbot (green)</li>
+        <li>and Sellbot (maroon)</li>
+    </ul>
 
-<ul>
-<li>Defeating specific Cogs or a specific number of Cogs</li>
-<li>Retrieving items from defeated Cogs</li>
-<li>Defeating Cog buildings</li>
-<li>Talking to other NPCs</li>
-</ul>
+    <p>Each suit in the corporate ladder contains 8 Cogs for a total of 32 unique Cogs.</p>
 
-<p>Rewards include jellybeans (currency), laff points (health points), gag advancements (weapons), access to other areas of the game, and <a href="https://toontown.fandom.com/wiki/ToonTask">more</a>.</p>
+    <p>While most Cogs can be found in the streets, the two highest-tiered Cogs of each suit can be found only in Cog
+        buildings.
+        We'll only acquire data about Cogs in the streets for this model.
+        We can leverage Cog invasions to find building-specific Cogs in the streets.</p>
 
-<h3 id="cogs">Cogs</h3>
+    <h3 id="why-is-it-important-for-toons-to-classify-cogs">Why is it important for Toons to classify Cogs?</h3>
 
-<figure class="right">
-    <img src="img/unique_suits.png" style="width:100%;"/>
-    <figcaption>4 unique Cog suits and their respective colors</figcaption>
-</figure>
+    <p>More often than not, ToonTasks involve defeating Cogs.
+        A ToonTown AI must be able to identify which Cogs are in a given image to engage in battle with the correct Cog.
+    </p>
 
-<p>Cogs are the main antagonists of ToonTown Online.
-They are corporate robots that are trying to take over ToonTown and convert it into a corporate dystopia.</p>
+    <p>There also exists delivery tasks that require Toons to deliver items to NPCs in the streets of ToonTown.
+        Therefore, Toons need to identify and <em>avoid</em> Cogs in its path to deliver the items on time.</p>
 
-<p>There are 4 Cog suits, each with a unique color:</p>
+    <hr />
 
-<ul>
-<li>Bossbot (brown)</li>
-<li>Lawbot (blue)</li>
-<li>Cashbot (green)</li>
-<li>and Sellbot (maroon)</li>
-</ul>
+    <h2 id="the-toonvision-dataset">The ToonVision dataset</h2>
 
-<p>Each suit in the corporate ladder contains 8 Cogs for a total of 32 unique Cogs.</p>
+    <p>There doesn't exist a dataset for ToonVision, so I'll be creating one from scratch.
+        The following sections will explain my dataset's design considerations, acquisition process, and extraction
+        results.</p>
 
-<p>While most Cogs can be found in the streets, the two highest-tiered Cogs of each suit can be found only in Cog buildings.
-We'll only acquire data about Cogs in the streets for this model.
-We can leverage Cog invasions to find building-specific Cogs in the streets.</p>
+    <h3 id="dataset-considerations">Dataset considerations</h3>
 
-<h3 id="why-is-it-important-for-toons-to-classify-cogs">Why is it important for Toons to classify Cogs?</h3>
+    <ul>
+        <li>Images are split into training, validation, and test sets: 60% training, 20% validation, and 20% test
+            <ul>
+                <li>There must be an equal part of Toons and Cogs in each set</li>
+                <li>There must be an equal part of Cog suits in each set</li>
+            </ul>
+        </li>
+        <li>Images of Toons and Cogs must be...
+            <ul>
+                <li>Taken at various distances from each street, not playground</li>
+                <li>Taken of the entity's front, back, and side</li>
+            </ul>
+        </li>
+        <li>In the Cog dataset, there must be an equal part of each Cog suit
+            <ul>
+                <li>There must be an equal part of each unique Cog (32 unique Cogs)
+                    <ul>
+                        <li>There is a minimum requirement of 20 images per unique Cog (32*20 = 640 images total)</li>
+                    </ul>
+                </li>
+                <li>Must not include the Cog's nametag in the image</li>
+            </ul>
+        </li>
+        <li>In the Toon dataset, a balance of animal types is welcome but not necessary</li>
+    </ul>
 
-<p>More often than not, ToonTasks involve defeating Cogs.
-A ToonTown AI must be able to identify which Cogs are in a given image to engage in battle with the correct Cog.</p>
+    <h3 id="filename-and-data-folder-structure">Filename and data folder structure</h3>
 
-<p>There also exists delivery tasks that require Toons to deliver items to NPCs in the streets of ToonTown.
-Therefore, Toons need to identify and <em>avoid</em> Cogs in its path to deliver the items on time.</p>
+    <p>Cog filename structure: <code>cog_&lt;suit&gt;_&lt;name&gt;_&lt;index&gt;.png</code>.</p>
 
-<hr />
+    <p>Toon filename structure: <code>toon_&lt;animal&gt;_&lt;index&gt;.png</code>.</p>
 
-<h2 id="the-toonvision-dataset">The ToonVision dataset</h2>
+    <p>Data folder structure:</p>
 
-<p>There doesn't exist a dataset for ToonVision, so I'll be creating one from scratch.
-The following sections will explain my dataset's design considerations, acquisition process, and extraction results.</p>
-
-<h3 id="dataset-considerations">Dataset considerations</h3>
-
-<ul>
-<li>Images are split into training, validation, and test sets: 60% training, 20% validation, and 20% test
-<ul>
-<li>There must be an equal part of Toons and Cogs in each set</li>
-<li>There must be an equal part of Cog suits in each set</li>
-</ul></li>
-<li>Images of Toons and Cogs must be...
-<ul>
-<li>Taken at various distances from each street, not playground</li>
-<li>Taken of the entity's front, back, and side</li>
-</ul></li>
-<li>In the Cog dataset, there must be an equal part of each Cog suit
-<ul>
-<li>There must be an equal part of each unique Cog (32 unique Cogs)
-<ul>
-<li>There is a minimum requirement of 20 images per unique Cog (32*20 = 640 images total)</li>
-</ul></li>
-<li>Must not include the Cog's nametag in the image</li>
-</ul></li>
-<li>In the Toon dataset, a balance of animal types is welcome but not necessary</li>
-</ul>
-
-<h3 id="filename-and-data-folder-structure">Filename and data folder structure</h3>
-
-<p>Cog filename structure: <code>cog_&lt;suit&gt;_&lt;name&gt;_&lt;index&gt;.png</code>.</p>
-
-<p>Toon filename structure: <code>toon_&lt;animal&gt;_&lt;index&gt;.png</code>.</p>
-
-<p>Data folder structure:</p>
-
-<pre><code>img
+    <pre><code>img
 ├───data
 │   ├───test
 │   │   ├───cog
@@ -334,104 +394,121 @@ The following sections will explain my dataset's design considerations, acquisit
     └───toon
 </code></pre>
 
-<p>There is no need to create folders for each Cog suit because we can filter on the filename.</p>
+    <p>There is no need to create folders for each Cog suit because we can filter on the filename.</p>
 
-<h3 id="data-acquisition">Data acquisition</h3>
+    <h3 id="data-acquisition">Data acquisition</h3>
 
-<p>Data acquisition is simple: Walk around TT streets, take screenshots, and save them to the raw folder.
-It's important to take screenshots from various distances and angles of each entity: front, back, and side.</p>
+    <p>Data acquisition is simple: Walk around TT streets, take screenshots, and save them to the raw folder.
+        It's important to take screenshots from various distances and angles of each entity: front, back, and side.</p>
 
-<p>Taking screenshots from up close is preferred.
-When taken from far away, the entity's nametag covers the entity's head, thus causing us to crop the entity's head or include the nametag - neither are good options.</p>
+    <p>Taking screenshots from up close is preferred.
+        When taken from far away, the entity's nametag covers the entity's head, thus causing us to crop the entity's
+        head or include the nametag - neither are good options.</p>
 
-<figure class="center" style="width:90%;">
-    <img src="img/sample_screenshot.png" style="width:100%;"/>
-    <figcaption>Sample screenshot containing one Cog and three Toons in battle</figcaption>
-</figure>
+    <figure class="center" style="width:90%;">
+        <img src="img/sample_screenshot.png" style="width:100%;" />
+        <figcaption>Sample screenshot containing one Cog and three Toons in battle</figcaption>
+    </figure>
 
-<p>There were a few difficulties with acquiring data:</p>
+    <p>There were a few difficulties with acquiring data:</p>
 
-<ol>
-<li>Entities are typically moving unless in battle</li>
-<li>Entities often obstruct other entities, which makes for less than ideal training data</li>
-<li>Finding the desired entity is purely a matter of walking around the street and looking for the entity as there is no precision radar</li>
-</ol>
+    <ol>
+        <li>Entities are typically moving unless in battle</li>
+        <li>Entities often obstruct other entities, which makes for less than ideal training data</li>
+        <li>Finding the desired entity is purely a matter of walking around the street and looking for the entity as
+            there is no precision radar</li>
+    </ol>
 
-<p>Furthermore, there were class-specific data acquisition problems:</p>
+    <p>Furthermore, there were class-specific data acquisition problems:</p>
 
-<ol>
-<li>Cogs are more commonly found in the streets than Toons</li>
-<li>Multi-colored Toons are uncommon, therefore the dataset is skewed towards single-colored Toons</li>
-<li>The two highest-tiered Cogs are only found in Cog buildings, not in the streets (unless there's an invasion)
-<ul>
-<li>Highest-tiered Cogs include Corporate Raiders and The Big Cheese for Bossbots, Legal Eagle and Big Wig for Lawbots, etc.</li>
-</ul></li>
-</ol>
+    <ol>
+        <li>Cogs are more commonly found in the streets than Toons</li>
+        <li>Multi-colored Toons are uncommon, therefore the dataset is skewed towards single-colored Toons</li>
+        <li>The two highest-tiered Cogs are only found in Cog buildings, not in the streets (unless there's an invasion)
+            <ul>
+                <li>Highest-tiered Cogs include Corporate Raiders and The Big Cheese for Bossbots, Legal Eagle and Big
+                    Wig for Lawbots, etc.</li>
+            </ul>
+        </li>
+    </ol>
 
-<p>As a result, we have an imbalanced dataset.
-I hope to balance the dataset over time, but we'll work with the current dataset to better understand how to deal with a model overfitting to a small, imbalanced dataset.</p>
+    <p>As a result, we have an imbalanced dataset.
+        I hope to balance the dataset over time, but we'll work with the current dataset to better understand how to
+        deal with a model overfitting to a small, imbalanced dataset.</p>
 
-<figure class="center" style="width:100%">
-    <img src="img/label_balance.png" style="width:100%;background:white;"/>
-    <figcaption></figcaption>
-</figure>
+    <figure class="center" style="width:100%">
+        <img src="img/label_balance.png" style="width:100%;background:white;" />
+        <figcaption></figcaption>
+    </figure>
 
-<p>The green lines indicate the <font style="color:#0F0;">desired number of samples</font> for each class, whereas the red lines indicate the <font style="color:red;">average number of samples</font> per class.</p>
+    <p>The green lines indicate the <font style="color:#0F0;">desired number of samples</font> for each class, whereas
+        the red lines indicate the <font style="color:red;">average number of samples</font> per class.</p>
 
-<p>The dataset shows a few overrepresented classes:</p>
+    <p>The dataset shows a few overrepresented classes:</p>
 
-<ul>
-<li>More Cogs than Toons (526 vs 148 Toon samples)</li>
-<li>Less-than-average Sellbot samples (cog_sb_*), specifically Glad Handers, Mover &amp; Shakers, and Two Faces</li>
-<li>Too many cats on the streets (or I have a bias towards taking photos of cats)</li>
-<li>Not enough horses on the streets (or I have a bias towards not taking photos of horses)</li>
-</ul>
+    <ul>
+        <li>More Cogs than Toons (526 vs 148 Toon samples)</li>
+        <li>Less-than-average Sellbot samples (cog_sb_*), specifically Glad Handers, Mover &amp; Shakers, and Two Faces
+        </li>
+        <li>Too many cats on the streets (or I have a bias towards taking photos of cats)</li>
+        <li>Not enough horses on the streets (or I have a bias towards not taking photos of horses)</li>
+    </ul>
 
-<h3 id="data-labeling">Data labeling</h3>
+    <h3 id="data-labeling">Data labeling</h3>
 
-<p>I'm using <a href="https://github.com/tzutalin/labelImg">labelimg</a> to draw labeled bounding boxes around Toons and Cogs.
-Labels - also referred to as <code>obj_name</code> in our Python code - follow the format:</p>
+    <p>I'm using <a href="https://github.com/tzutalin/labelImg">labelimg</a> to draw labeled bounding boxes around Toons
+        and Cogs.
+        Labels - also referred to as <code>obj_name</code> in our Python code - follow the format:</p>
 
-<ul>
-<li><code>cog_&lt;bb|lb|cb|sb&gt;_&lt;name&gt;_&lt;index&gt;</code></li>
-<li><code>toon_&lt;animal&gt;_&lt;index&gt;</code></li>
-</ul>
+    <ul>
+        <li><code>cog_&lt;bb|lb|cb|sb&gt;_&lt;name&gt;_&lt;index&gt;</code></li>
+        <li><code>toon_&lt;animal&gt;_&lt;index&gt;</code></li>
+    </ul>
 
-<p>The Cog labels contain shorthand notation (<code>&lt;bb|lb|cb|sb&gt;</code>) for each suit: Bossbot, Lawbot, Cashbot, and Sellbot, respectively.
-This shorthand notation allows us to filter Cog data by filename and create a classifier that can distinguish between the 4 suits.</p>
+    <p>The Cog labels contain shorthand notation (<code>&lt;bb|lb|cb|sb&gt;</code>) for each suit: Bossbot, Lawbot,
+        Cashbot, and Sellbot, respectively.
+        This shorthand notation allows us to filter Cog data by filename and create a classifier that can distinguish
+        between the 4 suits.</p>
 
-<p>Bounding boxes are saved in XML format - specifically <a href="https://mlhive.com/2022/02/read-and-write-pascal-voc-xml-annotations-in-python">Pascal VOC XML</a> - alongside the image in the <code>raw/screenshots</code> directory, as seen in the <a href="#filename-and-data-folder-structure">data folder file structure</a> section above.</p>
+    <p>Bounding boxes are saved in XML format - specifically <a
+            href="https://mlhive.com/2022/02/read-and-write-pascal-voc-xml-annotations-in-python">Pascal VOC XML</a> -
+        alongside the image in the <code>raw/screenshots</code> directory, as seen in the <a
+            href="#filename-and-data-folder-structure">data folder file structure</a> section above.</p>
 
-<figure class="center" style="width:90%;">
-    <img src="img/sample_screenshot_with_bounding_boxes.png" style="width:100%;"/>
-    <figcaption>Sample screenshot with labeled bounding boxes</figcaption>
-</figure>
+    <figure class="center" style="width:90%;">
+        <img src="img/sample_screenshot_with_bounding_boxes.png" style="width:100%;" />
+        <figcaption>Sample screenshot with labeled bounding boxes</figcaption>
+    </figure>
 
-<p>How the objects are labeled - how the bounding boxes are drawn - determines how the object will be extracted from the image.
-It's crucial to draw bounding boxes such that the entity is snugly contained within the bounding box.
-Furthermore, we must exclude entity nametags in the bounding box because the classifier will learn to "cheat" by identifying objects from their nametag rather than features of the entity itself.</p>
+    <p>How the objects are labeled - how the bounding boxes are drawn - determines how the object will be extracted from
+        the image.
+        It's crucial to draw bounding boxes such that the entity is snugly contained within the bounding box.
+        Furthermore, we must exclude entity nametags in the bounding box because the classifier will learn to "cheat" by
+        identifying objects from their nametag rather than features of the entity itself.</p>
 
-<h3 id="data-extraction">Data extraction</h3>
+    <h3 id="data-extraction">Data extraction</h3>
 
-<p>The raw data (screenshot) is processed by functions in the <code>data_processing</code> module.
-The module utilizes functions in <code>img_utils.py</code> to extract objects from the images using the labeled bounding boxes found in the image's corresponding XML files.
-Specifically, the data extraction workflow is as follows:</p>
+    <p>The raw data (screenshot) is processed by functions in the <code>data_processing</code> module.
+        The module utilizes functions in <code>img_utils.py</code> to extract objects from the images using the labeled
+        bounding boxes found in the image's corresponding XML files.
+        Specifically, the data extraction workflow is as follows:</p>
 
-<ul>
-<li>Acquire bounding box dimensions and labels from the XML files</li>
-<li>Extract the object (Toon or Cog) from the image using the dimensions and labels found in the XML files</li>
-<li>Save the cropped image of the object to the <code>img/unsorted</code> folder</li>
-<li>Move the raw image and its corresponding XML file to the <code>raw/processed</code> folder</li>
-</ul>
+    <ul>
+        <li>Acquire bounding box dimensions and labels from the XML files</li>
+        <li>Extract the object (Toon or Cog) from the image using the dimensions and labels found in the XML files</li>
+        <li>Save the cropped image of the object to the <code>img/unsorted</code> folder</li>
+        <li>Move the raw image and its corresponding XML file to the <code>raw/processed</code> folder</li>
+    </ul>
 
-<p><em>Why move the raw image and XML file to the processed directory?</em></p>
+    <p><em>Why move the raw image and XML file to the processed directory?</em></p>
 
-<p>The processed directory is used to maintain a counter (referred to as an index) for each label.
-The data within the XML files are used to count the number of samples for each label.
-The label's counter is appended to a newly-extracted object's filename and the counter is incremented by 1.
-This process ensures we never overwrite existing sample images.</p>
+    <p>The processed directory is used to maintain a counter (referred to as an index) for each label.
+        The data within the XML files are used to count the number of samples for each label.
+        The label's counter is appended to a newly-extracted object's filename and the counter is incremented by 1.
+        This process ensures we never overwrite existing sample images.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="c1"># %% Convert raw images to data images</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="c1"># %% Convert raw images to data images</span>
 <span class="k">def</span> <span class="nf">process_images</span><span class="p">(</span>
     <span class="n">raw_images_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">SCREENSHOTS_DIR</span><span class="p">,</span>
     <span class="n">image_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span>
@@ -460,41 +537,50 @@ This process ensures we never overwrite existing sample images.</p>
                         <span class="n">rename</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    No XML file found for </span><span class="si">{</span><span class="n">img_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="data-processing">Data processing</h3>
+    <h3 id="data-processing">Data processing</h3>
 
-<figure class="right">
-    <img src="img/image_size_scale.png" style="width:100%;"/>
-    <figcaption></figcaption>
-</figure>
+    <figure class="right">
+        <img src="img/image_size_scale.png" style="width:100%;" />
+        <figcaption></figcaption>
+    </figure>
 
-<p>The extracted objects are of various sizes because the screenshots were taken from various angles and distances.
-Large objects are a result of the screenshot taken from up close, while small objects are a result of the screenshot taken from far away.</p>
+    <p>The extracted objects are of various sizes because the screenshots were taken from various angles and distances.
+        Large objects are a result of the screenshot taken from up close, while small objects are a result of the
+        screenshot taken from far away.</p>
 
-<p>We can see from the image on the right how the object's distance affects the extracted object's quality.
-The further the object is from the camera, the smaller and more blurry the object is.
-We lose quite a bit of information about the object when the object is far away.</p>
+    <p>We can see from the image on the right how the object's distance affects the extracted object's quality.
+        The further the object is from the camera, the smaller and more blurry the object is.
+        We lose quite a bit of information about the object when the object is far away.</p>
 
-<p>Overall, it would be ideal for the dataset to consist mostly of large, close-up objects because they contain more information about the object.
-Small, far-away objects lose information about the object and are not as useful for training.
-Furthermore, we could simulate this loss of information through image augmentation - rescaling or blurring/pixelating the image.</p>
+    <p>Overall, it would be ideal for the dataset to consist mostly of large, close-up objects because they contain more
+        information about the object.
+        Small, far-away objects lose information about the object and are not as useful for training.
+        Furthermore, we could simulate this loss of information through image augmentation - rescaling or
+        blurring/pixelating the image.</p>
 
-<p>It would make a fun project to create a model that upscales the images to a higher resolution.
-Then we could use those high-resolution images in this dataset.</p>
+    <p>It would make a fun project to create a model that upscales the images to a higher resolution.
+        Then we could use those high-resolution images in this dataset.</p>
 
-<h3 id="creating-the-dataset-objects">Creating the dataset objects</h3>
+    <h3 id="creating-the-dataset-objects">Creating the dataset objects</h3>
 
-<p>After the objects are extracted and placed in the <code>unsorted</code> folder, we can create the <a href="https://www.tensorflow.org/api_docs/python/tf/data/Dataset">Keras dataset objects</a>.
-First, we need to create balanced datasets within the <code>data/[train|validate|test]</code> folders.
-Remember that we're aiming for a 60/20/20 split for the training, validation, and testing datasets`, respectively.</p>
+    <p>After the objects are extracted and placed in the <code>unsorted</code> folder, we can create the <a
+            href="https://www.tensorflow.org/api_docs/python/tf/data/Dataset">Keras dataset objects</a>.
+        First, we need to create balanced datasets within the <code>data/[train|validate|test]</code> folders.
+        Remember that we're aiming for a 60/20/20 split for the training, validation, and testing datasets`,
+        respectively.</p>
 
-<h4 id="spitting-the-images-into-train-validate-and-test">Spitting the images into train, validate, and test</h4>
+    <h4 id="spitting-the-images-into-train-validate-and-test">Spitting the images into train, validate, and test</h4>
 
-<p>Before creating the dataset objects, we need to move images from <code>unsorted/[cog|toon]</code> to <code>data/[train|validate|test]/[cog|toon]</code>.
-We can utilize the <code>split_data()</code> function in the <code>data_processing</code> module to do this.</p>
+    <p>Before creating the dataset objects, we need to move images from <code>unsorted/[cog|toon]</code> to
+        <code>data/[train|validate|test]/[cog|toon]</code>.
+        We can utilize the <code>split_data()</code> function in the <code>data_processing</code> module to do this.
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">split_data</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="k">def</span> <span class="nf">split_data</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Split the data into train(60%)/validate(20%)/test(20%) data sets&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">unsorted_dir</span> <span class="ow">in</span> <span class="p">[</span><span class="n">UNSORTED_COG_DIR</span><span class="p">,</span> <span class="n">UNSORTED_TOON_DIR</span><span class="p">]:</span>
         <span class="n">cog_or_toon</span> <span class="o">=</span> <span class="n">unsorted_dir</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -524,12 +610,16 @@ We can utilize the <code>split_data()</code> function in the <code>data_processi
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Moving </span><span class="si">{</span><span class="n">img_path</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">rename</span><span class="p">(</span><span class="n">img_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Creating <code>tf.data.Dataset</code> objects is straight-forward when using Keras' <code>image_dataset_from_directory</code> function.
-I wrote a wrapper function, <code>create_datasets</code>, to create the train, validate, and test datasets:</p>
+    <p>Creating <code>tf.data.Dataset</code> objects is straight-forward when using Keras'
+        <code>image_dataset_from_directory</code> function.
+        I wrote a wrapper function, <code>create_datasets</code>, to create the train, validate, and test datasets:
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow.keras.utils</span> <span class="kn">import</span> <span class="n">image_dataset_from_directory</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow.keras.utils</span> <span class="kn">import</span> <span class="n">image_dataset_from_directory</span>
 
 
 <span class="k">def</span> <span class="nf">create_datasets</span><span class="p">(</span>
@@ -561,88 +651,124 @@ I wrote a wrapper function, <code>create_datasets</code>, to create the train, v
         <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">ds_train</span><span class="p">,</span> <span class="n">ds_validate</span><span class="p">,</span> <span class="n">ds_test</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>We can visualize the dataset's balance by using the <code>plot_datasets_all()</code> function in the <code>data_visualization</code> module.</p>
+    <p>We can visualize the dataset's balance by using the <code>plot_datasets_all()</code> function in the
+        <code>data_visualization</code> module.
+    </p>
 
-<p><details>
-    <summary>Dataset balance</summary></p>
+    <p>
+    <details>
+        <summary>Dataset balance</summary>
+        </p>
 
-<figure class="center" style="width:60%;">
-    <img src="img/dataset_balance.png" style="width:100%;"/>
-    <figcaption>Train, validate, and test datasets</figcaption>
-</figure>
+        <figure class="center" style="width:60%;">
+            <img src="img/dataset_balance.png" style="width:100%;" />
+            <figcaption>Train, validate, and test datasets</figcaption>
+        </figure>
 
-<p></details></p>
+        <p>
+    </details>
+    </p>
 
-<hr />
+    <hr />
 
-<h2 id="compiling-the-model">Compiling the model</h2>
+    <h2 id="compiling-the-model">Compiling the model</h2>
 
-<p>Now that we've created the datasets, we can compile the model.
-Compiling the model requires choosing a loss function, optimizer, and metrics to monitor the model's performance during training.</p>
+    <p>Now that we've created the datasets, we can compile the model.
+        Compiling the model requires choosing a loss function, optimizer, and metrics to monitor the model's performance
+        during training.</p>
 
-<h3 id="loss-function">Loss function</h3>
+    <h3 id="loss-function">Loss function</h3>
 
-<p>Our model is classifying between two classes, therefore we'll use the <code>binary_crossentropy</code> loss function.
-The later models will be more complex - classifying 4 or 32 classes - so we'll use the <code>[sparse_]categorical_crossentropy</code> loss function.</p>
+    <p>Our model is classifying between two classes, therefore we'll use the <code>binary_crossentropy</code> loss
+        function.
+        The later models will be more complex - classifying 4 or 32 classes - so we'll use the
+        <code>[sparse_]categorical_crossentropy</code> loss function.
+    </p>
 
-<h3 id="optimizer">Optimizer</h3>
+    <h3 id="optimizer">Optimizer</h3>
 
-<p>I visualized the process of choosing an optimizer by plotting each optimizer's performance during training.
-Models were trained with each optimizer for 20 epochs using the same model architecture, dataset, hyperparameters, and static learning rate of 0.001 (1e-3).</p>
+    <p>I visualized the process of choosing an optimizer by plotting each optimizer's performance during training.
+        Models were trained with each optimizer for 20 epochs using the same model architecture, dataset,
+        hyperparameters, and static learning rate of 0.001 (1e-3).</p>
 
-<figure class="center" style="width:90%;">
-    <img src="img/optimizer_comparison.png" style="width:100%;"/>
-    <figcaption></figcaption>
-</figure>
+    <figure class="center" style="width:90%;">
+        <img src="img/optimizer_comparison.png" style="width:100%;" />
+        <figcaption></figcaption>
+    </figure>
 
-<p>A handful of the optimizers' losses flattened over the course of training as a result of a low learning rate or <em>vanishing gradients</em>.
-SGD commonly encounters this problem, and it's often due to a low learning rate.</p>
+    <p>A handful of the optimizers' losses flattened over the course of training as a result of a low learning rate or
+        <em>vanishing gradients</em>.
+        SGD commonly encounters this problem, and it's often due to a low learning rate.
+    </p>
 
-<p>I increased the learning rate for all flattened optimizers and plotted the loss scores and accuracies again, but didn't see much improvement.
-Additional callbacks, such as the learning rate scheduler, could be used to gradually decrease the learning rate and improve the model's performance.
-Adding <em>momentum</em> to the SGD optimizer could also help the model reach global loss minimums and learn more effectively.
-To find the best optimizer we should try different learning rates, utilize Keras' callbacks, and tweak the hyperparameters.
-However, this is beyond the scope of the article.</p>
+    <p>I increased the learning rate for all flattened optimizers and plotted the loss scores and accuracies again, but
+        didn't see much improvement.
+        Additional callbacks, such as the learning rate scheduler, could be used to gradually decrease the learning rate
+        and improve the model's performance.
+        Adding <em>momentum</em> to the SGD optimizer could also help the model reach global loss minimums and learn
+        more effectively.
+        To find the best optimizer we should try different learning rates, utilize Keras' callbacks, and tweak the
+        hyperparameters.
+        However, this is beyond the scope of the article.</p>
 
-<p>Optimizers with low performance (<code>Adadelta</code>, <code>Adagrad</code>, <code>Ftrl</code>, and <code>SGD</code>) were eliminated from consideration.
-The performance between the remaining four optimizers - <code>Adam</code>, <code>Adamax</code>, <code>Nadam</code>, and <code>RMSprop</code> - is close enough that either one is a good choice.
-Looking at the plot below, we see that <code>Adam</code> and <code>Nadam</code> are the most effective optimizers.</p>
+    <p>Optimizers with low performance (<code>Adadelta</code>, <code>Adagrad</code>, <code>Ftrl</code>, and
+        <code>SGD</code>) were eliminated from consideration.
+        The performance between the remaining four optimizers - <code>Adam</code>, <code>Adamax</code>,
+        <code>Nadam</code>, and <code>RMSprop</code> - is close enough that either one is a good choice.
+        Looking at the plot below, we see that <code>Adam</code> and <code>Nadam</code> are the most effective
+        optimizers.
+    </p>
 
-<figure class="center" style="width:90%;">
-    <img src="img/optimizer_comparison_non_vanishing.png" style="width:100%;"/>
-    <figcaption></figcaption>
-</figure>
+    <figure class="center" style="width:90%;">
+        <img src="img/optimizer_comparison_non_vanishing.png" style="width:100%;" />
+        <figcaption></figcaption>
+    </figure>
 
-<p>The <code>Adam</code> optimizer has a smooth accuracy and loss curve, while <code>Nadam</code> overfits quickly and has a more jagged curve.
-Given the loss scores and accuracies plotted above, I've decided to go with the <code>Adam</code> optimizer.</p>
+    <p>The <code>Adam</code> optimizer has a smooth accuracy and loss curve, while <code>Nadam</code> overfits quickly
+        and has a more jagged curve.
+        Given the loss scores and accuracies plotted above, I've decided to go with the <code>Adam</code> optimizer.</p>
 
-<h4 id="adam-optimizer">Adam optimizer</h4>
+    <h4 id="adam-optimizer">Adam optimizer</h4>
 
-<p>The <code>Adam</code> optimizer is an adaptive variant of the stochastic gradient descent (<code>SGD</code>) algorithm.
-<code>Adam</code> combines the advantages of two other <code>SGD</code> variants - <code>AdaGrad</code> and <code>RMSProp</code> - to create a more effective optimization algorithm for computer vision tasks.
-Jason Brownlee wrote an <a href="https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/">excellent introduction</a> to the <code>Adam</code> algorithm, and I encourage you to read it if you're interested in the technical details.</p>
+    <p>The <code>Adam</code> optimizer is an adaptive variant of the stochastic gradient descent (<code>SGD</code>)
+        algorithm.
+        <code>Adam</code> combines the advantages of two other <code>SGD</code> variants - <code>AdaGrad</code> and
+        <code>RMSProp</code> - to create a more effective optimization algorithm for computer vision tasks.
+        Jason Brownlee wrote an <a
+            href="https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/">excellent
+            introduction</a> to the <code>Adam</code> algorithm, and I encourage you to read it if you're interested in
+        the technical details.
+    </p>
 
-<h3 id="metrics">Metrics</h3>
+    <h3 id="metrics">Metrics</h3>
 
-<p>We're building a two-class classification model, so we'll use the <code>binary_accuracy</code> metric.
-When training the multi-class models - with 4 and 32 classes - we'll utilize the <code>categorical_accuracy</code> metric.</p>
+    <p>We're building a two-class classification model, so we'll use the <code>binary_accuracy</code> metric.
+        When training the multi-class models - with 4 and 32 classes - we'll utilize the
+        <code>categorical_accuracy</code> metric.
+    </p>
 
-<h3 id="callbacks">Callbacks</h3>
+    <h3 id="callbacks">Callbacks</h3>
 
-<p>Originally, I planned on only using a single callback, <a href="https://keras.io/api/callbacks/model_checkpoint/">ModelCheckpoint</a>, to save the model's weights.
-The callback saves the model's weights to a file at some interval - usually after each epoch or at the lowest validation loss value during training.</p>
+    <p>Originally, I planned on only using a single callback, <a
+            href="https://keras.io/api/callbacks/model_checkpoint/">ModelCheckpoint</a>, to save the model's weights.
+        The callback saves the model's weights to a file at some interval - usually after each epoch or at the lowest
+        validation loss value during training.</p>
 
-<p>Saving the model at the lowest validation loss value is flawed because the model may have overfit to the data.
-In fact, during my experiments, I found that models that saved their weights at the lowest validation loss value were not performing well during evaluation.</p>
+    <p>Saving the model at the lowest validation loss value is flawed because the model may have overfit to the data.
+        In fact, during my experiments, I found that models that saved their weights at the lowest validation loss value
+        were not performing well during evaluation.</p>
 
-<p>As a result, I omitted the use of <code>ModelCheckpoint</code>.
-Rather, I saved the model only if it exceeded the previous run's evaluation accuracy and loss.
-This ensured I got a better model out of the 200 runs.
-I believe this method is still flawed, but it proved to be more effective than saving the model based on the validation loss.</p>
+    <p>As a result, I omitted the use of <code>ModelCheckpoint</code>.
+        Rather, I saved the model only if it exceeded the previous run's evaluation accuracy and loss.
+        This ensured I got a better model out of the 200 runs.
+        I believe this method is still flawed, but it proved to be more effective than saving the model based on the
+        validation loss.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="c1"># Save the model based on the validation loss value</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="c1"># Save the model based on the validation loss value</span>
 <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">ModelCheckpoint</span><span class="p">(</span>
         <span class="n">filepath</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;toonvision_</span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.keras&quot;</span><span class="p">,</span>
@@ -663,23 +789,27 @@ I believe this method is still flawed, but it proved to be more effective than s
         <span class="n">evaluations_best</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">acc</span><span class="p">)</span>
         <span class="c1"># Save the model</span>
         <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./models/toonvision_</span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">_run</span><span class="si">{</span><span class="n">run</span><span class="si">}</span><span class="s2">.keras&quot;</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="defining-the-model">Defining the model</h3>
+    <h3 id="defining-the-model">Defining the model</h3>
 
-<p>The model is a simple CNN (convolutional neural network) with three Conv2D layers and four MaxPooling2D layers.
-It's defined in the <code>model_utils</code> module within the <code>make_model()</code> function.</p>
+    <p>The model is a simple CNN (convolutional neural network) with three Conv2D layers and four MaxPooling2D layers.
+        It's defined in the <code>model_utils</code> module within the <code>make_model()</code> function.</p>
 
-<figure class="center" style="width:80%">
-    <img src="img/model_architecture.png" style="width:100%;"/>
-    <figcaption>Model architecture, visualized with python package "visualkeras"</figcaption>
-</figure>
+    <figure class="center" style="width:80%">
+        <img src="img/model_architecture.png" style="width:100%;" />
+        <figcaption>Model architecture, visualized with python package "visualkeras"</figcaption>
+    </figure>
 
-<p>After experimenting with a handful of different architectures, I found the best architecture to contain a few intermediate layers with small filters.
-Remember that the more layers and filters in the model, the more room for the model to overfit to the data.
-We must find the right balance in the architecture to ensure the model is small enough to prevent overfitting but accurate enough to generalize on never-before-seen data.</p>
+    <p>After experimenting with a handful of different architectures, I found the best architecture to contain a few
+        intermediate layers with small filters.
+        Remember that the more layers and filters in the model, the more room for the model to overfit to the data.
+        We must find the right balance in the architecture to ensure the model is small enough to prevent overfitting
+        but accurate enough to generalize on never-before-seen data.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">make_model</span><span class="p">(</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="k">def</span> <span class="nf">make_model</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">augmentation</span><span class="p">:</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
     <span class="n">inputs</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>  <span class="c1"># Height, width, channels</span>
@@ -699,12 +829,15 @@ We must find the right balance in the architecture to ensure the model is small 
     <span class="n">outputs</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p><details>
-    <summary>Model summary</summary></p>
+    <p>
+    <details>
+        <summary>Model summary</summary>
+        </p>
 
-<pre><code>Model: "optimized_1e-5"
+        <pre><code>Model: "optimized_1e-5"
 _________________________________________________________________
 Layer (type)                Output Shape              Param #
 =================================================================
@@ -728,21 +861,26 @@ Non-trainable params: 0
 _________________________________________________________________
 </code></pre>
 
-<p></details></p>
+        <p>
+    </details>
+    </p>
 
-<p>I believe the architecture above has room for improvement.
-More experimentation - removing some Conv2D and MaxPooling2D layers, reducing the filter sizes, or maybe adding strides or padding to the Conv2D layers - could fine-tune the architecture and improve the model's performance.
-The chosen architecture may not be the best, but it will suffice.</p>
+    <p>I believe the architecture above has room for improvement.
+        More experimentation - removing some Conv2D and MaxPooling2D layers, reducing the filter sizes, or maybe adding
+        strides or padding to the Conv2D layers - could fine-tune the architecture and improve the model's performance.
+        The chosen architecture may not be the best, but it will suffice.</p>
 
-<hr />
+    <hr />
 
-<h2 id="training-the-baseline-model">Training the baseline model</h2>
+    <h2 id="training-the-baseline-model">Training the baseline model</h2>
 
-<p>Before training the actual model, we need to define a simple baseline to compare against.
-The baseline model will use the same model architecture, datasets, and hyperparameters as the optimized model.
-The only difference is that the baseline model does not perform any optimizations within the model or during training - no data augmentation, dropout, batch normalization, or learning rate decay.</p>
+    <p>Before training the actual model, we need to define a simple baseline to compare against.
+        The baseline model will use the same model architecture, datasets, and hyperparameters as the optimized model.
+        The only difference is that the baseline model does not perform any optimizations within the model or during
+        training - no data augmentation, dropout, batch normalization, or learning rate decay.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">[</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span>
         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;baseline&quot;</span><span class="p">,</span>
         <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">LR</span><span class="p">)</span>
@@ -761,104 +899,116 @@ The only difference is that the baseline model does not perform any optimization
     <span class="n">num_runs</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
     <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
 <span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>We'll train the baseline for 25 epochs with a learning rate of 0.001 (1e-3).
-The baseline model will be trained 200 times, each time with a rebalanced dataset.
-The average of all 200 runs is plotted below.</p>
+    <p>We'll train the baseline for 25 epochs with a learning rate of 0.001 (1e-3).
+        The baseline model will be trained 200 times, each time with a rebalanced dataset.
+        The average of all 200 runs is plotted below.</p>
 
-<h3 id="baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</h3>
+    <h3 id="baseline-loss-and-accuracy-plots">Baseline loss and accuracy plots</h3>
 
-<p>The model's best run (#99) can be seen plotted below.
-It overfits to the training data after 9 epochs - see the validation loss increase.
-Furthermore, the model memorizes the dataset after 13 epochs - see the training accuracy plateau at 100% accuracy.</p>
+    <p>The model's best run (#99) can be seen plotted below.
+        It overfits to the training data after 9 epochs - see the validation loss increase.
+        Furthermore, the model memorizes the dataset after 13 epochs - see the training accuracy plateau at 100%
+        accuracy.</p>
 
-<p>There are four tell-tale signs of overfitting in the plots below:</p>
+    <p>There are four tell-tale signs of overfitting in the plots below:</p>
 
-<ol>
-<li>Train accuracy plateaus</li>
-<li>Validation accuracy <em>decreases</em></li>
-<li>Train loss converges</li>
-<li>Validation loss <em>increases</em></li>
-</ol>
+    <ol>
+        <li>Train accuracy plateaus</li>
+        <li>Validation accuracy <em>decreases</em></li>
+        <li>Train loss converges</li>
+        <li>Validation loss <em>increases</em></li>
+    </ol>
 
-<figure class="center" style="width:90%;">
-    <img src="img/train_baseline.png" style="width:100%;"/>
-    <figcaption>Baseline model's best loss and accuracy</figcaption>
-</figure>
+    <figure class="center" style="width:90%;">
+        <img src="img/train_baseline.png" style="width:100%;" />
+        <figcaption>Baseline model's best loss and accuracy</figcaption>
+    </figure>
 
-<p>On average, the baseline model overfits after 6 epochs.
-Refer to the plot below to see the average loss and accuracy of the baseline model.</p>
+    <p>On average, the baseline model overfits after 6 epochs.
+        Refer to the plot below to see the average loss and accuracy of the baseline model.</p>
 
-<figure class="center" style="width:90%;">
-    <img src="img/train_average_baseline.png" style="width:100%;"/>
-    <figcaption>Baseline model's average loss and accuracy</figcaption>
-</figure>
+    <figure class="center" style="width:90%;">
+        <img src="img/train_average_baseline.png" style="width:100%;" />
+        <figcaption>Baseline model's average loss and accuracy</figcaption>
+    </figure>
 
-<p>It's not surprising to see the model overfit so quickly.
-We're not performing any training optimizations and the learning rate is a bit high for the size of the dataset.</p>
+    <p>It's not surprising to see the model overfit so quickly.
+        We're not performing any training optimizations and the learning rate is a bit high for the size of the dataset.
+    </p>
 
-<p>Let's take a peek at the model's predictions on the entire dataset.</p>
+    <p>Let's take a peek at the model's predictions on the entire dataset.</p>
 
-<h3 id="baseline-wrong-predictions">Baseline wrong predictions</h3>
+    <h3 id="baseline-wrong-predictions">Baseline wrong predictions</h3>
 
-<figure class="right" style="width:60%;">
-    <img src="img/wrong_predictions_baseline.png" style="width:100%;"/>
-    <figcaption>Baseline model's wrong predictions, ranked from highest error</figcaption>
-</figure>
+    <figure class="right" style="width:60%;">
+        <img src="img/wrong_predictions_baseline.png" style="width:100%;" />
+        <figcaption>Baseline model's wrong predictions, ranked from highest error</figcaption>
+    </figure>
 
-<p>Despite the overfitting, the baseline model is still able to predict the correct class with a 99% accuracy rate!
-Looking at the model's predictions on the entire dataset, we see that it's predicting the wrong class for 6 images.
-However, when it's predicting the wrong class, the model is heavily confused.</p>
+    <p>Despite the overfitting, the baseline model is still able to predict the correct class with a 99% accuracy rate!
+        Looking at the model's predictions on the entire dataset, we see that it's predicting the wrong class for 6
+        images.
+        However, when it's predicting the wrong class, the model is heavily confused.</p>
 
-<p>The images are ranked from highest error to lowest error.
-The <code>E</code> stands for error, or how far away the model's confidence in the prediction is from the actual class.
-The <code>A</code> stands for the actual prediction or confidence in the model's prediction.
-Toons are predicted when <code>A</code> &gt; 0.5, and Cogs are predicted when <code>A</code> &lt; 0.5.</p>
+    <p>The images are ranked from highest error to lowest error.
+        The <code>E</code> stands for error, or how far away the model's confidence in the prediction is from the actual
+        class.
+        The <code>A</code> stands for the actual prediction or confidence in the model's prediction.
+        Toons are predicted when <code>A</code> &gt; 0.5, and Cogs are predicted when <code>A</code> &lt; 0.5.</p>
 
-<p>The first image is a Toon, but the model confidently predicts Cog.
-The second image is also predicted as a Cog, but that makes sense as there's a giant Cog arm occluding the Toon.</p>
+    <p>The first image is a Toon, but the model confidently predicts Cog.
+        The second image is also predicted as a Cog, but that makes sense as there's a giant Cog arm occluding the Toon.
+    </p>
 
-<p>There's no obvious reason as to why the model confidently predicts Cog for the first image.
-Perhaps the color of Toon's shirt is similar to the Lawbot's blue suit?
-We'll interpret the layers' activations as heatmaps later to see if this is the case.</p>
+    <p>There's no obvious reason as to why the model confidently predicts Cog for the first image.
+        Perhaps the color of Toon's shirt is similar to the Lawbot's blue suit?
+        We'll interpret the layers' activations as heatmaps later to see if this is the case.</p>
 
-<p>Let's optimize the model's training to prevent overfitting and acquire better results.</p>
+    <p>Let's optimize the model's training to prevent overfitting and acquire better results.</p>
 
-<hr />
+    <hr />
 
-<h2 id="training-the-optimized-model">Training the optimized model</h2>
+    <h2 id="training-the-optimized-model">Training the optimized model</h2>
 
-<p>Now that we have a baseline to compare against, we can train the optimized model.</p>
+    <p>Now that we have a baseline to compare against, we can train the optimized model.</p>
 
-<h3 id="preventing-overfitting">Preventing overfitting</h3>
+    <h3 id="preventing-overfitting">Preventing overfitting</h3>
 
-<p>Given that we have a small dataset, we can utilize a few of the following techniques during training to prevent overfitting:</p>
+    <p>Given that we have a small dataset, we can utilize a few of the following techniques during training to prevent
+        overfitting:</p>
 
-<ul>
-<li><strong>Data augmentation</strong> - randomly rotating, flipping, and cropping input images.</li>
-<li><strong>Data balancing</strong> - balancing the number of objects in each dataset.</li>
-<li><strong>Dropout</strong> - dropout some of the output nodes in the model to prevent overfitting.</li>
-<li><strong>Regularization</strong> - regularize the model by adding a penalty to the loss function.</li>
-<li><strong>Small learning rate</strong> - use a small learning rate to decrease the magnitude of the weight updates and learn slower.</li>
-<li><strong>Reducing number of parameters</strong> - too many parameters conditions the model to memorize the dataset.</li>
-<li><strong>Early stopping</strong> - stop training the model if the model doesn't improve after a certain number of epochs.</li>
-<li><strong>Learning rate decay</strong> - decrease the optimizer's learning rate after each epoch.</li>
-</ul>
+    <ul>
+        <li><strong>Data augmentation</strong> - randomly rotating, flipping, and cropping input images.</li>
+        <li><strong>Data balancing</strong> - balancing the number of objects in each dataset.</li>
+        <li><strong>Dropout</strong> - dropout some of the output nodes in the model to prevent overfitting.</li>
+        <li><strong>Regularization</strong> - regularize the model by adding a penalty to the loss function.</li>
+        <li><strong>Small learning rate</strong> - use a small learning rate to decrease the magnitude of the weight
+            updates and learn slower.</li>
+        <li><strong>Reducing number of parameters</strong> - too many parameters conditions the model to memorize the
+            dataset.</li>
+        <li><strong>Early stopping</strong> - stop training the model if the model doesn't improve after a certain
+            number of epochs.</li>
+        <li><strong>Learning rate decay</strong> - decrease the optimizer's learning rate after each epoch.</li>
+    </ul>
 
-<p>For the ToonVision model, we'll utilize data augmentation, dropout, regularization, small learning rate, and learning rate decay.</p>
+    <p>For the ToonVision model, we'll utilize data augmentation, dropout, regularization, small learning rate, and
+        learning rate decay.</p>
 
-<h4 id="data-augmentation">Data augmentation</h4>
+    <h4 id="data-augmentation">Data augmentation</h4>
 
-<p>During training, we'll perform the following data augmentation techniques:</p>
+    <p>During training, we'll perform the following data augmentation techniques:</p>
 
-<ul>
-<li>Horizontal flip (50% chance)</li>
-<li>Rotate +- 7.5%</li>
-<li>Zoom +-20%</li>
-</ul>
+    <ul>
+        <li>Horizontal flip (50% chance)</li>
+        <li>Rotate +- 7.5%</li>
+        <li>Zoom +-20%</li>
+    </ul>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">layers</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">layers</span>
 
 <span class="n">data_augmentation</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
     <span class="p">[</span>
@@ -870,37 +1020,48 @@ We'll interpret the layers' activations as heatmaps later to see if this is the 
         <span class="n">layers</span><span class="o">.</span><span class="n">RandomZoom</span><span class="p">(</span><span class="mf">0.2</span><span class="p">),</span>
     <span class="p">]</span>
 <span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>The purpose of the data augmentation is to increase the number of training examples so the model can learn from more data and never see the same sample twice.</p>
+    <p>The purpose of the data augmentation is to increase the number of training examples so the model can learn from
+        more data and never see the same sample twice.</p>
 
-<p>It's important to augment the data just enough so the samples remain representative of the dataset.
-If we rotate the image too much or zoom in/out too much, we lose the context of the image and the model will not be able to learn from it.</p>
+    <p>It's important to augment the data just enough so the samples remain representative of the dataset.
+        If we rotate the image too much or zoom in/out too much, we lose the context of the image and the model will not
+        be able to learn from it.</p>
 
-<figure class="center" style="width:50%">
-    <img src="img/image_augmentation.png" style="width:100%;"/>
-    <figcaption>Top four: Tame image augmentation resulting in realistic samples. Bottom four: Aggressive image augmentation resulting in unrealistic samples.</figcaption>
-</figure>
+    <figure class="center" style="width:50%">
+        <img src="img/image_augmentation.png" style="width:100%;" />
+        <figcaption>Top four: Tame image augmentation resulting in realistic samples. Bottom four: Aggressive image
+            augmentation resulting in unrealistic samples.</figcaption>
+    </figure>
 
-<p>Looking at the grid above, we see a single image that has been augmented with the data augmentation techniques.
-The top four images result from a slight data augmentation, whereas the bottom four images are from an aggressive data augmentation.
-The more aggressive augmentation is not representative of the dataset or real-world samples.</p>
+    <p>Looking at the grid above, we see a single image that has been augmented with the data augmentation techniques.
+        The top four images result from a slight data augmentation, whereas the bottom four images are from an
+        aggressive data augmentation.
+        The more aggressive augmentation is not representative of the dataset or real-world samples.</p>
 
-<h4 id="dropout">Dropout</h4>
+    <h4 id="dropout">Dropout</h4>
 
-<p>Dropout is one of the most effective and commonly used regularization techniques for neural networks.
-When applied to a layer, dropout randomly <em>drops out</em> (sets to zero) several output features of the layer.
-The number of dropped features is determined by the <em>dropout rate</em> - the percentage of features that are dropped.</p>
+    <p>Dropout is one of the most effective and commonly used regularization techniques for neural networks.
+        When applied to a layer, dropout randomly <em>drops out</em> (sets to zero) several output features of the
+        layer.
+        The number of dropped features is determined by the <em>dropout rate</em> - the percentage of features that are
+        dropped.</p>
 
-<p>For example, given a layer with 6 features, if the dropout rate is 0.5, then 3 features will be dropped.
-Let's say a given layer normal returns a vector <code>[0.1, 0.2, 0.3, 0.4, 0.5, 0.6]</code>.
-After applying dropout with a rate of 0.5, the output vector will be <code>[0.1, 0.2, 0.0, 0.0, 0.5, 0.0]</code>.</p>
+    <p>For example, given a layer with 6 features, if the dropout rate is 0.5, then 3 features will be dropped.
+        Let's say a given layer normal returns a vector <code>[0.1, 0.2, 0.3, 0.4, 0.5, 0.6]</code>.
+        After applying dropout with a rate of 0.5, the output vector will be
+        <code>[0.1, 0.2, 0.0, 0.0, 0.5, 0.0]</code>.
+    </p>
 
-<p>François Chollet, the author of the Keras library, recommends using a dropout rate in the range [0.2, 0.5].
-However, because our dataset is so small and skewed, I found the best dropout rate to be in the range [0.7, 0.9].
-For the remainder of the training, we'll use the dropout rate of 0.9.</p>
+    <p>François Chollet, the author of the Keras library, recommends using a dropout rate in the range [0.2, 0.5].
+        However, because our dataset is so small and skewed, I found the best dropout rate to be in the range [0.7,
+        0.9].
+        For the remainder of the training, we'll use the dropout rate of 0.9.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">[</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;baseline&quot;</span><span class="p">},</span>
     <span class="p">{</span>
         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;optimized_1e-5&quot;</span><span class="p">,</span>
@@ -908,22 +1069,24 @@ For the remainder of the training, we'll use the dropout rate of 0.9.</p>
         <span class="s2">&quot;dropout&quot;</span><span class="p">:</span> <span class="mf">0.90</span><span class="p">,</span>
     <span class="p">},</span>
 <span class="p">]</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h4 id="learning-rate-decay">Learning rate decay</h4>
+    <h4 id="learning-rate-decay">Learning rate decay</h4>
 
-<p>Learning rate decay is a technique that reduces the optimizer's learning rate as training progresses.
-Decreasing the learning rate will help the model to converge smoother and faster.
-We can implement learning rate decay in two ways:</p>
+    <p>Learning rate decay is a technique that reduces the optimizer's learning rate as training progresses.
+        Decreasing the learning rate will help the model to converge smoother and faster.
+        We can implement learning rate decay in two ways:</p>
 
-<ul>
-<li>Use a learning rate scheduler (callback)</li>
-<li>Add a learning rate decay factor to the optimizer</li>
-</ul>
+    <ul>
+        <li>Use a learning rate scheduler (callback)</li>
+        <li>Add a learning rate decay factor to the optimizer</li>
+    </ul>
 
-<p>I'll use the optimizer's <code>decay</code> argument to implement the learning rate decay in training.</p>
+    <p>I'll use the optimizer's <code>decay</code> argument to implement the learning rate decay in training.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">LearningRateScheduler</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">LearningRateScheduler</span>
 
 <span class="n">LR</span> <span class="o">=</span> <span class="mf">0.001</span>  <span class="c1"># Global learning rate value</span>
 
@@ -938,401 +1101,479 @@ We can implement learning rate decay in two ways:</p>
     <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">LR</span><span class="p">),</span>  <span class="c1"># baseline</span>
     <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">LR</span><span class="p">,</span> <span class="n">decay</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">),</span>
 <span class="p">]</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="wrong-predictions">Wrong predictions</h3>
+    <h3 id="wrong-predictions">Wrong predictions</h3>
 
-<figure class="right" style="width:50%;">
-    <img src="img/wrong_predictions_optimized3.png" style="width:100%;"/>
-    <figcaption>Optimized model's wrong predictions, ranked from highest error</figcaption>
-</figure>
+    <figure class="right" style="width:50%;">
+        <img src="img/wrong_predictions_optimized3.png" style="width:100%;" />
+        <figcaption>Optimized model's wrong predictions, ranked from highest error</figcaption>
+    </figure>
 
-<p>As expected, the optimized model predicts classes more accurately than the baseline model.
-The model only misclassifies 3 images out of the entire dataset of 674 images.
-Not bad!</p>
+    <p>As expected, the optimized model predicts classes more accurately than the baseline model.
+        The model only misclassifies 3 images out of the entire dataset of 674 images.
+        Not bad!</p>
 
-<p>The worst prediction - an image of a Cog partially occluded by another Cog's nametag - has an error of 0.46/0.50.
-It makes sense for this image to be incorrect because we purposefully excluded occluded Cogs from the dataset.
-Ideally, the model would be able to generalize to the unseen data.</p>
+    <p>The worst prediction - an image of a Cog partially occluded by another Cog's nametag - has an error of 0.46/0.50.
+        It makes sense for this image to be incorrect because we purposefully excluded occluded Cogs from the dataset.
+        Ideally, the model would be able to generalize to the unseen data.</p>
 
-<p>The other two images frequently appear in the wrong predictions of all models.
-I assume it's because the images contain brown in the middle of the image - a feature commonly seen in Bossbot and Sellbot Cogs.</p>
+    <p>The other two images frequently appear in the wrong predictions of all models.
+        I assume it's because the images contain brown in the middle of the image - a feature commonly seen in Bossbot
+        and Sellbot Cogs.</p>
 
-<p>We'll interpret the layers' activations as heatmaps later to see if this is the case.
-For now, let's compare the optimized model's average training loss and accuracy to the baseline model's.</p>
+    <p>We'll interpret the layers' activations as heatmaps later to see if this is the case.
+        For now, let's compare the optimized model's average training loss and accuracy to the baseline model's.</p>
 
-<h3 id="baseline-comparison-training">Baseline comparison: Training</h3>
+    <h3 id="baseline-comparison-training">Baseline comparison: Training</h3>
 
-<p>The following plots show clearly the superior performance of the optimized model following 200 training runs.
-In all of the plots, the orange line represents the average loss and accuracy of the optimized model, while the blue line represents the baseline model.</p>
+    <p>The following plots show clearly the superior performance of the optimized model following 200 training runs.
+        In all of the plots, the orange line represents the average loss and accuracy of the optimized model, while the
+        blue line represents the baseline model.</p>
 
-<p>We can see in the accuracy plot (top left) that the optimized model does not overfit to the training data, whereas the baseline model overfits at ~12 epochs.
-This is expected because the optimized model performs many techniques to prevent overfitting; the most important being <em>dropout</em> and <em>learning rate decay</em>.</p>
+    <p>We can see in the accuracy plot (top left) that the optimized model does not overfit to the training data,
+        whereas the baseline model overfits at ~12 epochs.
+        This is expected because the optimized model performs many techniques to prevent overfitting; the most important
+        being <em>dropout</em> and <em>learning rate decay</em>.</p>
 
-<p>The validation accuracy plot (top right) shows a similar trend.
-On average, the optimized model does not overfit, whereas the baseline model overfits at ~12 epochs.</p>
+    <p>The validation accuracy plot (top right) shows a similar trend.
+        On average, the optimized model does not overfit, whereas the baseline model overfits at ~12 epochs.</p>
 
-<!-- Split the training line chart and the evaluation bar chart -->
+    <!-- Split the training line chart and the evaluation bar chart -->
 
-<figure class="center" style="width:90%;">
-    <img src="img/baseline_comparison_train.png" style="width:100%;"/>
-    <figcaption></figcaption>
-</figure>
+    <figure class="center" style="width:90%;">
+        <img src="img/baseline_comparison_train.png" style="width:100%;" />
+        <figcaption></figcaption>
+    </figure>
 
-<p>The loss plots speak for themselves.
-The optimized model's loss plots are constantly decreasing and never converge to zero.
-One could argue that the validation loss flatlines after ~20 epochs, but at least it's not increasing.</p>
+    <p>The loss plots speak for themselves.
+        The optimized model's loss plots are constantly decreasing and never converge to zero.
+        One could argue that the validation loss flatlines after ~20 epochs, but at least it's not increasing.</p>
+
+    <p>On the other hand, the baseline model displays telltale signs of overfitting: training loss converges to
+        near-zero after ~15 epochs while the validation loss decreases to ~0.13 and steadily increases thereafter.</p>
 
-<p>On the other hand, the baseline model displays telltale signs of overfitting: training loss converges to near-zero after ~15 epochs while the validation loss decreases to ~0.13 and steadily increases thereafter.</p>
-
-<h4 id="whats-with-the-jagged-lines">What's with the jagged lines?</h4>
-
-<p>The validation plots for both models are quite sporadic compared to the smooth, continuous training plots.
-We can see that the optimized model often overfits to the validation data - enough to show jagged lines on both validation accuracy and loss plots.</p>
-
-<p>I suspect the validation plots' sporadic movement is due to the small size of the validation dataset.
-The fluctuations could also be due to the validation set being not representative enough of the training set.
-The former is a difficulty I burdened myself with early on to learn how to deal with poorly-balanced datasets.
-The latter is why I rebalance the datasets - un-split and re-split datasets - before each training run to get an accurate model performance over 200 runs.</p>
-
-<p>An alternative to shuffling the datasets would be to utilize <a href="https://medium.com/the-owl/k-fold-cross-validation-in-keras-3ec4a3a00538">k-fold cross-validation</a>, but that's beyond the scope of this article.
-Remember, we're keeping it simple!</p>
-
-<p>We can now clearly see the optimized model's superior performance during training.
-Let's take a look at the model's performance on the test dataset.</p>
-
-<h3 id="baseline-comparison-evaluation">Baseline comparison: Evaluation</h3>
-
-<p>Recall that we split the dataset into three sets: training (60%), validation (20%), and test (20%).
-The test set is used to evaluate the model's performance on never-before-seen data.</p>
-
-<p>The box plots below show the distribution of 200 evaluations of the models' predictions on the test dataset.
-Once again, the optimized model outshines the baseline model.</p>
-
-<p>The optimized model has a smaller test accuracy spread (smaller box) and its median (0.978) is more than a basis point higher than the baseline (0.965).
-Furthermore, excluding the outliers, the optimized model's minimum accuracy does not fall below 0.95, whereas the baseline model's minimum accuracy falls well below 0.93.</p>
-
-<!-- Split the training line chart and the evaluation bar chart -->
-
-<figure class="center" style="width:90%;">
-    <img src="img/baseline_comparison_test.png" style="width:100%;"/>
-    <figcaption></figcaption>
-</figure>
-
-<p>The loss plot is even more damning for the baseline model.
-The optimized model's loss spread is much smaller and lower than the baseline model's.
-We see the baseline model has a median loss of 1.6 while the optimized model's median loss is 0.5.
-Lastly, the optimized model's outliers are more contained with a range of [0.18, 0.21] whereas the baseline model's outliers range from [0.42, 0.68].</p>
-
-<p>Enough proving that the optimized model is superior to the baseline model.
-Let's interpret what the model's layers are seeing as heatmaps.</p>
-
-<hr />
-
-<h2 id="model-interpretation-and-visualization">Model interpretation and visualization</h2>
-
-<p>Neural networks are often considered to be black boxes: they learn data representations that are difficult to interpret in human-readable form.
-You throw a bunch of data at a network of math functions and it solves all of your problems; it's magic.</p>
-
-<p>Convolutional neural networks - specifically for image classification problems - are quite the opposite.
-We can visualize the convnet's activations - intermediate layer outputs - as heatmaps and clearly understand what the model is looking for in an image.</p>
-
-<p>We'll peel back the layers of the model in the following sections and interpret what the model has learned from our dataset.
-Specific code examples will not be provided in the sections below; instead, you'll be guided through the process of interpreting the model's activations.
-The code can be found in <code>main.py</code> on my <a href="https://github.com/nosas/blog/blob/main/toonvision/classification/code/main.py">GitHub</a>.</p>
-
-<h3 id="intermediate-convnet-outputs-intermediate-activations">Intermediate convnet outputs (intermediate activations)</h3>
-
-<figure class="right" style="width: 40%;margin-right: 1em;">
-    <img src="img/layer_activations_sample_image.png">
-    <figcaption>Sample image of a Bloodsucker Cog</figcaption>
-</figure>
-
-<p>Visualizing intermediate activations is useful for understanding how success layers transform the input data.
-This will give us a view into how the input is decomposed by the network's learned filters.
-We'll input the image seen on the right through the model and interpret the activations.</p>
-
-<p>The following image grid shows the activations of all Conv2D and MaxPooling2D layers.
-Notice how the number of <em>feature maps</em> - also called <em>activation channels</em> - increases as the input progresses through the model.
-The growing feature maps are due to the number of filters used in each layer: 16, 16, 32, 32, 32, 32, as seen in the <a href="#defining-the-model">model summary</a>.
-The earlier layers act as edge detectors, while the later layers encode feature detectors.
-In English, the earlier layers contain image-specific features (edges, colors, darkness, etc.) and the later layers contain class-specific features (suits, shoes, ears, eyes, etc.).</p>
-
-<p>Furthermore, we find that the image becomes smaller and more abstract as it progresses through the network.
-This is a direct result of the sub-sampling performed by the MaxPooling2D layers.
-Recall that MaxPooling2D layers reduce the input's size by a factor of <code>pool_size</code>, where our <code>pool_size</code> is 2 - meaning the input is halved in both dimensions.
-This allows the network to pool together useful information from the input pixels that are closest to each other.
-In short, our input transforms from a 200x600 image to a 10x35 image - a high-quality image to an abstract, low-quality image.</p>
-
-<p>Lastly, we see that the network learned to recognize the image's shape and color.
-The brightest pixels represent the highest activations in that specific channel.
-For instance, in the final channel of the final layer (bottom-right corner of the grid), we can see the highest activations in the Cog's pants and shoes.
-Some layers may contain channels with no activations, resulting in a blank image.
-This means the pattern encoded by the filter is not present in the input image.
-We'll discuss patterns and filters in the next section.</p>
-
-<figure class="center" style="width:95%;">
-    <img src="img/layer_activations_feature_maps.png" style="width:100%;"/>
-    <figcaption>Feature maps of the sample image above, extracted from each layer's output (excluding the first MaxPooling2D layer)</figcaption>
-</figure>
-
-<p>After looking at the activations of different inputs, I found that the model learned to recognize the Cogs by their heads, hands, and dark-colored suits.
-I anticipated that the model would identify Toons by their facial features or gloves, and I was <em>somewhat</em> correct.
-However, the model classified Toons by their accessories and clothes: backpacks, shoes, and pants, which were all strong feature indicators.
-Surprisingly, dog/deer faces - specifically ears, antlers, and noses - were the only features to outperform accessories/clothes indicators.</p>
-
-<p><details>
-    <summary>Feature maps of a dog Toon</summary></p>
-
-<figure class="center" style="width:95%;">
-    <img src="img/layer_activations_feature_maps_dog.png" style="width:100%;"/>
-    <figcaption>Note the large number of ear and nose-shaped activations in the final layer</figcaption>
-</figure>
-
-<p></details></p>
-
-<p>I'm quite fond of being able to visualize the model's activations.
-It is a great way to understand how the model is learning to recognize the input data.</p>
-
-<h3 id="convnet-filters">Convnet filters</h3>
-
-<figure class="right" style="width:55%;">
-    <img src="img/interesting_filters.gif" style="width:100%;"/>
-    <figcaption>Filters from intermediate layers: conv2d_157, max_pooling2d_210</figcaption>
-</figure>
-
-<p>Filters are the weights that are learned by the network - they are the model's "knowledge".
-They are used to extract information or extract patterns, from the input data.
-Filters tell us a lot about how the convnet layers see the world.</p>
-
-<p>The filters from the first layers in the model encode simple directional edges and colors.
-The remaining layers encode more complex patterns, although the patterns are not as clear in such a small model.
-We can make out blue and yellow patterns with diagonal and straight-line edges, but not much else.</p>
-
-<p>If our model were larger or trained for more epochs, we would see more complex patterns.
-More interesting patterns can be seen in the Keras blog post, <a href="https://blog.keras.io/how-convolutional-neural-networks-see-the-world.html">How convolutional neural networks see the world</a>.
-It's definitely worth the read to see how beautiful the patterns can be in more complex models.</p>
-
-<h3 id="class-activation-heatmaps">Class activation heatmaps</h3>
-
-<figure class="right" style="width:20%;">
-    <img src="img/cam_sample_cat.png"/>
-    <figcaption>Sample cat Toon, "cat_20"</figcaption>
-</figure>
-
-<p>The final visualization technique - <em>class activation maps</em> (CAM) - is useful for understanding which parts of an image led to a specific class prediction.
-This helps debug wrong predictions and understand classification mistakes.</p>
-
-<p>The technique involves scoring subsections of the image based on how much they activate a class's feature detectors.
-We take the average score across all feature maps to generate a heatmap of the image, where the hotter the pixel, the more activation of the predicted class.
-Lastly, we superimpose the heatmap on the original image to visualize the activation - visualize what parts of the image activate the class.</p>
-
-<p>We'll use the Toon on the right, "cat_20", to visualize the CAM.
-This image was mentioned earlier as always showing up in the wrong predictions of our models.
-Let's figure out <em>why</em> the models cannot predict the correct class for this image by visualizing the CAM.</p>
-
-<table style="width:100%;">
-    <tr>
-        <td style="width:50%;">
-            <img src="img/cam_sample_cat_superimposed.png" style="width:100%;"/>
-        </td>
-        <td style="width:50%;">
-            <img src="img/cam_sample_bloodsucker_superimposed.png" style="width:100%;"/>
-        </td>
-    </tr>
-    <tr >
-        <td>
-            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
-                <small>
-                    <i>Toon "cat_20" commonly predicted as Cog</i>
-                </small>
-            </span>
-        </td>
-        <td>
-            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
-                <small>
-                    <i>Cog with similar heatmap as "cat_20"</i>
-                </small>
-            </span>
-        </td>
-    </tr>
-</table>
-
-<p>The Toon's heatmap and superimposed images show that the model identifies Toon accessories more than Toon features (eyes, face, gloves).
-If the model recognizes the accessories, why does it still predict the wrong class?
-The issue seems to be two-fold:</p>
-
-<ol>
-<li>The Toon's coloring shares that of a Cog: brown/maroon top, dark pants, and black shoes</li>
-<li>The heatmap is incredibly similar to that of a Cog's: activations around the head area and more activation around the hands.</li>
-</ol>
-
-<p>Point 1 demonstrates that we need must include more Toons images with the same coloration as Cogs.
-Notice how the Toon's black shoes were not detected by the model because they match the Cogs' black shoes.</p>
-
-<p>Point 2 is trickier to resolve.
-We can see the model identify the Toon's facial features, but that's not enough for it to correctly label the image.
-To fix point 2, we need to include more Toons in our dataset.
-The class imbalance is a great problem in edge cases like this.</p>
-
-<p>An alternative solution to point 2 is to include padding in our convnet layers to not lose information.
-With padding, the heatmap would include the entirety of the backpack seen in the original image instead of cropping it out.
-Including the entire backpack in the heatmap likely would have resulted in a correct prediction.</p>
-
-<h4 id="additional-cam-findings">Additional CAM findings</h4>
-
-<p>I found the heatmaps to be the most useful visualization technique for understanding the model's predictions.
-Below are additional findings that I found interesting:</p>
-
-<ul>
-<li>Cog hands are important Cog feature indicators</li>
-<li>Light-colored clothing and accessories are strong Toon feature indicators</li>
-<li>Dark-colored Toon clothing leads to confusion between Toon and Cog features</li>
-<li>Toon features are decent indicators for Toons without accessories</li>
-</ul>
-
-<p><details>
-    <summary>Cog hands are important Cog feature indicators</summary></p>
-
-<figure class="center">
-    <img src="img/cam_sample_bloodsucker_superimposed1.png" style="width:100%;"/>
-    <figcaption>Bloodsucker labeled as a Toon because its hands are occluded</figcaption>
-</figure>
-
-<p>The Bloodsucker Cog from the <a href="#wrong-predictions">wrong predictions</a> section is wrongly classified as a Toon because the Cog's hands are occluded by the nametag.
-Furthermore, the heatmap shows high activations in the image's midsection, which is commonly seen in Toon images.
-</details></p>
-
-<p><details>
-    <summary>Colorization of Toon clothing/accessories affect model accuracy</summary></p>
-
-<table style="width:100%;">
-    <tr>
-        <td style="width:50%;">
-            <img src="img/cam_sample_mouse_superimposed.png" style="width:100%;">
-        </td>
-        <td style="width:50%;">
-            <img src="img/cam_sample_crocodile_superimposed.png" style="width:100%;">
-        </td>
-    </tr>
-    <tr >
-        <td>
-            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
-                <small>
-                    <i>Light-colored clothing and accessories</i>
-                </small>
-            </span>
-        </td>
-        <td>
-            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
-                <small>
-                    <i>Dark-colored clothing with highly-activated accessories</i>
-                </small>
-            </span>
-        </td>
-    </tr>
-</table>
-
-<p>The colorization of a Toon's clothes and accessories greatly affects the model's accuracy.
-The lighter the Toon's clothes/accessories, the higher chance the model will predict the correct class.
-The darker the Toon's clothes/accessories, the lower chance the model will predict the correct class.</p>
-
-<p>On the left, we see a mouse with light-color clothing and accessories.
-Both the clothing and the accessories are highly activated.
-We can even see the facial features, gloves, and ears being activated.</p>
-
-<p>The crocodile on the right, however, is wearing dark-colored clothing.
-That doesn't stop the model from identifying the Toon's pink hat and shoes and correctly labeling the image.
-Unfortunately, the Toon's facial features are barely activated.</p>
-
-<p>It would be ideal for Toon's facial features and gloves to be the prominent feature indicators in the model, but that's not possible with our small dataset.
-</details></p>
-
-<p><details>
-    <summary>Toon features are decent indicators on accessory-less Toons</summary></p>
-
-<table style="width:100%;">
-    <tr>
-        <td style="width:50%;">
-            <img src="img/cam_sample_duck_superimposed.png" style="width:100%;">
-        </td>
-        <td style="width:50%;">
-            <img src="img/cam_sample_dog_superimposed.png" style="width:100%;">
-        </td>
-    </tr>
-    <tr >
-        <td>
-            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
-                <small>
-                    <i>High facial-activations on a duck Toon</i>
-                </small>
-            </span>
-        </td>
-        <td>
-            <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
-                <small>
-                    <i>High facial and glove activations on a dog Toon</i>
-                </small>
-            </span>
-        </td>
-    </tr>
-</table>
-
-<p>The Toons' eyes and gloves are highly activated in both heatmaps.
-Also, note how the dark streak on the Toons' shirts (under the right arm) is not at all activated in the heatmaps.
-This is commonly seen in heatmaps containing Toons with Cog-colored clothing; dark clothes are not activated.
-</details></p>
-
-<hr />
-
-<h2 id="future-improvements">Future improvements</h2>
-
-<p>As much as I enjoyed writing this article, there are many areas in which I would like to improve: dataset balance, model architecture, and model interpretation.
-The following article will ensure improvement in the areas listed above.</p>
-
-<h3 id="dataset-balance">Dataset balance</h3>
-
-<p>Balancing the dataset requires time and effort.
-The imbalanced dataset in this article was created in haste.
-I wanted a quick dataset to train on so I could write this article, but I also wanted to learn how to work with a poorly-balanced dataset.
-With time, I'm confident in my ability to balance the dataset.</p>
-
-<p>Furthermore, the use of a validation set resulted in small training, validation, and testing datasets.
-As a consequence, the validation scores changed a lot depending on which data points were chosen for validation and training sets.
-This is commonly referred to as having a "high <em>variance</em>" with regard to the validation split and prevents us from properly evaluating our model.
-Future articles will forego the use of validation sets until the dataset is sufficiently grown and balanced, or implement K-fold cross-validation.</p>
-
-<p>In conclusion, using an imbalanced dataset should be avoided if possible, but it's not much of a hindrance for small models.</p>
-
-<h3 id="model-architecture">Model architecture</h3>
-
-<p>Model architecture is a bit of a challenge.
-I'm not sure how to best structure the model's layers and filters, and my readings have shown no clear direction for designing architectures.</p>
-
-<p>The original model architecture was based on a model found in François Chollet's book, "<em>Deep Learning with Python</em>".
-After writing this article, I'm sure the model can be improved.
-For instance, the first MaxPooling2D layer should be removed and padding should be added to prevent information loss.
-Multiple dropout layers can be added in between the convolutional layers rather than a single layer at the end of the model.
-Stacks of convolutional layers can be added to the model to increase the number of filters.</p>
-
-<p>I must streamline a process to design, compare, and measure the performance of different model architectures.
-This will allow me to select the best model for my dataset without having to manually design and test models.</p>
-
-<p>Of course, measuring performance is heavily dependent on a well-balanced dataset, so that must remain my highest priority.</p>
-
-<h3 id="model-interpretation">Model interpretation</h3>
-
-<p>Model interpretation is a crucial step in the process of model selection.
-It's important to understand the model's output and how it is interpreting the output.
-We can understand what the model is looking for in an input image - what features are important to the model - by visualizing its layers' outputs.</p>
-
-<p>Interpreting the model's output above was an eye-opener for me.
-The intermediate layer activations are shown as heatmaps which are superimposed on the input image.
-The heatmaps highlighted how the model searches for a specific feature in the image, such as faces, gloves, or accessories.
-These interpretations are incredibly useful for understanding the model.</p>
-
-<p>Moving forward, I will streamline the process of visualizing the model's layers' outputs.
-I would like to be able to visualize the model's outputs in a way that is easy to understand to select the best model after training.</p>
+    <h4 id="whats-with-the-jagged-lines">What's with the jagged lines?</h4>
+
+    <p>The validation plots for both models are quite sporadic compared to the smooth, continuous training plots.
+        We can see that the optimized model often overfits to the validation data - enough to show jagged lines on both
+        validation accuracy and loss plots.</p>
+
+    <p>I suspect the validation plots' sporadic movement is due to the small size of the validation dataset.
+        The fluctuations could also be due to the validation set being not representative enough of the training set.
+        The former is a difficulty I burdened myself with early on to learn how to deal with poorly-balanced datasets.
+        The latter is why I rebalance the datasets - un-split and re-split datasets - before each training run to get an
+        accurate model performance over 200 runs.</p>
+
+    <p>An alternative to shuffling the datasets would be to utilize <a
+            href="https://medium.com/the-owl/k-fold-cross-validation-in-keras-3ec4a3a00538">k-fold cross-validation</a>,
+        but that's beyond the scope of this article.
+        Remember, we're keeping it simple!</p>
+
+    <p>We can now clearly see the optimized model's superior performance during training.
+        Let's take a look at the model's performance on the test dataset.</p>
+
+    <h3 id="baseline-comparison-evaluation">Baseline comparison: Evaluation</h3>
+
+    <p>Recall that we split the dataset into three sets: training (60%), validation (20%), and test (20%).
+        The test set is used to evaluate the model's performance on never-before-seen data.</p>
+
+    <p>The box plots below show the distribution of 200 evaluations of the models' predictions on the test dataset.
+        Once again, the optimized model outshines the baseline model.</p>
+
+    <p>The optimized model has a smaller test accuracy spread (smaller box) and its median (0.978) is more than a basis
+        point higher than the baseline (0.965).
+        Furthermore, excluding the outliers, the optimized model's minimum accuracy does not fall below 0.95, whereas
+        the baseline model's minimum accuracy falls well below 0.93.</p>
+
+    <!-- Split the training line chart and the evaluation bar chart -->
+
+    <figure class="center" style="width:90%;">
+        <img src="img/baseline_comparison_test.png" style="width:100%;" />
+        <figcaption></figcaption>
+    </figure>
+
+    <p>The loss plot is even more damning for the baseline model.
+        The optimized model's loss spread is much smaller and lower than the baseline model's.
+        We see the baseline model has a median loss of 1.6 while the optimized model's median loss is 0.5.
+        Lastly, the optimized model's outliers are more contained with a range of [0.18, 0.21] whereas the baseline
+        model's outliers range from [0.42, 0.68].</p>
+
+    <p>Enough proving that the optimized model is superior to the baseline model.
+        Let's interpret what the model's layers are seeing as heatmaps.</p>
+
+    <hr />
+
+    <h2 id="model-interpretation-and-visualization">Model interpretation and visualization</h2>
+
+    <p>Neural networks are often considered to be black boxes: they learn data representations that are difficult to
+        interpret in human-readable form.
+        You throw a bunch of data at a network of math functions and it solves all of your problems; it's magic.</p>
+
+    <p>Convolutional neural networks - specifically for image classification problems - are quite the opposite.
+        We can visualize the convnet's activations - intermediate layer outputs - as heatmaps and clearly understand
+        what the model is looking for in an image.</p>
+
+    <p>We'll peel back the layers of the model in the following sections and interpret what the model has learned from
+        our dataset.
+        Specific code examples will not be provided in the sections below; instead, you'll be guided through the process
+        of interpreting the model's activations.
+        The code can be found in <code>main.py</code> on my <a
+            href="https://github.com/nosas/blog/blob/main/toonvision/classification/code/main.py">GitHub</a>.</p>
+
+    <h3 id="intermediate-convnet-outputs-intermediate-activations">Intermediate convnet outputs (intermediate
+        activations)</h3>
+
+    <figure class="right" style="width: 40%;margin-right: 1em;">
+        <img src="img/layer_activations_sample_image.png">
+        <figcaption>Sample image of a Bloodsucker Cog</figcaption>
+    </figure>
+
+    <p>Visualizing intermediate activations is useful for understanding how success layers transform the input data.
+        This will give us a view into how the input is decomposed by the network's learned filters.
+        We'll input the image seen on the right through the model and interpret the activations.</p>
+
+    <p>The following image grid shows the activations of all Conv2D and MaxPooling2D layers.
+        Notice how the number of <em>feature maps</em> - also called <em>activation channels</em> - increases as the
+        input progresses through the model.
+        The growing feature maps are due to the number of filters used in each layer: 16, 16, 32, 32, 32, 32, as seen in
+        the <a href="#defining-the-model">model summary</a>.
+        The earlier layers act as edge detectors, while the later layers encode feature detectors.
+        In English, the earlier layers contain image-specific features (edges, colors, darkness, etc.) and the later
+        layers contain class-specific features (suits, shoes, ears, eyes, etc.).</p>
+
+    <p>Furthermore, we find that the image becomes smaller and more abstract as it progresses through the network.
+        This is a direct result of the sub-sampling performed by the MaxPooling2D layers.
+        Recall that MaxPooling2D layers reduce the input's size by a factor of <code>pool_size</code>, where our
+        <code>pool_size</code> is 2 - meaning the input is halved in both dimensions.
+        This allows the network to pool together useful information from the input pixels that are closest to each
+        other.
+        In short, our input transforms from a 200x600 image to a 10x35 image - a high-quality image to an abstract,
+        low-quality image.
+    </p>
+
+    <p>Lastly, we see that the network learned to recognize the image's shape and color.
+        The brightest pixels represent the highest activations in that specific channel.
+        For instance, in the final channel of the final layer (bottom-right corner of the grid), we can see the highest
+        activations in the Cog's pants and shoes.
+        Some layers may contain channels with no activations, resulting in a blank image.
+        This means the pattern encoded by the filter is not present in the input image.
+        We'll discuss patterns and filters in the next section.</p>
+
+    <figure class="center" style="width:95%;">
+        <img src="img/layer_activations_feature_maps.png" style="width:100%;" />
+        <figcaption>Feature maps of the sample image above, extracted from each layer's output (excluding the first
+            MaxPooling2D layer)</figcaption>
+    </figure>
+
+    <p>After looking at the activations of different inputs, I found that the model learned to recognize the Cogs by
+        their heads, hands, and dark-colored suits.
+        I anticipated that the model would identify Toons by their facial features or gloves, and I was
+        <em>somewhat</em> correct.
+        However, the model classified Toons by their accessories and clothes: backpacks, shoes, and pants, which were
+        all strong feature indicators.
+        Surprisingly, dog/deer faces - specifically ears, antlers, and noses - were the only features to outperform
+        accessories/clothes indicators.
+    </p>
+
+    <p>
+    <details>
+        <summary>Feature maps of a dog Toon</summary>
+        </p>
+
+        <figure class="center" style="width:95%;">
+            <img src="img/layer_activations_feature_maps_dog.png" style="width:100%;" />
+            <figcaption>Note the large number of ear and nose-shaped activations in the final layer</figcaption>
+        </figure>
+
+        <p>
+    </details>
+    </p>
+
+    <p>I'm quite fond of being able to visualize the model's activations.
+        It is a great way to understand how the model is learning to recognize the input data.</p>
+
+    <h3 id="convnet-filters">Convnet filters</h3>
+
+    <figure class="right" style="width:55%;">
+        <img src="img/interesting_filters.gif" style="width:100%;" />
+        <figcaption>Filters from intermediate layers: conv2d_157, max_pooling2d_210</figcaption>
+    </figure>
+
+    <p>Filters are the weights that are learned by the network - they are the model's "knowledge".
+        They are used to extract information or extract patterns, from the input data.
+        Filters tell us a lot about how the convnet layers see the world.</p>
+
+    <p>The filters from the first layers in the model encode simple directional edges and colors.
+        The remaining layers encode more complex patterns, although the patterns are not as clear in such a small model.
+        We can make out blue and yellow patterns with diagonal and straight-line edges, but not much else.</p>
+
+    <p>If our model were larger or trained for more epochs, we would see more complex patterns.
+        More interesting patterns can be seen in the Keras blog post, <a
+            href="https://blog.keras.io/how-convolutional-neural-networks-see-the-world.html">How convolutional neural
+            networks see the world</a>.
+        It's definitely worth the read to see how beautiful the patterns can be in more complex models.</p>
+
+    <h3 id="class-activation-heatmaps">Class activation heatmaps</h3>
+
+    <figure class="right" style="width:20%;">
+        <img src="img/cam_sample_cat.png" />
+        <figcaption>Sample cat Toon, "cat_20"</figcaption>
+    </figure>
+
+    <p>The final visualization technique - <em>class activation maps</em> (CAM) - is useful for understanding which
+        parts of an image led to a specific class prediction.
+        This helps debug wrong predictions and understand classification mistakes.</p>
+
+    <p>The technique involves scoring subsections of the image based on how much they activate a class's feature
+        detectors.
+        We take the average score across all feature maps to generate a heatmap of the image, where the hotter the
+        pixel, the more activation of the predicted class.
+        Lastly, we superimpose the heatmap on the original image to visualize the activation - visualize what parts of
+        the image activate the class.</p>
+
+    <p>We'll use the Toon on the right, "cat_20", to visualize the CAM.
+        This image was mentioned earlier as always showing up in the wrong predictions of our models.
+        Let's figure out <em>why</em> the models cannot predict the correct class for this image by visualizing the CAM.
+    </p>
+
+    <table style="width:100%;">
+        <tr>
+            <td style="width:50%;">
+                <img src="img/cam_sample_cat_superimposed.png" style="width:100%;" />
+            </td>
+            <td style="width:50%;">
+                <img src="img/cam_sample_bloodsucker_superimposed.png" style="width:100%;" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                    <small>
+                        <i>Toon "cat_20" commonly predicted as Cog</i>
+                    </small>
+                </span>
+            </td>
+            <td>
+                <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                    <small>
+                        <i>Cog with similar heatmap as "cat_20"</i>
+                    </small>
+                </span>
+            </td>
+        </tr>
+    </table>
+
+    <p>The Toon's heatmap and superimposed images show that the model identifies Toon accessories more than Toon
+        features (eyes, face, gloves).
+        If the model recognizes the accessories, why does it still predict the wrong class?
+        The issue seems to be two-fold:</p>
+
+    <ol>
+        <li>The Toon's coloring shares that of a Cog: brown/maroon top, dark pants, and black shoes</li>
+        <li>The heatmap is incredibly similar to that of a Cog's: activations around the head area and more activation
+            around the hands.</li>
+    </ol>
+
+    <p>Point 1 demonstrates that we need must include more Toons images with the same coloration as Cogs.
+        Notice how the Toon's black shoes were not detected by the model because they match the Cogs' black shoes.</p>
+
+    <p>Point 2 is trickier to resolve.
+        We can see the model identify the Toon's facial features, but that's not enough for it to correctly label the
+        image.
+        To fix point 2, we need to include more Toons in our dataset.
+        The class imbalance is a great problem in edge cases like this.</p>
+
+    <p>An alternative solution to point 2 is to include padding in our convnet layers to not lose information.
+        With padding, the heatmap would include the entirety of the backpack seen in the original image instead of
+        cropping it out.
+        Including the entire backpack in the heatmap likely would have resulted in a correct prediction.</p>
+
+    <h4 id="additional-cam-findings">Additional CAM findings</h4>
+
+    <p>I found the heatmaps to be the most useful visualization technique for understanding the model's predictions.
+        Below are additional findings that I found interesting:</p>
+
+    <ul>
+        <li>Cog hands are important Cog feature indicators</li>
+        <li>Light-colored clothing and accessories are strong Toon feature indicators</li>
+        <li>Dark-colored Toon clothing leads to confusion between Toon and Cog features</li>
+        <li>Toon features are decent indicators for Toons without accessories</li>
+    </ul>
+
+    <p>
+    <details>
+        <summary>Cog hands are important Cog feature indicators</summary>
+        </p>
+
+        <figure class="center">
+            <img src="img/cam_sample_bloodsucker_superimposed1.png" style="width:100%;" />
+            <figcaption>Bloodsucker labeled as a Toon because its hands are occluded</figcaption>
+        </figure>
+
+        <p>The Bloodsucker Cog from the <a href="#wrong-predictions">wrong predictions</a> section is wrongly classified
+            as a Toon because the Cog's hands are occluded by the nametag.
+            Furthermore, the heatmap shows high activations in the image's midsection, which is commonly seen in Toon
+            images.
+    </details>
+    </p>
+
+    <p>
+    <details>
+        <summary>Colorization of Toon clothing/accessories affect model accuracy</summary>
+        </p>
+
+        <table style="width:100%;">
+            <tr>
+                <td style="width:50%;">
+                    <img src="img/cam_sample_mouse_superimposed.png" style="width:100%;">
+                </td>
+                <td style="width:50%;">
+                    <img src="img/cam_sample_crocodile_superimposed.png" style="width:100%;">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                        <small>
+                            <i>Light-colored clothing and accessories</i>
+                        </small>
+                    </span>
+                </td>
+                <td>
+                    <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                        <small>
+                            <i>Dark-colored clothing with highly-activated accessories</i>
+                        </small>
+                    </span>
+                </td>
+            </tr>
+        </table>
+
+        <p>The colorization of a Toon's clothes and accessories greatly affects the model's accuracy.
+            The lighter the Toon's clothes/accessories, the higher chance the model will predict the correct class.
+            The darker the Toon's clothes/accessories, the lower chance the model will predict the correct class.</p>
+
+        <p>On the left, we see a mouse with light-color clothing and accessories.
+            Both the clothing and the accessories are highly activated.
+            We can even see the facial features, gloves, and ears being activated.</p>
+
+        <p>The crocodile on the right, however, is wearing dark-colored clothing.
+            That doesn't stop the model from identifying the Toon's pink hat and shoes and correctly labeling the image.
+            Unfortunately, the Toon's facial features are barely activated.</p>
+
+        <p>It would be ideal for Toon's facial features and gloves to be the prominent feature indicators in the model,
+            but that's not possible with our small dataset.
+    </details>
+    </p>
+
+    <p>
+    <details>
+        <summary>Toon features are decent indicators on accessory-less Toons</summary>
+        </p>
+
+        <table style="width:100%;">
+            <tr>
+                <td style="width:50%;">
+                    <img src="img/cam_sample_duck_superimposed.png" style="width:100%;">
+                </td>
+                <td style="width:50%;">
+                    <img src="img/cam_sample_dog_superimposed.png" style="width:100%;">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                        <small>
+                            <i>High facial-activations on a duck Toon</i>
+                        </small>
+                    </span>
+                </td>
+                <td>
+                    <span style="text-align:center; display: block; margin-bottom: 2ch;margin-top: 0.5ch;">
+                        <small>
+                            <i>High facial and glove activations on a dog Toon</i>
+                        </small>
+                    </span>
+                </td>
+            </tr>
+        </table>
+
+        <p>The Toons' eyes and gloves are highly activated in both heatmaps.
+            Also, note how the dark streak on the Toons' shirts (under the right arm) is not at all activated in the
+            heatmaps.
+            This is commonly seen in heatmaps containing Toons with Cog-colored clothing; dark clothes are not
+            activated.
+    </details>
+    </p>
+
+    <hr />
+
+    <h2 id="future-improvements">Future improvements</h2>
+
+    <p>As much as I enjoyed writing this article, there are many areas in which I would like to improve: dataset
+        balance, model architecture, and model interpretation.
+        The following article will ensure improvement in the areas listed above.</p>
+
+    <h3 id="dataset-balance">Dataset balance</h3>
+
+    <p>Balancing the dataset requires time and effort.
+        The imbalanced dataset in this article was created in haste.
+        I wanted a quick dataset to train on so I could write this article, but I also wanted to learn how to work with
+        a poorly-balanced dataset.
+        With time, I'm confident in my ability to balance the dataset.</p>
+
+    <p>Furthermore, the use of a validation set resulted in small training, validation, and testing datasets.
+        As a consequence, the validation scores changed a lot depending on which data points were chosen for validation
+        and training sets.
+        This is commonly referred to as having a "high <em>variance</em>" with regard to the validation split and
+        prevents us from properly evaluating our model.
+        Future articles will forego the use of validation sets until the dataset is sufficiently grown and balanced, or
+        implement K-fold cross-validation.</p>
+
+    <p>In conclusion, using an imbalanced dataset should be avoided if possible, but it's not much of a hindrance for
+        small models.</p>
+
+    <h3 id="model-architecture">Model architecture</h3>
+
+    <p>Model architecture is a bit of a challenge.
+        I'm not sure how to best structure the model's layers and filters, and my readings have shown no clear direction
+        for designing architectures.</p>
+
+    <p>The original model architecture was based on a model found in François Chollet's book, "<em>Deep Learning with
+            Python</em>".
+        After writing this article, I'm sure the model can be improved.
+        For instance, the first MaxPooling2D layer should be removed and padding should be added to prevent information
+        loss.
+        Multiple dropout layers can be added in between the convolutional layers rather than a single layer at the end
+        of the model.
+        Stacks of convolutional layers can be added to the model to increase the number of filters.</p>
+
+    <p>I must streamline a process to design, compare, and measure the performance of different model architectures.
+        This will allow me to select the best model for my dataset without having to manually design and test models.
+    </p>
+
+    <p>Of course, measuring performance is heavily dependent on a well-balanced dataset, so that must remain my highest
+        priority.</p>
+
+    <h3 id="model-interpretation">Model interpretation</h3>
+
+    <p>Model interpretation is a crucial step in the process of model selection.
+        It's important to understand the model's output and how it is interpreting the output.
+        We can understand what the model is looking for in an input image - what features are important to the model -
+        by visualizing its layers' outputs.</p>
+
+    <p>Interpreting the model's output above was an eye-opener for me.
+        The intermediate layer activations are shown as heatmaps which are superimposed on the input image.
+        The heatmaps highlighted how the model searches for a specific feature in the image, such as faces, gloves, or
+        accessories.
+        These interpretations are incredibly useful for understanding the model.</p>
+
+    <p>Moving forward, I will streamline the process of visualizing the model's layers' outputs.
+        I would like to be able to visualize the model's outputs in a way that is easy to understand to select the best
+        model after training.</p>
 
 </body>
+
 </html>

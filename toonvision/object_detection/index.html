@@ -1,208 +1,249 @@
-
 <html>
 
+<base href="https://sasonreza.com/">
+
 <head>
-  <link rel="stylesheet" type="text/css" href="../../css/default_dark.css">
-  <link rel="stylesheet" type="text/css" href="../../css/syntax_dark.css">
+    <link rel="stylesheet" type="text/css" href="/css/default_dark.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax_dark.css">
 </head>
 
 <body>
-  <center>
-    <div style="display: inline-block; vertical-align:middle;">
-      <a href="/" style="text-decoration: none;">SASON REZA<br>
-      </a>
-      <hr>
-      <div style="text-align: center;display: inline-block; width: 100%;">
-        <a class="title" href="../../about">ABOUT</a> &nbsp;<a class="title" href="../../contact">CONTACT</a>
-      </div>
-    </div>
-  </center>
+    <center>
+        <div style="display: inline-block; vertical-align:middle;">
+            <a href="/" style="text-decoration: none;">SASON REZA<br>
+            </a>
+            <hr>
+            <div style="text-align: center;display: inline-block; width: 100%;">
+                <a class="title" href="/books">BOOKS</a> &nbsp;<a class="title" href="/about">ABOUT</a> &nbsp;<a
+                    class="title" href="/contact">CONTACT</a>
+            </div>
+        </div>
+    </center>
+    <br>
+    <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 29, 2022</p>
 
-  <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 29, 2022</p>
+    <p>
+        <title>ToonVision: Object Detection</title>
+    </p>
 
-<p><title>ToonVision: Object Detection</title></p>
+    <h1 id="toonvision-object-detection">ToonVision - Object Detection</h1>
 
-<h1 id="toonvision-object-detection">ToonVision - Object Detection</h1>
+    <p>This article is the third in a series on <strong>ToonVision</strong>.
+        The <a href="/toonvision/classification/">first article</a> covered the basics of
+        classification and binary classification of Toons and Cogs.
+        More specifically, the previous article covered how to...</p>
 
-<p>This article is the third in a series on <strong>ToonVision</strong>.
-The <a href="https://sasonreza.com/toonvision/classification/">first article</a> covered the basics of classification and binary classification of Toons and Cogs.
-More specifically, the previous article covered how to...</p>
+    <ul>
+        <li>convert a binary dataset into a multiclass dataset</li>
+        <li>use classification performance measures such as precision, recall, and F1-score</li>
+        <li>automatically optimize hyperparameter values with Keras-tuner</li>
+        <li>interpret and visualize what the model is learning with confusion matrices and class activation maps</li>
+    </ul>
 
-<ul>
-<li>convert a binary dataset into a multiclass dataset</li>
-<li>use classification performance measures such as precision, recall, and F1-score</li>
-<li>automatically optimize hyperparameter values with Keras-tuner</li>
-<li>interpret and visualize what the model is learning with confusion matrices and class activation maps</li>
-</ul>
+    <p>This article explains object detection of Cogs - also called entity detection.
+        After reading this article, you should have a better understanding of how to...</p>
 
-<p>This article explains object detection of Cogs - also called entity detection.
-After reading this article, you should have a better understanding of how to...</p>
+    <ul>
+        <li>differentiate between object detection models (YOLO, R-CNN, SSD)</li>
+        <li>create an object detection model</li>
+        <li>extract objects from images and videos</li>
+        <li>build data pipelines to semi-autonomously grow a dataset (semi-supervised learning)</li>
+    </ul>
 
-<ul>
-<li>differentiate between object detection models (YOLO, R-CNN, SSD)</li>
-<li>create an object detection model</li>
-<li>extract objects from images and videos</li>
-<li>build data pipelines to semi-autonomously grow a dataset (semi-supervised learning)</li>
-</ul>
+    <p>The next article will cover image segmentation of ToonTown's streets, roads, Toons, Cogs, and Cog buildings.
+        For now, let's focus on object detection.</p>
 
-<p>The next article will cover image segmentation of ToonTown's streets, roads, Toons, Cogs, and Cog buildings.
-For now, let's focus on object detection.</p>
+    <p>
+    <details>
+        <summary>Table of Contents</summary>
+        </p>
 
-<p><details>
-    <summary>Table of Contents</summary></p>
+        <ul>
+            <li><a href="#toonvision---object-detection">ToonVision - Object Detection</a>
+                <ul>
+                    <li><a href="#toonvision">ToonVision</a></li>
+                    <li><a href="#object-detection">Object detection</a>
+                        <ul>
+                            <li><a href="#object-detection-models">Object detection models</a>
+                                <ul>
+                                    <li><a href="#two-shot">Two-shot</a></li>
+                                    <li><a href="#single-shot">Single-shot</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#r-cnn">R-CNN</a></li>
+                            <li><a href="#ssd">SSD</a></li>
+                            <li><a href="#yolo">YOLO</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#creating-an-object-detection-model">Creating an object detection model</a>
+                        <ul>
+                            <li><a href="#issues-encountered">Issues encountered</a>
+                                <ul>
+                                    <li><a href="#input-image-size">Input image size</a></li>
+                                    <li><a href="#accuracy-or-speed">Accuracy or speed</a></li>
+                                    <li><a href="#unable-to-detect-toons">Unable to detect Toons</a></li>
+                                    <li><a href="#dataset-inconsistencies">Dataset inconsistencies</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#prediction-results">Prediction results</a>
+                        <ul>
+                            <li><a href="#run-inference">Run inference</a></li>
+                            <li><a href="#retrieve-predicted-bounding-boxes">Retrieve predicted bounding boxes</a></li>
+                            <li><a href="#visualize-boxes-and-labels-on-the-input-image">Visualize boxes and labels on
+                                    the input image</a></li>
+                            <li><a href="#sample-predictions">Sample predictions</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#save-predicted-annotations-in-pascal-voc-format">Save predicted annotations in PASCAL
+                            VOC format</a>
+                        <ul>
+                            <li><a href="#review-correct-and-verify-the-predicted-annotations">Review, correct, and
+                                    verify the predicted annotations</a></li>
+                            <li><a href="#extract-the-annotated-objects">Extract the annotated objects</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#build-data-pipelines-to-semi-autonomously-grow-a-dataset">Build data pipelines to
+                            semi-autonomously grow a dataset</a>
+                        <ul>
+                            <li><a href="#future-pipeline-enhancements">Future pipeline enhancements</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#references">References</a>
+    </details>
+    </li>
+    </ul>
+    </li>
+    </ul>
 
-<ul>
-<li><a href="#toonvision---object-detection">ToonVision - Object Detection</a>
-<ul>
-<li><a href="#toonvision">ToonVision</a></li>
-<li><a href="#object-detection">Object detection</a>
-<ul>
-<li><a href="#object-detection-models">Object detection models</a>
-<ul>
-<li><a href="#two-shot">Two-shot</a></li>
-<li><a href="#single-shot">Single-shot</a></li>
-</ul></li>
-<li><a href="#r-cnn">R-CNN</a></li>
-<li><a href="#ssd">SSD</a></li>
-<li><a href="#yolo">YOLO</a></li>
-</ul></li>
-<li><a href="#creating-an-object-detection-model">Creating an object detection model</a>
-<ul>
-<li><a href="#issues-encountered">Issues encountered</a>
-<ul>
-<li><a href="#input-image-size">Input image size</a></li>
-<li><a href="#accuracy-or-speed">Accuracy or speed</a></li>
-<li><a href="#unable-to-detect-toons">Unable to detect Toons</a></li>
-<li><a href="#dataset-inconsistencies">Dataset inconsistencies</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#prediction-results">Prediction results</a>
-<ul>
-<li><a href="#run-inference">Run inference</a></li>
-<li><a href="#retrieve-predicted-bounding-boxes">Retrieve predicted bounding boxes</a></li>
-<li><a href="#visualize-boxes-and-labels-on-the-input-image">Visualize boxes and labels on the input image</a></li>
-<li><a href="#sample-predictions">Sample predictions</a></li>
-</ul></li>
-<li><a href="#save-predicted-annotations-in-pascal-voc-format">Save predicted annotations in PASCAL VOC format</a>
-<ul>
-<li><a href="#review-correct-and-verify-the-predicted-annotations">Review, correct, and verify the predicted annotations</a></li>
-<li><a href="#extract-the-annotated-objects">Extract the annotated objects</a></li>
-</ul></li>
-<li><a href="#build-data-pipelines-to-semi-autonomously-grow-a-dataset">Build data pipelines to semi-autonomously grow a dataset</a>
-<ul>
-<li><a href="#future-pipeline-enhancements">Future pipeline enhancements</a></li>
-</ul></li>
-<li><a href="#references">References</a>
-</details></li>
-</ul></li>
-</ul>
+    <h2 id="toonvision">ToonVision</h2>
 
-<h2 id="toonvision">ToonVision</h2>
+    <p>ToonVision is my computer vision project for teaching a machine how to see in <a
+            href="https://en.wikipedia.org/wiki/Toontown_Online">ToonTown Online</a> - an MMORPG created by Disney in
+        2003.
+        The project's objective is to teach a machine (nicknamed <strong>OmniToon</strong>) how to play ToonTown and
+        create a self-sustaining ecosystem where the bots progress through the game together.
+        In the process, I will explain the intricacies of building computer vision models, configuring static and
+        real-time (stream) data pipelines, and visualizing results and progress.</p>
 
-<p>ToonVision is my computer vision project for teaching a machine how to see in <a href="https://en.wikipedia.org/wiki/Toontown_Online">ToonTown Online</a> - an MMORPG created by Disney in 2003.
-The project's objective is to teach a machine (nicknamed <strong>OmniToon</strong>) how to play ToonTown and create a self-sustaining ecosystem where the bots progress through the game together.
-In the process, I will explain the intricacies of building computer vision models, configuring static and real-time (stream) data pipelines, and visualizing results and progress.</p>
+    <hr />
 
-<hr />
+    <h2 id="object-detection">Object detection</h2>
 
-<h2 id="object-detection">Object detection</h2>
+    <p>Object detection is a computer vision task of detecting instances of objects from pre-defined classes in images
+        and videos.
+        Specifically, object detection models detect, label, and draw a bounding box around each object.</p>
 
-<p>Object detection is a computer vision task of detecting instances of objects from pre-defined classes in images and videos.
-Specifically, object detection models detect, label, and draw a bounding box around each object.</p>
+    <figure class="center" style="width:98%;">
+        <img src="img/object_detection.png" style="width:100%;" />
+        <figcaption>Image classification, localization, object detection/localization, and semantic image segmentation
+        </figcaption>
+    </figure>
 
-<figure class="center" style="width:98%;">
-    <img src="img/object_detection.png" style="width:100%;"/>
-    <figcaption>Image classification, localization, object detection/localization, and semantic image segmentation</figcaption>
-</figure>
+    <p>Common use-cases include face detection in cameras and pedestrian detection in autonomous vehicles.
+        In ToonVision's case, object detection is applied to locate all entities - Cogs and Toons - in both images and
+        real-time video.</p>
 
-<p>Common use-cases include face detection in cameras and pedestrian detection in autonomous vehicles.
-In ToonVision's case, object detection is applied to locate all entities - Cogs and Toons - in both images and real-time video.</p>
+    <h3 id="object-detection-models">Object detection models</h3>
 
-<h3 id="object-detection-models">Object detection models</h3>
+    <p>The most popular object detection models can be split into two main groups: single-shot and two-shot.
+        Each group has accuracy and speed tradeoffs.
+        Single-shot models excel in tasks requiring high detection speed, such as in real-time videos.
+        Two-shot models are slower but more accurate; therefore, they're primarily used in tasks involving image data or
+        low-FPS videos.</p>
 
-<p>The most popular object detection models can be split into two main groups: single-shot and two-shot.
-Each group has accuracy and speed tradeoffs.
-Single-shot models excel in tasks requiring high detection speed, such as in real-time videos.
-Two-shot models are slower but more accurate; therefore, they're primarily used in tasks involving image data or low-FPS videos.</p>
+    <h4 id="two-shot">Two-shot</h4>
 
-<h4 id="two-shot">Two-shot</h4>
+    <p>Two-shot detection models have two stages: region proposal and then classification of those regions and
+        refinement of the location prediction.
+        The two steps require significant computational resources, resulting in slow training and inference.</p>
 
-<p>Two-shot detection models have two stages: region proposal and then classification of those regions and refinement of the location prediction.
-The two steps require significant computational resources, resulting in slow training and inference.</p>
+    <p>Despite the slowness, two-shot models have far superior accuracy when compared to single-shot models.
+        R-CNN<sup>[1]</sup> is a commonly used two-shot detection model.
+        Faster R-CNN<sup>[2]</sup>, R-CNN's improved variant, is the more popular choice for two-shot models.</p>
 
-<p>Despite the slowness, two-shot models have far superior accuracy when compared to single-shot models.
-R-CNN<sup>[1]</sup> is a commonly used two-shot detection model.
-Faster R-CNN<sup>[2]</sup>, R-CNN's improved variant, is the more popular choice for two-shot models.</p>
+    <h4 id="single-shot">Single-shot</h4>
 
-<h4 id="single-shot">Single-shot</h4>
+    <p>Single-shot models are designed for real-time object detection.
+        They have quicker inference speeds and use less resources during training than two-shot models.
+        These two properties allow for quick training, prototyping, and experimenting without consuming considerable
+        computation resources.</p>
 
-<p>Single-shot models are designed for real-time object detection.
-They have quicker inference speeds and use less resources during training than two-shot models.
-These two properties allow for quick training, prototyping, and experimenting without consuming considerable computation resources.</p>
+    <p>In a single forward pass, these models predict bounding boxes and class labels directly from the input's feature
+        maps.
+        They skip the region proposal stage and yield localization and class predictions at once.
+        SSD<sup>[3]</sup> and YOLO<sup>[4]</sup> are popular single-shot object detection models capable of running at
+        5-160 frames per second!</p>
 
-<p>In a single forward pass, these models predict bounding boxes and class labels directly from the input's feature maps.
-They skip the region proposal stage and yield localization and class predictions at once.
-SSD<sup>[3]</sup> and YOLO<sup>[4]</sup> are popular single-shot object detection models capable of running at 5-160 frames per second!</p>
+    <h3 id="r-cnn">R-CNN</h3>
 
-<h3 id="r-cnn">R-CNN</h3>
+    <p>Regions with Convolutional Neural Networks (R-CNN) is a two-shot detection algorithm created in 2013.
+        R-CNN combines <strong>rectangular region proposals</strong> with <strong>convolutional neural network
+            features</strong> to detect objects.
+        The first stage, region proposal, identifies a subset of regions in an image that might contain an object.
+        The second stage classifies the object in each region using a CNN classifier.
+        Each proposed object requires a forward pass of the classification network; as a result, the algorithm has slow
+        inference speed.</p>
 
-<p>Regions with Convolutional Neural Networks (R-CNN) is a two-shot detection algorithm created in 2013.
-R-CNN combines <strong>rectangular region proposals</strong> with <strong>convolutional neural network features</strong> to detect objects.
-The first stage, region proposal, identifies a subset of regions in an image that might contain an object.
-The second stage classifies the object in each region using a CNN classifier.
-Each proposed object requires a forward pass of the classification network; as a result, the algorithm has slow inference speed.</p>
+    <figure class="center" style="width:98%;">
+        <img src="img/region_proposal.png" style="width:100%;" />
+        <figcaption>R-CNN region proposal and classification</figcaption>
+    </figure>
 
-<figure class="center" style="width:98%;">
-    <img src="img/region_proposal.png" style="width:100%;"/>
-    <figcaption>R-CNN region proposal and classification</figcaption>
-</figure>
+    <p>R-CNNs can be boiled down to the following three processes:</p>
 
-<p>R-CNNs can be boiled down to the following three processes:</p>
+    <ol>
+        <li>Find regions in the image that might contain an object (region proposals)</li>
+        <li>Extract features from the region proposals</li>
+        <li>Classify the objects using the extracted features</li>
+    </ol>
 
-<ol>
-<li>Find regions in the image that might contain an object (region proposals)</li>
-<li>Extract features from the region proposals</li>
-<li>Classify the objects using the extracted features</li>
-</ol>
+    <p>There are many variants of R-CNN: Fast R-CNN<sup>[5]</sup>, Faster R-CNN<sup>[2]</sup>, Mask R-CNN<sup>[6]</sup>.
+        Each variant improves performance, but the algorithm is still slow when compared to single-shot.
+        Mask R-CNN is unique because it's used for image segmentation while all others are for object detection.</p>
 
-<p>There are many variants of R-CNN: Fast R-CNN<sup>[5]</sup>, Faster R-CNN<sup>[2]</sup>, Mask R-CNN<sup>[6]</sup>.
-Each variant improves performance, but the algorithm is still slow when compared to single-shot.
-Mask R-CNN is unique because it's used for image segmentation while all others are for object detection.</p>
+    <p>R-The CNN algorithm has incredible accuracy in low-FPS or still-image tasks.
+        However, both SSD and YOLO significantly outperform R-CNN in real-time object detection.</p>
 
-<p>R-The CNN algorithm has incredible accuracy in low-FPS or still-image tasks.
-However, both SSD and YOLO significantly outperform R-CNN in real-time object detection.</p>
+    <h3 id="ssd">SSD</h3>
 
-<h3 id="ssd">SSD</h3>
+    <p>Developed in 2015, the Single Shot MultiBox Detector (SSD) is a method for detecting object in images using a
+        single deep neural network.
+        Boxes of different aspect ratios and scales overlay each feature map.
+        At prediction time, the network generates scores for the presence of each object in each box.
+        The network combines predictions from multiple feature maps with different resolutions to handle objects of
+        various sizes.</p>
 
-<p>Developed in 2015, the Single Shot MultiBox Detector (SSD) is a method for detecting object in images using a single deep neural network.
-Boxes of different aspect ratios and scales overlay each feature map.
-At prediction time, the network generates scores for the presence of each object in each box.
-The network combines predictions from multiple feature maps with different resolutions to handle objects of various sizes.</p>
+    <figure class="center" style="width:98%;">
+        <img src="img/ssd_anchor_boxes.png" style="width:100%;" />
+        <figcaption>SSD anchor boxes and localization</figcaption>
+    </figure>
 
-<figure class="center" style="width:98%;">
-    <img src="img/ssd_anchor_boxes.png" style="width:100%;"/>
-    <figcaption>SSD anchor boxes and localization</figcaption>
-</figure>
+    <p>Like all other single-shot models, SSD eliminates proposal generation and feature resampling.
+        All computation is done in a single network, making SSD easy to train and integrate into systems requiring a
+        detection component.</p>
 
-<p>Like all other single-shot models, SSD eliminates proposal generation and feature resampling.
-All computation is done in a single network, making SSD easy to train and integrate into systems requiring a detection component.</p>
+    <p>Although SSD was state-of-the-art when it came out in 2015, there's a new king in town: YOLO.</p>
 
-<p>Although SSD was state-of-the-art when it came out in 2015, there's a new king in town: YOLO.</p>
+    <h3 id="yolo">YOLO</h3>
 
-<h3 id="yolo">YOLO</h3>
+    <p>Created in 2015 by Joseph Redmon and gang, the You Only Look Once (YOLO) model is a new approach to unified,
+        real-time object detection.
+        Rather than leveraging regional proposals and a CNN classifier, YOLO reframes object detection as a regression
+        problem.
+        Both the anchor boxes and the predicted bounding boxes are <a
+            href="https://towardsdatascience.com/training-yolo-select-anchor-boxes-like-this-3226cb8d7f0b">generated
+            through with use of the k-means clustering algorithm</a>.
+        Like all single-shot algorithms, YOLO's single neural network predicts bounding boxes and class probabilities
+        from images in one pass.</p>
 
-<p>Created in 2015 by Joseph Redmon and gang, the You Only Look Once (YOLO) model is a new approach to unified, real-time object detection.
-Rather than leveraging regional proposals and a CNN classifier, YOLO reframes object detection as a regression problem.
-Both the anchor boxes and the predicted bounding boxes are <a href="https://towardsdatascience.com/training-yolo-select-anchor-boxes-like-this-3226cb8d7f0b">generated through with use of the k-means clustering algorithm</a>.
-Like all single-shot algorithms, YOLO's single neural network predicts bounding boxes and class probabilities from images in one pass.</p>
+    <figure class="center" style="width:98%;">
+        <img src="img/yolo_anchor_boxes.png" style="width:100%;" />
+        <figcaption>YOLO anchor boxes and localization</figcaption>
+    </figure>
 
-<figure class="center" style="width:98%;">
-    <img src="img/yolo_anchor_boxes.png" style="width:100%;"/>
-    <figcaption>YOLO anchor boxes and localization</figcaption>
-</figure>
-
-<!-- The YOLO framework has three main components:
+    <!-- The YOLO framework has three main components:
 
 - Backbone
 - Neck
@@ -212,130 +253,152 @@ The **Backbone** mainly extracts essential features of an image and feeds them t
 The **Neck** collects feature maps extracted by the Backbone and creates feature pyramids.
 Finally, the **Head** consists of output layers that have final detections. -->
 
-<p>YOLO is insanely fast.
-The base model processes images in real-time at 45 FPS.
-A smaller version, Fast YOLO, processes an astounding 155 FPS!
-Take a peek at YOLOv3's performance from the author's own 3-minute <a href="https://www.youtube.com/watch?v=MPU2HistivI">YouTube video</a>.</p>
+    <p>YOLO is insanely fast.
+        The base model processes images in real-time at 45 FPS.
+        A smaller version, Fast YOLO, processes an astounding 155 FPS!
+        Take a peek at YOLOv3's performance from the author's own 3-minute <a
+            href="https://www.youtube.com/watch?v=MPU2HistivI">YouTube video</a>.</p>
 
-<p>Where YOLO excels in speed, it struggles in accuracy.
-The algorithm is prone to making localization errors (sizes and location of bounding boxes).
-When comparing to state-of-the-art detection systems, however, YOLO is far less likely to predict false detections where nothing exists.</p>
+    <p>Where YOLO excels in speed, it struggles in accuracy.
+        The algorithm is prone to making localization errors (sizes and location of bounding boxes).
+        When comparing to state-of-the-art detection systems, however, YOLO is far less likely to predict false
+        detections where nothing exists.</p>
 
-<p>There have been <strong>seven</strong> iterations on the algorithm since its inception in 2015.
-Each variation resulted in higher accuracy and inference speed.
-The newest version, YOLOv7<sup>[7]</sup>, was released in July 2022 and is capable of 160FPS.</p>
+    <p>There have been <strong>seven</strong> iterations on the algorithm since its inception in 2015.
+        Each variation resulted in higher accuracy and inference speed.
+        The newest version, YOLOv7<sup>[7]</sup>, was released in July 2022 and is capable of 160FPS.</p>
 
-<hr />
+    <hr />
 
-<h2 id="creating-an-object-detection-model">Creating an object detection model</h2>
+    <h2 id="creating-an-object-detection-model">Creating an object detection model</h2>
 
-<p>I'll leverage <a href="https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md">TensorFlow's model zoo</a> to fine-tune and train a SSD model.
-This article will explain the general procedures for building the model.
-A rough step-by-step page can be found in my knowledge base.
-In the future, I'd like to write an article about how feature extractors are created and used for smaller projects like this.</p>
+    <p>I'll leverage <a
+            href="https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md">TensorFlow's
+            model zoo</a> to fine-tune and train a SSD model.
+        This article will explain the general procedures for building the model.
+        A rough step-by-step page can be found in my knowledge base.
+        In the future, I'd like to write an article about how feature extractors are created and used for smaller
+        projects like this.</p>
 
-<h3 id="issues-encountered">Issues encountered</h3>
+    <h3 id="issues-encountered">Issues encountered</h3>
 
-<p>I encountered many issues that are not often discussed in articles and tutorials.
-In an effort to provide a realistic overview of my process, I've explained the following issues:</p>
+    <p>I encountered many issues that are not often discussed in articles and tutorials.
+        In an effort to provide a realistic overview of my process, I've explained the following issues:</p>
 
-<ol>
-<li>Input image size being too large</li>
-<li>Accuracy or speed for model selection</li>
-<li>Model does not detect Toons</li>
-<li>Bounding box inconsistencies in the dataset</li>
-</ol>
+    <ol>
+        <li>Input image size being too large</li>
+        <li>Accuracy or speed for model selection</li>
+        <li>Model does not detect Toons</li>
+        <li>Bounding box inconsistencies in the dataset</li>
+    </ol>
 
-<h4 id="input-image-size">Input image size</h4>
+    <h4 id="input-image-size">Input image size</h4>
 
-<p>My main concern about this project revolved around the dataset's image sizes being too large at 3440x1440.
-I trained a larger model (Faster R-CNN ResNet152) on the dataset and each training step took over 3 seconds.
-It took over 90 minutes to train 1000 steps!
-Even worse, the model likely would not converge until the following day; so, I stopped training.</p>
+    <p>My main concern about this project revolved around the dataset's image sizes being too large at 3440x1440.
+        I trained a larger model (Faster R-CNN ResNet152) on the dataset and each training step took over 3 seconds.
+        It took over 90 minutes to train 1000 steps!
+        Even worse, the model likely would not converge until the following day; so, I stopped training.</p>
 
-<p>Scaling the image sizes down by half (1720x720) resulted in faster training and inference speed.
-Further scaling the images down to 1/4 the original size (860x360) led to even faster training.
-The model converged in less than an hour after 50,000 training steps.
-Issue #1 resolved!</p>
+    <p>Scaling the image sizes down by half (1720x720) resulted in faster training and inference speed.
+        Further scaling the images down to 1/4 the original size (860x360) led to even faster training.
+        The model converged in less than an hour after 50,000 training steps.
+        Issue #1 resolved!</p>
 
-<h4 id="accuracy-or-speed">Accuracy or speed</h4>
+    <h4 id="accuracy-or-speed">Accuracy or speed</h4>
 
-<p>I had originally planned to create two models: one for real-time detection in videos (speed) and another for detection in images (accuracy).
-Faster R-CNN was to be used in image detection because I wanted accuracy for the data pipeline.
-SSD or YOLO for the real-time video detection.
-Given the large size and lengthy training process of two-shot models, I've scrapped the idea of two models in favor of a single SSD model.
-SSD's lower accuracy will be countered by my manual review and corrections of the model's annotations.
-Issue #2 resolved!</p>
+    <p>I had originally planned to create two models: one for real-time detection in videos (speed) and another for
+        detection in images (accuracy).
+        Faster R-CNN was to be used in image detection because I wanted accuracy for the data pipeline.
+        SSD or YOLO for the real-time video detection.
+        Given the large size and lengthy training process of two-shot models, I've scrapped the idea of two models in
+        favor of a single SSD model.
+        SSD's lower accuracy will be countered by my manual review and corrections of the model's annotations.
+        Issue #2 resolved!</p>
 
-<h4 id="unable-to-detect-toons">Unable to detect Toons</h4>
+    <h4 id="unable-to-detect-toons">Unable to detect Toons</h4>
 
-<p>The trained SSD model does not detect Toons.
-In fact, the Toons it does detect are classified as Cogs.
-This issue is largely due to the massive dataset imbalance: 526 Cog samples and 148 Toon samples.
-There are two solutions: Increase weights of Toon localization and classification during training or modify entire dataset to include only Cogs.</p>
+    <p>The trained SSD model does not detect Toons.
+        In fact, the Toons it does detect are classified as Cogs.
+        This issue is largely due to the massive dataset imbalance: 526 Cog samples and 148 Toon samples.
+        There are two solutions: Increase weights of Toon localization and classification during training or modify
+        entire dataset to include only Cogs.</p>
 
-<p><font style="color:red">TODO: Insert image of undetected or wrongly detected Toon</font></p>
+    <p>
+        <font style="color:red">TODO: Insert image of undetected or wrongly detected Toon</font>
+    </p>
 
-<p>Recall that the goal of ToonVision is for a Toon to see Cogs.
-Given that it's more important to detect Cogs, I will exclude Toons from the dataset.
-I generated new TensorFlow record files which consist purely of Cogs and excluded any images that contained only Toons.
-Issue #3 resolved!</p>
+    <p>Recall that the goal of ToonVision is for a Toon to see Cogs.
+        Given that it's more important to detect Cogs, I will exclude Toons from the dataset.
+        I generated new TensorFlow record files which consist purely of Cogs and excluded any images that contained only
+        Toons.
+        Issue #3 resolved!</p>
 
-<h4 id="dataset-inconsistencies">Dataset inconsistencies</h4>
+    <h4 id="dataset-inconsistencies">Dataset inconsistencies</h4>
 
-<p>This is probably an uncommon issue.
-When creating the binary and multi-class classification models, I opted to only include clear, non-obstructed Cog and Toon samples.
-This means I did not put bounding boxes on entities that were occluded by another object.
-Surprisingly, the trained SSD model correctly detected and classified occluded Cogs!
-Notice in the image below how the Cogs on the right-side of the image contains model annotations but no ground-truth annotation.</p>
+    <p>This is probably an uncommon issue.
+        When creating the binary and multi-class classification models, I opted to only include clear, non-obstructed
+        Cog and Toon samples.
+        This means I did not put bounding boxes on entities that were occluded by another object.
+        Surprisingly, the trained SSD model correctly detected and classified occluded Cogs!
+        Notice in the image below how the Cogs on the right-side of the image contains model annotations but no
+        ground-truth annotation.</p>
 
-<figure class="center" style="width:95%";>
-    <img src="img/annotation_occluded_2.png" style="width:100%;"/>
-    <figcaption>Model annotations of occluded Cogs (green box) compared to ground-truth annotation (teal box) </figcaption>
-</figure>
+    <figure class="center" style="width:95%" ;>
+        <img src="img/annotation_occluded_2.png" style="width:100%;" />
+        <figcaption>Model annotations of occluded Cogs (green box) compared to ground-truth annotation (teal box)
+        </figcaption>
+    </figure>
 
-<p><em>Why is it bad for the model to detect objects that I did not classify in the training set?</em>
-It negatively affects the training loss.
-More specifically, the localization loss increases during training.</p>
+    <p><em>Why is it bad for the model to detect objects that I did not classify in the training set?</em>
+        It negatively affects the training loss.
+        More specifically, the localization loss increases during training.</p>
 
-<p><em>What's causing the loss increase?</em>
-During training, the localization loss is calculated in part by how accurate the model's predicted bounding boxes compares to the ground truth bounding boxes.
-In object detection terms, the bounding box accuracy is called the <strong>Intersection over Union</strong> (IoU).
-IoU scores the overlap of the predicted box and the ground truth box.
-The higher the IoU score, the higher the accuracy.
-If there's no ground truth box, however, the IoU score will be zero and training loss will increase.</p>
+    <p><em>What's causing the loss increase?</em>
+        During training, the localization loss is calculated in part by how accurate the model's predicted bounding
+        boxes compares to the ground truth bounding boxes.
+        In object detection terms, the bounding box accuracy is called the <strong>Intersection over Union</strong>
+        (IoU).
+        IoU scores the overlap of the predicted box and the ground truth box.
+        The higher the IoU score, the higher the accuracy.
+        If there's no ground truth box, however, the IoU score will be zero and training loss will increase.</p>
 
-<p><font style="color:red">TODO: Insert image of IoU</font></p>
+    <p>
+        <font style="color:red">TODO: Insert image of IoU</font>
+    </p>
 
-<p><em>How does this inconsistency affect training?</em>
-The inconsistency did not affect the model's performance, but it decreased training performance and convergence.</p>
+    <p><em>How does this inconsistency affect training?</em>
+        The inconsistency did not affect the model's performance, but it decreased training performance and convergence.
+    </p>
 
-<figure class="center" style="width:95%;">
-    <img src="img/training_loss.png" style="width:100%;"/>
-    <figcaption>Training loss of two models after 50k steps: Cog (blue) and all Cog names (red)</figcaption>
-</figure>
+    <figure class="center" style="width:95%;">
+        <img src="img/training_loss.png" style="width:100%;" />
+        <figcaption>Training loss of two models after 50k steps: Cog (blue) and all Cog names (red)</figcaption>
+    </figure>
 
-<p><em>How can I resolve the issue?</em>
-I would have to go through the dataset and label the non-labeled Cogs.
-Alternatively, I could run the entire dataset through the model and compare the number of detected objects against the ground truth.
-If there's a discrepancy, I can manually review the ground truth labels and correct them if needed.</p>
+    <p><em>How can I resolve the issue?</em>
+        I would have to go through the dataset and label the non-labeled Cogs.
+        Alternatively, I could run the entire dataset through the model and compare the number of detected objects
+        against the ground truth.
+        If there's a discrepancy, I can manually review the ground truth labels and correct them if needed.</p>
 
-<p>In short, the model localizes objects that I did not declare as ground truth.
-It slowed down training but did not affect performance too much.
-Issue #4 explained, but unresolved!</p>
+    <p>In short, the model localizes objects that I did not declare as ground truth.
+        It slowed down training but did not affect performance too much.
+        Issue #4 explained, but unresolved!</p>
 
-<hr />
+    <hr />
 
-<h2 id="prediction-results">Prediction results</h2>
+    <h2 id="prediction-results">Prediction results</h2>
 
-<p>Enough about my issues, let's take a look at the model's predictions.
-But first I need functions to run inference, retrieve the predicted bounding boxes, and visualize boxes and labels on the input image.</p>
+    <p>Enough about my issues, let's take a look at the model's predictions.
+        But first I need functions to run inference, retrieve the predicted bounding boxes, and visualize boxes and
+        labels on the input image.</p>
 
-<h3 id="run-inference">Run inference</h3>
+    <h3 id="run-inference">Run inference</h3>
 
-<p>First load the image into a numpy array.</p>
+    <p>First load the image into a numpy array.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">load_image_into_numpy_array</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">resize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="k">def</span> <span class="nf">load_image_into_numpy_array</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">resize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Load an image from file into a numpy array.</span>
 
 <span class="sd">    Puts image into numpy array to feed into tensorflow graph.</span>
@@ -354,9 +417,11 @@ But first I need functions to run inference, retrieve the predicted bounding box
         <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">resize</span><span class="p">)</span>
     <span class="p">(</span><span class="n">im_width</span><span class="p">,</span> <span class="n">im_height</span><span class="p">)</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">size</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">getdata</span><span class="p">())</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">im_height</span><span class="p">,</span> <span class="n">im_width</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">run_inference_for_single_image</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="k">def</span> <span class="nf">run_inference_for_single_image</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
     <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
     <span class="c1"># The input needs to be a tensor, convert it using `tf.convert_to_tensor`.</span>
     <span class="n">input_tensor</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">convert_to_tensor</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
@@ -392,11 +457,13 @@ But first I need functions to run inference, retrieve the predicted bounding box
         <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;detection_masks_reframed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">detection_masks_reframed</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">output_dict</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="retrieve-predicted-bounding-boxes">Retrieve predicted bounding boxes</h3>
+    <h3 id="retrieve-predicted-bounding-boxes">Retrieve predicted bounding boxes</h3>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">get_highest_scoring_boxes</span><span class="p">(</span><span class="n">output_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">score_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="k">def</span> <span class="nf">get_highest_scoring_boxes</span><span class="p">(</span><span class="n">output_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">score_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
     <span class="c1"># Output scores are sorted by descending values</span>
     <span class="n">scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;detection_scores&quot;</span><span class="p">])</span>
     <span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">scores</span> <span class="o">&gt;</span> <span class="n">score_threshold</span><span class="p">]</span>
@@ -436,11 +503,13 @@ But first I need functions to run inference, retrieve the predicted bounding box
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># Input is a single bounding box</span>
         <span class="n">ymin</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="n">box</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y</span> <span class="o">*</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">y</span> <span class="o">*</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="n">xmax</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="visualize-boxes-and-labels-on-the-input-image">Visualize boxes and labels on the input image</h3>
+    <h3 id="visualize-boxes-and-labels-on-the-input-image">Visualize boxes and labels on the input image</h3>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">object_detection.utils</span> <span class="kn">import</span> <span class="n">visualization_utils</span> <span class="k">as</span> <span class="n">vis_util</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">from</span> <span class="nn">object_detection.utils</span> <span class="kn">import</span> <span class="n">visualization_utils</span> <span class="k">as</span> <span class="n">vis_util</span>
 <span class="n">img_path_test</span> <span class="o">=</span> <span class="s2">&quot;./tensorflow/workspace/training_demo/images/label&quot;</span>
 
 <span class="n">img_fps</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">img_path_test</span><span class="si">}</span><span class="s2">/*.png&quot;</span><span class="p">)</span>
@@ -473,23 +542,25 @@ But first I need functions to run inference, retrieve the predicted bounding box
     <span class="n">writer</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">annotation_path</span><span class="o">=</span><span class="n">path_xml</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="sample-predictions">Sample predictions</h3>
+    <h3 id="sample-predictions">Sample predictions</h3>
 
-<figure class="center" style="width:95%";>
-    <img src="img/annotation_occluded.png" style="width:100%;"/>
-    <figcaption></figcaption>
-</figure>
+    <figure class="center" style="width:95%" ;>
+        <img src="img/annotation_occluded.png" style="width:100%;" />
+        <figcaption></figcaption>
+    </figure>
 
-<hr />
+    <hr />
 
-<h2 id="save-predicted-annotations-in-pascal-voc-format">Save predicted annotations in PASCAL VOC format</h2>
+    <h2 id="save-predicted-annotations-in-pascal-voc-format">Save predicted annotations in PASCAL VOC format</h2>
 
-<p>Utilize a small Python package for reading and writing PASCAL VOC annotations.
-Save annotations in the same directory as the sample image.</p>
+    <p>Utilize a small Python package for reading and writing PASCAL VOC annotations.
+        Save annotations in the same directory as the sample image.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">pascal_voc_writer</span> <span class="kn">import</span> <span class="n">Writer</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">from</span> <span class="nn">pascal_voc_writer</span> <span class="kn">import</span> <span class="n">Writer</span>
 
 <span class="c1"># Create pascal VOC writer</span>
 <span class="n">writer</span> <span class="o">=</span> <span class="n">Writer</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">image_path</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">image_np</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="n">image_np</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -502,23 +573,30 @@ Save annotations in the same directory as the sample image.</p>
 <span class="n">fn_xml</span> <span class="o">=</span> <span class="n">image_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.png&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">)</span>
 <span class="n">path_xml</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;tensorflow/workspace/training_demo/images/label/</span><span class="si">{</span><span class="n">fn_xml</span><span class="si">}</span><span class="s2">&quot;</span>
 <span class="n">writer</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">annotation_path</span><span class="o">=</span><span class="n">path_xml</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="review-correct-and-verify-the-predicted-annotations">Review, correct, and verify the predicted annotations</h3>
+    <h3 id="review-correct-and-verify-the-predicted-annotations">Review, correct, and verify the predicted annotations
+    </h3>
 
-<p>Not all of the model's predicted annotations will be accurate or correct.
-I have to manually review all annotations, fix the bounding boxes, annotate the missing objects, and verify the image.
-All of this is completed with <a href="https://github.com/heartexlabs/labelImg">labelimg</a>.</p>
+    <p>Not all of the model's predicted annotations will be accurate or correct.
+        I have to manually review all annotations, fix the bounding boxes, annotate the missing objects, and verify the
+        image.
+        All of this is completed with <a href="https://github.com/heartexlabs/labelImg">labelimg</a>.</p>
 
-<p>Once the annotations are verified, we can move the images to the "unprocessed" directory and pass the annotated images to our other classification models.</p>
+    <p>Once the annotations are verified, we can move the images to the "unprocessed" directory and pass the annotated
+        images to our other classification models.</p>
 
-<h3 id="extract-the-annotated-objects">Extract the annotated objects</h3>
+    <h3 id="extract-the-annotated-objects">Extract the annotated objects</h3>
 
-<p>Once the objects are annotated, we can extract them and save them to our dataset.
-The bounded boxes of each object in the sample can be retrieved using the <code>extract_objects_from_xml</code> function.
-Afterwards, using the <code>extract_objects_from_img</code> function, the actual images can be extracted and saved to the dataset.</p>
+    <p>Once the objects are annotated, we can extract them and save them to our dataset.
+        The bounded boxes of each object in the sample can be retrieved using the <code>extract_objects_from_xml</code>
+        function.
+        Afterwards, using the <code>extract_objects_from_img</code> function, the actual images can be extracted and
+        saved to the dataset.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">extract_objects_from_xml</span><span class="p">(</span><span class="n">xml_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="k">def</span> <span class="nf">extract_objects_from_xml</span><span class="p">(</span><span class="n">xml_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Extract objects from XML file.</span>
 
 
@@ -572,61 +650,87 @@ Afterwards, using the <code>extract_objects_from_img</code> function, the actual
         <span class="n">obj_img</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="n">obj_ymin</span><span class="p">:</span><span class="n">obj_ymax</span><span class="p">,</span> <span class="n">obj_xmin</span><span class="p">:</span><span class="n">obj_xmax</span><span class="p">]</span>
         <span class="n">objects</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">obj_img</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">objects</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<hr />
+    <hr />
 
-<h2 id="build-data-pipelines-to-semi-autonomously-grow-a-dataset">Build data pipelines to semi-autonomously grow a dataset</h2>
+    <h2 id="build-data-pipelines-to-semi-autonomously-grow-a-dataset">Build data pipelines to semi-autonomously grow a
+        dataset</h2>
 
-<p>The new pipeline looks like this:</p>
+    <p>The new pipeline looks like this:</p>
 
-<ol>
-<li>Take screenshot</li>
-<li>Save to correct directory within <code>toonvision/img/raw/screenshots/</code></li>
-<li>Load model</li>
-<li>Run inference</li>
-<li>Save predicted annotations in PASCAL VOC format in same directory as its respective sample image</li>
-<li>Manually review, correct, and verify the predicted annotations</li>
-<li>Move verified images and their annotations to the <code>processed</code> directory</li>
-</ol>
+    <ol>
+        <li>Take screenshot</li>
+        <li>Save to correct directory within <code>toonvision/img/raw/screenshots/</code></li>
+        <li>Load model</li>
+        <li>Run inference</li>
+        <li>Save predicted annotations in PASCAL VOC format in same directory as its respective sample image</li>
+        <li>Manually review, correct, and verify the predicted annotations</li>
+        <li>Move verified images and their annotations to the <code>processed</code> directory</li>
+    </ol>
 
-<p>New process saves me time by assisting with the dataset annotation process.</p>
+    <p>New process saves me time by assisting with the dataset annotation process.</p>
 
-<h3 id="future-pipeline-enhancements">Future pipeline enhancements</h3>
+    <h3 id="future-pipeline-enhancements">Future pipeline enhancements</h3>
 
-<ul>
-<li>Run the extracted objects through a suit and name classifier to enhance the label from "cog" to "cog_bb_flunky"
-<ul>
-<li>Alternatively, create a multilabel classifier (suit, name, playground) and store in metadata file</li>
-<li>Raise an error/alert me if the suit and name mismatch</li>
-<li>Manually label the image</li>
-</ul></li>
-<li>Create metadata about the image
-<ul>
-<li>Number of Cogs</li>
-<li>Number of Toons</li>
-<li>Street name</li>
-<li>Playground</li>
-<li>Cog names and counts</li>
-<li>Cog suits and counts</li>
-</ul></li>
-<li>Store metadata in SQLite database</li>
-<li>Visualize dataset over time to see how it grows</li>
-</ul>
+    <ul>
+        <li>Run the extracted objects through a suit and name classifier to enhance the label from "cog" to
+            "cog_bb_flunky"
+            <ul>
+                <li>Alternatively, create a multilabel classifier (suit, name, playground) and store in metadata file
+                </li>
+                <li>Raise an error/alert me if the suit and name mismatch</li>
+                <li>Manually label the image</li>
+            </ul>
+        </li>
+        <li>Create metadata about the image
+            <ul>
+                <li>Number of Cogs</li>
+                <li>Number of Toons</li>
+                <li>Street name</li>
+                <li>Playground</li>
+                <li>Cog names and counts</li>
+                <li>Cog suits and counts</li>
+            </ul>
+        </li>
+        <li>Store metadata in SQLite database</li>
+        <li>Visualize dataset over time to see how it grows</li>
+    </ul>
 
-<hr />
+    <hr />
 
-<h2 id="references">References</h2>
+    <h2 id="references">References</h2>
 
-<ol>
-<li><p>Rich feature hierarchies for accurate object detection and semantic segmentation, <a href="https://arxiv.org/abs/1311.2524">https://arxiv.org/abs/1311.2524</a></p></li>
-<li><p>Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks, <a href="https://arxiv.org/abs/1506.01497">https://arxiv.org/abs/1506.01497</a></p></li>
-<li><p>SSD: Single Shot MultiBox Detector, <a href="https://arxiv.org/abs/1512.02325">https://arxiv.org/abs/1512.02325</a></p></li>
-<li><p>You Only Look Once: Unified, Real-Time Object Detection, <a href="https://arxiv.org/abs/1506.02640">https://arxiv.org/abs/1506.02640</a></p></li>
-<li><p>Fast R-CNN, <a href="https://arxiv.org/abs/1504.08083">https://arxiv.org/abs/1504.08083</a></p></li>
-<li><p>Mask R-CNN, <a href="https://arxiv.org/abs/1703.06870">https://arxiv.org/abs/1703.06870</a></p></li>
-<li><p>YOLOv7: Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors, <a href="https://arxiv.org/abs/2207.02696">https://arxiv.org/abs/2207.02696</a></p></li>
-</ol>
+    <ol>
+        <li>
+            <p>Rich feature hierarchies for accurate object detection and semantic segmentation, <a
+                    href="https://arxiv.org/abs/1311.2524">https://arxiv.org/abs/1311.2524</a></p>
+        </li>
+        <li>
+            <p>Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks, <a
+                    href="https://arxiv.org/abs/1506.01497">https://arxiv.org/abs/1506.01497</a></p>
+        </li>
+        <li>
+            <p>SSD: Single Shot MultiBox Detector, <a
+                    href="https://arxiv.org/abs/1512.02325">https://arxiv.org/abs/1512.02325</a></p>
+        </li>
+        <li>
+            <p>You Only Look Once: Unified, Real-Time Object Detection, <a
+                    href="https://arxiv.org/abs/1506.02640">https://arxiv.org/abs/1506.02640</a></p>
+        </li>
+        <li>
+            <p>Fast R-CNN, <a href="https://arxiv.org/abs/1504.08083">https://arxiv.org/abs/1504.08083</a></p>
+        </li>
+        <li>
+            <p>Mask R-CNN, <a href="https://arxiv.org/abs/1703.06870">https://arxiv.org/abs/1703.06870</a></p>
+        </li>
+        <li>
+            <p>YOLOv7: Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors, <a
+                    href="https://arxiv.org/abs/2207.02696">https://arxiv.org/abs/2207.02696</a></p>
+        </li>
+    </ol>
 
 </body>
+
 </html>

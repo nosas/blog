@@ -1,144 +1,173 @@
-
 <html>
 
+<base href="https://sasonreza.com/">
+
 <head>
-  <link rel="stylesheet" type="text/css" href="../../css/default_dark.css">
-  <link rel="stylesheet" type="text/css" href="../../css/syntax_dark.css">
+    <link rel="stylesheet" type="text/css" href="/css/default_dark.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax_dark.css">
 </head>
 
 <body>
-  <center>
-    <div style="display: inline-block; vertical-align:middle;">
-      <a href="/" style="text-decoration: none;">SASON REZA<br>
-      </a>
-      <hr>
-      <div style="text-align: center;display: inline-block; width: 100%;">
-        <a class="title" href="../../about">ABOUT</a> &nbsp;<a class="title" href="../../contact">CONTACT</a>
-      </div>
-    </div>
-  </center>
+    <center>
+        <div style="display: inline-block; vertical-align:middle;">
+            <a href="/" style="text-decoration: none;">SASON REZA<br>
+            </a>
+            <hr>
+            <div style="text-align: center;display: inline-block; width: 100%;">
+                <a class="title" href="/books">BOOKS</a> &nbsp;<a class="title" href="/about">ABOUT</a> &nbsp;<a
+                    class="title" href="/contact">CONTACT</a>
+            </div>
+        </div>
+    </center>
 
-  <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 9, 2022</p>
+    <br>
+    <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">May 9, 2022</p>
 
-<p><title>Deep Learning with Python: Chapter 2 - Mathematical building blocks of neural networks</title></p>
+    <p>
+        <title>Deep Learning with Python: Chapter 2 - Mathematical building blocks of neural networks</title>
+    </p>
 
-<h1 id="deep-learning-with-python-omit-in-toc-">Deep Learning with Python  <!-- omit in toc --></h1>
+    <h1 id="deep-learning-with-python-omit-in-toc-">Deep Learning with Python <!-- omit in toc --></h1>
 
-<p>This article is part 2/13 (?) of a series of articles named <em>Deep Learning with Python</em>.</p>
+    <p>This article is part 2/13 (?) of a series of articles named <em>Deep Learning with Python</em>.</p>
 
-<p>In this series, I will read through the second edition of <em>Deep Learning with Python</em> by François Chollet.
-Articles in this series will sequentially review key concepts, examples, and interesting facts from each chapter of the book.</p>
+    <p>In this series, I will read through the second edition of <em>Deep Learning with Python</em> by François Chollet.
+        Articles in this series will sequentially review key concepts, examples, and interesting facts from each chapter
+        of the book.</p>
 
-<p><details>
-    <summary>Table of Contents</summary></p>
+    <p>
+    <details>
+        <summary>Table of Contents</summary>
+        </p>
 
-<ul>
-<li><a href="#chapter-2-the-mathematical-building-blocks-of-neural-networks">Chapter 2: The mathematical building blocks of neural networks</a>
-<ul>
-<li><a href="#first-look-at-neural-networks">First look at neural networks</a>
-<ul>
-<li><a href="#the-problem">The problem</a></li>
-<li><a href="#defining-the-network-architecture">Defining the network architecture</a></li>
-<li><a href="#preparing-the-model-for-training">Preparing the model for training</a></li>
-<li><a href="#preparing-the-data">Preparing the data</a></li>
-<li><a href="#fitting-training-the-model">"Fitting" (Training) the model</a></li>
-<li><a href="#making-predictions-with-the-trained-model">Making predictions with the trained model</a></li>
-<li><a href="#evaluating-the-model-on-new-data">Evaluating the model on new data</a></li>
-</ul></li>
-<li><a href="#data-representations-tensors">Data representations: Tensors</a>
-<ul>
-<li><a href="#scalars-rank-0-tensors">Scalars (rank-0 tensors)</a></li>
-<li><a href="#vectors-rank-1-tensors">Vectors (rank-1 tensors)</a></li>
-<li><a href="#matrices-rank-2-tensors">Matrices (rank-2 tensors)</a></li>
-<li><a href="#rank-3-and-higher-rank-tensors">Rank-3 and higher-rank tensors</a></li>
-<li><a href="#key-attributes">Key attributes</a></li>
-</ul></li>
-<li><a href="#real-world-examples-of-data-tensors">Real-world examples of data tensors</a>
-<ul>
-<li><a href="#vector">Vector</a></li>
-<li><a href="#timeseries-data-or-sequence-data">Timeseries data or sequence data</a></li>
-<li><a href="#image-data">Image data</a></li>
-<li><a href="#video-data">Video data</a></li>
-</ul></li>
-<li><a href="#tensor-operations">Tensor operations</a>
-<ul>
-<li><a href="#basic-operations">Basic operations</a></li>
-<li><a href="#element-wise-operations">Element-wise operations</a></li>
-<li><a href="#broadcasting">Broadcasting</a></li>
-<li><a href="#tensor-product">Tensor product</a></li>
-<li><a href="#tensor-reshaping">Tensor reshaping</a></li>
-<li><a href="#geometric-interpretations">Geometric interpretations</a></li>
-</ul></li>
-<li><a href="#how-neural-networks-learn">How neural networks learn</a>
-<ul>
-<li><a href="#gradient-the-derivative-of-tensor-operations">Gradient: The derivative of tensor operations</a></li>
-<li><a href="#gradient-descent">Gradient descent</a></li>
-<li><a href="#variants-of-gradient-descent">Variants of gradient descent</a></li>
-<li><a href="#gradient-descent-with-momentum">Gradient descent with momentum</a></li>
-<li><a href="#backpropagation">Backpropagation</a></li>
-<li><a href="#backpropagation-algorithm">Backpropagation algorithm</a></li>
-<li><a href="#tensorflows-gradient-tape">TensorFlow's gradient tape</a></li>
-</ul></li>
-<li><a href="#recap-looking-back-at-our-first-example">Recap: Looking back at our first example</a>
-<ul>
-<li><a href="#input">Input</a></li>
-<li><a href="#layers">Layers</a></li>
-<li><a href="#loss-function-and-optimizer">Loss function and optimizer</a></li>
-<li><a href="#training-loop">Training loop</a></li>
-</ul></li>
-<li><a href="#summary">Summary</a>
-</details></li>
-</ul></li>
-</ul>
+        <ul>
+            <li><a href="#chapter-2-the-mathematical-building-blocks-of-neural-networks">Chapter 2: The mathematical
+                    building blocks of neural networks</a>
+                <ul>
+                    <li><a href="#first-look-at-neural-networks">First look at neural networks</a>
+                        <ul>
+                            <li><a href="#the-problem">The problem</a></li>
+                            <li><a href="#defining-the-network-architecture">Defining the network architecture</a></li>
+                            <li><a href="#preparing-the-model-for-training">Preparing the model for training</a></li>
+                            <li><a href="#preparing-the-data">Preparing the data</a></li>
+                            <li><a href="#fitting-training-the-model">"Fitting" (Training) the model</a></li>
+                            <li><a href="#making-predictions-with-the-trained-model">Making predictions with the trained
+                                    model</a></li>
+                            <li><a href="#evaluating-the-model-on-new-data">Evaluating the model on new data</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#data-representations-tensors">Data representations: Tensors</a>
+                        <ul>
+                            <li><a href="#scalars-rank-0-tensors">Scalars (rank-0 tensors)</a></li>
+                            <li><a href="#vectors-rank-1-tensors">Vectors (rank-1 tensors)</a></li>
+                            <li><a href="#matrices-rank-2-tensors">Matrices (rank-2 tensors)</a></li>
+                            <li><a href="#rank-3-and-higher-rank-tensors">Rank-3 and higher-rank tensors</a></li>
+                            <li><a href="#key-attributes">Key attributes</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#real-world-examples-of-data-tensors">Real-world examples of data tensors</a>
+                        <ul>
+                            <li><a href="#vector">Vector</a></li>
+                            <li><a href="#timeseries-data-or-sequence-data">Timeseries data or sequence data</a></li>
+                            <li><a href="#image-data">Image data</a></li>
+                            <li><a href="#video-data">Video data</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#tensor-operations">Tensor operations</a>
+                        <ul>
+                            <li><a href="#basic-operations">Basic operations</a></li>
+                            <li><a href="#element-wise-operations">Element-wise operations</a></li>
+                            <li><a href="#broadcasting">Broadcasting</a></li>
+                            <li><a href="#tensor-product">Tensor product</a></li>
+                            <li><a href="#tensor-reshaping">Tensor reshaping</a></li>
+                            <li><a href="#geometric-interpretations">Geometric interpretations</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#how-neural-networks-learn">How neural networks learn</a>
+                        <ul>
+                            <li><a href="#gradient-the-derivative-of-tensor-operations">Gradient: The derivative of
+                                    tensor operations</a></li>
+                            <li><a href="#gradient-descent">Gradient descent</a></li>
+                            <li><a href="#variants-of-gradient-descent">Variants of gradient descent</a></li>
+                            <li><a href="#gradient-descent-with-momentum">Gradient descent with momentum</a></li>
+                            <li><a href="#backpropagation">Backpropagation</a></li>
+                            <li><a href="#backpropagation-algorithm">Backpropagation algorithm</a></li>
+                            <li><a href="#tensorflows-gradient-tape">TensorFlow's gradient tape</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#recap-looking-back-at-our-first-example">Recap: Looking back at our first example</a>
+                        <ul>
+                            <li><a href="#input">Input</a></li>
+                            <li><a href="#layers">Layers</a></li>
+                            <li><a href="#loss-function-and-optimizer">Loss function and optimizer</a></li>
+                            <li><a href="#training-loop">Training loop</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#summary">Summary</a>
+    </details>
+    </li>
+    </ul>
+    </li>
+    </ul>
 
-<hr />
+    <hr />
 
-<h1 id="chapter-2-the-mathematical-building-blocks-of-neural-networks">Chapter 2: The mathematical building blocks of neural networks</h1>
+    <h1 id="chapter-2-the-mathematical-building-blocks-of-neural-networks">Chapter 2: The mathematical building blocks
+        of neural networks</h1>
 
-<p>This chapter covers...</p>
+    <p>This chapter covers...</p>
 
-<ul>
-<li>A first example of a neural network</li>
-<li>Tensors and tensor operations</li>
-<li>How neural networks learn via backpropagation and gradient descent</li>
-</ul>
+    <ul>
+        <li>A first example of a neural network</li>
+        <li>Tensors and tensor operations</li>
+        <li>How neural networks learn via backpropagation and gradient descent</li>
+    </ul>
 
-<p>Understanding deep learning requires familiarity with many simple mathematical concepts: <em>tensors</em>, <em>tensor operations</em>, <em>differentiation</em>, <em>gradient descent</em>, and so on.
-This chapter will build on the concepts above without getting overly technical.
-The use of precise, unambiguous executable code, instead of mathematical notation, will allow most programmers to easily grasp these concepts.</p>
+    <p>Understanding deep learning requires familiarity with many simple mathematical concepts: <em>tensors</em>,
+        <em>tensor operations</em>, <em>differentiation</em>, <em>gradient descent</em>, and so on.
+        This chapter will build on the concepts above without getting overly technical.
+        The use of precise, unambiguous executable code, instead of mathematical notation, will allow most programmers
+        to easily grasp these concepts.
+    </p>
 
-<hr />
+    <hr />
 
-<h2 id="first-look-at-neural-networks">First look at neural networks</h2>
+    <h2 id="first-look-at-neural-networks">First look at neural networks</h2>
 
-<p>Concrete example of a neural network (NN) with the use of the Python library <code>Keras</code> to learn how to classify handwritten digits.</p>
+    <p>Concrete example of a neural network (NN) with the use of the Python library <code>Keras</code> to learn how to
+        classify handwritten digits.</p>
 
-<h3 id="the-problem">The problem</h3>
+    <h3 id="the-problem">The problem</h3>
 
-<p>The problem we're trying to solve here is to classify grayscale images of handwritten digits (28x28 pixels) into their 10 categories (digits 0 through 9).
-This problem is commonly referred to as the "Hello World" of deep learning - it's what you do to verify your algorithms are working as expected.</p>
+    <p>The problem we're trying to solve here is to classify grayscale images of handwritten digits (28x28 pixels) into
+        their 10 categories (digits 0 through 9).
+        This problem is commonly referred to as the "Hello World" of deep learning - it's what you do to verify your
+        algorithms are working as expected.</p>
 
-<blockquote>
-  <p><strong>NOTE: Classification problem keywords</strong></p>
+    <blockquote>
+        <p><strong>NOTE: Classification problem keywords</strong></p>
 
-  <p>In ML classification problems, a <strong>category</strong> is called a <strong>class</strong>.
-  Data points - such as individual train or test images - are called <strong>samples</strong>.
-  The class associated with a specific sample is called a <strong>label</strong>.</p>
-</blockquote>
+        <p>In ML classification problems, a <strong>category</strong> is called a <strong>class</strong>.
+            Data points - such as individual train or test images - are called <strong>samples</strong>.
+            The class associated with a specific sample is called a <strong>label</strong>.</p>
+    </blockquote>
 
-<p>We'll be using the MNIST dataset: a set of 60,000 training images, plus 10,000 test images, assembled by the National Institute of Standards and Technology (the NIST in MNIST) in the 1980s.</p>
+    <p>We'll be using the MNIST dataset: a set of 60,000 training images, plus 10,000 test images, assembled by the
+        National Institute of Standards and Technology (the NIST in MNIST) in the 1980s.</p>
 
-<p>The MNIST dataset is preloaded in <code>Keras</code>, in the form of four <code>NumPy</code> arrays:</p>
+    <p>The MNIST dataset is preloaded in <code>Keras</code>, in the form of four <code>NumPy</code> arrays:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow.keras.datasets</span> <span class="kn">import</span> <span class="n">mnist</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow.keras.datasets</span> <span class="kn">import</span> <span class="n">mnist</span>
 <span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">),</span> <span class="p">(</span><span class="n">test_images</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span> <span class="o">=</span> <span class="n">mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Let's take a peek at the shape of the data.
-We should see 60,000 training images and labels, 10,000 test images and labels.</p>
+    <p>Let's take a peek at the shape of the data.
+        We should see 60,000 training images and labels, 10,000 test images and labels.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">train_images</span><span class="o">.</span><span class="n">shape</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">train_images</span><span class="o">.</span><span class="n">shape</span>
 <span class="p">(</span><span class="mi">60000</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_labels</span><span class="p">)</span>
 <span class="mi">60000</span>
@@ -151,118 +180,153 @@ We should see 60,000 training images and labels, 10,000 test images and labels.<
 <span class="mi">10000</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">test_labels</span>
 <span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">uint8</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Let's look at a sample image using the <code>matplotlib</code> library:</p>
+    <p>Let's look at a sample image using the <code>matplotlib</code> library:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="n">digit</span> <span class="o">=</span> <span class="n">train_images</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">imgshow</span><span class="p">(</span><span class="n">digit</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">binary</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p><details>
-    <summary>Sample image</summary>
-    <figure class="center">
-        <img src="img/mnist_sample.png" style="width: 10%"/>
-        <figcaption>Sample image from MNIST dataset, train_images[4]</figcaption>
-    </figure></p>
+    <p>
+    <details>
+        <summary>Sample image</summary>
+        <figure class="center">
+            <img src="img/mnist_sample.png" style="width: 10%" />
+            <figcaption>Sample image from MNIST dataset, train_images[4]</figcaption>
+        </figure>
+        </p>
 
-<p></details></p>
+        <p>
+    </details>
+    </p>
 
-<p>Lastly, let's look at what label corresponds to the previous image:</p>
+    <p>Lastly, let's look at what label corresponds to the previous image:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">train_labels</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">train_labels</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
 <span class="mi">9</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="defining-the-network-architecture">Defining the network architecture</h3>
+    <h3 id="defining-the-network-architecture">Defining the network architecture</h3>
 
-<p>The core building block of a neural network is the <em>layer</em>.
-A layer can be considered as a data filter: data goes in and comes out more purified - more useful.
-Specifically, layers extract <em>representations</em> out of the input data.</p>
+    <p>The core building block of a neural network is the <em>layer</em>.
+        A layer can be considered as a data filter: data goes in and comes out more purified - more useful.
+        Specifically, layers extract <em>representations</em> out of the input data.</p>
 
-<p>In deep learning models, simple layers are chained together to form a <em>data distillation</em> network.
-Deep learning models could be visualized as a sieve for data processing - successive layers refining input data more and more.</p>
+    <p>In deep learning models, simple layers are chained together to form a <em>data distillation</em> network.
+        Deep learning models could be visualized as a sieve for data processing - successive layers refining input data
+        more and more.</p>
 
-<p>The following example is a two-layer neural network.
-We aren't expected to know exactly what the example means - we'll learn throughout the next two chapters.</p>
+    <p>The following example is a two-layer neural network.
+        We aren't expected to know exactly what the example means - we'll learn throughout the next two chapters.</p>
 
-<p>The model consists of a sequence of two <code>Dense</code> layers, which are densely connected (also called <em>fully connected</em>).
-The second layer is a 10-way <em>softmax classification</em> layer, which means it will return an array of 10 probability scores (summing to 1).
-Each score will be the probability that the current digit image belongs to on our of 10 digit classes.</p>
+    <p>The model consists of a sequence of two <code>Dense</code> layers, which are densely connected (also called
+        <em>fully connected</em>).
+        The second layer is a 10-way <em>softmax classification</em> layer, which means it will return an array of 10
+        probability scores (summing to 1).
+        Each score will be the probability that the current digit image belongs to on our of 10 digit classes.
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span>
     <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">),</span>
     <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;softmax&quot;</span><span class="p">)</span>
 <span class="p">])</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="preparing-the-model-for-training">Preparing the model for training</h3>
+    <h3 id="preparing-the-model-for-training">Preparing the model for training</h3>
 
-<p>Before we begin training, we must compile three more things, in addition to the training and testing data, as part of the <em>compilation</em> step:
-We brushed over the jobs of the loss score and optimizer in the previous chapter.
-The specifics of their jobs will be made clear throughout the next two chapters.</p>
+    <p>Before we begin training, we must compile three more things, in addition to the training and testing data, as
+        part of the <em>compilation</em> step:
+        We brushed over the jobs of the loss score and optimizer in the previous chapter.
+        The specifics of their jobs will be made clear throughout the next two chapters.</p>
 
-<ol>
-<li><em>An optimizer</em>: How the model will update itself - its weights - based on the training data it sees, so as a to improve its performance</li>
-<li><em>A loss function</em>: How the model will measure its performance on the training data and how it will be able to steer itself in the more correct direction</li>
-<li><em>Metrics to monitor during training and testing</em>: For now, we'll only care about accuracy - the fraction of images that were correctly classified</li>
-</ol>
+    <ol>
+        <li><em>An optimizer</em>: How the model will update itself - its weights - based on the training data it sees,
+            so as a to improve its performance</li>
+        <li><em>A loss function</em>: How the model will measure its performance on the training data and how it will be
+            able to steer itself in the more correct direction</li>
+        <li><em>Metrics to monitor during training and testing</em>: For now, we'll only care about accuracy - the
+            fraction of images that were correctly classified</li>
+    </ol>
 
-<div class="codehilite"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s2">&quot;rmsprop&quot;</span><span class="p">,</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s2">&quot;rmsprop&quot;</span><span class="p">,</span>
               <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;sparse_categorical_crossentropy&quot;</span><span class="p">,</span>
               <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">])</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="preparing-the-data">Preparing the data</h3>
+    <h3 id="preparing-the-data">Preparing the data</h3>
 
-<p>Before training, we'll preprocess the data to ensure consistent data shapes and scales during training.
-We'll reshape the data into the shape the model expects and scale it so that all values are in the [0, 1] interval instead of [0, 255] interval.</p>
+    <p>Before training, we'll preprocess the data to ensure consistent data shapes and scales during training.
+        We'll reshape the data into the shape the model expects and scale it so that all values are in the [0, 1]
+        interval instead of [0, 255] interval.</p>
 
-<p>The training image data will transform from a <code>uint8</code> array of shape <code>(60000, 28, 28)</code> with values between [0, 255] to a <code>float32</code> array of shape <code>(60000, 28*28)</code> with values between [0, 1].
-The same reshaping and reformatting process is applied to the testing image data.</p>
+    <p>The training image data will transform from a <code>uint8</code> array of shape <code>(60000, 28, 28)</code> with
+        values between [0, 255] to a <code>float32</code> array of shape <code>(60000, 28*28)</code> with values between
+        [0, 1].
+        The same reshaping and reformatting process is applied to the testing image data.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">train_images</span> <span class="o">=</span> <span class="n">train_images</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">60000</span><span class="p">,</span> <span class="mi">28</span><span class="o">*</span><span class="mi">28</span><span class="p">))</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">train_images</span> <span class="o">=</span> <span class="n">train_images</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">60000</span><span class="p">,</span> <span class="mi">28</span><span class="o">*</span><span class="mi">28</span><span class="p">))</span>
 <span class="n">train_images</span> <span class="o">=</span> <span class="n">train_images</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
 <span class="n">test_images</span> <span class="o">=</span> <span class="n">test_images</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">28</span><span class="o">*</span><span class="mi">28</span><span class="p">))</span>
 <span class="n">test_images</span> <span class="o">=</span> <span class="n">test_images</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="fitting-training-the-model">"Fitting" (Training) the model</h3>
+    <h3 id="fitting-training-the-model">"Fitting" (Training) the model</h3>
 
-<p>With the data properly pre-processed, we are finally ready to train the model!
-In Keras, training the model is done via a call to the model's <code>fit()</code> method - we <em>fit</em> the model to its training data.</p>
+    <p>With the data properly pre-processed, we are finally ready to train the model!
+        In Keras, training the model is done via a call to the model's <code>fit()</code> method - we <em>fit</em> the
+        model to its training data.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
 <span class="n">Epoch</span> <span class="mi">1</span><span class="o">/</span><span class="mi">5</span>
 <span class="mi">60000</span><span class="o">/</span><span class="mi">60000</span> <span class="p">[</span><span class="o">==========================</span><span class="p">]</span> <span class="o">-</span> <span class="mi">5</span><span class="n">s</span> <span class="o">-</span> <span class="n">loss</span><span class="p">:</span> <span class="mf">0.2524</span> <span class="o">-</span> <span class="n">acc</span><span class="p">:</span> <span class="mf">0.9273</span>
 <span class="n">Epoch</span> <span class="mi">2</span><span class="o">/</span><span class="mi">5</span>
 <span class="mi">51328</span><span class="o">/</span><span class="mi">60000</span> <span class="p">[</span><span class="o">====================&gt;.....</span><span class="p">]</span> <span class="o">-</span> <span class="n">ETA</span><span class="p">:</span> <span class="mi">1</span><span class="n">s</span> <span class="o">-</span> <span class="n">loss</span><span class="p">:</span> <span class="mf">0.1035</span> <span class="o">-</span> <span class="n">acc</span><span class="p">:</span> <span class="mf">0.9692</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>The model swiftly reaches a decent accuracy of 96% after roughly 2 epochs of fitting to the training data.</p>
+    <p>The model swiftly reaches a decent accuracy of 96% after roughly 2 epochs of fitting to the training data.</p>
 
-<h3 id="making-predictions-with-the-trained-model">Making predictions with the trained model</h3>
+    <h3 id="making-predictions-with-the-trained-model">Making predictions with the trained model</h3>
 
-<p>Now that the model is trained, we can use it to make class predictions on the <em>new</em>, unseen data - such as the testing images.</p>
+    <p>Now that the model is trained, we can use it to make class predictions on the <em>new</em>, unseen data - such as
+        the testing images.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">test_digit</span> <span class="o">=</span> <span class="n">test_images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">test_digit</span> <span class="o">=</span> <span class="n">test_images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_digit</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">prediction</span>
 <span class="n">array</span><span class="p">([</span><span class="mf">1.0726176e-10</span><span class="p">,</span> <span class="mf">1.6918376e-10</span><span class="p">,</span> <span class="mf">6.1314843e-08</span><span class="p">,</span> <span class="mf">8.4106023e-06</span><span class="p">,</span>
        <span class="mf">2.9967067e-11</span><span class="p">,</span> <span class="mf">3.0331331e-09</span><span class="p">,</span> <span class="mf">8.3651971e-14</span><span class="p">,</span> <span class="mf">9.9999106e-01</span><span class="p">,</span>
        <span class="mf">2.6657624e-08</span><span class="p">,</span> <span class="mf">3.8127661e-07</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Each index <em>i</em> in <code>predictions[0]</code> corresponds to the probability that <code>prediction</code> belongs to class <em>i</em>.
-In this example, the highest probability is index 7, meaning the model believes that <code>test_digit</code> is the number 7.</p>
+    <p>Each index <em>i</em> in <code>predictions[0]</code> corresponds to the probability that <code>prediction</code>
+        belongs to class <em>i</em>.
+        In this example, the highest probability is index 7, meaning the model believes that <code>test_digit</code> is
+        the number 7.</p>
 
-<p>We can verify if the model's prediction is correct by comparing the prediction against the test_labels data.</p>
+    <p>We can verify if the model's prediction is correct by comparing the prediction against the test_labels data.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>  <span class="c1"># Return the index of the highest probability</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>  <span class="c1"># Return the index of the highest probability</span>
 <span class="mi">7</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
 <span class="mf">0.99999106</span>
@@ -270,88 +334,108 @@ In this example, the highest probability is index 7, meaning the model believes 
 <span class="mi">7</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span> <span class="o">==</span> <span class="n">test_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="kc">True</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="evaluating-the-model-on-new-data">Evaluating the model on new data</h3>
+    <h3 id="evaluating-the-model-on-new-data">Evaluating the model on new data</h3>
 
-<p>We can evaluate the model's accuracy against data it has never seen before using the model's <code>evaluate()</code> method.
-This method will allow us to compute the average accuracy against an entire test set.</p>
+    <p>We can evaluate the model's accuracy against data it has never seen before using the model's
+        <code>evaluate()</code> method.
+        This method will allow us to compute the average accuracy against an entire test set.
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">test_loss</span><span class="p">,</span> <span class="n">test_acc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_images</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">test_loss</span><span class="p">,</span> <span class="n">test_acc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_images</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;test_acc: </span><span class="si">{</span><span class="n">test_acc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="n">test_acc</span><span class="p">:</span> <span class="mf">0.9785</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>This concludes our first example.
-We just saw how easy it is to build and train a neural network classification model in less than 15 lines of Python code.</p>
+    <p>This concludes our first example.
+        We just saw how easy it is to build and train a neural network classification model in less than 15 lines of
+        Python code.</p>
 
-<p>Let's learn more about data representations and how the neural network interprets and refines input data using tensors.</p>
+    <p>Let's learn more about data representations and how the neural network interprets and refines input data using
+        tensors.</p>
 
-<hr />
+    <hr />
 
-<h2 id="data-representations-tensors">Data representations: Tensors</h2>
+    <h2 id="data-representations-tensors">Data representations: Tensors</h2>
 
-<p><em>Tensors</em> are fundamental data structures used in machine learning.
-At its core, a tensor is a container for data - usually numeric data.
-Matrices (2D arrays) are considered to be rank-2 tensors.</p>
+    <p><em>Tensors</em> are fundamental data structures used in machine learning.
+        At its core, a tensor is a container for data - usually numeric data.
+        Matrices (2D arrays) are considered to be rank-2 tensors.</p>
 
-<p>Therefore, tensors are generalizations of matrices to an arbitrary number of <em>dimensions</em>.
-Note that in the context of tensors, a dimension is often called an <em>axis</em>.</p>
+    <p>Therefore, tensors are generalizations of matrices to an arbitrary number of <em>dimensions</em>.
+        Note that in the context of tensors, a dimension is often called an <em>axis</em>.</p>
 
-<p>Let's take a look at definitions and examples of rank-0 to rank-3 and higher tensors.</p>
+    <p>Let's take a look at definitions and examples of rank-0 to rank-3 and higher tensors.</p>
 
-<h3 id="scalars-rank-0-tensors">Scalars (rank-0 tensors)</h3>
+    <h3 id="scalars-rank-0-tensors">Scalars (rank-0 tensors)</h3>
 
-<p>A tensor that contains only one number is called a <em>scalar</em> - or scalar tensor, rank-0 tensor, or 0D tensor.
-Using NumPy's <code>ndim</code> attribute, you'll notice a scalar tensor has 0 <em>axes</em> (<code>ndim == 0</code>).
-The number of axes of a tensor is also called its <em>rank</em>.</p>
+    <p>A tensor that contains only one number is called a <em>scalar</em> - or scalar tensor, rank-0 tensor, or 0D
+        tensor.
+        Using NumPy's <code>ndim</code> attribute, you'll notice a scalar tensor has 0 <em>axes</em>
+        (<code>ndim == 0</code>).
+        The number of axes of a tensor is also called its <em>rank</em>.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">22</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">x</span>
 <span class="n">array</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
 <span class="mi">0</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="vectors-rank-1-tensors">Vectors (rank-1 tensors)</h3>
+    <h3 id="vectors-rank-1-tensors">Vectors (rank-1 tensors)</h3>
 
-<p>An array of numbers is called a <em>vector</em> - or rank-1 tensor, 1D tensor, tensor of rank 1.
-A rank-1 tensor has exactly one axis.</p>
+    <p>An array of numbers is called a <em>vector</em> - or rank-1 tensor, 1D tensor, tensor of rank 1.
+        A rank-1 tensor has exactly one axis.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">15</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">93</span><span class="p">])</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">15</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">93</span><span class="p">])</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">x</span>
 <span class="n">array</span><span class="p">([</span><span class="mi">15</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">93</span><span class="p">])</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
 <span class="mi">1</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>The vector above has five entries and so is called a <em>5-dimensional vector</em>.
-It's important to not confuse a 5D <em>vector</em> with a 5D <em>tensor</em>.
-A 5D vector has a single axis and five dimensions along its axis.
-A 5D tensor - or <em>tensor of rank 5</em> -  on the other hand, has five axes and any number of dimensions along each axis.</p>
+    <p>The vector above has five entries and so is called a <em>5-dimensional vector</em>.
+        It's important to not confuse a 5D <em>vector</em> with a 5D <em>tensor</em>.
+        A 5D vector has a single axis and five dimensions along its axis.
+        A 5D tensor - or <em>tensor of rank 5</em> - on the other hand, has five axes and any number of dimensions along
+        each axis.</p>
 
-<h3 id="matrices-rank-2-tensors">Matrices (rank-2 tensors)</h3>
+    <h3 id="matrices-rank-2-tensors">Matrices (rank-2 tensors)</h3>
 
-<p>An array of vectors is a <em>matrix</em> - or rank-2 tensor, 2D tensor, tensor of rank 2.
-A matrix has two axes often referred to as <em>rows</em> and <em>columns</em>.</p>
+    <p>An array of vectors is a <em>matrix</em> - or rank-2 tensor, 2D tensor, tensor of rank 2.
+        A matrix has two axes often referred to as <em>rows</em> and <em>columns</em>.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">42</span><span class="p">],</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">42</span><span class="p">],</span>
                   <span class="p">[</span><span class="mi">24</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
                   <span class="p">[</span><span class="mi">44</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">62</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">]])</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
 <span class="mi">2</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>The entries from the first axis are called the <em>rows</em>, and the entries from the second axis are called the <em>columns</em>.
-<code>[4, 8, 15, 16, 23, 42]</code> is the first row of <code>x</code>, and <code>[4, 24, 44]</code> is the first column.</p>
+    <p>The entries from the first axis are called the <em>rows</em>, and the entries from the second axis are called the
+        <em>columns</em>.
+        <code>[4, 8, 15, 16, 23, 42]</code> is the first row of <code>x</code>, and <code>[4, 24, 44]</code> is the
+        first column.
+    </p>
 
-<h3 id="rank-3-and-higher-rank-tensors">Rank-3 and higher-rank tensors</h3>
+    <h3 id="rank-3-and-higher-rank-tensors">Rank-3 and higher-rank tensors</h3>
 
-<p>If you insert matrices (rank-2 tensors) into an array, you obtain a rank-3 tensor.
-Rank-3 tensors can be visualized as a cube of numbers.</p>
+    <p>If you insert matrices (rank-2 tensors) into an array, you obtain a rank-3 tensor.
+        Rank-3 tensors can be visualized as a cube of numbers.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">22</span><span class="p">],</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">22</span><span class="p">],</span>
                    <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">23</span><span class="p">],</span>
                    <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">29</span><span class="p">]],</span>
                   <span class="p">[[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">42</span><span class="p">],</span>
@@ -359,146 +443,187 @@ Rank-3 tensors can be visualized as a cube of numbers.</p>
                    <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">29</span><span class="p">]]])</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
 <span class="mi">3</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Inserting rank-3 tensors in an array will create a rank-4 tensor, and so on.
-In deep learning, we'll generally only work with rank-0 to rank-4 tensors.
-Although, rank-5 tensors may be used if processing video data.</p>
+    <p>Inserting rank-3 tensors in an array will create a rank-4 tensor, and so on.
+        In deep learning, we'll generally only work with rank-0 to rank-4 tensors.
+        Although, rank-5 tensors may be used if processing video data.</p>
 
-<h3 id="key-attributes">Key attributes</h3>
+    <h3 id="key-attributes">Key attributes</h3>
 
-<ul>
-<li><em>Number of axes (rank)</em>: For instance, a rank-3 tensor has three axes, and a matrix has two axes. This is also called the tensor's <code>ndim</code> in Python libraries such as NumPy or TensorFlow.</li>
-<li><em>Shape</em>: This is a tuple of integers that describes how many dimensions the tensor has along each axis.
-For instance, a matrix with shape <code>(3, 5)</code> has three rows and five columns.
-A vector with a single element could have the shape <code>(5,)</code>, whereas a scalar has an empty shape, <code>()</code>.
-Lastly, a rank-3 tensor, such as the example above, has shape <code>(2, 3, 5)</code>.</li>
-<li><em>Data type</em>: Usually called the<code>dtype</code> in Python libraries, this is the type of the data contained in the tensor.
-For instance, a tensor's type could be <code>float16</code>, <code>float32</code>, <code>uint8</code>, and so on.
-It's also possible to come across <code>string</code> tensors in TensorFlow.</li>
-</ul>
+    <ul>
+        <li><em>Number of axes (rank)</em>: For instance, a rank-3 tensor has three axes, and a matrix has two axes.
+            This is also called the tensor's <code>ndim</code> in Python libraries such as NumPy or TensorFlow.</li>
+        <li><em>Shape</em>: This is a tuple of integers that describes how many dimensions the tensor has along each
+            axis.
+            For instance, a matrix with shape <code>(3, 5)</code> has three rows and five columns.
+            A vector with a single element could have the shape <code>(5,)</code>, whereas a scalar has an empty shape,
+            <code>()</code>.
+            Lastly, a rank-3 tensor, such as the example above, has shape <code>(2, 3, 5)</code>.
+        </li>
+        <li><em>Data type</em>: Usually called the<code>dtype</code> in Python libraries, this is the type of the data
+            contained in the tensor.
+            For instance, a tensor's type could be <code>float16</code>, <code>float32</code>, <code>uint8</code>, and
+            so on.
+            It's also possible to come across <code>string</code> tensors in TensorFlow.</li>
+    </ul>
 
-<hr />
+    <hr />
 
-<h2 id="real-world-examples-of-data-tensors">Real-world examples of data tensors</h2>
+    <h2 id="real-world-examples-of-data-tensors">Real-world examples of data tensors</h2>
 
-<ul>
-<li><em>Vector data</em>: Rank-2 tensors of shape <code>(samples, features)</code>, where each sample is a vector of numerical attributes ("features")</li>
-<li><em>Timeseries data or sequence data</em>: Rank-3 tensors of shape <code>(samples, timesteps, features)</code>, where each sample is a sequence (of length <code>timesteps</code>) of feature vectors</li>
-<li><em>Images</em>: Rank-4 tensors of shape <code>(samples, height, width, channels)</code>, where each sample is a 2D grid of pixels, and each pixel is represented by a vector of values ("channels").</li>
-<li><em>Video</em>: Rank-5 tensors of shape <code>(samples, frames, height, width, channels)</code>, where each sample is a sequence (of length <code>frames</code>) of images</li>
-</ul>
+    <ul>
+        <li><em>Vector data</em>: Rank-2 tensors of shape <code>(samples, features)</code>, where each sample is a
+            vector of numerical attributes ("features")</li>
+        <li><em>Timeseries data or sequence data</em>: Rank-3 tensors of shape
+            <code>(samples, timesteps, features)</code>, where each sample is a sequence (of length
+            <code>timesteps</code>) of feature vectors
+        </li>
+        <li><em>Images</em>: Rank-4 tensors of shape <code>(samples, height, width, channels)</code>, where each sample
+            is a 2D grid of pixels, and each pixel is represented by a vector of values ("channels").</li>
+        <li><em>Video</em>: Rank-5 tensors of shape <code>(samples, frames, height, width, channels)</code>, where each
+            sample is a sequence (of length <code>frames</code>) of images</li>
+    </ul>
 
-<h3 id="vector">Vector</h3>
+    <h3 id="vector">Vector</h3>
 
-<p>This is one of the most common use cases of tensors.
-Each data point in a dataset is encoded as a vector.
-A batch of data will be encoded as a rank-2 tensor - that is, an array of vectors - where the first axis is the <code>samples axis</code> and the second axis is the <code>features axis</code>.</p>
+    <p>This is one of the most common use cases of tensors.
+        Each data point in a dataset is encoded as a vector.
+        A batch of data will be encoded as a rank-2 tensor - that is, an array of vectors - where the first axis is the
+        <code>samples axis</code> and the second axis is the <code>features axis</code>.
+    </p>
 
-<p>Let's look at an example:</p>
+    <p>Let's look at an example:</p>
 
-<ul>
-<li>A dataset of cars, where we consider each car's make, model, manufactured year, and odometer reading.
-Each car can be characterized as a vector of 4 values.
-An entire dataset of 100,000 cars can be stored in a rank-2 tensor of shape <code>(100000, 4)</code>.</li>
-</ul>
+    <ul>
+        <li>A dataset of cars, where we consider each car's make, model, manufactured year, and odometer reading.
+            Each car can be characterized as a vector of 4 values.
+            An entire dataset of 100,000 cars can be stored in a rank-2 tensor of shape <code>(100000, 4)</code>.</li>
+    </ul>
 
-<h3 id="timeseries-data-or-sequence-data">Timeseries data or sequence data</h3>
+    <h3 id="timeseries-data-or-sequence-data">Timeseries data or sequence data</h3>
 
-<p>Whenever time matters in your data - or the notion of sequential order - it makes sense to store it in a rank-3 tensor with an explicit time axis.
-Each sample can be encoded as a sequence of vectors (a rank-2 tensor), and thus a batch of data will be encoded as a rank-3 tensor.</p>
+    <p>Whenever time matters in your data - or the notion of sequential order - it makes sense to store it in a rank-3
+        tensor with an explicit time axis.
+        Each sample can be encoded as a sequence of vectors (a rank-2 tensor), and thus a batch of data will be encoded
+        as a rank-3 tensor.</p>
 
-<p>By convention, the time axis is always the second axis.
-Let's take a look at an example:</p>
+    <p>By convention, the time axis is always the second axis.
+        Let's take a look at an example:</p>
 
-<figure class="right" style="width:40%">
-    <img src="img/rank3_tensor.png" style="width:80%;"/>
-    <figcaption>Rank-3 tensor containing five samples of timeseries, or sequential, data</figcaption>
-</figure>
+    <figure class="right" style="width:40%">
+        <img src="img/rank3_tensor.png" style="width:80%;" />
+        <figcaption>Rank-3 tensor containing five samples of timeseries, or sequential, data</figcaption>
+    </figure>
 
-<ul>
-<li><p>A dataset of a MotoGP rider's lap around Laguna Seca.
-For every percentage of lap completed, we store the motorcycle's speed, lean angle, throttle input, brake input, and steering input.
-Ideally, it would be as close to real-time as possible instead of every single percentage, but let's keep it simple.
-Thus, every lap - every sample - is encoded as a 5D vector of shape <code>(101, 5)</code>, where 101 is 0 percent to 100 percent, inclusive.
-An entire race (assuming 30 laps) is encoded as a rank-3 tensor of shape <code>(30, 101, 5)</code>.</p></li>
-<li><p>A dataset of stock prices.
-Every minute, we store the current price of the stock, the highest price in the past minute, and the lowest price in the past minute.
-Thus, every minute is encoded as a 3D vector, an entire day of trading is encoded as a matrix of shape <code>(390, 3)</code> (there are 390 minutes in a trading day), and 365 days' worth of data can be stored in a rank-3 tensor of shape <code>(365, 390, 3)</code>.
-Here, each sample would be one day's worth of data.</p></li>
-</ul>
+    <ul>
+        <li>
+            <p>A dataset of a MotoGP rider's lap around Laguna Seca.
+                For every percentage of lap completed, we store the motorcycle's speed, lean angle, throttle input,
+                brake input, and steering input.
+                Ideally, it would be as close to real-time as possible instead of every single percentage, but let's
+                keep it simple.
+                Thus, every lap - every sample - is encoded as a 5D vector of shape <code>(101, 5)</code>, where 101 is
+                0 percent to 100 percent, inclusive.
+                An entire race (assuming 30 laps) is encoded as a rank-3 tensor of shape <code>(30, 101, 5)</code>.</p>
+        </li>
+        <li>
+            <p>A dataset of stock prices.
+                Every minute, we store the current price of the stock, the highest price in the past minute, and the
+                lowest price in the past minute.
+                Thus, every minute is encoded as a 3D vector, an entire day of trading is encoded as a matrix of shape
+                <code>(390, 3)</code> (there are 390 minutes in a trading day), and 365 days' worth of data can be
+                stored in a rank-3 tensor of shape <code>(365, 390, 3)</code>.
+                Here, each sample would be one day's worth of data.
+            </p>
+        </li>
+    </ul>
 
-<h3 id="image-data">Image data</h3>
+    <h3 id="image-data">Image data</h3>
 
-<figure class="right">
-    <img src="img/rank4_tensor.png" style="width:90%;"/>
-    <figcaption>Rank-4 tensor containing RGB image data </figcaption>
-</figure>
+    <figure class="right">
+        <img src="img/rank4_tensor.png" style="width:90%;" />
+        <figcaption>Rank-4 tensor containing RGB image data </figcaption>
+    </figure>
 
-<p>Images usually have three dimensions: height, width, and color channels.
-Grayscale images (black-and-white images, like our MNIST images) have only a single color channel.
-Colored images typically have three color channels: RGB (red, green, blue).</p>
+    <p>Images usually have three dimensions: height, width, and color channels.
+        Grayscale images (black-and-white images, like our MNIST images) have only a single color channel.
+        Colored images typically have three color channels: RGB (red, green, blue).</p>
 
-<p>A batch of 500 grayscale images of size 256x256 could thus be stored in a rank-4 tensor of shape <code>(500, 256, 256, 1)</code>, whereas a batch of 500 <em>colored</em> images could be stored in a tensor a shape <code>(500, 256, 256, 3)</code>.</p>
+    <p>A batch of 500 grayscale images of size 256x256 could thus be stored in a rank-4 tensor of shape
+        <code>(500, 256, 256, 1)</code>, whereas a batch of 500 <em>colored</em> images could be stored in a tensor a
+        shape <code>(500, 256, 256, 3)</code>.
+    </p>
 
-<h3 id="video-data">Video data</h3>
+    <h3 id="video-data">Video data</h3>
 
-<p>Video data is one of the few types of real-world data for which rank-5 tensors are used.
-A video can be simplified as a sequence of frames, each frame being a color image.</p>
+    <p>Video data is one of the few types of real-world data for which rank-5 tensors are used.
+        A video can be simplified as a sequence of frames, each frame being a color image.</p>
 
-<p>Each frame can be stored in a rank-3 tensor <code>(height, width, color_channel)</code>.
-A sequence of frames can be stored in a rank-4 tensor <code>(frames, height, width, color_channel)</code>.
-Therefore, a batch of videos can be stored in a rank-5 tensor of shape <code>(samples, frames, height, width, color_channel)</code>.</p>
+    <p>Each frame can be stored in a rank-3 tensor <code>(height, width, color_channel)</code>.
+        A sequence of frames can be stored in a rank-4 tensor <code>(frames, height, width, color_channel)</code>.
+        Therefore, a batch of videos can be stored in a rank-5 tensor of shape
+        <code>(samples, frames, height, width, color_channel)</code>.
+    </p>
 
-<p>For instance, a 20-second, 1920x1080 video clip sampled at 10 frames per second would have 200 frames.
-A batch of 5 such video clips would be stored in a tensor of shape <code>(5, 200, 1920, 1080, 3)</code>.
-That's a total of 6,220,800,000 values!</p>
+    <p>For instance, a 20-second, 1920x1080 video clip sampled at 10 frames per second would have 200 frames.
+        A batch of 5 such video clips would be stored in a tensor of shape <code>(5, 200, 1920, 1080, 3)</code>.
+        That's a total of 6,220,800,000 values!</p>
 
-<hr />
+    <hr />
 
-<h2 id="tensor-operations">Tensor operations</h2>
+    <h2 id="tensor-operations">Tensor operations</h2>
 
-<p>Similar to how computer programs can be reduced to a small set of binary operations (AND, OR, XOR, and so on), all transformations learned by deep neural networks can be reduced to a handful of <em>tensor operations</em>.</p>
+    <p>Similar to how computer programs can be reduced to a small set of binary operations (AND, OR, XOR, and so on),
+        all transformations learned by deep neural networks can be reduced to a handful of <em>tensor operations</em>.
+    </p>
 
-<h3 id="basic-operations">Basic operations</h3>
+    <h3 id="basic-operations">Basic operations</h3>
 
-<ul>
-<li><em>Addition</em>: <code>t1 + t2</code></li>
-<li><em>Subtraction</em>: <code>t1 - t2</code></li>
-<li><em>Element-wise multiplication</em>: <code>t1 * t2</code></li>
-<li><em>Element-wise division</em>: <code>t1 / t2</code></li>
-<li><em>Exponentiation</em>: <code>t1 ** t2</code></li>
-<li><em>Modulo</em>: <code>t1 % t2</code></li>
-<li><em>Floor division</em>: <code>t1 // t2</code></li>
-<li><em>Element-wise maximum</em>: <code>tf.maximum(t1, t2)</code></li>
-<li><em>Element-wise minimum</em>: <code>tf.minimum(t1, t2)</code></li>
-<li><em>Element-wise greater than</em>: <code>tf.greater(t1, t2)</code></li>
-<li><em>Element-wise less than</em>: <code>tf.less(t1, t2)</code></li>
-<li><em>Element-wise greater than or equal to</em>: <code>tf.greater_equal(t1, t2)</code></li>
-<li><em>Element-wise less than or equal to</em>: <code>tf.less_equal(t1, t2)</code></li>
-<li><em>Element-wise equality</em>: <code>tf.equal(t1, t2)</code></li>
-<li><em>Element-wise not equal</em>: <code>tf.not_equal(t1, t2)</code></li>
-</ul>
+    <ul>
+        <li><em>Addition</em>: <code>t1 + t2</code></li>
+        <li><em>Subtraction</em>: <code>t1 - t2</code></li>
+        <li><em>Element-wise multiplication</em>: <code>t1 * t2</code></li>
+        <li><em>Element-wise division</em>: <code>t1 / t2</code></li>
+        <li><em>Exponentiation</em>: <code>t1 ** t2</code></li>
+        <li><em>Modulo</em>: <code>t1 % t2</code></li>
+        <li><em>Floor division</em>: <code>t1 // t2</code></li>
+        <li><em>Element-wise maximum</em>: <code>tf.maximum(t1, t2)</code></li>
+        <li><em>Element-wise minimum</em>: <code>tf.minimum(t1, t2)</code></li>
+        <li><em>Element-wise greater than</em>: <code>tf.greater(t1, t2)</code></li>
+        <li><em>Element-wise less than</em>: <code>tf.less(t1, t2)</code></li>
+        <li><em>Element-wise greater than or equal to</em>: <code>tf.greater_equal(t1, t2)</code></li>
+        <li><em>Element-wise less than or equal to</em>: <code>tf.less_equal(t1, t2)</code></li>
+        <li><em>Element-wise equality</em>: <code>tf.equal(t1, t2)</code></li>
+        <li><em>Element-wise not equal</em>: <code>tf.not_equal(t1, t2)</code></li>
+    </ul>
 
-<p>More operations can be found in the <code>tf.math</code> module's API documentation here:
-<a href="https://www.tensorflow.org/api_docs/python/tf/math">https://www.tensorflow.org/api_docs/python/tf/math</a></p>
+    <p>More operations can be found in the <code>tf.math</code> module's API documentation here:
+        <a
+            href="https://www.tensorflow.org/api_docs/python/tf/math">https://www.tensorflow.org/api_docs/python/tf/math</a>
+    </p>
 
-<h3 id="element-wise-operations">Element-wise operations</h3>
+    <h3 id="element-wise-operations">Element-wise operations</h3>
 
-<p>Element-wise operations are applied independently to each entry in the tensors being considered.
-The <code>relu</code>, addition, and other operations listed above are all element-wise operations.</p>
+    <p>Element-wise operations are applied independently to each entry in the tensors being considered.
+        The <code>relu</code>, addition, and other operations listed above are all element-wise operations.</p>
 
-<p>Recall in our initial example, we built our model by sequentially stacking <code>Dense</code> layers.
-Each layer is a fully-connected layer with an <code>activation</code> function.
-The first layer was a <code>Dense</code> layer with 512 nodes and activation function <code>relu</code>, like so:</p>
+    <p>Recall in our initial example, we built our model by sequentially stacking <code>Dense</code> layers.
+        Each layer is a fully-connected layer with an <code>activation</code> function.
+        The first layer was a <code>Dense</code> layer with 512 nodes and activation function <code>relu</code>, like
+        so:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">)</span>
-</code></pre></div>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">)</span>
+</code></pre>
+    </div>
 
-<p>From a Python standpoint, we could use <code>for</code> loops to implement a naive element-wise operation.
-Take a look below at a naive Python implementation of the <code>relu</code> and addition operations.</p>
+    <p>From a Python standpoint, we could use <code>for</code> loops to implement a naive element-wise operation.
+        Take a look below at a naive Python implementation of the <code>relu</code> and addition operations.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">naive_relu</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="k">def</span> <span class="nf">naive_relu</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Relu is the equivalent of `max(x, 0)`, or `np.maximum(x, 0.)` for NumPy tensors&quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>  <span class="c1"># x is a rank-2 NumPy tensor</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Avoid overwriting the input tensor</span>
@@ -516,15 +641,19 @@ Take a look below at a naive Python implementation of the <code>relu</code> and 
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
             <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">x</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>In practice, when working with NumPy arrays, it's best to utilize NumPy's highly optimized, built-in functions rather than create naive implementations.
-NumPy's built-in functions are low-level, highly parallel, efficient tensor-manipulation routines that are typically implemented in C.</p>
+    <p>In practice, when working with NumPy arrays, it's best to utilize NumPy's highly optimized, built-in functions
+        rather than create naive implementations.
+        NumPy's built-in functions are low-level, highly parallel, efficient tensor-manipulation routines that are
+        typically implemented in C.</p>
 
-<p>As seen below in a simple example, the built-in functions are over 100x faster than naive implementations.
-They're wicked fast!</p>
+    <p>As seen below in a simple example, the built-in functions are over 100x faster than naive implementations.
+        They're wicked fast!</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">20</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
@@ -543,44 +672,57 @@ They're wicked fast!</p>
     <span class="n">z</span> <span class="o">=</span> <span class="n">naive_addition</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">naive_relu</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Took: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="broadcasting">Broadcasting</h3>
+    <h3 id="broadcasting">Broadcasting</h3>
 
-<p>Broadcasting is the process of performing element-wise operations on tensors with different shapes.
-For example, consider two tensors <code>t1</code> and <code>t2</code> with shapes <code>(2, 3)</code> and <code>(3,)</code>.
-The result of <code>t1 + t2</code> is a tensor <code>t3</code> of shape <code>(2, 3)</code> and the result of <code>t1 * t2</code> is a tensor <code>t4</code> of shape <code>(2, 3)</code>.</p>
+    <p>Broadcasting is the process of performing element-wise operations on tensors with different shapes.
+        For example, consider two tensors <code>t1</code> and <code>t2</code> with shapes <code>(2, 3)</code> and
+        <code>(3,)</code>.
+        The result of <code>t1 + t2</code> is a tensor <code>t3</code> of shape <code>(2, 3)</code> and the result of
+        <code>t1 * t2</code> is a tensor <code>t4</code> of shape <code>(2, 3)</code>.
+    </p>
 
-<p>Below is the simplest example of multiplying tensor <code>a</code> by scalar <code>b</code>.
-This example and the image following were taken directly from NumPy's documentation found <a href="https://numpy.org/doc/stable/user/basics.broadcasting.html">here</a>.</p>
+    <p>Below is the simplest example of multiplying tensor <code>a</code> by scalar <code>b</code>.
+        This example and the image following were taken directly from NumPy's documentation found <a
+            href="https://numpy.org/doc/stable/user/basics.broadcasting.html">here</a>.</p>
 
-<p>I encourage reading NumPy's documentation - at least read the <em>NumPy fundamentals</em> section - to gain a deep understanding of the topics discussed in this article.</p>
+    <p>I encourage reading NumPy's documentation - at least read the <em>NumPy fundamentals</em> section - to gain a
+        deep understanding of the topics discussed in this article.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="mf">2.0</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
 
 <span class="n">array</span><span class="p">([</span> <span class="mf">2.</span><span class="p">,</span>  <span class="mf">4.</span><span class="p">,</span>  <span class="mf">6.</span><span class="p">])</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<figure class="right ">
-    <img src="img/broadcasting.png" style="width:100%;background-color:lightgray;"/>
-    <figcaption>Scalar `b` is "stretched" to become the same shape as `a`</figcaption>
-</figure>
+    <figure class="right ">
+        <img src="img/broadcasting.png" style="width:100%;background-color:lightgray;" />
+        <figcaption>Scalar `b` is "stretched" to become the same shape as `a`</figcaption>
+    </figure>
 
-<p>Simply put, the scalar <code>b</code> is <em>stretched</em> - the original scalar is copied - to become a tensor of the same shape as <code>a</code>.</p>
+    <p>Simply put, the scalar <code>b</code> is <em>stretched</em> - the original scalar is copied - to become a tensor
+        of the same shape as <code>a</code>.</p>
 
-<p>Getting a little more technical - broadcasting consists of two steps:</p>
+    <p>Getting a little more technical - broadcasting consists of two steps:</p>
 
-<ol>
-<li>Axes (called <em>broadcast axes</em>) are added to the smaller tensor to match the <code>ndim</code> of the larger tensor</li>
-<li>The smaller tensor is repeated alongside these new axes to match the full shape of the larger tensor</li>
-</ol>
+    <ol>
+        <li>Axes (called <em>broadcast axes</em>) are added to the smaller tensor to match the <code>ndim</code> of the
+            larger tensor</li>
+        <li>The smaller tensor is repeated alongside these new axes to match the full shape of the larger tensor</li>
+    </ol>
 
-<p>Values from <code>b</code> are not actually copied - and <code>b</code> is not actually reshaped - as that would be resource-intensive and computationally wasteful.
-Rather, NumPy is smart enough to use the original scalar value without making copies so that broadcasting operations are as memory and resource-efficient as possible.</p>
+    <p>Values from <code>b</code> are not actually copied - and <code>b</code> is not actually reshaped - as that would
+        be resource-intensive and computationally wasteful.
+        Rather, NumPy is smart enough to use the original scalar value without making copies so that broadcasting
+        operations are as memory and resource-efficient as possible.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="sd">&quot;&quot;&quot;Example of how broadcasting &quot;stretches&quot; a vector into a matrix&quot;&quot;&quot;</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">28</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>  <span class="c1"># random matrix with shape (28, 10)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">10</span><span class="p">,))</span>     <span class="c1"># random vector with shape (10,)</span>
@@ -591,54 +733,68 @@ Rather, NumPy is smart enough to use the original scalar value without making co
 <span class="n">y_stretched</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">y</span><span class="p">]</span> <span class="o">*</span> <span class="mi">28</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="k">assert</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">y_stretched</span><span class="o">.</span><span class="n">shape</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>The stretching of scalar <code>b</code> qualifies the pair of variables for element-wise operations that take two input tensors.
-One of the most common and useful broadcasting applications include the <em>tensor product</em> or <em>dot product</em>.</p>
+    <p>The stretching of scalar <code>b</code> qualifies the pair of variables for element-wise operations that take two
+        input tensors.
+        One of the most common and useful broadcasting applications include the <em>tensor product</em> or <em>dot
+            product</em>.</p>
 
-<h3 id="tensor-product">Tensor product</h3>
+    <h3 id="tensor-product">Tensor product</h3>
 
-<p>The <em>tensor product</em>, or <em>dot product</em>, is one of the most common tensor operations.
-In NumPy, the tensor product is done using the <code>np.dot</code> function.
-In mathematical notation, the dot product is denoted with a dot (⋅) symbol: <code>z = x ⋅ y</code></p>
+    <p>The <em>tensor product</em>, or <em>dot product</em>, is one of the most common tensor operations.
+        In NumPy, the tensor product is done using the <code>np.dot</code> function.
+        In mathematical notation, the dot product is denoted with a dot (⋅) symbol: <code>z = x ⋅ y</code></p>
 
-<div class="codehilite"><pre><span></span><code><span class="c1"># two random, 28-dimension vectors</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="c1"># two random, 28-dimension vectors</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">28</span><span class="p">,))</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">28</span><span class="p">,))</span>
 <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
 <span class="c1"># the (dot) product of two vectors is a scalar</span>
 <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>The most common application of the dot product in deep learning may be between two matrices: <code>dot(x, y)</code>.
-The dot product between two matrices is only possible when <code>x.shape[1] == y.shape[0]</code>.
-The result is a matrix with shape <code>(x.shape[0], y.shape[1])</code>, where the coefficients are the vector products between the <em>rows</em> of <code>x</code> and the <em>columns</em> of <code>y</code>.</p>
+    <p>The most common application of the dot product in deep learning may be between two matrices:
+        <code>dot(x, y)</code>.
+        The dot product between two matrices is only possible when <code>x.shape[1] == y.shape[0]</code>.
+        The result is a matrix with shape <code>(x.shape[0], y.shape[1])</code>, where the coefficients are the vector
+        products between the <em>rows</em> of <code>x</code> and the <em>columns</em> of <code>y</code>.
+    </p>
 
-<figure class="center">
-    <img src="img/matrix_dot_product.png" style="width:100%;"/>
-    <figcaption>Matrix dot-product diagram</figcaption>
-</figure>
+    <figure class="center">
+        <img src="img/matrix_dot_product.png" style="width:100%;" />
+        <figcaption>Matrix dot-product diagram</figcaption>
+    </figure>
 
-<p>More generally, we can take the dot product between higher-dimensional tensors following the same rules for shape compatibility as outlined earlier for the 2D case:</p>
+    <p>More generally, we can take the dot product between higher-dimensional tensors following the same rules for shape
+        compatibility as outlined earlier for the 2D case:</p>
 
-<pre><code>(a, b, c, d) ⋅ (d,)   -&gt; (a, b, c)
+    <pre><code>(a, b, c, d) ⋅ (d,)   -&gt; (a, b, c)
 (a, b, c, d) ⋅ (d, e) -&gt; (a, b, c, e)
 </code></pre>
 
-<h3 id="tensor-reshaping">Tensor reshaping</h3>
+    <h3 id="tensor-reshaping">Tensor reshaping</h3>
 
-<p>A third tensor operation that's crucial to deep learning is tensor reshaping.
-We first encountered tensor reshaping earlier in the chapter when we <a href="#preparing-the-data">processed input images</a> for our neural network.</p>
+    <p>A third tensor operation that's crucial to deep learning is tensor reshaping.
+        We first encountered tensor reshaping earlier in the chapter when we <a href="#preparing-the-data">processed
+            input images</a> for our neural network.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">train_images</span> <span class="o">=</span> <span class="n">train_images</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6000</span><span class="p">,</span> <span class="mi">28</span><span class="o">*</span><span class="mi">28</span><span class="p">))</span>
-</code></pre></div>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">train_images</span> <span class="o">=</span> <span class="n">train_images</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6000</span><span class="p">,</span> <span class="mi">28</span><span class="o">*</span><span class="mi">28</span><span class="p">))</span>
+</code></pre>
+    </div>
 
-<p>Reshaping is the rearranging of a tensor's columns and rows.
-Expectedly, the result is a tensor with the same number of elements as the original tensor, but with a new shape.
-Consider the following example:</p>
+    <p>Reshaping is the rearranging of a tensor's columns and rows.
+        Expectedly, the result is a tensor with the same number of elements as the original tensor, but with a new
+        shape.
+        Consider the following example:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
 <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
@@ -651,20 +807,25 @@ Consider the following example:</p>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">z</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">z</span>
 <span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">]])</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>A common reshaping operation is the <em>flattening</em> of a tensor.
-The <em>flattening</em> operation is simply the concatenation of all the elements of a tensor into a single vector.</p>
+    <p>A common reshaping operation is the <em>flattening</em> of a tensor.
+        The <em>flattening</em> operation is simply the concatenation of all the elements of a tensor into a single
+        vector.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 <span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>A special case of the reshaping operation is the <em>transposing</em> of a tensor.
-The transpose operation is simply the reverse of the reshaping operation.</p>
+    <p>A special case of the reshaping operation is the <em>transposing</em> of a tensor.
+        The transpose operation is simply the reverse of the reshaping operation.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
 <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
@@ -677,12 +838,14 @@ The transpose operation is simply the reverse of the reshaping operation.</p>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>
 <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>A seemingly useless case of tensor reshaping - generated by CoPilot - is when the new shape is a singleton.
-For example, we can reshape a vector to a scalar:</p>
+    <p>A seemingly useless case of tensor reshaping - generated by CoPilot - is when the new shape is a singleton.
+        For example, we can reshape a vector to a scalar:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
 <span class="p">(</span><span class="mi">3</span><span class="p">,)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(())</span>
@@ -690,156 +853,208 @@ For example, we can reshape a vector to a scalar:</p>
 <span class="mi">1</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span>
 <span class="p">()</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="geometric-interpretations">Geometric interpretations</h3>
+    <h3 id="geometric-interpretations">Geometric interpretations</h3>
 
-<p>The book goes into deep detail about the geometric interpretations of deep learning and tensors operations.</p>
+    <p>The book goes into deep detail about the geometric interpretations of deep learning and tensors operations.</p>
 
-<p>François compares tensor operations to vector/matrix addition, translation, rotation, scaling, and other geometric operations.
-I believe these are fundamental concepts for understanding how data transformations are performed in neural networks as they provide a different perspective on the way data is processed.
-However, I will not be covering these concepts in this article because they diverge from the high-level concepts I wish to cover.
-I recommend reading the book's chapter on geometric interpretations of tensor operations.</p>
+    <p>François compares tensor operations to vector/matrix addition, translation, rotation, scaling, and other
+        geometric operations.
+        I believe these are fundamental concepts for understanding how data transformations are performed in neural
+        networks as they provide a different perspective on the way data is processed.
+        However, I will not be covering these concepts in this article because they diverge from the high-level concepts
+        I wish to cover.
+        I recommend reading the book's chapter on geometric interpretations of tensor operations.</p>
 
-<hr />
+    <hr />
 
-<h2 id="how-neural-networks-learn">How neural networks learn</h2>
+    <h2 id="how-neural-networks-learn">How neural networks learn</h2>
 
-<p>Each neural layer from our first model example transforms its input data as follows:</p>
+    <p>Each neural layer from our first model example transforms its input data as follows:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">output</span> <span class="o">=</span> <span class="n">relu</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
-</code></pre></div>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">output</span> <span class="o">=</span> <span class="n">relu</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+</code></pre>
+    </div>
 
-<p>In this expression, <code>W</code> and <code>b</code> are tensors from the layer attributes - <code>W</code> is the <em>weight</em> matrix and <code>b</code> is the <em>bias vector</em>.
-These variables are also called the <em>trainable parameters</em> (<code>kernel</code> and <code>bias</code> attributes, respectively) of the layer.
-The weights contain the information learned by the model from exposure to training data.</p>
+    <p>In this expression, <code>W</code> and <code>b</code> are tensors from the layer attributes - <code>W</code> is
+        the <em>weight</em> matrix and <code>b</code> is the <em>bias vector</em>.
+        These variables are also called the <em>trainable parameters</em> (<code>kernel</code> and <code>bias</code>
+        attributes, respectively) of the layer.
+        The weights contain the information learned by the model from exposure to training data.</p>
 
-<p>Upon initializing the model, the weights are randomly initialized - filled with random values.
-What comes next is to gradually update the weights based on a feedback signal from the loss function.
-The gradual adjustment of weights, also called <em>training</em>, is how the neural networks learn.
-Training is what machine learning is all about!</p>
+    <p>Upon initializing the model, the weights are randomly initialized - filled with random values.
+        What comes next is to gradually update the weights based on a feedback signal from the loss function.
+        The gradual adjustment of weights, also called <em>training</em>, is how the neural networks learn.
+        Training is what machine learning is all about!</p>
 
-<p>The model trains in what's called a <em>training loop</em>.
-At a high level, the following steps are repeated until the loss function converges:</p>
+    <p>The model trains in what's called a <em>training loop</em>.
+        At a high level, the following steps are repeated until the loss function converges:</p>
 
-<ol>
-<li>Draw a batch of training samples, <code>x</code>, and corresponding target labels, <code>y_true</code></li>
-<li>Run the model on <code>x</code> - a step called the <em>forward pass</em> - to obtain predictions, <code>y_pred</code></li>
-<li>Compute the loss of the model on the batch, a measure of the mismatch between <code>y_true</code> and <code>y_pred</code></li>
-<li>Update all weights of the model in a way that slightly reduces the loss on the batch</li>
-</ol>
+    <ol>
+        <li>Draw a batch of training samples, <code>x</code>, and corresponding target labels, <code>y_true</code></li>
+        <li>Run the model on <code>x</code> - a step called the <em>forward pass</em> - to obtain predictions,
+            <code>y_pred</code>
+        </li>
+        <li>Compute the loss of the model on the batch, a measure of the mismatch between <code>y_true</code> and
+            <code>y_pred</code>
+        </li>
+        <li>Update all weights of the model in a way that slightly reduces the loss on the batch</li>
+    </ol>
 
-<p>Step 1 is easy: we load our dataset (images, tabular data, etc.) and their corresponding labels.
-Steps 2 and 3 are a handful of tensor operations and basic mathematics.
-Step 4, however, is the most difficult part.
-We will cover the high-level details of step 4 in the following <em>gradient descent</em> and <em>backpropagation</em> sections.</p>
+    <p>Step 1 is easy: we load our dataset (images, tabular data, etc.) and their corresponding labels.
+        Steps 2 and 3 are a handful of tensor operations and basic mathematics.
+        Step 4, however, is the most difficult part.
+        We will cover the high-level details of step 4 in the following <em>gradient descent</em> and
+        <em>backpropagation</em> sections.
+    </p>
 
-<h3 id="gradient-the-derivative-of-tensor-operations">Gradient: The derivative of tensor operations</h3>
+    <h3 id="gradient-the-derivative-of-tensor-operations">Gradient: The derivative of tensor operations</h3>
 
-<blockquote>
-  <p><strong>NOTE: Assumptions</strong></p>
+    <blockquote>
+        <p><strong>NOTE: Assumptions</strong></p>
 
-  <p>This section assumes that you are familiar with <a href="#tensor-operations">tensor operations</a> and the concept of derivatives in calculus.
-  Below are some helpful rules to keep in mind:</p>
+        <p>This section assumes that you are familiar with <a href="#tensor-operations">tensor operations</a> and the
+            concept of derivatives in calculus.
+            Below are some helpful rules to keep in mind:</p>
 
-  <ul>
-  <li>Gradients can be interpreted as the direction of the steepest ascent of some function with respect to some variable.</li>
-  <li>Given a differential function, it's possible to find its minimum when the derivative is zero.
-  <ul>
-  <li>For a neural network, the minimum can be found by solving for <code>grad(f(W), W) = 0</code> or <code>grad(loss_score, W) = 0</code> using gradient descent.</li>
-  </ul></li>
-  </ul>
-</blockquote>
+        <ul>
+            <li>Gradients can be interpreted as the direction of the steepest ascent of some function with respect to
+                some variable.</li>
+            <li>Given a differential function, it's possible to find its minimum when the derivative is zero.
+                <ul>
+                    <li>For a neural network, the minimum can be found by solving for <code>grad(f(W), W) = 0</code> or
+                        <code>grad(loss_score, W) = 0</code> using gradient descent.
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </blockquote>
 
-<p>The derivative of a tensor operation (or tensor function) is called a gradient.
-The concept of derivation can be applied to any function, as long as the surfaces they describe are continuous and smooth.
-For example, the tensor operations used in our model - such as <code>relu</code>, <code>dot</code>, addition, etc. - are all continuous and smooth.</p>
+    <p>The derivative of a tensor operation (or tensor function) is called a gradient.
+        The concept of derivation can be applied to any function, as long as the surfaces they describe are continuous
+        and smooth.
+        For example, the tensor operations used in our model - such as <code>relu</code>, <code>dot</code>, addition,
+        etc. - are all continuous and smooth.</p>
 
-<p>All of the functions used in our models (such as <code>dot</code> or <code>+</code>) transform their input smoothly and continuously.
-Therefore, we can derive the gradient of all the tensor operations used in our model and use it to update the weights of the model.</p>
+    <p>All of the functions used in our models (such as <code>dot</code> or <code>+</code>) transform their input
+        smoothly and continuously.
+        Therefore, we can derive the gradient of all the tensor operations used in our model and use it to update the
+        weights of the model.</p>
 
-<p>For instance, if we look at <code>z = x + y</code>, we can determine that a small change in <code>x</code> will not change <code>z</code> much, but a large change in <code>x</code> will change <code>z</code> much more.
-Furthermore, if we know the direction of the change in <code>x</code>, we can infer the direction of the change in <code>z</code>.
-In mathematics, we called these <em>differentiable</em> functions.
-We can use the inferred direction of change to update the model's weight in a way that will incrementally reduce the loss during training.</p>
+    <p>For instance, if we look at <code>z = x + y</code>, we can determine that a small change in <code>x</code> will
+        not change <code>z</code> much, but a large change in <code>x</code> will change <code>z</code> much more.
+        Furthermore, if we know the direction of the change in <code>x</code>, we can infer the direction of the change
+        in <code>z</code>.
+        In mathematics, we called these <em>differentiable</em> functions.
+        We can use the inferred direction of change to update the model's weight in a way that will incrementally reduce
+        the loss during training.</p>
 
-<p>Mathematically, the gradient of a function represents the <em>curvature</em> of the multidimensional surface described by the function.
-Simply put, <strong>gradients characterize how the output of the function varies when its input parameters vary.</strong></p>
+    <p>Mathematically, the gradient of a function represents the <em>curvature</em> of the multidimensional surface
+        described by the function.
+        Simply put, <strong>gradients characterize how the output of the function varies when its input parameters
+            vary.</strong></p>
 
-<h3 id="gradient-descent">Gradient descent</h3>
+    <h3 id="gradient-descent">Gradient descent</h3>
 
-<p>Gradient descent is a common technique for optimizing neural networks by nudging the parameters of a neural network towards the minimum of the loss function.
-Essentially, it's the process for solving the equation <code>grad(f(W), W) = 0</code>.
-It's the key to figuring out what combination of weights can output the lowest loss.</p>
+    <p>Gradient descent is a common technique for optimizing neural networks by nudging the parameters of a neural
+        network towards the minimum of the loss function.
+        Essentially, it's the process for solving the equation <code>grad(f(W), W) = 0</code>.
+        It's the key to figuring out what combination of weights can output the lowest loss.</p>
 
-<p>Tying gradients back to weight updates and loss scores, the gradient can be used to move the weights of the model towards the minimum of the loss function.
-The weights are moved <strong>opposite</strong> to the direction of the gradient.</p>
+    <p>Tying gradients back to weight updates and loss scores, the gradient can be used to move the weights of the model
+        towards the minimum of the loss function.
+        The weights are moved <strong>opposite</strong> to the direction of the gradient.</p>
 
-<p>Why are weights moved in the opposite direction of the gradient?</p>
+    <p>Why are weights moved in the opposite direction of the gradient?</p>
 
-<p>The gradient - such as <code>grad(loss_score, W0)</code> - can be interpreted as the direction of <strong>steepest ascent</strong> of <code>loss_value = f(W)</code> with respect to <code>W0</code>, where <code>f</code> is the loss function.
-Intuitively, moving <code>W1</code> in the opposite direction of the steepest ascent (<code>grad(loss_score, W0</code>) will move the weights closer to a lower point of the curve - hence the name, gradient <strong>descent</strong>.
-When done incrementally during training, we see that the weights converge to the minimum of the loss function.</p>
+    <p>The gradient - such as <code>grad(loss_score, W0)</code> - can be interpreted as the direction of
+        <strong>steepest ascent</strong> of <code>loss_value = f(W)</code> with respect to <code>W0</code>, where
+        <code>f</code> is the loss function.
+        Intuitively, moving <code>W1</code> in the opposite direction of the steepest ascent
+        (<code>grad(loss_score, W0</code>) will move the weights closer to a lower point of the curve - hence the name,
+        gradient <strong>descent</strong>.
+        When done incrementally during training, we see that the weights converge to the minimum of the loss function.
+    </p>
 
-<p>Let's update the training loop process from <a href="#how-neural-networks-learn">above</a> to include gradient descent:</p>
+    <p>Let's update the training loop process from <a href="#how-neural-networks-learn">above</a> to include gradient
+        descent:</p>
 
-<ol>
-<li>Draw a batch of training samples, <code>x</code>, and corresponding target labels, <code>y_true</code></li>
-<li>Run the model on <code>x</code> - a step called the <em>forward pass</em> - to obtain predictions, <code>y_pred</code></li>
-<li>Compute the loss of the model on the batch, a measure of the mismatch between <code>y_true</code> and <code>y_pred</code></li>
-<li>Compute the gradient of the loss with respect to the model's parameters - a step called the <em>backward pass</em></li>
-<li>Move the parameters a little in the opposite direction from the gradient - <code>W -= learning_rate * gradient</code> - thus reducing the loss on the batch.
-<ul>
-<li>The <em>learning rate</em> (<code>learning_rate</code>) would be a scalar responsible for modulating the magnitude of the descent - or how big of a step the weights are moved</li>
-</ul></li>
-</ol>
+    <ol>
+        <li>Draw a batch of training samples, <code>x</code>, and corresponding target labels, <code>y_true</code></li>
+        <li>Run the model on <code>x</code> - a step called the <em>forward pass</em> - to obtain predictions,
+            <code>y_pred</code>
+        </li>
+        <li>Compute the loss of the model on the batch, a measure of the mismatch between <code>y_true</code> and
+            <code>y_pred</code>
+        </li>
+        <li>Compute the gradient of the loss with respect to the model's parameters - a step called the <em>backward
+                pass</em></li>
+        <li>Move the parameters a little in the opposite direction from the gradient -
+            <code>W -= learning_rate * gradient</code> - thus reducing the loss on the batch.
+            <ul>
+                <li>The <em>learning rate</em> (<code>learning_rate</code>) would be a scalar responsible for modulating
+                    the magnitude of the descent - or how big of a step the weights are moved</li>
+            </ul>
+        </li>
+    </ol>
 
-<figure class="center" style="width:auto;">
-    <img src="img/sgd_1dimensional_curve.png"/>
-    <figcaption>Gradient descent down a smooth and continuous 1D loss curve with a reasonably-sized learning rate </figcaption>
-</figure>
+    <figure class="center" style="width:auto;">
+        <img src="img/sgd_1dimensional_curve.png" />
+        <figcaption>Gradient descent down a smooth and continuous 1D loss curve with a reasonably-sized learning rate
+        </figcaption>
+    </figure>
 
-<p>It's important to pick a reasonable value for the <code>learning_rate</code>.
-If it's too small, the descent down the curve will take many iterations and may get stuck in a local minimum.
-If it's too large, the updates will be too big and may take you to completely random locations on the curve.</p>
+    <p>It's important to pick a reasonable value for the <code>learning_rate</code>.
+        If it's too small, the descent down the curve will take many iterations and may get stuck in a local minimum.
+        If it's too large, the updates will be too big and may take you to completely random locations on the curve.</p>
 
-<h3 id="variants-of-gradient-descent">Variants of gradient descent</h3>
+    <h3 id="variants-of-gradient-descent">Variants of gradient descent</h3>
 
-<p>There exist multiple variants of gradient descent.
-These variants are known as <em>optimizers</em> or <em>optimization algorithms</em>.</p>
+    <p>There exist multiple variants of gradient descent.
+        These variants are known as <em>optimizers</em> or <em>optimization algorithms</em>.</p>
 
-<p>The variant used above is called <em>stochastic gradient descent</em> - more specifically, <em>mini-batch stochastic gradient descent (SGD)</em>.
-SGD is a simple variant that looks only at the current value of the gradients.</p>
+    <p>The variant used above is called <em>stochastic gradient descent</em> - more specifically, <em>mini-batch
+            stochastic gradient descent (SGD)</em>.
+        SGD is a simple variant that looks only at the current value of the gradients.</p>
 
-<p>Other variants - such as <em>Adagrad</em>, <em>RMSprop</em>, and so on - differ by taking into account previous weight updates when computing the next weight update.
-This is an important concept called <em>momentum</em>.</p>
+    <p>Other variants - such as <em>Adagrad</em>, <em>RMSprop</em>, and so on - differ by taking into account previous
+        weight updates when computing the next weight update.
+        This is an important concept called <em>momentum</em>.</p>
 
-<h3 id="gradient-descent-with-momentum">Gradient descent with momentum</h3>
+    <h3 id="gradient-descent-with-momentum">Gradient descent with momentum</h3>
 
-<p>Momentum is the process of using previous weight updates to compute the next weight update.
-It addresses two issues with SGD:</p>
+    <p>Momentum is the process of using previous weight updates to compute the next weight update.
+        It addresses two issues with SGD:</p>
 
-<ol>
-<li>Convergence speed</li>
-<li>Local minima</li>
-</ol>
+    <ol>
+        <li>Convergence speed</li>
+        <li>Local minima</li>
+    </ol>
 
-<figure class="right">
-    <img src="img/global_local_minimum.png" style="width:85%;"/>
-    <figcaption>Smooth, continuous loss curve with local minimum and global minimum points</figcaption>
-</figure>
+    <figure class="right">
+        <img src="img/global_local_minimum.png" style="width:85%;" />
+        <figcaption>Smooth, continuous loss curve with local minimum and global minimum points</figcaption>
+    </figure>
 
-<p>Around a specific point in the figure beside, we can see there is a <em>local minimum</em> where moving left results in the loss increasing, but so does moving right.
-If the parameters were optimized via SGD with a small learning rate, the loss would get stuck at the local minimum instead of the global minimum.</p>
+    <p>Around a specific point in the figure beside, we can see there is a <em>local minimum</em> where moving left
+        results in the loss increasing, but so does moving right.
+        If the parameters were optimized via SGD with a small learning rate, the loss would get stuck at the local
+        minimum instead of the global minimum.</p>
 
-<p>The concept of momentum is inspired by physics - such as a small ball rolling down the loss curve.
-If the ball has enough momentum, it won't get stuck in the local minimum.</p>
+    <p>The concept of momentum is inspired by physics - such as a small ball rolling down the loss curve.
+        If the ball has enough momentum, it won't get stuck in the local minimum.</p>
 
-<p>Momentum is implemented by moving the ball at each step based not only on the current slope value (current acceleration) but also on the current velocity (resulting from pass acceleration).
-This means updating the parameter <code>w</code> based not only on the current gradient value but also on previous parameter updates.
-Take a look at this naive implementation:</p>
+    <p>Momentum is implemented by moving the ball at each step based not only on the current slope value (current
+        acceleration) but also on the current velocity (resulting from pass acceleration).
+        This means updating the parameter <code>w</code> based not only on the current gradient value but also on
+        previous parameter updates.
+        Take a look at this naive implementation:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">past_velocity</span> <span class="o">=</span> <span class="mi">0</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">past_velocity</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.1</span>
 <span class="k">while</span> <span class="n">loss</span> <span class="o">&gt;</span> <span class="mf">0.01</span><span class="p">:</span>
     <span class="n">w</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">gradient</span> <span class="o">=</span> <span class="n">get_model_parameters</span><span class="p">()</span>
@@ -847,112 +1062,152 @@ Take a look at this naive implementation:</p>
     <span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">+</span> <span class="n">momentum</span> <span class="o">*</span> <span class="n">velocity</span> <span class="o">-</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">gradient</span>
     <span class="n">past_velocity</span> <span class="o">=</span> <span class="n">velocity</span>
     <span class="n">update_model_parameters</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="backpropagation">Backpropagation</h3>
+    <h3 id="backpropagation">Backpropagation</h3>
 
-<p>A neural network consists of many tensor operations chained together: <code>dot</code>, <code>relu</code>, <code>softmax</code>, and <code>+</code>.
-Each operation has a simple, known derivative.
-Backpropagation is the process of finding the derivative of the loss function with respect to the weights and biases of a neural network.</p>
+    <p>A neural network consists of many tensor operations chained together: <code>dot</code>, <code>relu</code>,
+        <code>softmax</code>, and <code>+</code>.
+        Each operation has a simple, known derivative.
+        Backpropagation is the process of finding the derivative of the loss function with respect to the weights and
+        biases of a neural network.
+    </p>
 
-<p>Mathematically, Calculus tells us that a chain of functions can be derived using the <em>chain rule</em>.
-Consider the two functions <code>f</code> and <code>g</code>, and the composed <code>fg</code> such that <code>fg(x) = f(g(x))</code>:</p>
+    <p>Mathematically, Calculus tells us that a chain of functions can be derived using the <em>chain rule</em>.
+        Consider the two functions <code>f</code> and <code>g</code>, and the composed <code>fg</code> such that
+        <code>fg(x) = f(g(x))</code>:
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">fg</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="k">def</span> <span class="nf">fg</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">x1</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">y</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Mathematically, the chain rule states that <code>grad(y, x) == grad(y, x1) * grad(x1, x)</code>.
-In English, the chain rule states that the derivative of <code>fg</code> with respect to <code>x</code> is the derivative of <code>f</code> with respect to <code>x1</code> times the derivative of <code>g</code> with respect to <code>x</code>.
-This enables us to compute the derivative of <code>fg</code> as long as we know the derivatives of <code>f</code> and <code>g</code>.</p>
+    <p>Mathematically, the chain rule states that <code>grad(y, x) == grad(y, x1) * grad(x1, x)</code>.
+        In English, the chain rule states that the derivative of <code>fg</code> with respect to <code>x</code> is the
+        derivative of <code>f</code> with respect to <code>x1</code> times the derivative of <code>g</code> with respect
+        to <code>x</code>.
+        This enables us to compute the derivative of <code>fg</code> as long as we know the derivatives of
+        <code>f</code> and <code>g</code>.
+    </p>
 
-<p>Let's increase the size of the composed function to further understand why it's called the <em>chain</em> rule:</p>
+    <p>Let's increase the size of the composed function to further understand why it's called the <em>chain</em> rule:
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">fghj</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="k">def</span> <span class="nf">fghj</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">x1</span> <span class="o">=</span> <span class="n">j</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">x2</span> <span class="o">=</span> <span class="n">h</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
     <span class="n">x3</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x3</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">y</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Then the chain rule states that <code>grad(y, x) == grad(y, x3) * grad(x3, x2) * grad(x2, x1) * grad(x1, x)</code>.
-Let's dive deeper into the algorithm using computation graphs.</p>
+    <p>Then the chain rule states that
+        <code>grad(y, x) == grad(y, x3) * grad(x3, x2) * grad(x2, x1) * grad(x1, x)</code>.
+        Let's dive deeper into the algorithm using computation graphs.
+    </p>
 
-<h3 id="backpropagation-algorithm">Backpropagation algorithm</h3>
+    <h3 id="backpropagation-algorithm">Backpropagation algorithm</h3>
 
-<figure class="right" style="width:auto;">
-    <img src="img/forward_pass.png" style="width:80%;"/>
-    <figcaption>Computation graph of a forward pass</figcaption>
-</figure>
+    <figure class="right" style="width:auto;">
+        <img src="img/forward_pass.png" style="width:80%;" />
+        <figcaption>Computation graph of a forward pass</figcaption>
+    </figure>
 
-<p>Using the backpropagation algorithm, we can get the gradient of the loss with respect to the weights and biases of the network.
-Mathematically, we're solving the following equation: <code>grad(loss_score, w) = 0</code>.</p>
+    <p>Using the backpropagation algorithm, we can get the gradient of the loss with respect to the weights and biases
+        of the network.
+        Mathematically, we're solving the following equation: <code>grad(loss_score, w) = 0</code>.</p>
 
-<p><em>Computation graphs</em> are simple data structures that represent operations as data.
-It's a directed acyclic graph of operations - in our case, tensor operations.
-The image below is an example of a computation graph of a forward pass with input <code>x</code> and operations <code>*</code>, <code>+</code>, and <code>loss</code>, where <code>loss</code> is our loss function <code>loss_score = abs(y_true - x2)</code>.</p>
+    <p><em>Computation graphs</em> are simple data structures that represent operations as data.
+        It's a directed acyclic graph of operations - in our case, tensor operations.
+        The image below is an example of a computation graph of a forward pass with input <code>x</code> and operations
+        <code>*</code>, <code>+</code>, and <code>loss</code>, where <code>loss</code> is our loss function
+        <code>loss_score = abs(y_true - x2)</code>.
+    </p>
 
-<p>The forward pass has input <code>x = 3</code> with parameters <code>w = 2</code> and <code>b = 3</code>, resulting in <code>loss_score = 1</code>.</p>
+    <p>The forward pass has input <code>x = 3</code> with parameters <code>w = 2</code> and <code>b = 3</code>,
+        resulting in <code>loss_score = 1</code>.</p>
 
-<p>Simple enough to read a computation graph, right?
-Let's look at the computation graph of a backward pass to learn how to compute the gradients.
-Given the backward pass graph, we can compute the following gradients:</p>
+    <p>Simple enough to read a computation graph, right?
+        Let's look at the computation graph of a backward pass to learn how to compute the gradients.
+        Given the backward pass graph, we can compute the following gradients:</p>
 
-<figure class="right">
-  <img src="img/backward_pass.png" style="width:85%;">
-  <figcaption>Computation graph of backward pass</figcaption>
-</figure>
+    <figure class="right">
+        <img src="img/backward_pass.png" style="width:85%;">
+        <figcaption>Computation graph of backward pass</figcaption>
+    </figure>
 
-<ul>
-<li><code>grad(loss_score, x2) = 1</code>, because as <code>x2</code> varies by an amount epsilon, the <code>loss_score = abs(8 - x2)</code> changes by the same amount epsilon</li>
-<li><code>grad(x2, x1) = 1</code>, because as <code>x1</code> varies by an amount epsilon, the <code>x2 = x1 + b = x1 + 1</code> changes by the same amount epsilon</li>
-<li><code>grad(x2, b) = 1</code>, because as <code>b</code> varies by an amount epsilon, the <code>x2 = x1 + b = 6 + b</code> changes by the same amount epsilon</li>
-<li><code>grad(x1, w) = 3</code>, because as <code>w</code> varies by an amount epsilon, the <code>x1 = w * x = 3 * x</code> changes by <code>3 * epsilon</code></li>
-</ul>
+    <ul>
+        <li><code>grad(loss_score, x2) = 1</code>, because as <code>x2</code> varies by an amount epsilon, the
+            <code>loss_score = abs(8 - x2)</code> changes by the same amount epsilon
+        </li>
+        <li><code>grad(x2, x1) = 1</code>, because as <code>x1</code> varies by an amount epsilon, the
+            <code>x2 = x1 + b = x1 + 1</code> changes by the same amount epsilon
+        </li>
+        <li><code>grad(x2, b) = 1</code>, because as <code>b</code> varies by an amount epsilon, the
+            <code>x2 = x1 + b = 6 + b</code> changes by the same amount epsilon
+        </li>
+        <li><code>grad(x1, w) = 3</code>, because as <code>w</code> varies by an amount epsilon, the
+            <code>x1 = w * x = 3 * x</code> changes by <code>3 * epsilon</code>
+        </li>
+    </ul>
 
-<p>The chain rule says that we can obtain the derivative of a node with respect to another node by <em>multiplying the derivatives for each edge along the path linking the two nodes</em>.
-Therefore, we can compute the gradient of the <code>loss_score</code> with respect to the weights (<code>grad(loss_score, w)</code>) using the chain rule.</p>
+    <p>The chain rule says that we can obtain the derivative of a node with respect to another node by <em>multiplying
+            the derivatives for each edge along the path linking the two nodes</em>.
+        Therefore, we can compute the gradient of the <code>loss_score</code> with respect to the weights
+        (<code>grad(loss_score, w)</code>) using the chain rule.</p>
 
-<p>For instance, the figure below shows the path from <code>loss_score</code> to <code>w</code>.
-The path produces the following gradient calculation: <code>grad(loss_score, w) = grad(loss_score, x2) * grad(x2, x1) * grad(x1, w)</code>.</p>
+    <p>For instance, the figure below shows the path from <code>loss_score</code> to <code>w</code>.
+        The path produces the following gradient calculation:
+        <code>grad(loss_score, w) = grad(loss_score, x2) * grad(x2, x1) * grad(x1, w)</code>.
+    </p>
 
-<figure class="right">
-  <img src="img/backward_pass_path.png" style="width:85%;">
-  <figcaption>Path to compute gradient of loss score with respect to weights</figcaption>
-</figure>
+    <figure class="right">
+        <img src="img/backward_pass_path.png" style="width:85%;">
+        <figcaption>Path to compute gradient of loss score with respect to weights</figcaption>
+    </figure>
 
-<p>By applying the chain rule to our graph, we obtain what we were looking for:</p>
+    <p>By applying the chain rule to our graph, we obtain what we were looking for:</p>
 
-<ul>
-<li><code>grad(loss_score, w) = 1 * 1 * 3 = 3</code></li>
-<li><code>grad(loss_score, b) = 1 * 1 * 1 = 1</code></li>
-</ul>
+    <ul>
+        <li><code>grad(loss_score, w) = 1 * 1 * 3 = 3</code></li>
+        <li><code>grad(loss_score, b) = 1 * 1 * 1 = 1</code></li>
+    </ul>
 
-<p>That's the backpropagation algorithm using a simple computation graph example.
-The algorithm starts with the final loss score and works backward from the bottom layer to the top layers, computing the contribution of each parameter to the loss score.</p>
+    <p>That's the backpropagation algorithm using a simple computation graph example.
+        The algorithm starts with the final loss score and works backward from the bottom layer to the top layers,
+        computing the contribution of each parameter to the loss score.</p>
 
-<p>Now imagine a neural network with hundreds of layers and parameters.
-Calculating the gradient by hand would be tedious, error-prone, and time-consuming.
-That's why TensorFlow provides a way to compute the gradients for us through <em>automatic differentiation</em>.</p>
+    <p>Now imagine a neural network with hundreds of layers and parameters.
+        Calculating the gradient by hand would be tedious, error-prone, and time-consuming.
+        That's why TensorFlow provides a way to compute the gradients for us through <em>automatic differentiation</em>.
+    </p>
 
-<h3 id="tensorflows-gradient-tape">TensorFlow's gradient tape</h3>
+    <h3 id="tensorflows-gradient-tape">TensorFlow's gradient tape</h3>
 
-<p>The API through used to leverage TensorFlow's automatic differentiation is the <code>GradientTape</code>.
-It's a Python context that will "record" tensor operations executed within the context in the form of computation graphs.
-The computation graphs are used to retrieve the gradient of any output with respect to any variable or set of variables (instances of the <code>tf.Variable</code> class).</p>
+    <p>The API through used to leverage TensorFlow's automatic differentiation is the <code>GradientTape</code>.
+        It's a Python context that will "record" tensor operations executed within the context in the form of
+        computation graphs.
+        The computation graphs are used to retrieve the gradient of any output with respect to any variable or set of
+        variables (instances of the <code>tf.Variable</code> class).</p>
 
-<blockquote>
-  <p><strong>NOTE: <code>tf.Variable</code> class</strong></p>
+    <blockquote>
+        <p><strong>NOTE: <code>tf.Variable</code> class</strong></p>
 
-  <p>The <code>tf.Variable</code> class is simply a container that holds a mutable tensor.
-  For instance, the weights of a neural network are stored in <code>tf.Variable</code> instances.
-  Read more about <code>tf.Variable</code> class in the <a href="https://www.tensorflow.org/api_docs/python/tf/Variable">TensorFlow documentation</a>.</p>
-</blockquote>
+        <p>The <code>tf.Variable</code> class is simply a container that holds a mutable tensor.
+            For instance, the weights of a neural network are stored in <code>tf.Variable</code> instances.
+            Read more about <code>tf.Variable</code> class in the <a
+                href="https://www.tensorflow.org/api_docs/python/tf/Variable">TensorFlow documentation</a>.</p>
+    </blockquote>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 <span class="c1"># Initialize a variable with a scalar value of 3</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)</span>
 <span class="c1"># Open a GradientTape context, or scope</span>
@@ -963,11 +1218,13 @@ The computation graphs are used to retrieve the gradient of any output with resp
 <span class="n">grad_of_y_wrt_x</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 <span class="c1"># The gradient of y with respect to x is 5</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">grad_of_y_wrt_x</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>The <code>GradientTape</code> works with tensor operations and lists of variables as well:</p>
+    <p>The <code>GradientTape</code> works with tensor operations and lists of variables as well:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="c1"># Initialize a Variable of shape (2, 2) with random initial values</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="c1"># Initialize a Variable of shape (2, 2) with random initial values</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
 <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">tape</span><span class="p">:</span>
     <span class="c1"># Apply tensor operations within the context to our variable x</span>
@@ -992,106 +1249,156 @@ The computation graphs are used to retrieve the gradient of any output with resp
 
 <span class="nb">print</span><span class="p">(</span><span class="n">grad_of_y_wrt_W</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">grad_of_y_wrt_b</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>More information regarding the <code>GradientTape</code> can be found in the <a href="https://www.tensorflow.org/api_docs/python/tf/GradientTape">TensorFlow documentation</a> and Chapter 3 of <em>Deep Learning with Python</em>.</p>
+    <p>More information regarding the <code>GradientTape</code> can be found in the <a
+            href="https://www.tensorflow.org/api_docs/python/tf/GradientTape">TensorFlow documentation</a> and Chapter 3
+        of <em>Deep Learning with Python</em>.</p>
 
-<hr />
+    <hr />
 
-<h2 id="recap-looking-back-at-our-first-example">Recap: Looking back at our first example</h2>
+    <h2 id="recap-looking-back-at-our-first-example">Recap: Looking back at our first example</h2>
 
-<p>We should now have a general understanding of what's going on behind the scenes in a neural network.
-What was previously a mysterious black box has turned into a clearer picture seen below: the <strong>model</strong>, composed of sequential <strong>layers</strong>, maps the input data to predictions.
-The loss function then compares the predictions to the target values, producing a <strong>loss value</strong>: a measure of how well the model's predictions match what was expected.
-The <strong>optimizer</strong> uses this loss value to update the model's <strong>weights</strong>.</p>
+    <p>We should now have a general understanding of what's going on behind the scenes in a neural network.
+        What was previously a mysterious black box has turned into a clearer picture seen below: the
+        <strong>model</strong>, composed of sequential <strong>layers</strong>, maps the input data to predictions.
+        The loss function then compares the predictions to the target values, producing a <strong>loss value</strong>: a
+        measure of how well the model's predictions match what was expected.
+        The <strong>optimizer</strong> uses this loss value to update the model's <strong>weights</strong>.
+    </p>
 
-<h3 id="input">Input</h3>
+    <h3 id="input">Input</h3>
 
-<p>Now we understand that the input images are stored in NumPy tensors.
-Before training the model, the input images - training and testing images - were pre-processed: training tensors were converted to type <code>float32</code> and reshaped to shape <code>(60000, 28*28)</code> from <code>(60000, 28, 28)</code>, and testing tensors were similarly reformatted and reshaped <code>(10000, 28*28)</code> from <code>(10000, 28, 28)</code>.</p>
+    <p>Now we understand that the input images are stored in NumPy tensors.
+        Before training the model, the input images - training and testing images - were pre-processed: training tensors
+        were converted to type <code>float32</code> and reshaped to shape <code>(60000, 28*28)</code> from
+        <code>(60000, 28, 28)</code>, and testing tensors were similarly reformatted and reshaped
+        <code>(10000, 28*28)</code> from <code>(10000, 28, 28)</code>.
+    </p>
 
-<div class="codehilite"><pre><span></span><code><span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">),</span> <span class="p">(</span><span class="n">test_images</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span> <span class="o">=</span> <span class="n">mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">),</span> <span class="p">(</span><span class="n">test_images</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span> <span class="o">=</span> <span class="n">mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
 <span class="n">train_images</span> <span class="o">=</span> <span class="n">train_images</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">60000</span><span class="p">,</span> <span class="mi">28</span> <span class="o">*</span> <span class="mi">28</span><span class="p">))</span>
 <span class="n">train_images</span> <span class="o">=</span> <span class="n">train_images</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
 <span class="n">test_images</span> <span class="o">=</span> <span class="n">test_images</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">28</span> <span class="o">*</span> <span class="mi">28</span><span class="p">))</span>
 <span class="n">test_images</span> <span class="o">=</span> <span class="n">test_images</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="layers">Layers</h3>
+    <h3 id="layers">Layers</h3>
 
-<p>Recall that our two-layer neural network model was created like so:</p>
+    <p>Recall that our two-layer neural network model was created like so:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span>
     <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">),</span>
     <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;softmax&quot;</span><span class="p">)</span>
 <span class="p">])</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>We now understand that this model consists of a chain of two <code>Dense</code> layers.
-Each layer performs simple tensor operations to the input data, further refining the data to more useful data representations.</p>
+    <p>We now understand that this model consists of a chain of two <code>Dense</code> layers.
+        Each layer performs simple tensor operations to the input data, further refining the data to more useful data
+        representations.</p>
 
-<p>These layers incorporate the usage of layer <em>weight</em> tensors.
-Weight tensors, which are attributes of the layers, are where the <em>knowledge</em> of the model persists.</p>
+    <p>These layers incorporate the usage of layer <em>weight</em> tensors.
+        Weight tensors, which are attributes of the layers, are where the <em>knowledge</em> of the model persists.</p>
 
-<h3 id="loss-function-and-optimizer">Loss function and optimizer</h3>
+    <h3 id="loss-function-and-optimizer">Loss function and optimizer</h3>
 
-<p>This was the model-compilation step:</p>
+    <p>This was the model-compilation step:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s2">&quot;rmsprop&quot;</span><span class="p">,</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s2">&quot;rmsprop&quot;</span><span class="p">,</span>
               <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;sparse_categorical_crossentropy&quot;</span><span class="p">,</span>
               <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">])</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>We understand that <code>sparse_categorical_crossentropy</code> is the loss function that's used to calculate the loss score.
-The loss score is used as a feedback signal for learning the weight tensors.
-During the training phase, the training loop will attempt to minimize the loss score.</p>
+    <p>We understand that <code>sparse_categorical_crossentropy</code> is the loss function that's used to calculate the
+        loss score.
+        The loss score is used as a feedback signal for learning the weight tensors.
+        During the training phase, the training loop will attempt to minimize the loss score.</p>
 
-<p>The reduction of the loss happens via mini-batch stochastic (random) gradient descent.
-The exact rules and specifications of loss reduction are defined by the <code>rmsprop</code> optimizer passed as the model's first argument.</p>
+    <p>The reduction of the loss happens via mini-batch stochastic (random) gradient descent.
+        The exact rules and specifications of loss reduction are defined by the <code>rmsprop</code> optimizer passed as
+        the model's first argument.</p>
 
-<h3 id="training-loop">Training loop</h3>
+    <h3 id="training-loop">Training loop</h3>
 
-<p>Finally, this was the model's training loop:</p>
+    <p>Finally, this was the model's training loop:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
-</code></pre></div>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_images</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+</code></pre>
+    </div>
 
-<p>Fitting the model to the training data is simple: the model will iterate on the training data in a mini-batch of 128 samples, 5 times over.
-Each iteration over the entire training dataset is called an <em>epoch</em>.
-Given that there are 60000 training images, there are a total of 60000/128 (~469, or 500) mini-batches.</p>
+    <p>Fitting the model to the training data is simple: the model will iterate on the training data in a mini-batch of
+        128 samples, 5 times over.
+        Each iteration over the entire training dataset is called an <em>epoch</em>.
+        Given that there are 60000 training images, there are a total of 60000/128 (~469, or 500) mini-batches.</p>
 
-<p>For each mini-batch, the model will compute the gradient of the loss with regard to the weights.
-Using the <em>Backpropagation</em> algorithm (which derives from the chain rule in calculus), the optimizer moves the weights in the direction that will reduce the value of the loss for this batch.</p>
+    <p>For each mini-batch, the model will compute the gradient of the loss with regard to the weights.
+        Using the <em>Backpropagation</em> algorithm (which derives from the chain rule in calculus), the optimizer
+        moves the weights in the direction that will reduce the value of the loss for this batch.</p>
 
-<p>And that's it!
-It sounds complicated when all the keywords are used, but we firmly understand that it's simply matrix multiplication, addition, subtraction, and derivatives.</p>
+    <p>And that's it!
+        It sounds complicated when all the keywords are used, but we firmly understand that it's simply matrix
+        multiplication, addition, subtraction, and derivatives.</p>
 
-<hr />
+    <hr />
 
-<h2 id="summary">Summary</h2>
+    <h2 id="summary">Summary</h2>
 
-<ul>
-<li><p><em>Tensors</em> form the foundation of modern machine learning systems. They come in various flavors of <code>rank</code>, <code>shape</code>, and <code>dtype</code>.</p></li>
-<li><p>We can manipulate numerical tensors via <em>tensor operations</em>: addition, tensor product, or element-wise multiplication.
-In general, everything in deep learning is comparable to a geometric transformation.</p></li>
-<li><p>Deep learning models consist of sequences of simple tensor operations, parameterized by <em>weights</em>, which are tensors themselves.
-The weights of a model are where the model's "knowledge" is stored.</p></li>
-<li><p><em>Learning</em> means finding a set of values for the model's weights such that the <em>loss score</em> is minimized for a given batch of training data samples.</p></li>
-<li><p>Learning happens by drawing random batches of data samples and their targets and computing the gradient of the model parameters with respect to the batch's loss score.
-The model's parameters are then moved - the magnitude of which is determined by the learning rate - in the opposite direction from the gradient.
-This is called <em>mini-batch stochastic gradient descent</em>.</p></li>
-<li><p>The entire learning process is made possible by the fact that all tensor operations in neural networks are differentiable, making it possible to apply the chain rule of derivation.
-The chain rule of derivation allows us to find the gradient function mapping the current parameters and current batch of data to a gradient value.
-This is called <em>backpropagation</em>.</p></li>
-<li><p>Two key concepts we'll see frequently in future chapters are <em>loss</em> and <em>optimizers</em>.</p>
+    <ul>
+        <li>
+            <p><em>Tensors</em> form the foundation of modern machine learning systems. They come in various flavors of
+                <code>rank</code>, <code>shape</code>, and <code>dtype</code>.
+            </p>
+        </li>
+        <li>
+            <p>We can manipulate numerical tensors via <em>tensor operations</em>: addition, tensor product, or
+                element-wise multiplication.
+                In general, everything in deep learning is comparable to a geometric transformation.</p>
+        </li>
+        <li>
+            <p>Deep learning models consist of sequences of simple tensor operations, parameterized by <em>weights</em>,
+                which are tensors themselves.
+                The weights of a model are where the model's "knowledge" is stored.</p>
+        </li>
+        <li>
+            <p><em>Learning</em> means finding a set of values for the model's weights such that the <em>loss score</em>
+                is minimized for a given batch of training data samples.</p>
+        </li>
+        <li>
+            <p>Learning happens by drawing random batches of data samples and their targets and computing the gradient
+                of the model parameters with respect to the batch's loss score.
+                The model's parameters are then moved - the magnitude of which is determined by the learning rate - in
+                the opposite direction from the gradient.
+                This is called <em>mini-batch stochastic gradient descent</em>.</p>
+        </li>
+        <li>
+            <p>The entire learning process is made possible by the fact that all tensor operations in neural networks
+                are differentiable, making it possible to apply the chain rule of derivation.
+                The chain rule of derivation allows us to find the gradient function mapping the current parameters and
+                current batch of data to a gradient value.
+                This is called <em>backpropagation</em>.</p>
+        </li>
+        <li>
+            <p>Two key concepts we'll see frequently in future chapters are <em>loss</em> and <em>optimizers</em>.</p>
 
-<ul>
-<li>The <em>loss</em> is the quantity we'll attempt to minimize during training, so it should represent a measure of success for the task we're trying to solve.</li>
-<li>The <em>optimizer</em> specifies the exact way in which the gradient of the loss will be used to update parameters.</li>
-</ul></li>
-</ul>
+            <ul>
+                <li>The <em>loss</em> is the quantity we'll attempt to minimize during training, so it should represent
+                    a measure of success for the task we're trying to solve.</li>
+                <li>The <em>optimizer</em> specifies the exact way in which the gradient of the loss will be used to
+                    update parameters.</li>
+            </ul>
+        </li>
+    </ul>
 
 </body>
+
 </html>

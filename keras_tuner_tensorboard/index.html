@@ -1,141 +1,183 @@
-
 <html>
 
+<base href="https://sasonreza.com/">
+
 <head>
-  <link rel="stylesheet" type="text/css" href="../css/default_dark.css">
-  <link rel="stylesheet" type="text/css" href="../css/syntax_dark.css">
+    <link rel="stylesheet" type="text/css" href="/css/default_dark.css">
+    <link rel="stylesheet" type="text/css" href="/css/syntax_dark.css">
 </head>
 
 <body>
-  <center>
-    <div style="display: inline-block; vertical-align:middle;">
-      <a href="/" style="text-decoration: none;">SASON REZA<br>
-      </a>
-      <hr>
-      <div style="text-align: center;display: inline-block; width: 100%;">
-        <a class="title" href="../about">ABOUT</a> &nbsp;<a class="title" href="../contact">CONTACT</a>
-      </div>
-    </div>
-  </center>
+    <center>
+        <div style="display: inline-block; vertical-align:middle;">
+            <a href="/" style="text-decoration: none;">SASON REZA<br>
+            </a>
+            <hr>
+            <div style="text-align: center;display: inline-block; width: 100%;">
+                <a class="title" href="/books">BOOKS</a> &nbsp;<a class="title" href="/about">ABOUT</a> &nbsp;<a
+                    class="title" href="/contact">CONTACT</a>
+            </div>
+        </div>
+    </center>
 
-  <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 27, 2022</p>
+    <br>
+    <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">July 27, 2022</p>
 
-<p><title>Hyperparameter optimization: KerasTuner &amp; TensorBoard</title></p>
+    <p>
+        <title>Hyperparameter optimization: KerasTuner &amp; TensorBoard</title>
+    </p>
 
-<h1 id="hyperparameter-optimization">Hyperparameter optimization</h1>
+    <h1 id="hyperparameter-optimization">Hyperparameter optimization</h1>
 
-<p>Finding the optimal model architecture and training configuration is a tedious and time-consuming task.
-The manual process of repeatedly tuning a model's hyperparameters often leads to suboptimal model performance.</p>
+    <p>Finding the optimal model architecture and training configuration is a tedious and time-consuming task.
+        The manual process of repeatedly tuning a model's hyperparameters often leads to suboptimal model performance.
+    </p>
 
-<p><em>Hyperparameters</em> are values that are used to control the model's learning process during training.
-Their values determine the model's performance – specifically, the model's ability to correctly map the input data to the desired labels or targets.
-The more optimal the hyperparameters, the better the model's performance.</p>
+    <p><em>Hyperparameters</em> are values that are used to control the model's learning process during training.
+        Their values determine the model's performance – specifically, the model's ability to correctly map the input
+        data to the desired labels or targets.
+        The more optimal the hyperparameters, the better the model's performance.</p>
 
-<p>In deep learning models, the most common hyperparameters are the number of hidden layers, the number of neurons in each layer, and the activation function used in each layer.</p>
+    <p>In deep learning models, the most common hyperparameters are the number of hidden layers, the number of neurons
+        in each layer, and the activation function used in each layer.</p>
 
-<p><details>
-<summary>Additional hyperparameters</summary></p>
+    <p>
+    <details>
+        <summary>Additional hyperparameters</summary>
+        </p>
 
-<ul>
-<li>Train-validation-test split ratio</li>
-<li>Number of epochs</li>
-<li>Optimizer algorithm (e.g., gradient descent, stochastic gradient descent, or Adam optimizer)</li>
-<li>Optimizer's learning-rate</li>
-<li>Convolutional layer's kernel or filter size</li>
-<li>Activation function in a neural network layer (e.g., Sigmoid, ReLU, Tanh)</li>
-<li>Number of hidden layers</li>
-<li>Number of activation units in each layer</li>
-<li>Dropout rate</li>
-<li>Pooling size</li>
-<li>Batch size</li>
-<li>Number of iterations (epochs) during training</li>
-<li>Number of clusters in a clustering task</li>
-</ul>
+        <ul>
+            <li>Train-validation-test split ratio</li>
+            <li>Number of epochs</li>
+            <li>Optimizer algorithm (e.g., gradient descent, stochastic gradient descent, or Adam optimizer)</li>
+            <li>Optimizer's learning-rate</li>
+            <li>Convolutional layer's kernel or filter size</li>
+            <li>Activation function in a neural network layer (e.g., Sigmoid, ReLU, Tanh)</li>
+            <li>Number of hidden layers</li>
+            <li>Number of activation units in each layer</li>
+            <li>Dropout rate</li>
+            <li>Pooling size</li>
+            <li>Batch size</li>
+            <li>Number of iterations (epochs) during training</li>
+            <li>Number of clusters in a clustering task</li>
+        </ul>
 
-<p></details></p>
+        <p>
+    </details>
+    </p>
 
-<p>We can use <a href="https://keras.io/keras_tuner/">KerasTuner</a> to automate the process of hyperparameter optimization.
-<a href="https://www.tensorflow.org/tensorboard/">TensorBoard</a> can be used alongside KerasTuner to visualize the optimization progress.</p>
+    <p>We can use <a href="https://keras.io/keras_tuner/">KerasTuner</a> to automate the process of hyperparameter
+        optimization.
+        <a href="https://www.tensorflow.org/tensorboard/">TensorBoard</a> can be used alongside KerasTuner to visualize
+        the optimization progress.
+    </p>
 
-<p>This article will cover the basics of hyperparameter optimization in deep learning projects using KerasTuner and TensorBoard.
-The examples will be based on my own <a href="../toonvision/classification">ToonVision</a> computer vision project.</p>
+    <p>This article will cover the basics of hyperparameter optimization in deep learning projects using KerasTuner and
+        TensorBoard.
+        The examples will be based on my own <a href="/toonvision/classification">ToonVision</a> computer vision
+        project.</p>
 
-<p><details>
-    <summary>Table of Contents</summary></p>
+    <p>
+    <details>
+        <summary>Table of Contents</summary>
+        </p>
 
-<ul>
-<li><a href="#hyperparameter-optimization">Hyperparameter optimization</a>
-<ul>
-<li><a href="#project-description">Project description</a>
-<ul>
-<li><a href="#model-architecture">Model architecture</a></li>
-<li><a href="#hyperparameters">Hyperparameters</a></li>
-</ul></li>
-<li><a href="#kerastuner">KerasTuner</a>
-<ul>
-<li><a href="#define-the-hyperparameter-search-space">Define the hyperparameter search space</a>
-<ul>
-<li><a href="#search-space-considerations">Search space considerations</a></li>
-</ul></li>
-<li><a href="#create-a-tuner-object">Create a tuner object</a></li>
-<li><a href="#launch-the-tuning-process">Launch the tuning process</a>
-<ul>
-<li><a href="#tuning-process-search-times">Tuning process search times</a></li>
-</ul></li>
-<li><a href="#tuning-process-results">Tuning process results</a>
-<ul>
-<li><a href="#retrieve-the-best-hyperparameter-values">Retrieve the best hyperparameter values</a></li>
-<li><a href="#create-a-model">Create a model</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#tensorboard">TensorBoard</a>
-<ul>
-<li><a href="#hyperparameter-values-and-lossaccuracy-metrics">Hyperparameter values and loss/accuracy metrics</a></li>
-<li><a href="#parallel-coordinates-view">Parallel coordinates view</a>
-<ul>
-<li><a href="#upper-distribution-of-hyperparameters">Upper distribution of hyperparameters</a></li>
-<li><a href="#lower-distribution-of-hyperparameters">Lower distribution of hyperparameters</a></li>
-<li><a href="#parallel-coordinates-view-findings">Parallel coordinates view findings</a></li>
-</ul></li>
-<li><a href="#scatter-plots-matrix-view">Scatter plots matrix view</a></li>
-</ul></li>
-<li><a href="#tuned-vs-baseline-performance">Tuned vs baseline performance</a>
-<ul>
-<li><a href="#baseline-model">Baseline model</a></li>
-<li><a href="#tuned-model">Tuned model</a></li>
-<li><a href="#model-predictions">Model predictions</a></li>
-<li><a href="#model-evaluations">Model evaluations</a></li>
-<li><a href="#model-summary-comparison">Model summary comparison</a></li>
-</ul></li>
-<li><a href="#conclusion">Conclusion</a></li>
-</ul></li>
-</ul>
+        <ul>
+            <li><a href="#hyperparameter-optimization">Hyperparameter optimization</a>
+                <ul>
+                    <li><a href="#project-description">Project description</a>
+                        <ul>
+                            <li><a href="#model-architecture">Model architecture</a></li>
+                            <li><a href="#hyperparameters">Hyperparameters</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#kerastuner">KerasTuner</a>
+                        <ul>
+                            <li><a href="#define-the-hyperparameter-search-space">Define the hyperparameter search
+                                    space</a>
+                                <ul>
+                                    <li><a href="#search-space-considerations">Search space considerations</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#create-a-tuner-object">Create a tuner object</a></li>
+                            <li><a href="#launch-the-tuning-process">Launch the tuning process</a>
+                                <ul>
+                                    <li><a href="#tuning-process-search-times">Tuning process search times</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#tuning-process-results">Tuning process results</a>
+                                <ul>
+                                    <li><a href="#retrieve-the-best-hyperparameter-values">Retrieve the best
+                                            hyperparameter values</a></li>
+                                    <li><a href="#create-a-model">Create a model</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#tensorboard">TensorBoard</a>
+                        <ul>
+                            <li><a href="#hyperparameter-values-and-lossaccuracy-metrics">Hyperparameter values and
+                                    loss/accuracy metrics</a></li>
+                            <li><a href="#parallel-coordinates-view">Parallel coordinates view</a>
+                                <ul>
+                                    <li><a href="#upper-distribution-of-hyperparameters">Upper distribution of
+                                            hyperparameters</a></li>
+                                    <li><a href="#lower-distribution-of-hyperparameters">Lower distribution of
+                                            hyperparameters</a></li>
+                                    <li><a href="#parallel-coordinates-view-findings">Parallel coordinates view
+                                            findings</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#scatter-plots-matrix-view">Scatter plots matrix view</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#tuned-vs-baseline-performance">Tuned vs baseline performance</a>
+                        <ul>
+                            <li><a href="#baseline-model">Baseline model</a></li>
+                            <li><a href="#tuned-model">Tuned model</a></li>
+                            <li><a href="#model-predictions">Model predictions</a></li>
+                            <li><a href="#model-evaluations">Model evaluations</a></li>
+                            <li><a href="#model-summary-comparison">Model summary comparison</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#conclusion">Conclusion</a></li>
+                </ul>
+            </li>
+        </ul>
 
-<p></details></p>
+        <p>
+    </details>
+    </p>
 
-<hr />
+    <hr />
 
-<h2 id="project-description">Project description</h2>
+    <h2 id="project-description">Project description</h2>
 
-<p>The ToonVision project is a single-label, multiclass classification model for classifying <a href="https://toontownrewritten.fandom.com/wiki/Cogs">Cogs</a> in ToonTown Online.
-There are four unique Cog types - also called <a href="https://toontownrewritten.fandom.com/wiki/Corporate_ladder">corporate ladders</a> or suits.
-Our goal is to train a model that can classify Cogs into one of the four unique suits, as seen in the image below.</p>
+    <p>The ToonVision project is a single-label, multiclass classification model for classifying <a
+            href="https://toontownrewritten.fandom.com/wiki/Cogs">Cogs</a> in ToonTown Online.
+        There are four unique Cog types - also called <a
+            href="https://toontownrewritten.fandom.com/wiki/Corporate_ladder">corporate ladders</a> or suits.
+        Our goal is to train a model that can classify Cogs into one of the four unique suits, as seen in the image
+        below.</p>
 
-<figure class="center">
-    <img src="img/unique_cogs.png" style="width:100%;"/>
-    <figcaption>Unique Cog types: Bossbot, Lawbot, Cashbot, Sellbot</figcaption>
-</figure>
+    <figure class="center">
+        <img src="img/unique_cogs.png" style="width:100%;" />
+        <figcaption>Unique Cog types: Bossbot, Lawbot, Cashbot, Sellbot</figcaption>
+    </figure>
 
-<h3 id="model-architecture">Model architecture</h3>
+    <h3 id="model-architecture">Model architecture</h3>
 
-<p>We'll create a model from scratch and use my <a href="../toonvision/classification/#the-toonvision-dataset">ToonVision dataset</a> to train and evaluate the model.</p>
+    <p>We'll create a model from scratch and use my <a
+            href="/toonvision/classification/#the-toonvision-dataset">ToonVision dataset</a> to train and evaluate the
+        model.</p>
 
-<p>The model will be a convolutional neural network (CNN).
-It will have two "blocks", each of which contains a single convolutional layer, two max-pooling layers, and a dropout layer.
-The final layer will be fully-connected (Dense) with four output nodes, one for each of the four Cog types.</p>
+    <p>The model will be a convolutional neural network (CNN).
+        It will have two "blocks", each of which contains a single convolutional layer, two max-pooling layers, and a
+        dropout layer.
+        The final layer will be fully-connected (Dense) with four output nodes, one for each of the four Cog types.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">make_multiclass_model</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="k">def</span> <span class="nf">make_multiclass_model</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
     <span class="n">inputs</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Rescaling</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)(</span><span class="n">inputs</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">RandomFlip</span><span class="p">(</span><span class="s2">&quot;horizontal&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
@@ -161,63 +203,75 @@ The final layer will be fully-connected (Dense) with four output nodes, one for 
         <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">SparseCategoricalAccuracy</span><span class="p">()],</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="hyperparameters">Hyperparameters</h3>
+    <h3 id="hyperparameters">Hyperparameters</h3>
 
-<p>The model's hyperparameters were chosen by intuition and experimentation.
-However, I believe that we can find better hyperparameters by tuning the model's hyperparameters using KerasTuner.</p>
+    <p>The model's hyperparameters were chosen by intuition and experimentation.
+        However, I believe that we can find better hyperparameters by tuning the model's hyperparameters using
+        KerasTuner.</p>
 
-<p>We'll focus on tuning the following four hyperparameters with KerasTuner:</p>
+    <p>We'll focus on tuning the following four hyperparameters with KerasTuner:</p>
 
-<ul>
-<li><code>filters</code>: The number of convolutional filters in each convolutional layer.</li>
-<li><code>kernel_size</code>: The size of the convolutional kernel.</li>
-<li><code>pool_size</code>: The size of the max pooling layers.</li>
-<li><code>dropout_rate</code>: The probability of dropping a neuron.</li>
-</ul>
+    <ul>
+        <li><code>filters</code>: The number of convolutional filters in each convolutional layer.</li>
+        <li><code>kernel_size</code>: The size of the convolutional kernel.</li>
+        <li><code>pool_size</code>: The size of the max pooling layers.</li>
+        <li><code>dropout_rate</code>: The probability of dropping a neuron.</li>
+    </ul>
 
-<div class="codehilite"><pre><span></span><code><span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Additional hyperparameter tuning could include the number of layers (convolutional/pooling/dropout), optimizer algorithm, and/or activation functions, but I will not cover these in this article.</p>
+    <p>Additional hyperparameter tuning could include the number of layers (convolutional/pooling/dropout), optimizer
+        algorithm, and/or activation functions, but I will not cover these in this article.</p>
 
-<p>Before we start tuning the hyperparameters, let's discuss what KerasTuner does and how it helps ML engineers.</p>
+    <p>Before we start tuning the hyperparameters, let's discuss what KerasTuner does and how it helps ML engineers.</p>
 
-<hr />
+    <hr />
 
-<h2 id="kerastuner">KerasTuner</h2>
+    <h2 id="kerastuner">KerasTuner</h2>
 
-<p>KerasTuner is a general-purpose hyperparameter tuning library.
-The library is well integrated with Keras, allowing for hyperparameter tuning with minimal code changes.
-It is a powerful, yet simple, library.</p>
+    <p>KerasTuner is a general-purpose hyperparameter tuning library.
+        The library is well integrated with Keras, allowing for hyperparameter tuning with minimal code changes.
+        It is a powerful, yet simple, library.</p>
 
-<p>We can begin tuning with three easy steps:</p>
+    <p>We can begin tuning with three easy steps:</p>
 
-<ol>
-<li>Define the hyperparameter search space</li>
-<li>Create a KerasTuner tuner object of type <code>Hyperband</code>, <code>BayesianOptimization</code>, or <code>RandomSearch</code></li>
-<li>Launch the tuning process</li>
-</ol>
+    <ol>
+        <li>Define the hyperparameter search space</li>
+        <li>Create a KerasTuner tuner object of type <code>Hyperband</code>, <code>BayesianOptimization</code>, or
+            <code>RandomSearch</code>
+        </li>
+        <li>Launch the tuning process</li>
+    </ol>
 
-<p>Pretty simple, right?
-Let's take a look at how we can implement the above steps.</p>
+    <p>Pretty simple, right?
+        Let's take a look at how we can implement the above steps.</p>
 
-<h3 id="define-the-hyperparameter-search-space">Define the hyperparameter search space</h3>
+    <h3 id="define-the-hyperparameter-search-space">Define the hyperparameter search space</h3>
 
-<p>Defining a search space is as simple as replacing the layers' hyperparameter values with KerasTuner's search space methods: <code>hp.Int</code>, <code>hp.Float</code>, <code>hp.Choice</code>, etc.</p>
+    <p>Defining a search space is as simple as replacing the layers' hyperparameter values with KerasTuner's search
+        space methods: <code>hp.Int</code>, <code>hp.Float</code>, <code>hp.Choice</code>, etc.</p>
 
-<p>For instance, the following code block defines a search space for the number of convolutional filters in a convolutional layer.
-When launched, the tuner searches for the most optimal filter count by varying the number of filters in the layer from 4 to 16, training the model, and comparing model metrics.
-What was once a tedious, manual task is now a simple and powerful process for ML engineers.</p>
+    <p>For instance, the following code block defines a search space for the number of convolutional filters in a
+        convolutional layer.
+        When launched, the tuner searches for the most optimal filter count by varying the number of filters in the
+        layer from 4 to 16, training the model, and comparing model metrics.
+        What was once a tedious, manual task is now a simple and powerful process for ML engineers.</p>
 
-<p>The three search space methods above only scratch the surface of KerasTuner's available methods.
-More details about the KerasTuner search space methods can be found <a href="https://keras.io/api/keras_tuner/hyperparameters/">here</a>.</p>
+    <p>The three search space methods above only scratch the surface of KerasTuner's available methods.
+        More details about the KerasTuner search space methods can be found <a
+            href="https://keras.io/api/keras_tuner/hyperparameters/">here</a>.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
     <span class="p">[</span>
         <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span>
             <span class="n">filters</span><span class="o">=</span><span class="n">hp</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="s2">&quot;conv_1_filters&quot;</span><span class="p">,</span> <span class="n">min_value</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
@@ -226,16 +280,19 @@ More details about the KerasTuner search space methods can be found <a href="htt
             <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">])</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>The following code block is our model-building function with defined search spaces.
-Recall that we're searching for the most optimal filter count, kernel size, pooling sizes, and dropout rate.</p>
+    <p>The following code block is our model-building function with defined search spaces.
+        Recall that we're searching for the most optimal filter count, kernel size, pooling sizes, and dropout rate.</p>
 
-<p>Note the use of <code>hp.Int</code>, <code>hp.Float</code>, and <code>hp.Choice</code> methods in each layer.
-Each of these methods defines a search space for the corresponding hyperparameter.
-Integers and floats are used for discrete search spaces (minimum and maximum values with steps), while choices are used for categorical search spaces.</p>
+    <p>Note the use of <code>hp.Int</code>, <code>hp.Float</code>, and <code>hp.Choice</code> methods in each layer.
+        Each of these methods defines a search space for the corresponding hyperparameter.
+        Integers and floats are used for discrete search spaces (minimum and maximum values with steps), while choices
+        are used for categorical search spaces.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">model_builder</span><span class="p">(</span><span class="n">hp</span><span class="p">):</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="k">def</span> <span class="nf">model_builder</span><span class="p">(</span><span class="n">hp</span><span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
         <span class="p">[</span>
             <span class="c1"># Input and augmentation layers</span>
@@ -274,47 +331,61 @@ Integers and floats are used for discrete search spaces (minimum and maximum val
         <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">SparseCategoricalAccuracy</span><span class="p">()],</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h4 id="search-space-considerations">Search space considerations</h4>
+    <h4 id="search-space-considerations">Search space considerations</h4>
 
-<p>Selecting the correct search space methods and values is critical to the success of the tuning process.
-We do not want such a large search space that the tuner takes too much time and resources.
-We also do not want such a small search space that the tuner does not find any optimal hyperparameters.</p>
+    <p>Selecting the correct search space methods and values is critical to the success of the tuning process.
+        We do not want such a large search space that the tuner takes too much time and resources.
+        We also do not want such a small search space that the tuner does not find any optimal hyperparameters.</p>
 
-<p>Rather, we must consider meaningful values for each hyperparameter.
-This is where intuition, experimentation, and domain expertise come in to help us define the search space.</p>
+    <p>Rather, we must consider meaningful values for each hyperparameter.
+        This is where intuition, experimentation, and domain expertise come in to help us define the search space.</p>
 
-<p>For my model, I knew that the number of convolutional filters should remain low (4 to 16).
-This choice was made in part because I wanted to avoid overfitting to the validation data during training.
-I also knew from experience that the more filters I have, the lower my model's generalization performance.</p>
+    <p>For my model, I knew that the number of convolutional filters should remain low (4 to 16).
+        This choice was made in part because I wanted to avoid overfitting to the validation data during training.
+        I also knew from experience that the more filters I have, the lower my model's generalization performance.</p>
 
-<p>Furthermore, I stacked two MaxPooling2D layers for each block because I knew the main differentiation between classes is the Cog's suit color.
-My intuition says that more pooling is better in the case of classifying entities based on color rather than finer details, such as eye color or suit design.</p>
+    <p>Furthermore, I stacked two MaxPooling2D layers for each block because I knew the main differentiation between
+        classes is the Cog's suit color.
+        My intuition says that more pooling is better in the case of classifying entities based on color rather than
+        finer details, such as eye color or suit design.</p>
 
-<p>I'm putting my intuition to the test by defining a search space capable of evaluating a model's performance with either a single MaxPooling2D layer or stacked MaxPooling2D layers.
-This is how domain expertise – knowing your data's characteristics – helps us define meaningful search spaces.</p>
+    <p>I'm putting my intuition to the test by defining a search space capable of evaluating a model's performance with
+        either a single MaxPooling2D layer or stacked MaxPooling2D layers.
+        This is how domain expertise – knowing your data's characteristics – helps us define meaningful search spaces.
+    </p>
 
-<h3 id="create-a-tuner-object">Create a tuner object</h3>
+    <h3 id="create-a-tuner-object">Create a tuner object</h3>
 
-<p>KerasTuner contains multiple tuners: <code>RandomSearch</code>, <code>BayesianOptimization</code>, and <code>Hyperband</code>.
-Each has its unique tuning algorithm, but all of them share the same search space defined above.
-Here are the three tuners along with their respective algorithms:</p>
+    <p>KerasTuner contains multiple tuners: <code>RandomSearch</code>, <code>BayesianOptimization</code>, and
+        <code>Hyperband</code>.
+        Each has its unique tuning algorithm, but all of them share the same search space defined above.
+        Here are the three tuners along with their respective algorithms:
+    </p>
 
-<ul>
-<li><code>kerastuner.tuners.randomsearch.RandomSearch</code>: An inefficient, random search algorithm</li>
-<li><code>kerastuner.tuners.bayesian.BayesianOptimization</code>: A Bayesian optimization algorithm that follows a probabilistic search approach by taking previous results into account</li>
-<li><code>kerastuner.tuners.hyperband.Hyperband</code>: An optimized variant of the <code>RandomSearch</code> algorithm in terms of time and resource usage</li>
-</ul>
+    <ul>
+        <li><code>kerastuner.tuners.randomsearch.RandomSearch</code>: An inefficient, random search algorithm</li>
+        <li><code>kerastuner.tuners.bayesian.BayesianOptimization</code>: A Bayesian optimization algorithm that follows
+            a probabilistic search approach by taking previous results into account</li>
+        <li><code>kerastuner.tuners.hyperband.Hyperband</code>: An optimized variant of the <code>RandomSearch</code>
+            algorithm in terms of time and resource usage</li>
+    </ul>
 
-<p>My preferred tuning method is to first perform a <code>RandomSearch</code> with numerous trials (100+).
-Each trial samples a random set of hyperparameter values from the search space.
-The goal is to find the best hyperparameter values that minimize (or maximize) the objective – in our case, the goal is to minimize the validation loss.</p>
+    <p>My preferred tuning method is to first perform a <code>RandomSearch</code> with numerous trials (100+).
+        Each trial samples a random set of hyperparameter values from the search space.
+        The goal is to find the best hyperparameter values that minimize (or maximize) the objective – in our case, the
+        goal is to minimize the validation loss.</p>
 
-<p>More details on each tuner can be found in <a href="https://neptune.ai/blog/hyperband-and-bohb-understanding-state-of-the-art-hyperparameter-optimization-algorithms">this article</a>.
-Additionally, refer to the <a href="https://keras.io/api/keras_tuner/tuners/">KerasTuner documentation</a> for API details.</p>
+    <p>More details on each tuner can be found in <a
+            href="https://neptune.ai/blog/hyperband-and-bohb-understanding-state-of-the-art-hyperparameter-optimization-algorithms">this
+            article</a>.
+        Additionally, refer to the <a href="https://keras.io/api/keras_tuner/tuners/">KerasTuner documentation</a> for
+        API details.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">kerastuner</span> <span class="kn">import</span> <span class="n">RandomSearch</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">from</span> <span class="nn">kerastuner</span> <span class="kn">import</span> <span class="n">RandomSearch</span>
 
 <span class="n">tuner</span> <span class="o">=</span> <span class="n">RandomSearch</span><span class="p">(</span>
     <span class="n">hypermodel</span><span class="o">=</span><span class="n">model_builder</span><span class="p">,</span>
@@ -325,24 +396,28 @@ Additionally, refer to the <a href="https://keras.io/api/keras_tuner/tuners/">Ke
     <span class="n">project_name</span><span class="o">=</span><span class="s2">&quot;tuned_multiclass_randomsearch&quot;</span><span class="p">,</span>
     <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
 <span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p><code>RandomSearch</code> is the least efficient algorithm, but it provides useful insight into the general whereabouts of optimal hyperparameter values.
-These insights can be used to further reduce the search space for more effective tuning.</p>
+    <p><code>RandomSearch</code> is the least efficient algorithm, but it provides useful insight into the general
+        whereabouts of optimal hyperparameter values.
+        These insights can be used to further reduce the search space for more effective tuning.</p>
 
-<p>Following the random search, I'll review the highest performing parameters in TensorBoard, tighten my search space, and then launch a more efficient <code>Hyperband</code> or <code>BayesianOptimization</code> search.
-Let's launch a <code>RandomSearch</code> and review the results.</p>
+    <p>Following the random search, I'll review the highest performing parameters in TensorBoard, tighten my search
+        space, and then launch a more efficient <code>Hyperband</code> or <code>BayesianOptimization</code> search.
+        Let's launch a <code>RandomSearch</code> and review the results.</p>
 
-<h3 id="launch-the-tuning-process">Launch the tuning process</h3>
+    <h3 id="launch-the-tuning-process">Launch the tuning process</h3>
 
-<p>The tuning process uses identical arguments as the <code>keras.Model.fit</code> method.
-Refer to the code block below to see how the <code>RandomSearch</code> is launched.</p>
+    <p>The tuning process uses identical arguments as the <code>keras.Model.fit</code> method.
+        Refer to the code block below to see how the <code>RandomSearch</code> is launched.</p>
 
-<p>We will utilize the <code>tf.keras.callbacks.TensorBoard</code> callback to monitor the tuning process progress.
-This callback will save the logs of all trials to the <code>./tb_logs/randomsearch/</code> directory.
-We can then use TensorBoard to visualize the results of all trials during/after the tuning process.</p>
+    <p>We will utilize the <code>tf.keras.callbacks.TensorBoard</code> callback to monitor the tuning process progress.
+        This callback will save the logs of all trials to the <code>./tb_logs/randomsearch/</code> directory.
+        We can then use TensorBoard to visualize the results of all trials during/after the tuning process.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 
 <span class="n">tuner</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
     <span class="n">train_images</span><span class="p">,</span>
@@ -358,31 +433,40 @@ We can then use TensorBoard to visualize the results of all trials during/after 
         <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">TensorBoard</span><span class="p">(</span><span class="s2">&quot;./tb_logs/randomsearch/&quot;</span><span class="p">),</span>
     <span class="p">],</span>
 <span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Details about the TensorBoard callback API can be found <a href="https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard">here</a>.
-A Keras guide for visualizing the tuning process can be found <a href="https://keras.io/guides/keras_tuner/visualize_tuning/">here</a>.</p>
+    <p>Details about the TensorBoard callback API can be found <a
+            href="https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard">here</a>.
+        A Keras guide for visualizing the tuning process can be found <a
+            href="https://keras.io/guides/keras_tuner/visualize_tuning/">here</a>.</p>
 
-<h4 id="tuning-process-search-times">Tuning process search times</h4>
+    <h4 id="tuning-process-search-times">Tuning process search times</h4>
 
-<p>On a GPU, 100 trials of <code>RandomSearch</code> takes roughly 45 minutes with the search space above.
-The search would take even longer if done on a CPU.</p>
+    <p>On a GPU, 100 trials of <code>RandomSearch</code> takes roughly 45 minutes with the search space above.
+        The search would take even longer if done on a CPU.</p>
 
-<p>We can reduce the search time by constraining the search space, reducing the number of trials, decreasing the number of epochs, and/or reducing the executions per trial.
-Alternatively, we could pick a more efficient algorithm, such as <code>Hyperband</code> or <code>BayesianOptimization</code>.</p>
+    <p>We can reduce the search time by constraining the search space, reducing the number of trials, decreasing the
+        number of epochs, and/or reducing the executions per trial.
+        Alternatively, we could pick a more efficient algorithm, such as <code>Hyperband</code> or
+        <code>BayesianOptimization</code>.
+    </p>
 
-<p>Search times are also dependent on the size of the model - large filters in the Conv2D layers or small pooling sizes in MaxPooling2D layers result in larger models and slower training times.
-That's why it's important to define the search space with meaningful values; if the values are needlessly large, the search will be inefficient with regard to time and computation.</p>
+    <p>Search times are also dependent on the size of the model - large filters in the Conv2D layers or small pooling
+        sizes in MaxPooling2D layers result in larger models and slower training times.
+        That's why it's important to define the search space with meaningful values; if the values are needlessly large,
+        the search will be inefficient with regard to time and computation.</p>
 
-<h3 id="tuning-process-results">Tuning process results</h3>
+    <h3 id="tuning-process-results">Tuning process results</h3>
 
-<p>We can review the results of the tuning process using the <code>tuner.results_summary(N)</code> method.
-The output is a list of trial summaries including each trial's hyperparameter values, objective value, and other metrics.</p>
+    <p>We can review the results of the tuning process using the <code>tuner.results_summary(N)</code> method.
+        The output is a list of trial summaries including each trial's hyperparameter values, objective value, and other
+        metrics.</p>
 
-<p>The summaries do not include trial IDs, so we cannot use this method to retrieve a specific trial.
-Fortunately, TensorBoard provides a way to retrieve the results of specific trials.</p>
+    <p>The summaries do not include trial IDs, so we cannot use this method to retrieve a specific trial.
+        Fortunately, TensorBoard provides a way to retrieve the results of specific trials.</p>
 
-<pre><code>&gt;&gt;&gt; tuner.results_summary(100)
+    <pre><code>&gt;&gt;&gt; tuner.results_summary(100)
 Results summary
 Results in models\tuned_multiclass_randomsearch
 Showing 100 best trials
@@ -445,24 +529,29 @@ learning_rate: 0.0001
 Score: 1.4044125080108643
 </code></pre>
 
-<p>The snippet above shows the top and bottom two trials, with 96 trials omitted in between.
-There's a significant difference in the validation loss (Scores) of the top and bottom two trials.
-If I had to speculate, I would say that the performance gap is due to the large <code>dropout_1_rate</code> of 0.8.</p>
+    <p>The snippet above shows the top and bottom two trials, with 96 trials omitted in between.
+        There's a significant difference in the validation loss (Scores) of the top and bottom two trials.
+        If I had to speculate, I would say that the performance gap is due to the large <code>dropout_1_rate</code> of
+        0.8.</p>
 
-<p>We'll see if this is the case in the next section.
-For now, let's learn how to create a model with the best hyperparameter values.</p>
+    <p>We'll see if this is the case in the next section.
+        For now, let's learn how to create a model with the best hyperparameter values.</p>
 
-<h4 id="retrieve-the-best-hyperparameter-values">Retrieve the best hyperparameter values</h4>
+    <h4 id="retrieve-the-best-hyperparameter-values">Retrieve the best hyperparameter values</h4>
 
-<p>The <code>tuner.best_hyperparameters(N)</code> method returns the <em>N</em> best hyperparameter values as a list of <code>HyperParameters</code> objects.
-The following code block shows how to retrieve the top hyperparameter values.</p>
+    <p>The <code>tuner.best_hyperparameters(N)</code> method returns the <em>N</em> best hyperparameter values as a list
+        of <code>HyperParameters</code> objects.
+        The following code block shows how to retrieve the top hyperparameter values.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">params</span> <span class="o">=</span> <span class="n">tuner</span><span class="o">.</span><span class="n">get_best_hyperparameters</span><span class="p">(</span><span class="n">num_trials</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-</code></pre></div>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">params</span> <span class="o">=</span> <span class="n">tuner</span><span class="o">.</span><span class="n">get_best_hyperparameters</span><span class="p">(</span><span class="n">num_trials</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</code></pre>
+    </div>
 
-<p>We can view the hyperparameters as a python dictionary using the <code>params.values</code> attribute.</p>
+    <p>We can view the hyperparameters as a python dictionary using the <code>params.values</code> attribute.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">params</span><span class="o">.</span><span class="n">values</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">params</span><span class="o">.</span><span class="n">values</span>
 <span class="p">{</span><span class="s1">&#39;conv_1_filters&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
  <span class="s1">&#39;pool_1_size&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
  <span class="s1">&#39;pool_2_size&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
@@ -472,264 +561,300 @@ The following code block shows how to retrieve the top hyperparameter values.</p
  <span class="s1">&#39;pool_4_size&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
  <span class="s1">&#39;dropout_2_rate&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
  <span class="s1">&#39;learning_rate&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">}</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Now that we have the best hyperparameter values, let's figure out how to create a model with these values.</p>
+    <p>Now that we have the best hyperparameter values, let's figure out how to create a model with these values.</p>
 
-<h4 id="create-a-model">Create a model</h4>
+    <h4 id="create-a-model">Create a model</h4>
 
-<p>Fortunately, KerasTuner makes it easy to create a model with the best hyperparameter values.
-All we have to do is call the <code>tuner.hypermodel.build()</code> method.
-This is the same as calling <code>model_builder(params)</code>.</p>
+    <p>Fortunately, KerasTuner makes it easy to create a model with the best hyperparameter values.
+        All we have to do is call the <code>tuner.hypermodel.build()</code> method.
+        This is the same as calling <code>model_builder(params)</code>.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">tuner</span><span class="o">.</span><span class="n">hypermodel</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-</code></pre></div>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">tuner</span><span class="o">.</span><span class="n">hypermodel</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+</code></pre>
+    </div>
 
-<p>Just like that, we have a fresh, untrained model with the best hyperparameter values.
-We can now train this model from scratch and evaluate it.
-We will train the tuned model and compare it to the baseline later in this article.</p>
+    <p>Just like that, we have a fresh, untrained model with the best hyperparameter values.
+        We can now train this model from scratch and evaluate it.
+        We will train the tuned model and compare it to the baseline later in this article.</p>
 
-<p><em>What if I want the best model from the trials?</em></p>
+    <p><em>What if I want the best model from the trials?</em></p>
 
-<p>Using the models from the tuning process is not recommended.
-But, as seen in the code block below, it is possible.</p>
+    <p>Using the models from the tuning process is not recommended.
+        But, as seen in the code block below, it is possible.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">tuner</span><span class="o">.</span><span class="n">get_best_models</span><span class="p">(</span><span class="n">num_models</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">tuner</span><span class="o">.</span><span class="n">get_best_models</span><span class="p">(</span><span class="n">num_models</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">model</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>It's usually a good idea to train a new model from scratch rather than use the pre-trained model from the trials.
-When training from scratch, we concatenate the training and validation data together to create a single training dataset.
-This allows the model to learn from a larger, more representative dataset using the most optimal hyperparameters.</p>
+    <p>It's usually a good idea to train a new model from scratch rather than use the pre-trained model from the trials.
+        When training from scratch, we concatenate the training and validation data together to create a single training
+        dataset.
+        This allows the model to learn from a larger, more representative dataset using the most optimal
+        hyperparameters.</p>
 
-<p>Ultimately, the model trained from scratch will be smarter than the model from the trials.</p>
+    <p>Ultimately, the model trained from scratch will be smarter than the model from the trials.</p>
 
-<p>Enough about the tuning process.
-Let's take a look at the tuning results in TensorBoard.</p>
+    <p>Enough about the tuning process.
+        Let's take a look at the tuning results in TensorBoard.</p>
 
-<hr />
+    <hr />
 
-<h2 id="tensorboard">TensorBoard</h2>
+    <h2 id="tensorboard">TensorBoard</h2>
 
-<p>TensorBoard is a web application for monitoring and visualizing the progress of machine learning experiments.
-It can track metrics, visualize model layers and graphs, view histograms of weights/biases/other tensors, and much more.
-Learn how to get started with TensorBoard using their <a href="https://www.tensorflow.org/tensorboard/get_started">guide</a>.</p>
+    <p>TensorBoard is a web application for monitoring and visualizing the progress of machine learning experiments.
+        It can track metrics, visualize model layers and graphs, view histograms of weights/biases/other tensors, and
+        much more.
+        Learn how to get started with TensorBoard using their <a
+            href="https://www.tensorflow.org/tensorboard/get_started">guide</a>.</p>
 
-<p>We'll launch TensorBoard using the <code>tensorboard</code> command.
-The <code>--logdir</code> flag specifies the directory where the logs are stored.</p>
+    <p>We'll launch TensorBoard using the <code>tensorboard</code> command.
+        The <code>--logdir</code> flag specifies the directory where the logs are stored.</p>
 
-<div class="codehilite"><pre><span></span><code>$ tensorboard --logdir toonvision/multiclassification/code/tb_logs/randomsearch/
+    <div class="codehilite">
+        <pre><span></span><code>$ tensorboard --logdir toonvision/multiclassification/code/tb_logs/randomsearch/
 
 Serving TensorBoard on localhost<span class="p">;</span> to expose to the network, use a proxy or pass --bind_all
 TensorBoard <span class="m">2</span>.9.1 at http://localhost:6006/ <span class="o">(</span>Press CTRL+C to quit<span class="o">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>Once launched, we can open TensorBoard in a web browser by navigating to <code>http://localhost:6006/</code>.</p>
+    <p>Once launched, we can open TensorBoard in a web browser by navigating to <code>http://localhost:6006/</code>.</p>
 
-<p>We will use TensorBoard to view the hyperparameter values and their corresponding loss and accuracy metrics.
-As such, we must navigate away from the <code>SCALARS</code> tab and towards the <code>HPARAMS</code> tab.</p>
+    <p>We will use TensorBoard to view the hyperparameter values and their corresponding loss and accuracy metrics.
+        As such, we must navigate away from the <code>SCALARS</code> tab and towards the <code>HPARAMS</code> tab.</p>
 
-<figure class="center">
-    <img src="img/tb_initial_screen.png" style="width:100%;"/>
-    <figcaption>TensorBoard's initial screen</figcaption>
-</figure>
+    <figure class="center">
+        <img src="img/tb_initial_screen.png" style="width:100%;" />
+        <figcaption>TensorBoard's initial screen</figcaption>
+    </figure>
 
-<h3 id="hyperparameter-values-and-lossaccuracy-metrics">Hyperparameter values and loss/accuracy metrics</h3>
+    <h3 id="hyperparameter-values-and-lossaccuracy-metrics">Hyperparameter values and loss/accuracy metrics</h3>
 
-<p>The raw hyperparameter values from all trials are displayed in the <code>TABLE VIEW</code> tab.
-By default, the table columns are unordered, and some are even hidden, so take a minute to explore the data and reorder the columns.</p>
+    <p>The raw hyperparameter values from all trials are displayed in the <code>TABLE VIEW</code> tab.
+        By default, the table columns are unordered, and some are even hidden, so take a minute to explore the data and
+        reorder the columns.</p>
 
-<p>The green boxes in the image below outline the changes I made to the sorting, ordering, and filtering of the table.
-In summary, the changes are:</p>
+    <p>The green boxes in the image below outline the changes I made to the sorting, ordering, and filtering of the
+        table.
+        In summary, the changes are:</p>
 
-<ul>
-<li>Hide training loss and accuracy metrics</li>
-<li>Sort the table by the validation loss metric (the metric we are trying to optimize)</li>
-<li>Reorder table columns to group similar hyperparameters together</li>
-<li>Filter validation loss metrics above a certain threshold (&gt;0.3)</li>
-</ul>
+    <ul>
+        <li>Hide training loss and accuracy metrics</li>
+        <li>Sort the table by the validation loss metric (the metric we are trying to optimize)</li>
+        <li>Reorder table columns to group similar hyperparameters together</li>
+        <li>Filter validation loss metrics above a certain threshold (&gt;0.3)</li>
+    </ul>
 
-<figure class="center" style="width:98%;">
-    <img src="img/tb_table_view.png" style="width:100%;"/>
-    <figcaption>Filtered and sorted </figcaption>
-</figure>
+    <figure class="center" style="width:98%;">
+        <img src="img/tb_table_view.png" style="width:100%;" />
+        <figcaption>Filtered and sorted </figcaption>
+    </figure>
 
-<p>The resulting table includes only 23 trials (see the red square in the image's bottom left corner), which is a decent starting point for further constraining the search space.</p>
+    <p>The resulting table includes only 23 trials (see the red square in the image's bottom left corner), which is a
+        decent starting point for further constraining the search space.</p>
 
-<p>We can see a few trends in the table data:</p>
+    <p>We can see a few trends in the table data:</p>
 
-<ul>
-<li>The first dropout layer often has a low dropout rate (&lt;0.2)</li>
-<li>The Conv2D layers successively reduce the number of filters (e.g., 16 -> 12, 16 -> 8)</li>
-<li>When the number of filters is reduced, the fourth MaxPooling2D (<code>pool_4_size</code>) layer is often discarded (set to 1x1 pool size)</li>
-</ul>
+    <ul>
+        <li>The first dropout layer often has a low dropout rate (&lt;0.2)</li>
+        <li>The Conv2D layers successively reduce the number of filters (e.g., 16 -> 12, 16 -> 8)</li>
+        <li>When the number of filters is reduced, the fourth MaxPooling2D (<code>pool_4_size</code>) layer is often
+            discarded (set to 1x1 pool size)</li>
+    </ul>
 
-<blockquote>
-  <p><strong>NOTE: Download table data into CSV/JSON/LaTeX format</strong></p>
+    <blockquote>
+        <p><strong>NOTE: Download table data into CSV/JSON/LaTeX format</strong></p>
 
-  <p>If you'd rather perform your own data analysis, you can download the table data into CSV/JSON/LaTeX format.
-  The download link is in the bottom-left corner of the HPARAMS tab.
-  <details>
-      <summary>Download link location</summary>
-   <figure class="center">
-      <img src="img/tb_download_data.png" style="width:100%;"/>
-      <figcaption></figcaption>
-  </figure>
-  </details></p>
+        <p>If you'd rather perform your own data analysis, you can download the table data into CSV/JSON/LaTeX format.
+            The download link is in the bottom-left corner of the HPARAMS tab.
+        <details>
+            <summary>Download link location</summary>
+            <figure class="center">
+                <img src="img/tb_download_data.png" style="width:100%;" />
+                <figcaption></figcaption>
+            </figure>
+        </details>
+        </p>
 
-  <p>Alternatively, consider uploading log data to <a href="https://tensorboard.dev/">tensorboard.dev</a> and using <code>pandas</code> to <a href="https://www.tensorflow.org/tensorboard/dataframe_api">access the data as dataframes</a>.</p>
-</blockquote>
+        <p>Alternatively, consider uploading log data to <a href="https://tensorboard.dev/">tensorboard.dev</a> and
+            using <code>pandas</code> to <a href="https://www.tensorflow.org/tensorboard/dataframe_api">access the data
+                as dataframes</a>.</p>
+    </blockquote>
 
-<p><em>Table View</em> does not provide concrete, visual information about trends found during the tuning process.
-Let's take a look at the other views available in TensorBoard, starting with <em>Parallel Coordinates View</em>.</p>
+    <p><em>Table View</em> does not provide concrete, visual information about trends found during the tuning process.
+        Let's take a look at the other views available in TensorBoard, starting with <em>Parallel Coordinates View</em>.
+    </p>
 
-<h3 id="parallel-coordinates-view">Parallel coordinates view</h3>
+    <h3 id="parallel-coordinates-view">Parallel coordinates view</h3>
 
-<p>Parallel coordinates is a visualization technique used to plot individual data points across vertical axes.
-The result is a series of connected points along each axis.</p>
+    <p>Parallel coordinates is a visualization technique used to plot individual data points across vertical axes.
+        The result is a series of connected points along each axis.</p>
 
-<p>This view is useful for visualizing the relationships between multiple variables.
-In our case, we will use it to visualize the relationship between different hyperparameters and their effect on the validation loss metric.</p>
+    <p>This view is useful for visualizing the relationships between multiple variables.
+        In our case, we will use it to visualize the relationship between different hyperparameters and their effect on
+        the validation loss metric.</p>
 
-<figure class="center" style="width:98%;">
-    <img src="img/tb_parallel_coords.png" style="width:100%;"/>
-    <figcaption>Initial, unfiltered parallel coordinates view, colored by validation loss</figcaption>
-</figure>
+    <figure class="center" style="width:98%;">
+        <img src="img/tb_parallel_coords.png" style="width:100%;" />
+        <figcaption>Initial, unfiltered parallel coordinates view, colored by validation loss</figcaption>
+    </figure>
 
-<p>The figure above shows the initial parallel coordinates view for all 100 trials.
-The bluer the line, the lower the validation loss metric – the more optimal the hyperparameters.
-On the other hand, the redder the line, the less optimal the hyperparameters.</p>
+    <p>The figure above shows the initial parallel coordinates view for all 100 trials.
+        The bluer the line, the lower the validation loss metric – the more optimal the hyperparameters.
+        On the other hand, the redder the line, the less optimal the hyperparameters.</p>
 
-<p>The initial unfiltered visualization is convoluted, but we can make out some trends.
-For instance, we can see a handful of purple/blue lines in the lower values of <code>dropout_1_rate</code> and upper values of <code>dropout_2_rate</code>.
-Let's filter the data and see what trends we can find.</p>
+    <p>The initial unfiltered visualization is convoluted, but we can make out some trends.
+        For instance, we can see a handful of purple/blue lines in the lower values of <code>dropout_1_rate</code> and
+        upper values of <code>dropout_2_rate</code>.
+        Let's filter the data and see what trends we can find.</p>
 
-<h4 id="upper-distribution-of-hyperparameters">Upper distribution of hyperparameters</h4>
+    <h4 id="upper-distribution-of-hyperparameters">Upper distribution of hyperparameters</h4>
 
-<p>Filtering the data and dropping a few columns can help remove the clutter and clarify the trends.
-The light green box in the image below highlights parallel coordinates that fall within some validation loss metric range.
-As a result, the only colored lines we should see are the ones with a validation loss below 0.75.</p>
+    <p>Filtering the data and dropping a few columns can help remove the clutter and clarify the trends.
+        The light green box in the image below highlights parallel coordinates that fall within some validation loss
+        metric range.
+        As a result, the only colored lines we should see are the ones with a validation loss below 0.75.</p>
 
-<p>Of the 100 trials, the bluest lines are most commonly seen stemming from <code>dropout_1_rate</code> values of &lt;0.2.
-This strengthens my idea that higher model performance is directly correlated to lower dropout rates for the first dropout layer.</p>
+    <p>Of the 100 trials, the bluest lines are most commonly seen stemming from <code>dropout_1_rate</code> values of
+        &lt;0.2.
+        This strengthens my idea that higher model performance is directly correlated to lower dropout rates for the
+        first dropout layer.</p>
 
-<figure class="center" style="width:98%;">
-    <img src="img/tb_parallel_coords_upper.png" style="width:100%;"/>
-    <figcaption>Highlighted trials with upper 50% validation values (0.1 -> 0.75)</figcaption>
-</figure>
+    <figure class="center" style="width:98%;">
+        <img src="img/tb_parallel_coords_upper.png" style="width:100%;" />
+        <figcaption>Highlighted trials with upper 50% validation values (0.1 -> 0.75)</figcaption>
+    </figure>
 
-<p>Next, let's only include trials with a validation loss below 0.3 - the highest performers.
-Now there are 23 trials visible in the parallel coordinates view.
-After constraining the view to highlight trials with 95% validation accuracy or above, we're left with three trials.</p>
+    <p>Next, let's only include trials with a validation loss below 0.3 - the highest performers.
+        Now there are 23 trials visible in the parallel coordinates view.
+        After constraining the view to highlight trials with 95% validation accuracy or above, we're left with three
+        trials.</p>
 
-<p>The remaining three trials show two trends that I touched on before:</p>
+    <p>The remaining three trials show two trends that I touched on before:</p>
 
-<ol>
-<li>The first dropout layer has a low dropout rate (&lt;0.2)</li>
-<li>The Conv2D layers successively reduce the number of filters (e.g., 16 -> 12, 16 -> 8)</li>
-</ol>
+    <ol>
+        <li>The first dropout layer has a low dropout rate (&lt;0.2)</li>
+        <li>The Conv2D layers successively reduce the number of filters (e.g., 16 -> 12, 16 -> 8)</li>
+    </ol>
 
-<p>We'll keep these trends in mind when we reduce our hyperparameter space and launch additional tuning trials.</p>
+    <p>We'll keep these trends in mind when we reduce our hyperparameter space and launch additional tuning trials.</p>
 
-<figure class="center" style="width:98%;">
-    <img src="img/tb_parallel_coords_upper_23_trials.png" style="width:100%;"/>
-    <figcaption>Filtered trials highlighted with >=95% validation accuracy</figcaption>
-</figure>
+    <figure class="center" style="width:98%;">
+        <img src="img/tb_parallel_coords_upper_23_trials.png" style="width:100%;" />
+        <figcaption>Filtered trials highlighted with >=95% validation accuracy</figcaption>
+    </figure>
 
-<p>We've narrowed down the search space correlating to the highest performers.
-Now, let's see what hyperparameters are associated with the lowest performers.</p>
+    <p>We've narrowed down the search space correlating to the highest performers.
+        Now, let's see what hyperparameters are associated with the lowest performers.</p>
 
-<h4 id="lower-distribution-of-hyperparameters">Lower distribution of hyperparameters</h4>
+    <h4 id="lower-distribution-of-hyperparameters">Lower distribution of hyperparameters</h4>
 
-<p>Recall that the redder the line, the higher the validation loss metric – the less optimal the hyperparameters.
-In the figure below, we can see the worst-performing hyperparameters.</p>
+    <p>Recall that the redder the line, the higher the validation loss metric – the less optimal the hyperparameters.
+        In the figure below, we can see the worst-performing hyperparameters.</p>
 
-<p>It should be no surprise to see that the lowest performing models contain large <code>dropout_1_rate</code> values.</p>
+    <p>It should be no surprise to see that the lowest performing models contain large <code>dropout_1_rate</code>
+        values.</p>
 
-<figure class="center" style="width:98%;">
-    <img src="img/tb_parallel_coords_lower.png" style="width:100%;"/>
-    <figcaption>Highlighted trials with lower 50% validation values (0.75 -> 1.4)</figcaption>
-</figure>
+    <figure class="center" style="width:98%;">
+        <img src="img/tb_parallel_coords_lower.png" style="width:100%;" />
+        <figcaption>Highlighted trials with lower 50% validation values (0.75 -> 1.4)</figcaption>
+    </figure>
 
-<p>There aren't many obvious trends in the lower-performing models, so let's wrap up our findings and move on.</p>
+    <p>There aren't many obvious trends in the lower-performing models, so let's wrap up our findings and move on.</p>
 
-<h4 id="parallel-coordinates-view-findings">Parallel coordinates view findings</h4>
+    <h4 id="parallel-coordinates-view-findings">Parallel coordinates view findings</h4>
 
-<p>Before we move on to the next view, let's discuss our findings from the parallel coordinates view.</p>
+    <p>Before we move on to the next view, let's discuss our findings from the parallel coordinates view.</p>
 
-<p>The following figure shows the parallel coordinates view for trials with &lt;0.2 validation loss.
-I believe these hyperparameter value ranges are the best starting points for the next tuning process.</p>
+    <p>The following figure shows the parallel coordinates view for trials with &lt;0.2 validation loss.
+        I believe these hyperparameter value ranges are the best starting points for the next tuning process.</p>
 
-<figure class="center" style="width:98%;">
-    <img src="img/tb_parallel_coords_upper_final.png" style="width:100%;"/>
-    <figcaption>Highlighted trials with <=0.2 validation loss</figcaption>
-</figure>
+    <figure class="center" style="width:98%;">
+        <img src="img/tb_parallel_coords_upper_final.png" style="width:100%;" />
+        <figcaption>Highlighted trials with <=0.2 validation loss</figcaption>
+    </figure>
 
-<p>The next tuning process will reduce the following hyperparameter search spaces:</p>
+    <p>The next tuning process will reduce the following hyperparameter search spaces:</p>
 
-<ol>
-<li>The first dropout layer must have a low dropout rate (we'll try &lt;=0.4)</li>
-<li>The second dropout layer can have a high dropout rate (&lt;=0.8)</li>
-<li>The second Conv2D layer must have at least 8, but no more than 20, filters</li>
-<li>The fourth MaxPooling2D layer must have a pool size &lt;=3</li>
-</ol>
+    <ol>
+        <li>The first dropout layer must have a low dropout rate (we'll try &lt;=0.4)</li>
+        <li>The second dropout layer can have a high dropout rate (&lt;=0.8)</li>
+        <li>The second Conv2D layer must have at least 8, but no more than 20, filters</li>
+        <li>The fourth MaxPooling2D layer must have a pool size &lt;=3</li>
+    </ol>
 
-<p>Now, let's take a look at how the findings above look in <em>Scatter Plots Matrix View</em>.</p>
+    <p>Now, let's take a look at how the findings above look in <em>Scatter Plots Matrix View</em>.</p>
 
-<h3 id="scatter-plots-matrix-view">Scatter plots matrix view</h3>
+    <h3 id="scatter-plots-matrix-view">Scatter plots matrix view</h3>
 
-<p>The scatter plots matrix view is more pleasing to the eye than the parallel coordinates view.
-It provides less clear information about the relationships between hyperparameters compared to the parallel coordinates view.
-However, it excels at showing distributions of hyperparameter values with respect to their validation loss and accuracy.</p>
+    <p>The scatter plots matrix view is more pleasing to the eye than the parallel coordinates view.
+        It provides less clear information about the relationships between hyperparameters compared to the parallel
+        coordinates view.
+        However, it excels at showing distributions of hyperparameter values with respect to their validation loss and
+        accuracy.</p>
 
-<p>Below is a scatter plots matrix view for all 100 trials.
-Same as before, the bluer the dot, the lower the validation loss metric – the more optimal the hyperparameters.</p>
+    <p>Below is a scatter plots matrix view for all 100 trials.
+        Same as before, the bluer the dot, the lower the validation loss metric – the more optimal the hyperparameters.
+    </p>
 
-<p>Unfortunately, the columns in this view are unordered and cannot be moved.</p>
+    <p>Unfortunately, the columns in this view are unordered and cannot be moved.</p>
 
-<figure class="center" style="width:98%;">
-    <img src="img/tb_scatter_matrix.png" style="width:100%;"/>
-    <figcaption>Initial, unfiltered scatter plots matrix view, colored by validation loss</figcaption>
-</figure>
+    <figure class="center" style="width:98%;">
+        <img src="img/tb_scatter_matrix.png" style="width:100%;" />
+        <figcaption>Initial, unfiltered scatter plots matrix view, colored by validation loss</figcaption>
+    </figure>
 
-<p>We can filter the data based on the validation loss metrics, or we can highlight a subset of trials.
-For instance, the figure below highlights trials with validation loss lower than 0.5.</p>
+    <p>We can filter the data based on the validation loss metrics, or we can highlight a subset of trials.
+        For instance, the figure below highlights trials with validation loss lower than 0.5.</p>
 
-<figure class="center" style="width:98%;">
-    <img src="img/tb_scatter_matrix_5_loss.png" style="width:100%;"/>
-    <figcaption>Highlighted trials with validation loss <=0.5</figcaption>
-</figure>
+    <figure class="center" style="width:98%;">
+        <img src="img/tb_scatter_matrix_5_loss.png" style="width:100%;" />
+        <figcaption>Highlighted trials with validation loss <=0.5< /figcaption>
+    </figure>
 
-<p>If we filter the data to include only trials with validation loss lower than 0.5, we can see that the blue dots are more evenly distributed.
-We can also highlight the trials with validation loss lower than 0.2.</p>
+    <p>If we filter the data to include only trials with validation loss lower than 0.5, we can see that the blue dots
+        are more evenly distributed.
+        We can also highlight the trials with validation loss lower than 0.2.</p>
 
-<p>From the figure below, we can see clearly that higher model performance is dependent on lower initial dropout rates.</p>
+    <p>From the figure below, we can see clearly that higher model performance is dependent on lower initial dropout
+        rates.</p>
 
-<figure class="center" style="width:98%;">
-    <img src="img/tb_scatter_matrix_5_loss_dropout.png" style="width:100%;"/>
-    <figcaption>Filtered trials highlighted with validation loss <=0.2</figcaption>
-</figure>
+    <figure class="center" style="width:98%;">
+        <img src="img/tb_scatter_matrix_5_loss_dropout.png" style="width:100%;" />
+        <figcaption>Filtered trials highlighted with validation loss <=0.2< /figcaption>
+    </figure>
 
-<p>That's about it for scatter plots matrix view.
-It's the most complex view of the three, but it provides the clearest information about hyperparameter distributions.</p>
+    <p>That's about it for scatter plots matrix view.
+        It's the most complex view of the three, but it provides the clearest information about hyperparameter
+        distributions.</p>
 
-<p>For more information regarding TensorBoard and hyperparameter optimization, please see this <a href="https://keras.io/guides/keras_tuner/visualize_tuning/">Keras developer guide for visualizing the hyperparameter tuning process</a>.</p>
+    <p>For more information regarding TensorBoard and hyperparameter optimization, please see this <a
+            href="https://keras.io/guides/keras_tuner/visualize_tuning/">Keras developer guide for visualizing the
+            hyperparameter tuning process</a>.</p>
 
-<p>The time has come to train our optimal model and compare it against the baseline model!</p>
+    <p>The time has come to train our optimal model and compare it against the baseline model!</p>
 
-<hr />
+    <hr />
 
-<h2 id="tuned-vs-baseline-performance">Tuned vs baseline performance</h2>
+    <h2 id="tuned-vs-baseline-performance">Tuned vs baseline performance</h2>
 
-<p>Earlier in the article, we discussed how to retrieve the most optimal hyperparameters and create a tuned model.
-Now, let's train our tuned model and compare it against the baseline model.</p>
+    <p>Earlier in the article, we discussed how to retrieve the most optimal hyperparameters and create a tuned model.
+        Now, let's train our tuned model and compare it against the baseline model.</p>
 
-<h3 id="baseline-model">Baseline model</h3>
+    <h3 id="baseline-model">Baseline model</h3>
 
-<p>The baseline model was trained for 100 epochs with a learning rate of 1e-3 and decay of 1e-6, a 50% dropout rate, and image augmentations.
-The early stopping callback stopped the training at 59 epochs.</p>
+    <p>The baseline model was trained for 100 epochs with a learning rate of 1e-3 and decay of 1e-6, a 50% dropout rate,
+        and image augmentations.
+        The early stopping callback stopped the training at 59 epochs.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="c1"># Create and compile the baseline model</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="c1"># Create and compile the baseline model</span>
 <span class="n">baseline_model</span> <span class="o">=</span> <span class="n">make_multiclass_model_padding</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;opt_tv_&quot;</span> <span class="o">+</span> <span class="n">opt</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">baseline_model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
     <span class="n">loss</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">SparseCategoricalCrossentropy</span><span class="p">(),</span>
@@ -751,14 +876,17 @@ The early stopping callback stopped the training at 59 epochs.</p>
         <span class="p">),</span>
     <span class="p">],</span>
 <span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="tuned-model">Tuned model</h3>
+    <h3 id="tuned-model">Tuned model</h3>
 
-<p>Recall earlier in the article when we retrieved the most optimal hyperparameters and <a href="#create-a-model">created a tuned model</a>.
-We'll follow the same steps now and also train the model for 100 epochs.</p>
+    <p>Recall earlier in the article when we retrieved the most optimal hyperparameters and <a
+            href="#create-a-model">created a tuned model</a>.
+        We'll follow the same steps now and also train the model for 100 epochs.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 
 <span class="n">params</span> <span class="o">=</span> <span class="n">tuner</span><span class="o">.</span><span class="n">get_best_hyperparameters</span><span class="p">(</span><span class="n">num_trials</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -777,45 +905,52 @@ We'll follow the same steps now and also train the model for 100 epochs.</p>
         <span class="p">),</span>
     <span class="p">],</span>
 <span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="model-predictions">Model predictions</h3>
+    <h3 id="model-predictions">Model predictions</h3>
 
-<p>The baseline model had 12 wrong predictions on the test set of 197 images.
-That's over 6% of the test set incorrectly labeled!</p>
+    <p>The baseline model had 12 wrong predictions on the test set of 197 images.
+        That's over 6% of the test set incorrectly labeled!</p>
 
-<p>The tuned model, on the other hand, had only 1 wrong prediction on the test set.</p>
+    <p>The tuned model, on the other hand, had only 1 wrong prediction on the test set.</p>
 
-<figure class="center" style="width:98%;">
-    <img src="img/preds_baseline.png" style="width:100%;"/>
-    <figcaption>Baseline model's wrong predictions</figcaption>
-</figure>
+    <figure class="center" style="width:98%;">
+        <img src="img/preds_baseline.png" style="width:100%;" />
+        <figcaption>Baseline model's wrong predictions</figcaption>
+    </figure>
 
-<figure class="center" style="width:98%;">
-    <img src="img/preds_tuned.png" style="width:100%;"/>
-    <figcaption>Tuned model's wrong predictions</figcaption>
-</figure>
+    <figure class="center" style="width:98%;">
+        <img src="img/preds_tuned.png" style="width:100%;" />
+        <figcaption>Tuned model's wrong predictions</figcaption>
+    </figure>
 
-<h3 id="model-evaluations">Model evaluations</h3>
+    <h3 id="model-evaluations">Model evaluations</h3>
 
-<p>When evaluating the two models against the test set, we can see that the tuned model has extraordinarily low loss and high accuracy.
-To be fair to the baseline model, its performance is not terrible; the tuned model is just way better.</p>
+    <p>When evaluating the two models against the test set, we can see that the tuned model has extraordinarily low loss
+        and high accuracy.
+        To be fair to the baseline model, its performance is not terrible; the tuned model is just way better.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">baseline_model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_images</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">baseline_model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_images</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
 <span class="n">loss</span><span class="p">:</span> <span class="mf">0.2405</span> <span class="o">-</span> <span class="n">sparse_categorical_accuracy</span><span class="p">:</span> <span class="mf">0.9391</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">tuned_model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_images</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
 <span class="n">loss</span><span class="p">:</span> <span class="mf">0.0315</span> <span class="o">-</span> <span class="n">sparse_categorical_accuracy</span><span class="p">:</span> <span class="mf">0.9949</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="model-summary-comparison">Model summary comparison</h3>
+    <h3 id="model-summary-comparison">Model summary comparison</h3>
 
-<p>The tuned model significantly improved over the baseline model with regard to test set predictions and evaluation.
-However, the tuned model is over 4x the size of the baseline model!</p>
+    <p>The tuned model significantly improved over the baseline model with regard to test set predictions and
+        evaluation.
+        However, the tuned model is over 4x the size of the baseline model!</p>
 
-<p>Comparing the model summaries below, we can see that the tuned model has significantly more parameters than the baseline model.</p>
+    <p>Comparing the model summaries below, we can see that the tuned model has significantly more parameters than the
+        baseline model.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">baseline_model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">baseline_model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
 <span class="n">Model</span><span class="p">:</span> <span class="s2">&quot;baseline_tv_Adam&quot;</span>
 <span class="n">Total</span> <span class="n">params</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span><span class="mi">620</span>
 <span class="n">Trainable</span> <span class="n">params</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span><span class="mi">620</span>
@@ -826,28 +961,36 @@ However, the tuned model is over 4x the size of the baseline model!</p>
 <span class="n">Total</span> <span class="n">params</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span><span class="mi">812</span>
 <span class="n">Trainable</span> <span class="n">params</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span><span class="mi">812</span>
 <span class="n">Non</span><span class="o">-</span><span class="n">trainable</span> <span class="n">params</span><span class="p">:</span> <span class="mi">0</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>I would much prefer to see the tuned model be smaller, while also performing better, than the baseline model.
-We can improve the tuned model by reducing the hyperparameter search space, performing additional optimization trials, comparing to the baseline, and repeating the process.</p>
+    <p>I would much prefer to see the tuned model be smaller, while also performing better, than the baseline model.
+        We can improve the tuned model by reducing the hyperparameter search space, performing additional optimization
+        trials, comparing to the baseline, and repeating the process.</p>
 
-<hr />
+    <hr />
 
-<h2 id="conclusion">Conclusion</h2>
+    <h2 id="conclusion">Conclusion</h2>
 
-<p>We can see the benefits of hyperparameter tuning.
-Not only does the engineer save time and effort, but they can greatly improve model performance while gaining invaluable insights about <em>why</em> the model performs well.</p>
+    <p>We can see the benefits of hyperparameter tuning.
+        Not only does the engineer save time and effort, but they can greatly improve model performance while gaining
+        invaluable insights about <em>why</em> the model performs well.</p>
 
-<p>Surprisingly, <code>RandomSearch</code> did an excellent job of exploring the hyperparameter space and finding the best hyperparameters.
-Although it wasn't the most efficient way to do hyperparameter tuning, it was a good way to get a sense of what the best hyperparameters are.</p>
+    <p>Surprisingly, <code>RandomSearch</code> did an excellent job of exploring the hyperparameter space and finding
+        the best hyperparameters.
+        Although it wasn't the most efficient way to do hyperparameter tuning, it was a good way to get a sense of what
+        the best hyperparameters are.</p>
 
-<p>Future work will include more hyperparameter tuning with the new, constrained search space.
-Hopefully, the additional tuning will lead to a model that performs better than the baseline and tuned model.</p>
+    <p>Future work will include more hyperparameter tuning with the new, constrained search space.
+        Hopefully, the additional tuning will lead to a model that performs better than the baseline and tuned model.
+    </p>
 
-<p>In fact, additional tuning resulted in a model that's half the size of the baseline model, but the same performance as the tuned model!</p>
+    <p>In fact, additional tuning resulted in a model that's half the size of the baseline model, but the same
+        performance as the tuned model!</p>
 
-<p>KerasTuner is a great tool for hyperparameter tuning, and I hope it's useful for other engineers.
-Huge kudos to the KerasTuner team for creating such a simple and powerful tool.</p>
+    <p>KerasTuner is a great tool for hyperparameter tuning, and I hope it's useful for other engineers.
+        Huge kudos to the KerasTuner team for creating such a simple and powerful tool.</p>
 
 </body>
+
 </html>
