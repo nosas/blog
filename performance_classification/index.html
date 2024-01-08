@@ -1,147 +1,172 @@
-
 <html>
 
 <head>
-  <link rel="stylesheet" type="text/css" href="../css/default_dark.css">
-  <link rel="stylesheet" type="text/css" href="../css/syntax_dark.css">
+    <link rel="stylesheet" type="text/css" href="../css/default_dark.css">
+    <link rel="stylesheet" type="text/css" href="../css/syntax_dark.css">
 </head>
 
 <body>
-  <center>
-    <div style="display: inline-block; vertical-align:middle;">
-      <a href="/" style="text-decoration: none;">SASON REZA<br>
-      </a>
-      <hr>
-      <div style="text-align: center;display: inline-block; width: 100%;">
-        <a class="title" href="../about">ABOUT</a> &nbsp;<a class="title" href="../contact">CONTACT</a>
-      </div>
-    </div>
-  </center>
+    <center>
+        <div style="display: inline-block; vertical-align:middle;">
+            <a href="/" style="text-decoration: none;">SASON REZA<br>
+            </a>
+            <hr>
+            <div style="text-align: center;display: inline-block; width: 100%;">
+                <a class="title" href="/books">BOOKS</a> &nbsp;<a class="title" href="/about">ABOUT</a>
+                &nbsp;<a class="title" href="/contact">CONTACT</a>
+            </div>
+        </div>
+    </center>
 
-  <br>
-  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 14, 2022</p>
+    <br>
+    <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 14, 2022</p>
 
-<p><title>Performance Measures for Classification Problems</title></p>
+    <p>
+        <title>Performance Measures for Classification Problems</title>
+    </p>
 
-<h1 id="classification-performance-measures">Classification Performance Measures</h1>
+    <h1 id="classification-performance-measures">Classification Performance Measures</h1>
 
-<p>This article will explain the most common performance measures for classification problems.
-These measures apply to both binary and multiclass classification problems.</p>
+    <p>This article will explain the most common performance measures for classification problems.
+        These measures apply to both binary and multiclass classification problems.</p>
 
-<p>We will explain model performance metrics such as confusion matrix, accuracy, precision, recall, and F1-score.
-The code in this article utilizes python3.7, TensorFlow, keras, and scikit-learn.</p>
+    <p>We will explain model performance metrics such as confusion matrix, accuracy, precision, recall, and F1-score.
+        The code in this article utilizes python3.7, TensorFlow, keras, and scikit-learn.</p>
 
-<p><details>
-    <summary>Table of Contents</summary></p>
+    <p>
+    <details>
+        <summary>Table of Contents</summary>
+        </p>
 
-<ul>
-<li><a href="#classification-performance-measures">Classification Performance Measures</a>
-<ul>
-<li><a href="#why-are-performance-measures-important">Why are performance measures important?</a></li>
-<li><a href="#confusion-matrix">Confusion Matrix</a>
-<ul>
-<li><a href="#generate-confusion-matrix">Generate confusion matrix</a></li>
-</ul></li>
-<li><a href="#accuracy">Accuracy</a>
-<ul>
-<li><a href="#accuracy-in-classification-problems">Accuracy in classification problems</a></li>
-</ul></li>
-<li><a href="#precision">Precision</a>
-<ul>
-<li><a href="#what-are-positive-labels">What are positive labels?</a></li>
-<li><a href="#conceptualizing-precision">Conceptualizing precision</a></li>
-</ul></li>
-<li><a href="#accuracy-vs-precision">Accuracy vs. Precision</a></li>
-<li><a href="#recall">Recall</a></li>
-<li><a href="#when-to-use-precision-vs-recall">When to use Precision vs. Recall</a></li>
-<li><a href="#f1-score">F1-score</a></li>
-<li><a href="#performance-measures-in-code">Performance measures in code</a>
-<ul>
-<li><a href="#training-accuracy">Training accuracy</a></li>
-<li><a href="#keras-built-in-accuracy-function">Keras built-in accuracy function</a></li>
-<li><a href="#training-precision-recall-and-f1-score">Training precision, recall, and F1-score</a></li>
-</ul></li>
-<li><a href="#conclusion">Conclusion</a></li>
-<li><a href="#further-reading">Further reading</a></li>
-<li><a href="#references">References</a>
-</details></li>
-</ul></li>
-</ul>
+        <ul>
+            <li><a href="#classification-performance-measures">Classification Performance Measures</a>
+                <ul>
+                    <li><a href="#why-are-performance-measures-important">Why are performance measures important?</a>
+                    </li>
+                    <li><a href="#confusion-matrix">Confusion Matrix</a>
+                        <ul>
+                            <li><a href="#generate-confusion-matrix">Generate confusion matrix</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#accuracy">Accuracy</a>
+                        <ul>
+                            <li><a href="#accuracy-in-classification-problems">Accuracy in classification problems</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#precision">Precision</a>
+                        <ul>
+                            <li><a href="#what-are-positive-labels">What are positive labels?</a></li>
+                            <li><a href="#conceptualizing-precision">Conceptualizing precision</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#accuracy-vs-precision">Accuracy vs. Precision</a></li>
+                    <li><a href="#recall">Recall</a></li>
+                    <li><a href="#when-to-use-precision-vs-recall">When to use Precision vs. Recall</a></li>
+                    <li><a href="#f1-score">F1-score</a></li>
+                    <li><a href="#performance-measures-in-code">Performance measures in code</a>
+                        <ul>
+                            <li><a href="#training-accuracy">Training accuracy</a></li>
+                            <li><a href="#keras-built-in-accuracy-function">Keras built-in accuracy function</a></li>
+                            <li><a href="#training-precision-recall-and-f1-score">Training precision, recall, and
+                                    F1-score</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#conclusion">Conclusion</a></li>
+                    <li><a href="#further-reading">Further reading</a></li>
+                    <li><a href="#references">References</a>
+    </details>
+    </li>
+    </ul>
+    </li>
+    </ul>
 
-<hr />
+    <hr />
 
-<h2 id="why-are-performance-measures-important">Why are performance measures important?</h2>
+    <h2 id="why-are-performance-measures-important">Why are performance measures important?</h2>
 
-<p>During training, we monitor how well the model performs on the training data using model loss and accuracy metrics.
-While these metrics are useful for monitoring the model's training progress, they are not very useful for evaluating the <em>performance</em>, or <em>quality</em>, of the model.</p>
+    <p>During training, we monitor how well the model performs on the training data using model loss and accuracy
+        metrics.
+        While these metrics are useful for monitoring the model's training progress, they are not very useful for
+        evaluating the <em>performance</em>, or <em>quality</em>, of the model.</p>
 
-<p>For example, imagine we've trained 100 models for the same classification problem, each with a different set of hyperparameters.
-How do we know which model is the best?
-Do we pick the model with the lowest loss, highest accuracy, or maybe a combination of the two metrics?</p>
+    <p>For example, imagine we've trained 100 models for the same classification problem, each with a different set of
+        hyperparameters.
+        How do we know which model is the best?
+        Do we pick the model with the lowest loss, highest accuracy, or maybe a combination of the two metrics?</p>
 
-<p>We could pick the model with the lowest loss, or highest accuracy, but that does not guarantee that the model is the best.
-Alternatively, we could pick the model with the least amount of wrong predictions on the test data.
-But does that guarantee we've picked the best model?</p>
+    <p>We could pick the model with the lowest loss, or highest accuracy, but that does not guarantee that the model is
+        the best.
+        Alternatively, we could pick the model with the least amount of wrong predictions on the test data.
+        But does that guarantee we've picked the best model?</p>
 
-<p>The loss and accuracy metrics give us a rough idea of the model's performance on the training data, but no indication of the model's general performance.
-To gain a better understanding of the model's performance, we must use more specific metrics.
-We'll discuss and compare the following metrics:</p>
+    <p>The loss and accuracy metrics give us a rough idea of the model's performance on the training data, but no
+        indication of the model's general performance.
+        To gain a better understanding of the model's performance, we must use more specific metrics.
+        We'll discuss and compare the following metrics:</p>
 
-<ul>
-<li><em>Accuracy</em>: The percentage of correct predictions</li>
-<li><em>Precision</em>: The proportion of correct positive predictions</li>
-<li><em>Recall</em>: The proportion of positive labels that were correctly identified</li>
-<li><em>F1-score</em>: The harmonic mean of precision and recall</li>
-</ul>
+    <ul>
+        <li><em>Accuracy</em>: The percentage of correct predictions</li>
+        <li><em>Precision</em>: The proportion of correct positive predictions</li>
+        <li><em>Recall</em>: The proportion of positive labels that were correctly identified</li>
+        <li><em>F1-score</em>: The harmonic mean of precision and recall</li>
+    </ul>
 
-<p>We'll examine these metrics in examples such as dog vs cat classification, cancer detection, and shooting arrows at a target.
-Afterward, with the help of Keras and scikit-learn, we'll write code to calculate the metrics.
-But first, we must familiarize ourselves with the confusion matrix.</p>
+    <p>We'll examine these metrics in examples such as dog vs cat classification, cancer detection, and shooting arrows
+        at a target.
+        Afterward, with the help of Keras and scikit-learn, we'll write code to calculate the metrics.
+        But first, we must familiarize ourselves with the confusion matrix.</p>
 
-<hr />
+    <hr />
 
-<h2 id="confusion-matrix">Confusion Matrix</h2>
+    <h2 id="confusion-matrix">Confusion Matrix</h2>
 
-<figure class="right" style="width:30%">
-    <img src="img/confusion_matrix.png" style="width:100%;"/>
-    <figcaption>Confusion matrix for a binary classification problem</figcaption>
-</figure>
+    <figure class="right" style="width:30%">
+        <img src="img/confusion_matrix.png" style="width:100%;" />
+        <figcaption>Confusion matrix for a binary classification problem</figcaption>
+    </figure>
 
-<p>A confusion matrix is a core computer vision technique for visualizing and evaluating a classification model's performance.
-As the name suggests, a confusion matrix is a 2-dimensional table.</p>
+    <p>A confusion matrix is a core computer vision technique for visualizing and evaluating a classification model's
+        performance.
+        As the name suggests, a confusion matrix is a 2-dimensional table.</p>
 
-<p>From the confusion matrix, we can determine the number of true positives, true negatives, false positives, and false negatives.
-We'll shorten the names to TP, TN, FP, and FN, respectively.
-Using TP, TN, FP, and FN, we can calculate the model's accuracy, precision, recall, and F1-score.</p>
+    <p>From the confusion matrix, we can determine the number of true positives, true negatives, false positives, and
+        false negatives.
+        We'll shorten the names to TP, TN, FP, and FN, respectively.
+        Using TP, TN, FP, and FN, we can calculate the model's accuracy, precision, recall, and F1-score.</p>
 
-<p>The table on the right shows a confusion matrix for a binary classification problem.
-The rows represent the true labels and the columns represent the predicted labels.
-The diagonal represents correct predictions, and all other cells represent incorrect predictions.
-Ideally, our confusion matrix should only contain diagonal values - no incorrect predictions.</p>
+    <p>The table on the right shows a confusion matrix for a binary classification problem.
+        The rows represent the true labels and the columns represent the predicted labels.
+        The diagonal represents correct predictions, and all other cells represent incorrect predictions.
+        Ideally, our confusion matrix should only contain diagonal values - no incorrect predictions.</p>
 
-<p>We can expand the confusion matrix to include multiclass classification problems.
-For instance, the table below shows the confusion matrix for a multiclass classification problem with four classes.</p>
+    <p>We can expand the confusion matrix to include multiclass classification problems.
+        For instance, the table below shows the confusion matrix for a multiclass classification problem with four
+        classes.</p>
 
-<p>The more classes in a multiclass classification problem, the more convoluted the confusion matrix will be.
-This should not stop us from using the confusion matrix to evaluate model performance, however.
-We can turn the multiclass matrix into a binary matrix using one-vs-all, but I will not demonstrate that here.
-Instead, I'll point you to this <a href="https://www.youtube.com/watch?v=6kzvrq-MIO0">video</a> and this <a href="https://www.youtube.com/watch?v=ZvaELFv5IpM">video by Andrew Ng</a>.</p>
+    <p>The more classes in a multiclass classification problem, the more convoluted the confusion matrix will be.
+        This should not stop us from using the confusion matrix to evaluate model performance, however.
+        We can turn the multiclass matrix into a binary matrix using one-vs-all, but I will not demonstrate that here.
+        Instead, I'll point you to this <a href="https://www.youtube.com/watch?v=6kzvrq-MIO0">video</a> and this <a
+            href="https://www.youtube.com/watch?v=ZvaELFv5IpM">video by Andrew Ng</a>.</p>
 
-<figure class="center">
-    <img src="img/confusion_matrix_multiclass.png" style="width:100%;"/>
-    <figcaption>Confusion matrix for a multiclass classification problem</figcaption>
-</figure>
+    <figure class="center">
+        <img src="img/confusion_matrix_multiclass.png" style="width:100%;" />
+        <figcaption>Confusion matrix for a multiclass classification problem</figcaption>
+    </figure>
 
-<p>Later in this article, we'll use a confusion matrix to derive the accuracy, precision, recall, and F1-score of our classification models.</p>
+    <p>Later in this article, we'll use a confusion matrix to derive the accuracy, precision, recall, and F1-score of
+        our classification models.</p>
 
-<h3 id="generate-confusion-matrix">Generate confusion matrix</h3>
+    <h3 id="generate-confusion-matrix">Generate confusion matrix</h3>
 
-<p>Given a list of predictions and a list of targets (true labels), we can generate a confusion matrix.
-We'll utilize two libraries to display the matrix: <code>matplotlib</code> and <code>sklearn</code>.</p>
+    <p>Given a list of predictions and a list of targets (true labels), we can generate a confusion matrix.
+        We'll utilize two libraries to display the matrix: <code>matplotlib</code> and <code>sklearn</code>.</p>
 
-<p>The code block below was used to generate the multiclass confusion matrix in the earlier section.</p>
+    <p>The code block below was used to generate the multiclass confusion matrix in the earlier section.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">ConfusionMatrixDisplay</span><span class="p">,</span> <span class="n">confusion_matrix</span>
 
 
@@ -169,12 +194,15 @@ We'll utilize two libraries to display the matrix: <code>matplotlib</code> and <
     <span class="n">fig</span><span class="o">.</span><span class="n">set_figheight</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
     <span class="c1"># Show the confusion matrix</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>The <code>confusion_matrix()</code> method from <code>sklearn.metrics</code> takes in a list of predictions and a list of targets (true labels).
-It outputs a 2-dimensional numpy array that represents the confusion matrix.</p>
+    <p>The <code>confusion_matrix()</code> method from <code>sklearn.metrics</code> takes in a list of predictions and a
+        list of targets (true labels).
+        It outputs a 2-dimensional numpy array that represents the confusion matrix.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">confusion_matrix</span><span class="p">(</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">confusion_matrix</span><span class="p">(</span>
         <span class="n">y_pred</span><span class="o">=</span><span class="n">preds_str</span><span class="p">,</span>
         <span class="n">y_true</span><span class="o">=</span><span class="n">integer_to_suit</span><span class="p">(</span><span class="n">test_labels</span><span class="p">),</span>
         <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;bb&#39;</span><span class="p">,</span> <span class="s1">&#39;lb&#39;</span><span class="p">,</span> <span class="s1">&#39;cb&#39;</span><span class="p">,</span> <span class="s1">&#39;sb&#39;</span><span class="p">]</span>
@@ -183,211 +211,255 @@ It outputs a 2-dimensional numpy array that represents the confusion matrix.</p>
        <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
        <span class="p">[</span> <span class="mi">4</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
        <span class="p">[</span><span class="mi">10</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int64</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>It may be important to note that the ordering of the <code>labels</code> parameter determines the order of the rows and columns in the confusion matrix.</p>
+    <p>It may be important to note that the ordering of the <code>labels</code> parameter determines the order of the
+        rows and columns in the confusion matrix.</p>
 
-<hr />
+    <hr />
 
-<h2 id="accuracy">Accuracy</h2>
+    <h2 id="accuracy">Accuracy</h2>
 
-<figure class="right" style="width:40%;">
-    <img src="img/confusion_matrix_accuracy.png" style="width:100%;"/>
-    <figcaption>Ratio of correct predictions</figcaption>
-</figure>
+    <figure class="right" style="width:40%;">
+        <img src="img/confusion_matrix_accuracy.png" style="width:100%;" />
+        <figcaption>Ratio of correct predictions</figcaption>
+    </figure>
 
-<p>Accuracy is a metric that measures the percentage of correct predictions across all classes.
-In other words, accuracy is <strong>how close the model comes to the correct result</strong>.</p>
+    <p>Accuracy is a metric that measures the percentage of correct predictions across all classes.
+        In other words, accuracy is <strong>how close the model comes to the correct result</strong>.</p>
 
-<p>Using the confusion matrix on the right, we can visualize accuracy as the confusion matrix's diagonal.</p>
+    <p>Using the confusion matrix on the right, we can visualize accuracy as the confusion matrix's diagonal.</p>
 
-<p>Accuracy is calculated by dividing the number of correct predictions by the total number of predictions: <code>(TP + TN) / (TP + TN + FP + FN)</code>.
-<code>(TP + TN)</code> is the number of correct predictions - the diagonal of the confusion matrix.
-<code>(TP + TN + FP + FN)</code> is the total number of predictions - the sum of all cells in the confusion matrix.</p>
+    <p>Accuracy is calculated by dividing the number of correct predictions by the total number of predictions:
+        <code>(TP + TN) / (TP + TN + FP + FN)</code>.
+        <code>(TP + TN)</code> is the number of correct predictions - the diagonal of the confusion matrix.
+        <code>(TP + TN + FP + FN)</code> is the total number of predictions - the sum of all cells in the confusion
+        matrix.
+    </p>
 
-<p><br></p>
+    <p><br></p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_images</span><span class="p">)</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_images</span><span class="p">)</span>
 <span class="c1"># Get the wrong predictions as a True/False array, where True == wrong prediction</span>
 <span class="n">wrong_preds</span> <span class="o">=</span> <span class="n">preds</span> <span class="o">!=</span> <span class="n">test_labels</span>
 <span class="c1"># Count the number of wrong predictions (number of True values in the array)</span>
 <span class="n">num_wrong_preds</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">wrong_preds</span><span class="p">))</span>
 <span class="c1"># Calculate the accuracy</span>
 <span class="n">accuracy</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span> <span class="o">-</span> <span class="n">num_wrong_preds</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="accuracy-in-classification-problems">Accuracy in classification problems</h3>
+    <h3 id="accuracy-in-classification-problems">Accuracy in classification problems</h3>
 
-<p>Balanced datasets are the key to successful classification models.
-Real-world problems, however, do not always have balanced datasets.
-We must understand how accuracy may be misleading in imbalanced classification datasets and tasks.</p>
+    <p>Balanced datasets are the key to successful classification models.
+        Real-world problems, however, do not always have balanced datasets.
+        We must understand how accuracy may be misleading in imbalanced classification datasets and tasks.</p>
 
-<p>Imagine we had a binary classifier that predicts whether an image was a cat or dog.
-Our dataset consists of 1000 pictures: 950 cat pictures and 50 dog pictures.</p>
+    <p>Imagine we had a binary classifier that predicts whether an image was a cat or dog.
+        Our dataset consists of 1000 pictures: 950 cat pictures and 50 dog pictures.</p>
 
-<p>After training, the model correctly predicts 925/950 cats and 5/50 dogs, for a total of 930/1000 correct predictions.
-We would say the model has an accuracy of 93%.</p>
+    <p>After training, the model correctly predicts 925/950 cats and 5/50 dogs, for a total of 930/1000 correct
+        predictions.
+        We would say the model has an accuracy of 93%.</p>
 
-<p>We might think that the model has high accuracy regardless of the class.
-For instance, given a dataset with 950 dogs and 50 cats, we might assume the model retains its 93% accuracy.
-This is not the case.
-The model will incorrectly predict dog samples as cats as a result of its imbalanced training, resulting in significantly lower accuracy.
-We can agree that the model has high accuracy on imbalanced tasks - specifically those that favor cat samples - but it will perform poorly on balanced tasks where there's an equal number of dog and cat samples.</p>
+    <p>We might think that the model has high accuracy regardless of the class.
+        For instance, given a dataset with 950 dogs and 50 cats, we might assume the model retains its 93% accuracy.
+        This is not the case.
+        The model will incorrectly predict dog samples as cats as a result of its imbalanced training, resulting in
+        significantly lower accuracy.
+        We can agree that the model has high accuracy on imbalanced tasks - specifically those that favor cat samples -
+        but it will perform poorly on balanced tasks where there's an equal number of dog and cat samples.</p>
 
-<p>Accuracy does not provide insight into the model's general performance, but rather the model's performance on a specific dataset.
-Furthermore, accuracy does not consider the subtleties of class imbalances or differing costs of false negatives and false positives.
-Measuring model performance should be straightforward, not misleading.
-We can use precision and recall to measure model performance properly when facing class imbalances of differing costs of incorrect predictions.</p>
+    <p>Accuracy does not provide insight into the model's general performance, but rather the model's performance on a
+        specific dataset.
+        Furthermore, accuracy does not consider the subtleties of class imbalances or differing costs of false negatives
+        and false positives.
+        Measuring model performance should be straightforward, not misleading.
+        We can use precision and recall to measure model performance properly when facing class imbalances of differing
+        costs of incorrect predictions.</p>
 
-<hr />
+    <hr />
 
-<h2 id="precision">Precision</h2>
+    <h2 id="precision">Precision</h2>
 
-<p>We know now that accuracy is simply the ratio of correct predictions to total predictions.
-Let's expand this to include precision.</p>
+    <p>We know now that accuracy is simply the ratio of correct predictions to total predictions.
+        Let's expand this to include precision.</p>
 
-<p>Precision answers the question of "what proportion of positive labels are actually positive?"
-It's calculated as follows: <code>TP / (TP + FP)</code>.</p>
+    <p>Precision answers the question of "what proportion of positive labels are actually positive?"
+        It's calculated as follows: <code>TP / (TP + FP)</code>.</p>
 
-<figure class="center" style="width:40%;">
-    <img src="img/confusion_matrix_precision.png" style="width:100%;"/>
-    <figcaption>Ratio of correctly predicted positive labels</figcaption>
-</figure>
+    <figure class="center" style="width:40%;">
+        <img src="img/confusion_matrix_precision.png" style="width:100%;" />
+        <figcaption>Ratio of correctly predicted positive labels</figcaption>
+    </figure>
 
-<p>It is the ratio of correctly predicted <em>positive</em> labels to the total number of <em>positive</em> labels predicted.
-In other words, precision is <strong>how reliably the model reaches the correct result</strong>.</p>
+    <p>It is the ratio of correctly predicted <em>positive</em> labels to the total number of <em>positive</em> labels
+        predicted.
+        In other words, precision is <strong>how reliably the model reaches the correct result</strong>.</p>
 
-<p>We should optimize our model's precision when we want to decrease the number of false positives or when having false negatives is not costly.</p>
+    <p>We should optimize our model's precision when we want to decrease the number of false positives or when having
+        false negatives is not costly.</p>
 
-<h3 id="what-are-positive-labels">What are positive labels?</h3>
+    <h3 id="what-are-positive-labels">What are positive labels?</h3>
 
-<p>Positive labels are labels that the model is expected to predict correctly.
-They are chosen by the model author and represent the class that the model is expected to predict.</p>
+    <p>Positive labels are labels that the model is expected to predict correctly.
+        They are chosen by the model author and represent the class that the model is expected to predict.</p>
 
-<p>Suppose that we selected "cat" as the positive label in the cat vs. dog classification problem above.
-We could then calculate the model's precision by asking, <strong>"what proportion of cat predictions were actually cats?"</strong>
-For instance, if the model correctly predicted 3 cat samples as cats (TP = 3), but incorrectly predicted 2 dog samples as cats (FP = 2), then precision = 3/5 = 60%.</p>
+    <p>Suppose that we selected "cat" as the positive label in the cat vs. dog classification problem above.
+        We could then calculate the model's precision by asking, <strong>"what proportion of cat predictions were
+            actually cats?"</strong>
+        For instance, if the model correctly predicted 3 cat samples as cats (TP = 3), but incorrectly predicted 2 dog
+        samples as cats (FP = 2), then precision = 3/5 = 60%.</p>
 
-<p>Positive labels are used to frame the model's performance given a specific task - such as precisely predicting cats.</p>
+    <p>Positive labels are used to frame the model's performance given a specific task - such as precisely predicting
+        cats.</p>
 
-<h3 id="conceptualizing-precision">Conceptualizing precision</h3>
+    <h3 id="conceptualizing-precision">Conceptualizing precision</h3>
 
-<p>Imagine the goal is to shoot an arrow at the apple's center.
-We would have high precision if there were a cluster of arrows directly at the apple's center.</p>
+    <p>Imagine the goal is to shoot an arrow at the apple's center.
+        We would have high precision if there were a cluster of arrows directly at the apple's center.</p>
 
-<p>If we shot a cluster of arrows directly above the apple - the arrows reliably landed above the apple, but had no guarantee of hitting the apple's center - we would still have high precision due to the arrows' consistent clustering.
-This is a case of high precision (consistent arrow location) with low accuracy (missing the apple's center).</p>
+    <p>If we shot a cluster of arrows directly above the apple - the arrows reliably landed above the apple, but had no
+        guarantee of hitting the apple's center - we would still have high precision due to the arrows' consistent
+        clustering.
+        This is a case of high precision (consistent arrow location) with low accuracy (missing the apple's center).</p>
 
-<p>High precision allows us to trust the arrow to reliably hit near the previous arrows' locations.
-The key takeaway is that high precision means high reliability, but that doesn't guarantee it's reliably correct!</p>
+    <p>High precision allows us to trust the arrow to reliably hit near the previous arrows' locations.
+        The key takeaway is that high precision means high reliability, but that doesn't guarantee it's reliably
+        correct!</p>
 
-<hr />
+    <hr />
 
-<h2 id="accuracy-vs-precision">Accuracy vs. Precision</h2>
+    <h2 id="accuracy-vs-precision">Accuracy vs. Precision</h2>
 
-<p>Accuracy and precision are closely related and often used interchangeably in day-to-day work.
-However, the distinction between accuracy and precision is crucial for engineers and scientists.</p>
+    <p>Accuracy and precision are closely related and often used interchangeably in day-to-day work.
+        However, the distinction between accuracy and precision is crucial for engineers and scientists.</p>
 
-<p>Earlier we explained accuracy as how <em>close</em> the model is to the correct result and precision as how <em>reliably</em> the model reaches the correct result.
-We can visualize accuracy as how close the arrows land near the apple's center, and precision as how reliably the arrows land near one another.</p>
+    <p>Earlier we explained accuracy as how <em>close</em> the model is to the correct result and precision as how
+        <em>reliably</em> the model reaches the correct result.
+        We can visualize accuracy as how close the arrows land near the apple's center, and precision as how reliably
+        the arrows land near one another.</p>
 
-<figure class="center" style="width:100%;">
-    <img src="img/accuracy_precision.png" style="width:100%;"/>
-    <figcaption>Accuracy and precision</figcaption>
-</figure>
+    <figure class="center" style="width:100%;">
+        <img src="img/accuracy_precision.png" style="width:100%;" />
+        <figcaption>Accuracy and precision</figcaption>
+    </figure>
 
-<p>One can have high accuracy and low precision - such as when the arrows land everywhere around the apple's center.
-High precision and low accuracy are also possible - such as when the arrows reliably cluster, but miss the apple's center.</p>
+    <p>One can have high accuracy and low precision - such as when the arrows land everywhere around the apple's center.
+        High precision and low accuracy are also possible - such as when the arrows reliably cluster, but miss the
+        apple's center.</p>
 
-<hr />
+    <hr />
 
-<h2 id="recall">Recall</h2>
+    <h2 id="recall">Recall</h2>
 
-<p>Now we understand how many times the model correctly predicted labels (accuracy) and how many times it correctly predicted a specific label (precision).
-Let's move on to the next metric: recall.</p>
+    <p>Now we understand how many times the model correctly predicted labels (accuracy) and how many times it correctly
+        predicted a specific label (precision).
+        Let's move on to the next metric: recall.</p>
 
-<p>Recall answers the question "what proportion of actual positives are correctly classified?"
-We calculate recall as follows: <code>TP / (TP + FN)</code>.</p>
+    <p>Recall answers the question "what proportion of actual positives are correctly classified?"
+        We calculate recall as follows: <code>TP / (TP + FN)</code>.</p>
 
-<figure class="center" style="width:40%;">
-    <img src="img/confusion_matrix_recall.png" style="width:100%;"/>
-    <figcaption>Proportion of correct positives</figcaption>
-</figure>
+    <figure class="center" style="width:40%;">
+        <img src="img/confusion_matrix_recall.png" style="width:100%;" />
+        <figcaption>Proportion of correct positives</figcaption>
+    </figure>
 
-<p>We should optimize our model's recall when we want to decrease the number of false negatives - identify rare but important classes.</p>
+    <p>We should optimize our model's recall when we want to decrease the number of false negatives - identify rare but
+        important classes.</p>
 
-<hr />
+    <hr />
 
-<h2 id="when-to-use-precision-vs-recall">When to use Precision vs. Recall</h2>
+    <h2 id="when-to-use-precision-vs-recall">When to use Precision vs. Recall</h2>
 
-<p>Remember that precision minimizes false positives and recall minimizes false negatives.
-When precision is high, we trust the model when it says positive.
-When recall is high, we can trust the model to not mislabel positive classes as negative.</p>
+    <p>Remember that precision minimizes false positives and recall minimizes false negatives.
+        When precision is high, we trust the model when it says positive.
+        When recall is high, we can trust the model to not mislabel positive classes as negative.</p>
 
-<p>If our goal is identifying an object in a scene, and the false negatives are not a concern, then we should optimize for precision.
-For example, counting the number of cars on a busy street or trees in forest photos, or fish in aquarium photos.
-Missing an object or two is not detrimental to our goal of identifying the objects.</p>
+    <p>If our goal is identifying an object in a scene, and the false negatives are not a concern, then we should
+        optimize for precision.
+        For example, counting the number of cars on a busy street or trees in forest photos, or fish in aquarium photos.
+        Missing an object or two is not detrimental to our goal of identifying the objects.</p>
 
-<p>Now, imagine our model's task is to identify cancer in x-rays.
-We're provided a realistic dataset with 1000 x-rays where the vast majority of the x-rays do <em>not</em> contain cancer.
-Therefore, we can consider cancer in x-rays to be a rare class.
-Our goal is to guarantee the correct identification of all cancer samples in the dataset.
-Mistakenly classifying a cancerous x-ray as cancer-free is a serious mistake that would ruin our credibility.</p>
+    <p>Now, imagine our model's task is to identify cancer in x-rays.
+        We're provided a realistic dataset with 1000 x-rays where the vast majority of the x-rays do <em>not</em>
+        contain cancer.
+        Therefore, we can consider cancer in x-rays to be a rare class.
+        Our goal is to guarantee the correct identification of all cancer samples in the dataset.
+        Mistakenly classifying a cancerous x-ray as cancer-free is a serious mistake that would ruin our credibility.
+    </p>
 
-<p>Optimizing for recall will decrease the number of false negatives and ensure no x-rays containing cancer fly under our radar.
-This optimization will both strengthen the model's ability to recognize rare classes and reach our goal of correctly identifying all cancer samples.
-Alternatively, if we optimize our model's precision, then we decrease the number of false positives - misclassifying cancer-free x-rays as cancerous.
-This neither improves our model's ability to classify cancer nor reaches our goal of identifying all cancer samples.</p>
+    <p>Optimizing for recall will decrease the number of false negatives and ensure no x-rays containing cancer fly
+        under our radar.
+        This optimization will both strengthen the model's ability to recognize rare classes and reach our goal of
+        correctly identifying all cancer samples.
+        Alternatively, if we optimize our model's precision, then we decrease the number of false positives -
+        misclassifying cancer-free x-rays as cancerous.
+        This neither improves our model's ability to classify cancer nor reaches our goal of identifying all cancer
+        samples.</p>
 
-<p>Precision and recall are in a trade-off relationship, where optimizing for one comes at a cost of the other.
-There are cases where we should optimize for either precision or recall but, realistically, we should optimize both.
-We can do this by utilizing the F1-score.</p>
+    <p>Precision and recall are in a trade-off relationship, where optimizing for one comes at a cost of the other.
+        There are cases where we should optimize for either precision or recall but, realistically, we should optimize
+        both.
+        We can do this by utilizing the F1-score.</p>
 
-<hr />
+    <hr />
 
-<h2 id="f1-score">F1-score</h2>
+    <h2 id="f1-score">F1-score</h2>
 
-<p>The F1-score combines precision and recall to effectively measure the model's accuracy on imbalanced classification datasets.
-It's designed to be used when other metrics may be deceptive or misleading.</p>
+    <p>The F1-score combines precision and recall to effectively measure the model's accuracy on imbalanced
+        classification datasets.
+        It's designed to be used when other metrics may be deceptive or misleading.</p>
 
-<p>Formally, the F1-score is: <code>(2 * precision * recall) / (precision + recall)</code>.
-We calculate the F1-score by taking the harmonic mean of precision and recall.
-We take the harmonic mean because it penalizes extreme value discrepancies more than the arithmetic mean.
-Penalization ensures we find a balance of precision and recall in our model's performance.
-The following figure demonstrates how the F1-score compares against the arithmetic mean with varying precision and recall values.</p>
+    <p>Formally, the F1-score is: <code>(2 * precision * recall) / (precision + recall)</code>.
+        We calculate the F1-score by taking the harmonic mean of precision and recall.
+        We take the harmonic mean because it penalizes extreme value discrepancies more than the arithmetic mean.
+        Penalization ensures we find a balance of precision and recall in our model's performance.
+        The following figure demonstrates how the F1-score compares against the arithmetic mean with varying precision
+        and recall values.</p>
 
-<figure class="center" style="width:98%;">
-    <img src="img/f1_score.png" style="width:100%;"/>
-    <figcaption></figcaption>
-</figure>
+    <figure class="center" style="width:98%;">
+        <img src="img/f1_score.png" style="width:100%;" />
+        <figcaption></figcaption>
+    </figure>
 
-<p>Figure 1 derives the F1-score when precision and recall are slightly different.
-Note how close the F1-score is to the arithmetic mean.
-The larger the difference between precision and recall, the larger the difference between the harmonic and arithmetic means.
-Figures 2 and 3 show how the F1-score moves when the precision and recall values are vastly different and the same, respectively.</p>
+    <p>Figure 1 derives the F1-score when precision and recall are slightly different.
+        Note how close the F1-score is to the arithmetic mean.
+        The larger the difference between precision and recall, the larger the difference between the harmonic and
+        arithmetic means.
+        Figures 2 and 3 show how the F1-score moves when the precision and recall values are vastly different and the
+        same, respectively.</p>
 
-<p>If our goal is to have strong precision and recall, we should optimize our model's F1-score.
-This is especially true when working with imbalanced datasets or tasks - such as the cancer classification problem.</p>
+    <p>If our goal is to have strong precision and recall, we should optimize our model's F1-score.
+        This is especially true when working with imbalanced datasets or tasks - such as the cancer classification
+        problem.</p>
 
-<p>The following section shows how to implement the accuracy, precision, recall, and F1-score metrics using python.
-It's not a detailed how-to, but a resource for future projects.</p>
+    <p>The following section shows how to implement the accuracy, precision, recall, and F1-score metrics using python.
+        It's not a detailed how-to, but a resource for future projects.</p>
 
-<hr />
+    <hr />
 
-<h2 id="performance-measures-in-code">Performance measures in code</h2>
+    <h2 id="performance-measures-in-code">Performance measures in code</h2>
 
-<p>The following section is for future reference.
-We'll implement and visualize the performance measures with the help of Keras, Tensorflow, and scikit-learn.</p>
+    <p>The following section is for future reference.
+        We'll implement and visualize the performance measures with the help of Keras, Tensorflow, and scikit-learn.</p>
 
-<h3 id="training-accuracy">Training accuracy</h3>
+    <h3 id="training-accuracy">Training accuracy</h3>
 
-<p>During training, we can use Keras' built-in accuracy <code>Metric</code> classes: <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/BinaryAccuracy">binary_accuracy</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/CategoricalAccuracy">categorical_accuracy</a>, and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/SparseCategoricalAccuracy">sparse_categorical_accuracy</a>.
-For binary classification models, we use the <code>binary_accuracy</code> metric.
-For multiclass classification models, we use the <code>[sparse_]categorical_accuracy</code> metric.</p>
+    <p>During training, we can use Keras' built-in accuracy <code>Metric</code> classes: <a
+            href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/BinaryAccuracy">binary_accuracy</a>, <a
+            href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/CategoricalAccuracy">categorical_accuracy</a>,
+        and <a
+            href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/SparseCategoricalAccuracy">sparse_categorical_accuracy</a>.
+        For binary classification models, we use the <code>binary_accuracy</code> metric.
+        For multiclass classification models, we use the <code>[sparse_]categorical_accuracy</code> metric.</p>
 
-<p>The <code>Metric</code> classes allow us to use TensorBoard and visualize training metrics.</p>
+    <p>The <code>Metric</code> classes allow us to use TensorBoard and visualize training metrics.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">make_multiclass_model</span><span class="p">(</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">make_multiclass_model</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;convnet_example&quot;</span><span class="p">,</span> <span class="n">augmentation</span><span class="o">=</span><span class="n">get_image_augmentations</span><span class="p">(),</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.5</span>
 <span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
@@ -403,15 +475,23 @@ For multiclass classification models, we use the <code>[sparse_]categorical_accu
         <span class="k">else</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">CategoricalAccuracy</span><span class="p">(),</span>
     <span class="p">]</span>
 <span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="keras-built-in-accuracy-function">Keras built-in accuracy function</h3>
+    <h3 id="keras-built-in-accuracy-function">Keras built-in accuracy function</h3>
 
-<p>Alternatively, given a pre-trained model, we can use Keras' built-in accuracy function to calculate the model's prediction accuracy: <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/binary_accuracy">binary</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/categorical_accuracy">categorical</a>, <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/sparse_categorical_accuracy">sparse_categorical</a>.</p>
+    <p>Alternatively, given a pre-trained model, we can use Keras' built-in accuracy function to calculate the model's
+        prediction accuracy: <a
+            href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/binary_accuracy">binary</a>, <a
+            href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/categorical_accuracy">categorical</a>, <a
+            href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/sparse_categorical_accuracy">sparse_categorical</a>.
+    </p>
 
-<p>Where the <code>Metric</code> classes allow us to utilize TensorBoard, the accuracy function allows us to directly calculate the model's prediction accuracy.</p>
+    <p>Where the <code>Metric</code> classes allow us to utilize TensorBoard, the accuracy function allows us to
+        directly calculate the model's prediction accuracy.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_images</span><span class="p">)</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_images</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ca</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">categorical_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">test_labels</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">predictions</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ca</span>
 <span class="o">&lt;</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">197</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">,</span> <span class="n">numpy</span><span class="o">=</span>
@@ -427,24 +507,31 @@ For multiclass classification models, we use the <code>[sparse_]categorical_accu
        <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
        <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span>
        <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span><span class="o">&gt;</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>The function outputs a binary array where <code>0</code> represents wrong predictions and <code>1</code> represents correct predictions.
-This is the equivalent of the code example seen earlier in the <a href="#accuracy">accuracy section</a>:</p>
+    <p>The function outputs a binary array where <code>0</code> represents wrong predictions and <code>1</code>
+        represents correct predictions.
+        This is the equivalent of the code example seen earlier in the <a href="#accuracy">accuracy section</a>:</p>
 
-<div class="codehilite"><pre><span></span><code><span class="c1"># Get the wrong predictions as a True/False array, where True == wrong prediction</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="c1"># Get the wrong predictions as a True/False array, where True == wrong prediction</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">wrong_preds</span> <span class="o">=</span> <span class="n">preds</span> <span class="o">!=</span> <span class="n">test_labels</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ca</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">categorical_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">test_labels</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">predictions</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ca</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">ca</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Create the True/False array</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ca</span> <span class="o">==</span> <span class="n">wrong_preds</span>
 <span class="kc">True</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<h3 id="training-precision-recall-and-f1-score">Training precision, recall, and F1-score</h3>
+    <h3 id="training-precision-recall-and-f1-score">Training precision, recall, and F1-score</h3>
 
-<p>During training, we can use Keras' built-in <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision">precision</a> and <a href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall">recall</a> metrics.</p>
+    <p>During training, we can use Keras' built-in <a
+            href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Precision">precision</a> and <a
+            href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Recall">recall</a> metrics.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">make_multiclass_model</span><span class="p">(</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">make_multiclass_model</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;convnet_example&quot;</span><span class="p">,</span> <span class="n">augmentation</span><span class="o">=</span><span class="n">get_image_augmentations</span><span class="p">(),</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.5</span>
 <span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
@@ -456,14 +543,18 @@ This is the equivalent of the code example seen earlier in the <a href="#accurac
     <span class="n">optimizer</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span>
     <span class="n">metrics</span><span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">Precision</span><span class="p">(),</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">Recall</span><span class="p">()]</span>
 <span class="p">)</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<p>We can use these measures to manually derive the F1-score.
-Alternatively, we can use TensorFlow Addons' <a href="https://www.tensorflow.org/addons/api_docs/python/tfa/metrics/F1Score">F1Score metric</a>.</p>
+    <p>We can use these measures to manually derive the F1-score.
+        Alternatively, we can use TensorFlow Addons' <a
+            href="https://www.tensorflow.org/addons/api_docs/python/tfa/metrics/F1Score">F1Score metric</a>.</p>
 
-<p>The simplest way to derive precision, recall, and F1-score, however, is to use scikit-learn's <code>classification_report</code> and <code>f1_score</code> methods.</p>
+    <p>The simplest way to derive precision, recall, and F1-score, however, is to use scikit-learn's
+        <code>classification_report</code> and <code>f1_score</code> methods.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="p">(</span>
+    <div class="codehilite">
+        <pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="p">(</span>
 <span class="o">&gt;&gt;&gt;</span>     <span class="n">classification_report</span><span class="p">,</span>
 <span class="o">&gt;&gt;&gt;</span>     <span class="n">f1_score</span><span class="p">,</span>
 <span class="o">&gt;&gt;&gt;</span>     <span class="n">precision_score</span><span class="p">,</span>
@@ -496,51 +587,70 @@ Alternatively, we can use TensorFlow Addons' <a href="https://www.tensorflow.org
     <span class="n">accuracy</span>                           <span class="mf">0.95</span>       <span class="mi">197</span>
    <span class="n">macro</span> <span class="n">avg</span>       <span class="mf">0.95</span>      <span class="mf">0.95</span>      <span class="mf">0.95</span>       <span class="mi">197</span>
 <span class="n">weighted</span> <span class="n">avg</span>       <span class="mf">0.95</span>      <span class="mf">0.95</span>      <span class="mf">0.95</span>       <span class="mi">19</span>
-</code></pre></div>
+</code></pre>
+    </div>
 
-<hr />
+    <hr />
 
-<h2 id="conclusion">Conclusion</h2>
+    <h2 id="conclusion">Conclusion</h2>
 
-<p>After reading this article, we should have a more profound understanding of the three most common classification performance measures: precision, recall, and F1-score.
-We learned how accuracy is a misleading metric for evaluating model performance - especially in imbalanced classification tasks.
-Using precision, recall, and F1-score, we can properly evaluate and fine-tune our model for high performance on imbalanced datasets.</p>
+    <p>After reading this article, we should have a more profound understanding of the three most common classification
+        performance measures: precision, recall, and F1-score.
+        We learned how accuracy is a misleading metric for evaluating model performance - especially in imbalanced
+        classification tasks.
+        Using precision, recall, and F1-score, we can properly evaluate and fine-tune our model for high performance on
+        imbalanced datasets.</p>
 
-<p>Here's the final summary of the performance measures:</p>
+    <p>Here's the final summary of the performance measures:</p>
 
-<ul>
-<li><strong>Accuracy</strong>: The percentage of correct predictions. A misleading metric that provides minimal insight into the model's true performance.</li>
-<li><strong>Precision</strong>: The proportion of positive labels that are actually positive: model's reliability score. Useful for minimizing false positives.</li>
-<li><strong>Recall</strong>: The proportion of actual positive labels that were correctly identified. Useful for minimizing false negatives.</li>
-<li><strong>F1-score</strong>: The harmonic mean of precision and recall. Useful for finding a balance of high precision and recall - minimizing false positives and false negatives - in imbalanced datasets.</li>
-</ul>
+    <ul>
+        <li><strong>Accuracy</strong>: The percentage of correct predictions. A misleading metric that provides minimal
+            insight into the model's true performance.</li>
+        <li><strong>Precision</strong>: The proportion of positive labels that are actually positive: model's
+            reliability score. Useful for minimizing false positives.</li>
+        <li><strong>Recall</strong>: The proportion of actual positive labels that were correctly identified. Useful for
+            minimizing false negatives.</li>
+        <li><strong>F1-score</strong>: The harmonic mean of precision and recall. Useful for finding a balance of high
+            precision and recall - minimizing false positives and false negatives - in imbalanced datasets.</li>
+    </ul>
 
-<hr />
+    <hr />
 
-<h2 id="further-reading">Further reading</h2>
+    <h2 id="further-reading">Further reading</h2>
 
-<p>My explanations merely scratch the surface of classification performance measures.
-This article was not intended to deep dive into the measures.
-Rather, it was to demonstrate my current working knowledge on the subject of performance measures.</p>
+    <p>My explanations merely scratch the surface of classification performance measures.
+        This article was not intended to deep dive into the measures.
+        Rather, it was to demonstrate my current working knowledge on the subject of performance measures.</p>
 
-<p>The following articles go in-depth into additional measures such as ROC-AUC curves, Cohen Kappa score, Matthew’s correlation coefficient, and log loss.
-I highly recommend giving them a read/skim to gain a deeper understanding, or varying perspective, of the measures mentioned above.</p>
+    <p>The following articles go in-depth into additional measures such as ROC-AUC curves, Cohen Kappa score, Matthew’s
+        correlation coefficient, and log loss.
+        I highly recommend giving them a read/skim to gain a deeper understanding, or varying perspective, of the
+        measures mentioned above.</p>
 
-<ul>
-<li><a href="https://deepai.org/machine-learning-glossary-and-terms/f-score">F-Score</a></li>
-<li><a href="https://www.mage.ai/blog/definitive-guide-to-accuracy-precision-recall-for-product-developers">Guide to accuracy, precision, and recall</a></li>
-<li><a href="https://towardsdatascience.com/comprehensive-guide-on-multiclass-classification-metrics-af94cfb83fbd">Comprehensive Guide to Multiclass Classification Metrics</a></li>
-<li><a href="https://towardsdatascience.com/comprehensive-guide-to-multiclass-classification-with-sklearn-127cc500f362">Comprehensive Guide to Multiclass Classification With Sklearn</a></li>
-<li>(VIDEO) <a href="https://www.youtube.com/watch?v=jJ7ff7Gcq34">Introduction to Precision, Recall, and F1</a></li>
-</ul>
+    <ul>
+        <li><a href="https://deepai.org/machine-learning-glossary-and-terms/f-score">F-Score</a></li>
+        <li><a href="https://www.mage.ai/blog/definitive-guide-to-accuracy-precision-recall-for-product-developers">Guide
+                to accuracy, precision, and recall</a></li>
+        <li><a
+                href="https://towardsdatascience.com/comprehensive-guide-on-multiclass-classification-metrics-af94cfb83fbd">Comprehensive
+                Guide to Multiclass Classification Metrics</a></li>
+        <li><a
+                href="https://towardsdatascience.com/comprehensive-guide-to-multiclass-classification-with-sklearn-127cc500f362">Comprehensive
+                Guide to Multiclass Classification With Sklearn</a></li>
+        <li>(VIDEO) <a href="https://www.youtube.com/watch?v=jJ7ff7Gcq34">Introduction to Precision, Recall, and F1</a>
+        </li>
+    </ul>
 
-<hr />
+    <hr />
 
-<h2 id="references">References</h2>
+    <h2 id="references">References</h2>
 
-<ul>
-<li>Scikit-learn's <em>Model Evaluation Metrics and Scoring</em> <a href="https://scikit-learn.org/stable/modules/model_evaluation.html#metrics-and-scoring-quantifying-the-quality-of-predictions">API</a></li>
-</ul>
+    <ul>
+        <li>Scikit-learn's <em>Model Evaluation Metrics and Scoring</em> <a
+                href="https://scikit-learn.org/stable/modules/model_evaluation.html#metrics-and-scoring-quantifying-the-quality-of-predictions">API</a>
+        </li>
+    </ul>
 
 </body>
+
 </html>

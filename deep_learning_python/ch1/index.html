@@ -1,4 +1,3 @@
-
 <html>
 
 <head>
@@ -13,305 +12,375 @@
       </a>
       <hr>
       <div style="text-align: center;display: inline-block; width: 100%;">
-        <a class="title" href="../../about">ABOUT</a> &nbsp;<a class="title" href="../../contact">CONTACT</a>
+        <a class="title" href="/books">BOOKS</a> &nbsp;<a class="title" href="/about">ABOUT</a>
+        &nbsp;<a class="title" href="/contact">CONTACT</a>
       </div>
     </div>
   </center>
 
+
   <br>
   <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">April 22, 2022</p>
 
-<p><title>Deep Learning with Python: Chapter 1 - What is deep learning?</title></p>
+  <p>
+    <title>Deep Learning with Python: Chapter 1 - What is deep learning?</title>
+  </p>
 
-<h1 id="deep-learning-with-python">Deep Learning with Python</h1>
+  <h1 id="deep-learning-with-python">Deep Learning with Python</h1>
 
-<p>This article is part 1/13 (?) of a series of articles named <em>Deep Learning with Python</em>.</p>
+  <p>This article is part 1/13 (?) of a series of articles named <em>Deep Learning with Python</em>.</p>
 
-<p>In this series, I will read through the second edition of <em>Deep Learning with Python</em> by François Chollet.
-Articles in this series will sequentially review key concepts, examples, and interesting facts from each chapter of the book.</p>
+  <p>In this series, I will read through the second edition of <em>Deep Learning with Python</em> by François Chollet.
+    Articles in this series will sequentially review key concepts, examples, and interesting facts from each chapter of
+    the book.</p>
 
-<p><details>
-<summary>Table of Contents</summary></p>
+  <p>
+  <details>
+    <summary>Table of Contents</summary>
+    </p>
 
-<ul>
-<li><a href="#deep-learning-with-python">Deep Learning with Python</a>
-<ul>
-<li><a href="#why-this-book">Why this book?</a></li>
-<li><a href="#about-the-author">About the author</a></li>
-</ul></li>
-<li><a href="#chapter-1-what-is-deep-learning">Chapter 1: What is deep learning?</a>
-<ul>
-<li><a href="#artificial-intelligence">Artificial Intelligence</a>
-<ul>
-<li><a href="#symbolic-ai">Symbolic AI</a></li>
-</ul></li>
-<li><a href="#machine-learning">Machine Learning</a>
-<ul>
-<li><a href="#classical-programming-vs-machine-learning">Classical Programming vs Machine Learning</a></li>
-<li><a href="#whats-needed-to-do-machine-learning">What's needed to do Machine Learning?</a></li>
-<li><a href="#how-does-a-machine-learn">How does a machine learn?</a></li>
-<li><a href="#machine-learning-simplified">Machine Learning simplified</a></li>
-</ul></li>
-<li><a href="#deep-learning">Deep Learning</a>
-<ul>
-<li><a href="#neural-networks">Neural Networks</a></li>
-<li><a href="#layers-weights-and-parameters">Layers, Weights, and Parameters</a></li>
-<li><a href="#how-does-a-neural-network-learn">How does a neural network learn?</a></li>
-<li><a href="#loss-function-and-optimizer">Loss Function and Optimizer</a></li>
-<li><a href="#neural-network-training-loop">Neural Network training loop</a></li>
-<li><a href="#deep-learning-simplified">Deep Learning simplified</a></li>
-</ul></li>
-<li><a href="#what-has-deep-learning-achieved-so-far">What has Deep Learning achieved so far?</a></li>
-<li><a href="#summary">Summary</a></li>
-</ul></li>
-</ul>
+    <ul>
+      <li><a href="#deep-learning-with-python">Deep Learning with Python</a>
+        <ul>
+          <li><a href="#why-this-book">Why this book?</a></li>
+          <li><a href="#about-the-author">About the author</a></li>
+        </ul>
+      </li>
+      <li><a href="#chapter-1-what-is-deep-learning">Chapter 1: What is deep learning?</a>
+        <ul>
+          <li><a href="#artificial-intelligence">Artificial Intelligence</a>
+            <ul>
+              <li><a href="#symbolic-ai">Symbolic AI</a></li>
+            </ul>
+          </li>
+          <li><a href="#machine-learning">Machine Learning</a>
+            <ul>
+              <li><a href="#classical-programming-vs-machine-learning">Classical Programming vs Machine Learning</a>
+              </li>
+              <li><a href="#whats-needed-to-do-machine-learning">What's needed to do Machine Learning?</a></li>
+              <li><a href="#how-does-a-machine-learn">How does a machine learn?</a></li>
+              <li><a href="#machine-learning-simplified">Machine Learning simplified</a></li>
+            </ul>
+          </li>
+          <li><a href="#deep-learning">Deep Learning</a>
+            <ul>
+              <li><a href="#neural-networks">Neural Networks</a></li>
+              <li><a href="#layers-weights-and-parameters">Layers, Weights, and Parameters</a></li>
+              <li><a href="#how-does-a-neural-network-learn">How does a neural network learn?</a></li>
+              <li><a href="#loss-function-and-optimizer">Loss Function and Optimizer</a></li>
+              <li><a href="#neural-network-training-loop">Neural Network training loop</a></li>
+              <li><a href="#deep-learning-simplified">Deep Learning simplified</a></li>
+            </ul>
+          </li>
+          <li><a href="#what-has-deep-learning-achieved-so-far">What has Deep Learning achieved so far?</a></li>
+          <li><a href="#summary">Summary</a></li>
+        </ul>
+      </li>
+    </ul>
 
-<p></details></p>
+    <p>
+  </details>
+  </p>
 
-<h2 id="why-this-book">Why this book?</h2>
+  <h2 id="why-this-book">Why this book?</h2>
 
-<p>There are a few reasons why I picked this book over others:</p>
+  <p>There are a few reasons why I picked this book over others:</p>
 
-<ol>
-<li>I've heard this book referred to as the "bible of deep learning" from engineers within the AI community</li>
-<li>The author is quite knowledgeable (see <code>About the author</code> section below)</li>
-<li>Opportunity for me to learn a new ML framework. This book teaches Tensorflow and Keras vs PyTorch which I am already familiar with. It'll be useful for me to compare and contrast the frameworks.</li>
-<li>Originally published in 2017 and recently updated in 2021 to include 1/3 new content (Transformers) and 75% refreshed content</li>
-</ol>
+  <ol>
+    <li>I've heard this book referred to as the "bible of deep learning" from engineers within the AI community</li>
+    <li>The author is quite knowledgeable (see <code>About the author</code> section below)</li>
+    <li>Opportunity for me to learn a new ML framework. This book teaches Tensorflow and Keras vs PyTorch which I am
+      already familiar with. It'll be useful for me to compare and contrast the frameworks.</li>
+    <li>Originally published in 2017 and recently updated in 2021 to include 1/3 new content (Transformers) and 75%
+      refreshed content</li>
+  </ol>
 
-<h2 id="about-the-author">About the author</h2>
+  <h2 id="about-the-author">About the author</h2>
 
-<p>Directly from the book...</p>
+  <p>Directly from the book...</p>
 
-<blockquote>
-  <p>François Chollet is the creator of Keras, one of the most widely used deep learning frameworks.
-  He is currently [as of April 2022] a software engineer at Google, where he leads the Keras team.
-  In addition, he does research on abstraction, reasoning, and how to achieve greater generality in artificial intelligence.</p>
-</blockquote>
+  <blockquote>
+    <p>François Chollet is the creator of Keras, one of the most widely used deep learning frameworks.
+      He is currently [as of April 2022] a software engineer at Google, where he leads the Keras team.
+      In addition, he does research on abstraction, reasoning, and how to achieve greater generality in artificial
+      intelligence.</p>
+  </blockquote>
 
-<hr />
+  <hr />
 
-<h1 id="chapter-1-what-is-deep-learning">Chapter 1: What is deep learning?</h1>
+  <h1 id="chapter-1-what-is-deep-learning">Chapter 1: What is deep learning?</h1>
 
-<p>This chapter provides essential context around artificial intelligence (AI), machine learning (ML), and deep learning (DL).</p>
+  <p>This chapter provides essential context around artificial intelligence (AI), machine learning (ML), and deep
+    learning (DL).</p>
 
-<hr />
+  <hr />
 
-<h2 id="artificial-intelligence">Artificial Intelligence</h2>
+  <h2 id="artificial-intelligence">Artificial Intelligence</h2>
 
-<figure class="right">
-    <img src="img/ai_subfields.png" style="width:100%;"/>
-    <figcaption>Deep learning is a subfield of machine learning, which is a subfield of artificial intelligence</figcaption>
-</figure>
+  <figure class="right">
+    <img src="img/ai_subfields.png" style="width:100%;" />
+    <figcaption>Deep learning is a subfield of machine learning, which is a subfield of artificial intelligence
+    </figcaption>
+  </figure>
 
-<p>AI can be described as <em>the effort to automate intellectual tasks normally performed by humans</em>.
-Artificial intelligence is a general field that encompasses machine learning and deep learning.</p>
+  <p>AI can be described as <em>the effort to automate intellectual tasks normally performed by humans</em>.
+    Artificial intelligence is a general field that encompasses machine learning and deep learning.</p>
 
-<h3 id="symbolic-ai">Symbolic AI</h3>
+  <h3 id="symbolic-ai">Symbolic AI</h3>
 
-<p>Early AI programs from the 1950s - such as Chess AI - involved hardcoded rules crafted by programmers.
-This approach is known as <em>symbolic AI</em>and was the dominant paradigm in AI from the 50s to the late 1980s.
-Symbolic AI reached its peak popularity during the <em>expert systems</em> boom of the 80s.</p>
+  <p>Early AI programs from the 1950s - such as Chess AI - involved hardcoded rules crafted by programmers.
+    This approach is known as <em>symbolic AI</em>and was the dominant paradigm in AI from the 50s to the late 1980s.
+    Symbolic AI reached its peak popularity during the <em>expert systems</em> boom of the 80s.</p>
 
-<p>Symbolic AI is successful when applied to well-defined, logical problems like Chess or Go.
-However, symbolic AI fails when solving more complex, fuzzy problems because it's not possible to hardcode rules for such tasks.
-Perceptual tasks normally performed by humans - such as image classification, speech recognition, or natural language processing - are especially complex and cannot be accurately distilled into a set of rules.</p>
+  <p>Symbolic AI is successful when applied to well-defined, logical problems like Chess or Go.
+    However, symbolic AI fails when solving more complex, fuzzy problems because it's not possible to hardcode rules for
+    such tasks.
+    Perceptual tasks normally performed by humans - such as image classification, speech recognition, or natural
+    language processing - are especially complex and cannot be accurately distilled into a set of rules.</p>
 
-<p>By the early 1990s, expert systems were proven expensive to maintain, difficult to scale, and limited in scope.
-Interest in AI dwindled until the late 2000s when new machine learning approaches were developed.</p>
+  <p>By the early 1990s, expert systems were proven expensive to maintain, difficult to scale, and limited in scope.
+    Interest in AI dwindled until the late 2000s when new machine learning approaches were developed.</p>
 
-<hr />
+  <hr />
 
-<h2 id="machine-learning">Machine Learning</h2>
+  <h2 id="machine-learning">Machine Learning</h2>
 
-<blockquote>
-  <p>Could a general-purpose computer "originate" anything, or would it always be bound to dully execute processes we humans fully understand?
-  Could it learn from experience?
-  Could it show creativity?</p>
+  <blockquote>
+    <p>Could a general-purpose computer "originate" anything, or would it always be bound to dully execute processes we
+      humans fully understand?
+      Could it learn from experience?
+      Could it show creativity?</p>
 
-  <p><em>- Ada Lovelace's remarks on the invention of the Analytical Engine, 1843</em></p>
-</blockquote>
+    <p><em>- Ada Lovelace's remarks on the invention of the Analytical Engine, 1843</em></p>
+  </blockquote>
 
-<p>Lovelace's remark was later quoted by AI pioneer Alan Turing as "Lady Lovelace's objection" in his landmark paper "Computing Machinery and Intelligence".
-Alan Turing's paper introduced the <em>Turing test</em> as well as key concepts that would come to shape AI.</p>
+  <p>Lovelace's remark was later quoted by AI pioneer Alan Turing as "Lady Lovelace's objection" in his landmark paper
+    "Computing Machinery and Intelligence".
+    Alan Turing's paper introduced the <em>Turing test</em> as well as key concepts that would come to shape AI.</p>
 
-<h3 id="classical-programming-vs-machine-learning">Classical Programming vs Machine Learning</h3>
+  <h3 id="classical-programming-vs-machine-learning">Classical Programming vs Machine Learning</h3>
 
-<figure class="right">
-    <img src="img/classic_vs_ml.png" style="width:100%;"/>
+  <figure class="right">
+    <img src="img/classic_vs_ml.png" style="width:100%;" />
     <figcaption>Classical programming vs machine learning</figcaption>
-</figure>
+  </figure>
 
-<p>Classical programming is the usual way to make a computer perform useful tasks.
-A human programmer designs explicit <em>rules</em> - a computer program - to be followed.
-The computer, given a set of rules and input data, outputs appropriate answers.</p>
+  <p>Classical programming is the usual way to make a computer perform useful tasks.
+    A human programmer designs explicit <em>rules</em> - a computer program - to be followed.
+    The computer, given a set of rules and input data, outputs appropriate answers.</p>
 
-<p><em>Machine Learning</em> flips this concept around: the computer looks at the input data and the appropriate answers, and figures out what the rules should be.
-ML systems are <em>trained</em> rather than explicitly programmed.
-Presented with many examples of a task (training data), the machine finds statistical structures in the examples and eventually allows the system to determine rules for automating the task.</p>
+  <p><em>Machine Learning</em> flips this concept around: the computer looks at the input data and the appropriate
+    answers, and figures out what the rules should be.
+    ML systems are <em>trained</em> rather than explicitly programmed.
+    Presented with many examples of a task (training data), the machine finds statistical structures in the examples and
+    eventually allows the system to determine rules for automating the task.</p>
 
-<h3 id="whats-needed-to-do-machine-learning">What's needed to do Machine Learning?</h3>
+  <h3 id="whats-needed-to-do-machine-learning">What's needed to do Machine Learning?</h3>
 
-<ol>
-<li><em>Input data points</em>:
-For example, if the task is speech recognition, the data points could be sound files of people speaking.
-If the task is image classification, they could be pictures.</li>
-<li><em>Examples of the expected output</em>:
-In a speech-recognition task, these could be human-generated transcripts of sound files.
-In an image task, expected outputs could be tags such as "cat", "dog", "bird", etc.</li>
-<li><em>A way to measure whether the algorithm is doing a good job</em>:
-This is required in order to determine the distance between the algorithm's current output and its expected output.
-The measurement is used as a feedback signal to adjust the algorithm.
-This adjustment step is what we call <em>learning</em>.</li>
-</ol>
+  <ol>
+    <li><em>Input data points</em>:
+      For example, if the task is speech recognition, the data points could be sound files of people speaking.
+      If the task is image classification, they could be pictures.</li>
+    <li><em>Examples of the expected output</em>:
+      In a speech-recognition task, these could be human-generated transcripts of sound files.
+      In an image task, expected outputs could be tags such as "cat", "dog", "bird", etc.</li>
+    <li><em>A way to measure whether the algorithm is doing a good job</em>:
+      This is required in order to determine the distance between the algorithm's current output and its expected
+      output.
+      The measurement is used as a feedback signal to adjust the algorithm.
+      This adjustment step is what we call <em>learning</em>.</li>
+  </ol>
 
-<h3 id="how-does-a-machine-learn">How does a machine learn?</h3>
+  <h3 id="how-does-a-machine-learn">How does a machine learn?</h3>
 
-<p><em>Learning</em>, in the context of ML, describes an automatic search process for data transformations that produces useful representations of data.
-The search process is guided by some feedback signal.</p>
+  <p><em>Learning</em>, in the context of ML, describes an automatic search process for data transformations that
+    produces useful representations of data.
+    The search process is guided by some feedback signal.</p>
 
-<p>A machine learning model transforms its input data into meaningful outputs, a process that is "learned" from exposure to examples of inputs and outputs during training.
-Therefore, the central problem in ML is to <em>meaningfully transform data</em>.
-The transformations and representations are amenable to simpler rules for solving the task at hand.</p>
+  <p>A machine learning model transforms its input data into meaningful outputs, a process that is "learned" from
+    exposure to examples of inputs and outputs during training.
+    Therefore, the central problem in ML is to <em>meaningfully transform data</em>.
+    The transformations and representations are amenable to simpler rules for solving the task at hand.</p>
 
-<p>In other words, ML's purpose is to learn useful <em>representations</em> of the input data at hand - representations that get us closer to the expected output.</p>
+  <p>In other words, ML's purpose is to learn useful <em>representations</em> of the input data at hand -
+    representations that get us closer to the expected output.</p>
 
-<h3 id="machine-learning-simplified">Machine Learning simplified</h3>
+  <h3 id="machine-learning-simplified">Machine Learning simplified</h3>
 
-<p>In short, machine learning is searching for useful representations and rules over some input data, within a predefined space of possibilities, by performing data transformations and using guidance from a feedback signal.
-This simple idea allows for solving a remarkably broad range of intellectual tasks, from speech recognition to autonomous driving.</p>
+  <p>In short, machine learning is searching for useful representations and rules over some input data, within a
+    predefined space of possibilities, by performing data transformations and using guidance from a feedback signal.
+    This simple idea allows for solving a remarkably broad range of intellectual tasks, from speech recognition to
+    autonomous driving.</p>
 
-<p>If that's not simple enough: Machine learning is about mapping inputs to labels - such as images of a cat to the label "cat" - by observing many examples of inputs and targets.</p>
+  <p>If that's not simple enough: Machine learning is about mapping inputs to labels - such as images of a cat to the
+    label "cat" - by observing many examples of inputs and targets.</p>
 
-<hr />
+  <hr />
 
-<h2 id="deep-learning">Deep Learning</h2>
+  <h2 id="deep-learning">Deep Learning</h2>
 
-<p>Deep learning is a specific subfield of machine learning.
-It's a new take on learning representations from data that emphasizes learning successive layers of increasingly meaningful representations.
-The "deep" in "deep learning" refers to successive layers of representations.
-How many layers contributes to a model of the data is called the <em>depth</em> of the model.</p>
+  <p>Deep learning is a specific subfield of machine learning.
+    It's a new take on learning representations from data that emphasizes learning successive layers of increasingly
+    meaningful representations.
+    The "deep" in "deep learning" refers to successive layers of representations.
+    How many layers contributes to a model of the data is called the <em>depth</em> of the model.</p>
 
-<p>Most approaches to machine learning focus on learning only one or two layers of representations of the data; hence they're sometimes called <em>shallow learning</em>.
-Modern deep learning, on the other hand, often involves tens or even hundreds of successive layers of representations.</p>
+  <p>Most approaches to machine learning focus on learning only one or two layers of representations of the data; hence
+    they're sometimes called <em>shallow learning</em>.
+    Modern deep learning, on the other hand, often involves tens or even hundreds of successive layers of
+    representations.</p>
 
-<h3 id="neural-networks">Neural Networks</h3>
+  <h3 id="neural-networks">Neural Networks</h3>
 
-<figure class="right">
-    <img src="img/nn_layer_simple.png" style="width:100%;"/>
+  <figure class="right">
+    <img src="img/nn_layer_simple.png" style="width:100%;" />
     <figcaption>High-level overview of neural network layers</figcaption>
-</figure>
+  </figure>
 
-<p>In DL, representations are learned via models called <em>neural networks</em>, structured in literal layers stacked on top of each other.
-Although the term "neural network" refers to neurobiology, and some central concepts in DL were developed in part by inspiration from our understanding of the brain, deep learning models are <strong>not</strong> models of the brain.</p>
+  <p>In DL, representations are learned via models called <em>neural networks</em>, structured in literal layers stacked
+    on top of each other.
+    Although the term "neural network" refers to neurobiology, and some central concepts in DL were developed in part by
+    inspiration from our understanding of the brain, deep learning models are <strong>not</strong> models of the brain.
+  </p>
 
-<figure class="right">
-    <img src="img/nn_layer_complex.png" style="width:100%;"/>
+  <figure class="right">
+    <img src="img/nn_layer_complex.png" style="width:100%;" />
     <figcaption>Data representations learned at each layer</figcaption>
-</figure>
+  </figure>
 
-<p>Given an input, such as an image, the neural network applies a sequence of simple data transformations to the image at each successive layer, creating a different data representation at each layer.
-As the image travels through the layers, representations become increasingly different from the original image and increasingly informative about the final result.</p>
+  <p>Given an input, such as an image, the neural network applies a sequence of simple data transformations to the image
+    at each successive layer, creating a different data representation at each layer.
+    As the image travels through the layers, representations become increasingly different from the original image and
+    increasingly informative about the final result.</p>
 
-<p>You can think of a deep network as a multistage <em>information distillation</em> process, where information goes through successive filters and come out increasingly <em>purified</em>.</p>
+  <p>You can think of a deep network as a multistage <em>information distillation</em> process, where information goes
+    through successive filters and come out increasingly <em>purified</em>.</p>
 
-<h3 id="layers-weights-and-parameters">Layers, Weights, and Parameters</h3>
+  <h3 id="layers-weights-and-parameters">Layers, Weights, and Parameters</h3>
 
-<p>Recall that each layer performs a simple data transformation to the input to create a more pure, or simple, data representation.
-The specification of what a layer does to its input data - <em>how</em> the input is transformed - is stored in the layer's <em>weights</em>, which in essence are a bunch of numbers.</p>
+  <p>Recall that each layer performs a simple data transformation to the input to create a more pure, or simple, data
+    representation.
+    The specification of what a layer does to its input data - <em>how</em> the input is transformed - is stored in the
+    layer's <em>weights</em>, which in essence are a bunch of numbers.</p>
 
-<p>Technically, we'd say that the transformation implemented by a layer is <em>parametrized</em> by its weights.
-Weights are sometimes called the <em>parameters</em> of a layer.</p>
+  <p>Technically, we'd say that the transformation implemented by a layer is <em>parametrized</em> by its weights.
+    Weights are sometimes called the <em>parameters</em> of a layer.</p>
 
-<figure class="center">
-    <img src="img/nn_weight.png" style="width:100%;"/>
+  <figure class="center">
+    <img src="img/nn_weight.png" style="width:100%;" />
     <figcaption>Layers parametrized by their weights</figcaption>
-</figure>
+  </figure>
 
-<h3 id="how-does-a-neural-network-learn">How does a neural network learn?</h3>
+  <h3 id="how-does-a-neural-network-learn">How does a neural network learn?</h3>
 
-<p>In this context of DL and neural networks, <em>learning</em> means finding a set of values for the weights of all layers in a network, such that the network will correctly map example inputs to their associated targets.
-The correct set of weights is found by measuring how far the output is from what was expected, and adjusting the weights such that the output is incrementally closer to the expected output.</p>
+  <p>In this context of DL and neural networks, <em>learning</em> means finding a set of values for the weights of all
+    layers in a network, such that the network will correctly map example inputs to their associated targets.
+    The correct set of weights is found by measuring how far the output is from what was expected, and adjusting the
+    weights such that the output is incrementally closer to the expected output.</p>
 
-<p>The output measurement and weight adjustment are the jobs of the network's <em>loss function</em> and <em>optimizer</em>, respectively.</p>
+  <p>The output measurement and weight adjustment are the jobs of the network's <em>loss function</em> and
+    <em>optimizer</em>, respectively.
+  </p>
 
-<h3 id="loss-function-and-optimizer">Loss Function and Optimizer</h3>
+  <h3 id="loss-function-and-optimizer">Loss Function and Optimizer</h3>
 
-<p>The network's <em>loss function</em> - also sometimes called the <em>objective</em> or <em>cost</em> function - compares the network's prediction against the true target (what you wanted/expected the network to output), and computes a loss score.
-This loss score captures how well the network is doing during training.</p>
+  <p>The network's <em>loss function</em> - also sometimes called the <em>objective</em> or <em>cost</em> function -
+    compares the network's prediction against the true target (what you wanted/expected the network to output), and
+    computes a loss score.
+    This loss score captures how well the network is doing during training.</p>
 
-<figure class="center">
-    <img src="img/nn_loss_func.png" style="width:100%;"/>
+  <figure class="center">
+    <img src="img/nn_loss_func.png" style="width:100%;" />
     <figcaption>Loss function measures the quality of the network's output</figcaption>
-</figure>
+  </figure>
 
-<p>The fundamental trick in deep learning is to use this score as a feedback signal for slightly adjusting the value of the layers' weights.
-The weight adjustment should move in a direction that will lower, or minimize, the loss score for the current example.</p>
+  <p>The fundamental trick in deep learning is to use this score as a feedback signal for slightly adjusting the value
+    of the layers' weights.
+    The weight adjustment should move in a direction that will lower, or minimize, the loss score for the current
+    example.</p>
 
-<figure class="center">
-    <img src="img/nn_optimizer.png" style="width:100%;"/>
+  <figure class="center">
+    <img src="img/nn_optimizer.png" style="width:100%;" />
     <figcaption>Loss score used as a feedback signal to adjust weights</figcaption>
-</figure>
+  </figure>
 
-<p>The weight adjustment is the job of the network's <em>optimizer</em>, which implements what's called the <em>backpropagation</em> algorithm: the central algorithm in DL.
-The next chapter explains in more detail how backpropagation works.</p>
+  <p>The weight adjustment is the job of the network's <em>optimizer</em>, which implements what's called the
+    <em>backpropagation</em> algorithm: the central algorithm in DL.
+    The next chapter explains in more detail how backpropagation works.
+  </p>
 
-<h3 id="neural-network-training-loop">Neural Network training loop</h3>
+  <h3 id="neural-network-training-loop">Neural Network training loop</h3>
 
-<p>Initially, the weights of the network are assigned random values, so the network implements a series of random transformations.
-Naturally, the network's output is far from what it should ideally be, and the loss score is accordingly very high.
-With every example the network processes, the weights are slightly adjusted in the correct direction, and the loss score decreases.</p>
+  <p>Initially, the weights of the network are assigned random values, so the network implements a series of random
+    transformations.
+    Naturally, the network's output is far from what it should ideally be, and the loss score is accordingly very high.
+    With every example the network processes, the weights are slightly adjusted in the correct direction, and the loss
+    score decreases.</p>
 
-<p>This is the <em>training loop</em>, which, repeated a sufficient number of times (typically tens of iterations over thousands of examples), yields weight values that minimize the loss function.</p>
+  <p>This is the <em>training loop</em>, which, repeated a sufficient number of times (typically tens of iterations over
+    thousands of examples), yields weight values that minimize the loss function.</p>
 
-<p>A network with minimal loss is one for which the outputs are as close as they can be to the targets: a trained network.</p>
+  <p>A network with minimal loss is one for which the outputs are as close as they can be to the targets: a trained
+    network.</p>
 
-<h3 id="deep-learning-simplified">Deep Learning simplified</h3>
+  <h3 id="deep-learning-simplified">Deep Learning simplified</h3>
 
-<p>Technically, deep learning is a multistage way to learn data representations.
-It's a simple idea with simple mechanisms that - when sufficiently scaled - end up looking like magic.</p>
+  <p>Technically, deep learning is a multistage way to learn data representations.
+    It's a simple idea with simple mechanisms that - when sufficiently scaled - end up looking like magic.</p>
 
-<hr />
+  <hr />
 
-<h2 id="what-has-deep-learning-achieved-so-far">What has Deep Learning achieved so far?</h2>
+  <h2 id="what-has-deep-learning-achieved-so-far">What has Deep Learning achieved so far?</h2>
 
-<p>Deep learning rose to prominence in the early 2010s, following the boom of publicly-available data on the internet (images, videos from widespread use of cell phones and cameras) and faster processors.
-It has achieved nothing short of a revolution in the field of machine learning, producing remarkable results on perceptual tasks and even natural language processing tasks - problems involving skills that seem natural and intuitive to humans but have long been elusive for machines.</p>
+  <p>Deep learning rose to prominence in the early 2010s, following the boom of publicly-available data on the internet
+    (images, videos from widespread use of cell phones and cameras) and faster processors.
+    It has achieved nothing short of a revolution in the field of machine learning, producing remarkable results on
+    perceptual tasks and even natural language processing tasks - problems involving skills that seem natural and
+    intuitive to humans but have long been elusive for machines.</p>
 
-<p>More specifically, deep learning has enabled the following breakthroughs, all in historically difficult areas of machine learning:</p>
+  <p>More specifically, deep learning has enabled the following breakthroughs, all in historically difficult areas of
+    machine learning:</p>
 
-<ul>
-<li>Near-human-level...
-<ul>
-<li>Image classification</li>
-<li>Speech transcription</li>
-<li>Handwriting transcription</li>
-<li>Autonomous driving</li>
-</ul></li>
-<li>Dramatically improved...
-<ul>
-<li>Machine translation</li>
-<li>Text-to-speech conversion</li>
-<li>Ad targeting</li>
-<li>Search results on the web</li>
-</ul></li>
-<li>Digital assistants such as Google Assistant, Apple Siri, and Amazon Alexa</li>
-<li>Superhuman Go, Chess, video game playing</li>
-<li>Ability to answer natural language questions</li>
-</ul>
+  <ul>
+    <li>Near-human-level...
+      <ul>
+        <li>Image classification</li>
+        <li>Speech transcription</li>
+        <li>Handwriting transcription</li>
+        <li>Autonomous driving</li>
+      </ul>
+    </li>
+    <li>Dramatically improved...
+      <ul>
+        <li>Machine translation</li>
+        <li>Text-to-speech conversion</li>
+        <li>Ad targeting</li>
+        <li>Search results on the web</li>
+      </ul>
+    </li>
+    <li>Digital assistants such as Google Assistant, Apple Siri, and Amazon Alexa</li>
+    <li>Superhuman Go, Chess, video game playing</li>
+    <li>Ability to answer natural language questions</li>
+  </ul>
 
-<hr />
+  <hr />
 
-<h2 id="summary">Summary</h2>
+  <h2 id="summary">Summary</h2>
 
-<p>Deep learning is still a relatively new field of machine learning, but it has achieved a lot of progress in the last few years.
-It has delivered revolutions in the field of natural language processing, computer vision, and speech recognition.</p>
+  <p>Deep learning is still a relatively new field of machine learning, but it has achieved a lot of progress in the
+    last few years.
+    It has delivered revolutions in the field of natural language processing, computer vision, and speech recognition.
+  </p>
 
-<p>There are three things needed to make deep learning work: input data, expected output data, and a measure of success.
-Deep learning models <em>learn</em> by predicting the output of some input data, and updating its knowledge based on the correctness of its prediction.
-The ultimate goal of deep learning is to create a model that transforms input data into useful representations in order to find the correct output for our problems.</p>
+  <p>There are three things needed to make deep learning work: input data, expected output data, and a measure of
+    success.
+    Deep learning models <em>learn</em> by predicting the output of some input data, and updating its knowledge based on
+    the correctness of its prediction.
+    The ultimate goal of deep learning is to create a model that transforms input data into useful representations in
+    order to find the correct output for our problems.</p>
 
-<p>We'll dive deeper into the details of DL in the following articles.</p>
+  <p>We'll dive deeper into the details of DL in the following articles.</p>
 
 </body>
+
 </html>

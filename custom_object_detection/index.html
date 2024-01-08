@@ -1,4 +1,3 @@
-
 <html>
 
 <head>
@@ -13,7 +12,8 @@
       </a>
       <hr>
       <div style="text-align: center;display: inline-block; width: 100%;">
-        <a class="title" href="../about">ABOUT</a> &nbsp;<a class="title" href="../contact">CONTACT</a>
+        <a class="title" href="/books">BOOKS</a> &nbsp;<a class="title" href="/about">ABOUT</a>
+        &nbsp;<a class="title" href="/contact">CONTACT</a>
       </div>
     </div>
   </center>
@@ -21,49 +21,55 @@
   <br>
   <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">September 07, 2022</p>
 
-<h1 id="custom-object-detection">Custom Object Detection</h1>
+  <h1 id="custom-object-detection">Custom Object Detection</h1>
 
-<p>This is for transfer learning object detection
-Follow documentation https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/</p>
+  <p>This is for transfer learning object detection
+    Follow documentation https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/</p>
 
-<h2 id="custom-training-custom-model">Custom training, custom model</h2>
+  <h2 id="custom-training-custom-model">Custom training, custom model</h2>
 
-<p>https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/configuring_jobs.md</p>
+  <p>https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/configuring_jobs.md</p>
 
-<hr />
+  <hr />
 
-<h2 id="install-tensorflow-object-detection-api">Install TensorFlow Object Detection API</h2>
+  <h2 id="install-tensorflow-object-detection-api">Install TensorFlow Object Detection API</h2>
 
-<p>Download the the API, Model Garden, protobuf, pycocotools</p>
+  <p>Download the the API, Model Garden, protobuf, pycocotools</p>
 
-<hr />
+  <hr />
 
-<h2 id="test-and-verify-installation">Test and verify installation</h2>
+  <h2 id="test-and-verify-installation">Test and verify installation</h2>
 
-<p>Test installation, download older protobuf version, add model garden to path, pip install a bunch of missing modules</p>
+  <p>Test installation, download older protobuf version, add model garden to path, pip install a bunch of missing
+    modules</p>
 
-<div class="codehilite"><pre><span></span><code><span class="c1"># From within TensorFlow/models/research/</span>
+  <div class="codehilite">
+    <pre><span></span><code><span class="c1"># From within TensorFlow/models/research/</span>
 <span class="n">python</span> <span class="n">object_detection</span><span class="o">/</span><span class="n">builders</span><span class="o">/</span><span class="n">model_builder_tf2_test</span><span class="o">.</span><span class="n">py</span>
-</code></pre></div>
+</code></pre>
+  </div>
 
-<h2 id="create-testtrain-directories">Create test/train directories</h2>
+  <h2 id="create-testtrain-directories">Create test/train directories</h2>
 
-<h3 id="partition-images-and-xmls">Partition images and XMLs</h3>
+  <h3 id="partition-images-and-xmls">Partition images and XMLs</h3>
 
-<p>Utilize existing <code>partition_dataset.py</code> script from TensorFlow documentation
-80/20 train/test split</p>
+  <p>Utilize existing <code>partition_dataset.py</code> script from TensorFlow documentation
+    80/20 train/test split</p>
 
-<div class="codehilite"><pre><span></span><code><span class="c1"># from ~/blog/custom_object_detection/tensorflow/workspace/training_demo/images (main)</span>
+  <div class="codehilite">
+    <pre><span></span><code><span class="c1"># from ~/blog/custom_object_detection/tensorflow/workspace/training_demo/images (main)</span>
 python ../../../scripts/partition_dataset.py -i ./unsorted/ -o ./ -r <span class="m">0</span>.2 -x
-</code></pre></div>
+</code></pre>
+  </div>
 
-<hr />
+  <hr />
 
-<h2 id="create-label_map">Create label_map</h2>
+  <h2 id="create-label_map">Create label_map</h2>
 
-<p>TensorFlow requires a label map, which namely maps each of the used labels to an integer values. This label map is used both by the training and detection processes.</p>
+  <p>TensorFlow requires a label map, which namely maps each of the used labels to an integer values. This label map is
+    used both by the training and detection processes.</p>
 
-<pre><code># custom_object_detection\tensorflow\workspace\training_demo\annotations\label_map.pbtxt
+  <pre><code># custom_object_detection\tensorflow\workspace\training_demo\annotations\label_map.pbtxt
 
 item {
     id: 1
@@ -77,36 +83,42 @@ item {
 
 </code></pre>
 
-<h3 id="simplify-existing-labels">Simplify existing labels</h3>
+  <h3 id="simplify-existing-labels">Simplify existing labels</h3>
 
-<p>Replace <code>cog_SUIT_NAME</code> to <code>cog</code>, and <code>toon_ANIMAL</code> to <code>toon</code> in all .xml files</p>
+  <p>Replace <code>cog_SUIT_NAME</code> to <code>cog</code>, and <code>toon_ANIMAL</code> to <code>toon</code> in all
+    .xml files</p>
 
-<p>Used VSCode's search and replace, should create a script
-Maybe unnecessary, can add a step when creating TensorFlow records</p>
+  <p>Used VSCode's search and replace, should create a script
+    Maybe unnecessary, can add a step when creating TensorFlow records</p>
 
-<hr />
+  <hr />
 
-<h2 id="create-tensorflow-records">Create TensorFlow records</h2>
+  <h2 id="create-tensorflow-records">Create TensorFlow records</h2>
 
-<p>Now that we have generated our annotations and split our dataset into the desired training and testing subsets, it is time to convert our annotations into the so called TFRecord format.</p>
+  <p>Now that we have generated our annotations and split our dataset into the desired training and testing subsets, it
+    is time to convert our annotations into the so called TFRecord format.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="c1"># from ~/blog/custom_object_detection/tensorflow/workspace/training_demo/images (main)</span>
+  <div class="codehilite">
+    <pre><span></span><code><span class="c1"># from ~/blog/custom_object_detection/tensorflow/workspace/training_demo/images (main)</span>
 <span class="c1"># Create train data</span>
 python ../../../scripts/generate_tfrecord.py -x ./train -l ../annotations/label_map.pbtxt -o ../annotations/train.record
 <span class="c1"># Create test data</span>
 python ../../../scripts/generate_tfrecord.py -x ./test -l ../annotations/label_map.pbtxt -o ../annotations/test.record
-</code></pre></div>
+</code></pre>
+  </div>
 
-<hr />
+  <hr />
 
-<h2 id="configure-training-job">Configure training job</h2>
+  <h2 id="configure-training-job">Configure training job</h2>
 
-<p>To begin with, we need to download the latest pre-trained network for the model we wish to use.
-Using TF pre-trained models, specifically <code>Faster R-CNN ResNet152 V1 1024x1024</code>
-Not creating custom training job (yet)
-Download the model and extract to <code>~\blog\custom_object_detection\tensorflow\workspace\training_demo\pre_trained_models\</code></p>
+  <p>To begin with, we need to download the latest pre-trained network for the model we wish to use.
+    Using TF pre-trained models, specifically <code>Faster R-CNN ResNet152 V1 1024x1024</code>
+    Not creating custom training job (yet)
+    Download the model and extract to
+    <code>~\blog\custom_object_detection\tensorflow\workspace\training_demo\pre_trained_models\</code>
+  </p>
 
-<pre><code>training_demo/
+  <pre><code>training_demo/
 ├─ ...
 ├─ pre-trained-models/
 │  └─ faster_rcnn_resnet152_v1_1024x1024_coco17_tpu-8/
@@ -116,62 +128,78 @@ Download the model and extract to <code>~\blog\custom_object_detection\tensorflo
 └─ ...
 </code></pre>
 
-<h3 id="configure-the-training-pipeline">Configure the training <strong>pipeline</strong></h3>
+  <h3 id="configure-the-training-pipeline">Configure the training <strong>pipeline</strong></h3>
 
-<p>Create new directory under <code>training_demo\models</code>
-Modify pipeline.config <code>blog\custom_object_detection\tensorflow\workspace\training_demo\models\my_faster_rcnn_resnet152_v1\pipeline.config</code>
-Follow steps from here: https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/training.html#configure-the-training-pipeline</p>
+  <p>Create new directory under <code>training_demo\models</code>
+    Modify pipeline.config
+    <code>blog\custom_object_detection\tensorflow\workspace\training_demo\models\my_faster_rcnn_resnet152_v1\pipeline.config</code>
+    Follow steps from here:
+    https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/training.html#configure-the-training-pipeline
+  </p>
 
-<p>Alternatively, copy custom pipeline config from TF's object detection sample config directory: <code>~\blog\custom_object_detection\tensorflow\models\research\object_detection\samples\configs</code></p>
+  <p>Alternatively, copy custom pipeline config from TF's object detection sample config directory:
+    <code>~\blog\custom_object_detection\tensorflow\models\research\object_detection\samples\configs</code>
+  </p>
 
-<hr />
+  <hr />
 
-<h2 id="train-the-model">Train the model</h2>
+  <h2 id="train-the-model">Train the model</h2>
 
-<div class="codehilite"><pre><span></span><code><span class="c1"># from ~/blog/custom_object_detection/tensorflow/workspace/training_demo</span>
+  <div class="codehilite">
+    <pre><span></span><code><span class="c1"># from ~/blog/custom_object_detection/tensorflow/workspace/training_demo</span>
 python model_main_tf2.py --model_dir<span class="o">=</span>models/my_faster_rcnn_resnet152_v1 --pipeline_config_path<span class="o">=</span>models/my_faster_rcnn_resnet152_v1/pipeline.config
-</code></pre></div>
+</code></pre>
+  </div>
 
-<p>No module name pycocotools, lvis,
-Installed C++ 14.0:       error: Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/</p>
+  <p>No module name pycocotools, lvis,
+    Installed C++ 14.0: error: Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build
+    Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/</p>
 
-<p>OSError: Checkpoint is expected to be an object-based checkpoint.
-  fine_tune_checkpoint: "C:/Users/Sason/Documents/Projects/blog/custom_object_detection/tensorflow/workspace/training_demo/pre_trained_models/faster_rcnn_resnet152_v1_1024x1024_coco17_tpu-8/checkpoint/ckpt-0.index"
-Solution: Modify <code>fine_tune_checkpoint</code> in pipeline.config, strip the .index</p>
+  <p>OSError: Checkpoint is expected to be an object-based checkpoint.
+    fine_tune_checkpoint:
+    "C:/Users/Sason/Documents/Projects/blog/custom_object_detection/tensorflow/workspace/training_demo/pre_trained_models/faster_rcnn_resnet152_v1_1024x1024_coco17_tpu-8/checkpoint/ckpt-0.index"
+    Solution: Modify <code>fine_tune_checkpoint</code> in pipeline.config, strip the .index</p>
 
-<h3 id="monitor-training-progress-with-tensorboard">Monitor training progress with TensorBoard</h3>
+  <h3 id="monitor-training-progress-with-tensorboard">Monitor training progress with TensorBoard</h3>
 
-<p><font style="color:red">TODO: Insert image of training</font></p>
+  <p>
+    <font style="color:red">TODO: Insert image of training</font>
+  </p>
 
-<hr />
+  <hr />
 
-<h2 id="evaluate-the-model">Evaluate the model</h2>
+  <h2 id="evaluate-the-model">Evaluate the model</h2>
 
-<hr />
+  <hr />
 
-<h2 id="export-the-model">Export the model</h2>
+  <h2 id="export-the-model">Export the model</h2>
 
-<div class="codehilite"><pre><span></span><code><span class="c1"># from ~/blog/custom_object_detection/tensorflow/workspace/training_demo</span>
+  <div class="codehilite">
+    <pre><span></span><code><span class="c1"># from ~/blog/custom_object_detection/tensorflow/workspace/training_demo</span>
 python ./exporter_main_v2.py --input_type image_tensor --pipeline_config_path ./models/my_faster_rcnn_resnet152_v1/pipeline.config --trained_checkpoint_dir ./models/my_faster_rcnn_resnet152_v1/ --output_directory ./exported-models/my_model
-</code></pre></div>
+</code></pre>
+  </div>
 
-<p>New file located under <code>~/blog/custom_object_detection/tensorflow/workspace/training_demo/exported-models/my_model</code></p>
+  <p>New file located under
+    <code>~/blog/custom_object_detection/tensorflow/workspace/training_demo/exported-models/my_model</code>
+  </p>
 
-<hr />
+  <hr />
 
-<h2 id="use-model-for-inference">Use model for inference</h2>
+  <h2 id="use-model-for-inference">Use model for inference</h2>
 
-<p>The model does not generate bounding boxes on the images.
-I suspect it's due to the vast difference in image sizes.
-There are two avenues for resolving this issue:</p>
+  <p>The model does not generate bounding boxes on the images.
+    I suspect it's due to the vast difference in image sizes.
+    There are two avenues for resolving this issue:</p>
 
-<ol>
-<li>Train a custom object detector that takes as input an image 1/4 the original size</li>
-<li>Create a miniature dataset of image sizes relatively near the existing model's input size</li>
-</ol>
+  <ol>
+    <li>Train a custom object detector that takes as input an image 1/4 the original size</li>
+    <li>Create a miniature dataset of image sizes relatively near the existing model's input size</li>
+  </ol>
 
-<p>Another option is to train using a different architecture, such as SSD or EfficientDet.
-I will train another model first before I train a custom object detector.</p>
+  <p>Another option is to train using a different architecture, such as SSD or EfficientDet.
+    I will train another model first before I train a custom object detector.</p>
 
 </body>
+
 </html>
