@@ -271,7 +271,7 @@ Please watch [this 3-minute video](https://www.youtube.com/watch?v=OX7rj93m6o8) 
 ## Mancala simulator
 
 I wrote a simple, CLI Mancala game simulator in Python.
-The code can be found on [my GitHub repo](https://github.com/nosas/blog/tree/mancala/minimax_mancala/code). An example of the simulator can be seen below.
+The code can be found on [my GitHub repo](https://github.com/nosas/blog/tree/main/minimax_mancala/code). An example of the simulator can be seen below.
 
 The top-most row is the indices of Player 1's pits.
 The following row is Player 1's pits initialized with 4 seeds.
