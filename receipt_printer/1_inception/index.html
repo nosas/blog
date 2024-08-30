@@ -1,0 +1,202 @@
+
+<html>
+
+<head>
+  <link rel="stylesheet" type="text/css" href="../../css/default_dark.css">
+  <link rel="stylesheet" type="text/css" href="../../css/syntax_dark.css">
+</head>
+
+<body>
+  <center>
+      <div style="display: inline-block; vertical-align:middle;">
+          <a href="/" style="text-decoration: none;">SASON REZA<br>
+          </a>
+          <hr>
+          <div style="text-align: center;display: inline-block; width: 100%;">
+              <a class="title" href="/books">BOOKS</a> &nbsp;<a class="title" href="/about">ABOUT</a> &nbsp;<a
+                  class="title" href="/contact">CONTACT</a>
+          </div>
+      </div>
+  </center>
+
+  <br>
+  <p style="margin-bottom: 2ch;text-align: right;font-style: italic;">August 30, 2024</p>
+
+<p><title>Receipt Printer: Inception</title></p>
+
+<h1 id="receipt-printer-inception">Receipt Printer - Inception</h1>
+
+<p>A silly project on Twitter caught my attention.
+Andrew Schmelyun's video<sup class="footnote-ref" id="fnref-1"><a href="#fn-1">1</a></sup> showcased a receipt printer generating physical tickets for new GitHub issues.
+He wrote up a blog post<sup class="footnote-ref" id="fnref-2"><a href="#fn-2">2</a></sup> about it.
+I want to do something similar.</p>
+
+<p>It turns out that I have a receipt printer laying around.
+Specifically, I have a Star Micronics MCP31LB thermal receipt printer.
+I will use it to print daily updates about myself, my projects, and my cats.</p>
+
+<h2 id="idea">Idea</h2>
+
+<p>I have a handful of services that I use daily: cat updates, GitHub issues, TODO task list, and calendar scheduling.
+I'd like updates from these services to be printed on a receipt throughout the day.
+In the morning, I want it to print a summary of the day.
+Throughout the day, I want it to print updates regarding my cats, GitHub issues, task list completions, and whatever else I have going on (news, discord, etc.).
+At the end of the day, I want it to print a summary of the day.</p>
+
+<p>I asked ChatGPT to produce a sample output of the receipt's content:</p>
+
+<blockquote>
+  <p>I have a receipt printer connected to my home lab. I would like for it to regularly print stuff.
+  Assume it has an SDK and can communicate with local services, external APIs, etc.</p>
+
+  <p>It starts with BEGIN &lt;CURRENT_DAY>.
+  It prints a time stamped event, such as weather update, calendar update, cat update, etc.
+  Finally, at the end of the day it prints a summary block followed by an END &lt;CURRENT_DAY> block.</p>
+
+  <p>Can you show me a sample output for this?</p>
+</blockquote>
+
+<p>After a few iterations of instructions, I got a decent starting point for the receipt's content.
+It's not quite what I want, but I'll massage it out as I get stuff printing.</p>
+
+<pre><code>=======================
+BEGIN TUESDAY, AUGUST 27, 2024
+=======================
+
+[08:00 AM]
+Weather Update:
+- Temperature: 72°F
+- Chance of Rain: 20%
+- Wind: 5 mph N
+
+-----------------------
+
+[08:15 AM]
+Daily Calendar Events:
+- 09:00 AM: Team Meeting
+- 11:00 AM: Project Review
+- 02:00 PM: Doctor Appointment
+
+-----------------------
+
+[08:30 AM]
+Cat Health Update:
+- Luna: Ate breakfast at 08:25 AM.
+- Max: Weight: 12 lbs. Checked at 08:20 AM.
+
+-----------------------
+
+[12:00 PM]
+Midday Weather Update:
+- Temperature: 78°F
+- Chance of Rain: 10%
+- Wind: 7 mph NW
+
+-----------------------
+
+[01:00 PM]
+Reminder:
+- Lunch break! Take some time to relax.
+
+-----------------------
+
+[05:00 PM]
+GitHub Commits:
+- Repo: cat-tracker
+- Latest Commit: "Added health update notification system."
+
+-----------------------
+
+[07:00 PM]
+Evening Weather Update:
+- Temperature: 70°F
+- Chance of Rain: 5%
+- Wind: 4 mph NW
+
+-----------------------
+
+[09:00 PM]
+Summary:
+- Weather: No significant changes.
+- Calendar: 3 events completed.
+- Cat Updates: Luna ate 3 times, Max ate 2 times.
+- GitHub: 5 commits made today.
+
+=======================
+END TUESDAY, AUGUST 27, 2024
+=======================
+</code></pre>
+
+<hr />
+
+<h2 id="implementation">Implementation</h2>
+
+<p>My implementation will be different from Andrew's.
+Where he used PHP, a Raspberry Pi, and a PHP library for communicating with the receipt printer, I will use Python, message queues, and deploy it in my Kubernetes cluster.
+Overkill?
+Yeah, maybe.
+It should be fun, though.</p>
+
+<p>This printer is awesome.
+Can you believe that it has ...</p>
+
+<ol>
+<li>fantastic online manual<sup class="footnote-ref" id="fnref-3"><a href="#fn-3">3</a></sup></li>
+<li>open-source SDK<sup class="footnote-ref" id="fnref-4"><a href="#fn-4">4</a></sup></li>
+<li>detailed protocol overview for developers<sup class="footnote-ref" id="fnref-5"><a href="#fn-5">5</a></sup></li>
+</ol>
+
+<p>The SDK's technology stack - PHP and .NET - is not my favorite, so I will write my own in Python.
+I have to remember to stay focused on the goal: I want to print stuff on a receipt printer.
+The Python SDK does not have to be perfect.</p>
+
+<p>Once I've converted the SDK to Python, I can create a simple web service for the print server.
+Then, the fun can begin.</p>
+
+<h3 id="data-collection-printing">Data Collection &amp; Printing</h3>
+
+<p>The data to be printed is spread across many services.
+I need to figure out how to collect it in a way that I can print it on the receipt printer.</p>
+
+<p>At a high-level, I anticipate designing a pub-sub system.
+When new updates occur (completed a task, new cat update, etc.), they are published to a topic.
+Cron jobs can also publish to the topic, such as daily summaries, important news, and whatnot.
+A subscriber will listen to the topic, send the print request to the printer, and mark the update as printed once the printer confirms the receipt was printed.</p>
+
+<hr />
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I want to print stuff on a receipt printer.
+I am lucky that the printer has so much documentation, so it should be a fun project.
+Let's get started.</p>
+
+<h2 id="references">References</h2>
+
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn-1">
+<p><a href="https://x.com/aschmelyun/status/1506960015063625733">https://x.com/aschmelyun/status/1506960015063625733</a>&#160;<a href="#fnref-1" class="footnoteBackLink" title="Jump back to footnote 1 in the text.">&#8617;</a></p>
+</li>
+
+<li id="fn-2">
+<p><a href="https://aschmelyun.com/blog/i-built-a-receipt-printer-for-github-issues/">https://aschmelyun.com/blog/i-built-a-receipt-printer-for-github-issues/</a>&#160;<a href="#fnref-2" class="footnoteBackLink" title="Jump back to footnote 2 in the text.">&#8617;</a></p>
+</li>
+
+<li id="fn-3">
+<p><a href="https://star-m.jp/products/s_print/sdk/StarCloudPRNT/manual/en/index.html">https://star-m.jp/products/s_print/sdk/StarCloudPRNT/manual/en/index.html</a>&#160;<a href="#fnref-3" class="footnoteBackLink" title="Jump back to footnote 3 in the text.">&#8617;</a></p>
+</li>
+
+<li id="fn-4">
+<p><a href="https://github.com/star-micronics/cloudprnt-sdk/tree/master">https://github.com/star-micronics/cloudprnt-sdk/tree/master</a>&#160;<a href="#fnref-4" class="footnoteBackLink" title="Jump back to footnote 4 in the text.">&#8617;</a></p>
+</li>
+
+<li id="fn-5">
+<p><a href="https://star-m.jp/products/s_print/sdk/StarCloudPRNT/manual/en/protocol-reference/index.html">https://star-m.jp/products/s_print/sdk/StarCloudPRNT/manual/en/protocol-reference/index.html</a>&#160;<a href="#fnref-5" class="footnoteBackLink" title="Jump back to footnote 5 in the text.">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+</body>
+</html>
